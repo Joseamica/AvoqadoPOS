@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AvoqadoApp</string>
+    <string name="wait_payment">Espera</string>
+    <string name="whileInitProcessFinishes">Mientras configuramos la terminal</string>
+</resources>
