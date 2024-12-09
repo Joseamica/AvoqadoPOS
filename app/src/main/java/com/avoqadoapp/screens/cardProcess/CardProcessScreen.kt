@@ -42,12 +42,11 @@ import timber.log.Timber
 
 @Composable
 fun CardProcessScreen(
-    viewModel: CardProcessViewModel
+    viewModel: CardProcessViewModel,
+    cardProcessData: CardProcessData,
+    binValidationData: BinValidationData
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val cardProcessData = remember {
-        CardProcessData()
-    }
 
     var doPayment2: DoProcessAdquirerOperationData? = remember(key1 = state.isPaymentStarted) {
         null
@@ -57,13 +56,12 @@ fun CardProcessScreen(
     val selectApp by cardProcessData.selectApp.observeAsState()
     val navigate by cardProcessData.navigate.observeAsState()
 
-    val binValidationData: BinValidationData = BinValidationData(context)
+
     val binResponse by binValidationData.binValidationResponse.observeAsState()
     val storage = Storage(context = context)
     val emvImpl = EMVImpl()
     val deviceKeyStorage = DeviceKeyStorage(context = context)
     val dbParams = ParametroDB(context)
-
     val opResponse : State<OperationResponseModel?>? = doPayment2?.operationResponse?.observeAsState()
 
     LaunchedEffect(key1 = state.isPaymentStarted) {
@@ -106,6 +104,8 @@ fun CardProcessScreen(
             context = context,
             inputModeType = InputMode.ALL
         )
+
+        viewModel.submitAction(CardProcessAction.LogCardProcess("Inserta tarjeta para continuar..."))
     }
 
     LaunchedEffect(key1 = selectApp) {

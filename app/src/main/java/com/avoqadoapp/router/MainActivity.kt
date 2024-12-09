@@ -8,7 +8,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.avoqadoapp.core.navigation.NavigationCommand
@@ -25,8 +27,10 @@ import com.avoqadoapp.screens.home.HomeViewModel
 import com.avoqadoapp.screens.splash.SplashScreen
 import com.avoqadoapp.screens.splash.SplashViewModel
 import com.avoqadoapp.ui.theme.AvoqadoAppTheme
+import com.menta.android.core.viewmodel.CardProcessData
 import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
+import com.menta.android.core.viewmodel.bin.BinValidationData
 import com.menta.android.restclient.core.RestClientConfiguration.configure
 import com.menta.android.restclient.core.Storage
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -83,10 +87,16 @@ class MainActivity : ComponentActivity() {
                             HomeScreen(viewModel = viewModel)
                         }
                         composableHolder(MainDests.CardProcess) {
+                            val context = LocalContext.current
                             val viewModel = CardProcessViewModel(
                                 savedStateHandle = it.savedStateHandle
                             )
-                            CardProcessScreen(viewModel)
+                            val cardProcessData =
+                                CardProcessData()
+
+                            val binValidationData: BinValidationData = BinValidationData(context)
+
+                            CardProcessScreen(viewModel, cardProcessData, binValidationData)
                         }
                     }
                 }
