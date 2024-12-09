@@ -93,8 +93,7 @@ class MainActivity : ComponentActivity() {
                             val viewModel = CardProcessViewModel(
                                 savedStateHandle = it.savedStateHandle
                             )
-                            val cardProcessData =
-                                CardProcessData()
+                            val cardProcessData = CardProcessData()
 
                             val binValidationData: BinValidationData = BinValidationData(context)
                             val storage = Storage(context = context)

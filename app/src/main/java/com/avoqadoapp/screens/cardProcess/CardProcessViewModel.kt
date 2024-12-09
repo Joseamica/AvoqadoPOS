@@ -21,10 +21,15 @@ import com.menta.android.core.model.OperationFlow
 import com.menta.android.core.model.OperationType
 import com.menta.android.core.utils.OPERATION
 import com.menta.android.core.utils.StringUtils
+import timber.log.Timber
 
 class CardProcessViewModel constructor (
     private val savedStateHandle: SavedStateHandle
 ) : BaseViewModel<CardProcessViewState, CardProcessAction>(CardProcessViewState()) {
+
+    init {
+        Timber.d("Init CardProcessViewModel")
+    }
 
     val amount: String? = savedStateHandle.get("amount")
     val currency: String? = savedStateHandle.get("currency")
