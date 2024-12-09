@@ -99,6 +99,7 @@ fun CardProcessScreen(
     }
 
     LaunchedEffect(key1 = Unit) {
+        viewModel.submitAction(CardProcessAction.LogCardProcess("Inicio de lectura de tarjeta..."))
         cardProcessData.findCardProcess(
             operationFlow = viewModel.doOperationFlow(),
             cardData = viewModel.getCardData(),

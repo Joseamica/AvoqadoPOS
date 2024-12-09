@@ -22,9 +22,9 @@ enum class Country(val code: String) {
 }
 
 val merchantId = "bd0fc6c6-d698-444a-b4ce-baa2af32f9c7"
-val customerId = ""
+val customerId = "4b9d4822-9c94-4056-b58f-b84c7d214ed4"
 val merchantApiKey = "8vn8MTN02NvZff8NwWv4NhI8UOHKAloWxMc6JMIwKTFqoKb4Z5aoKdw2eFZhiUAK"
-val terminalId = ""
+val terminalId = "e8d7e331-a842-459c-84b9-3814cf097db0"
 val CURRENCY_LABEL = CURRENCY_LABEL_MX // Usar CURRENCY_LABEL_ARG si es Argentina. Usar CURRENCY_LABEL_MX si es Mexico
 val ACQUIRER_NAME = Acquirer.BANORTE.name // Usar Acquirer.GPS.name para Argentina. Usar Acquirer.BANORTE.name para México
 val COUNTRY_CODE = Country.MEX.code // Usar Country.ARG.code para Argentina. Usar Country.MEX.code para México

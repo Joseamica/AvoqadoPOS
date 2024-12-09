@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -17,6 +18,7 @@ fun CardProcessContent(info: List<String>) {
         Box(
             modifier = Modifier
                 .fillMaxHeight(0.5f)
+                .fillMaxWidth()
                 .background(color = Color.LightGray)
         ) {
             Column(
@@ -28,6 +30,7 @@ fun CardProcessContent(info: List<String>) {
         Box(
             modifier = Modifier
                 .fillMaxHeight(0.5f)
+                .fillMaxWidth()
                 .background(color = Color.White)
         ) {
 
