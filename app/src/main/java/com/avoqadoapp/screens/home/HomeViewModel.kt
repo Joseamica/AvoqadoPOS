@@ -22,7 +22,7 @@ class HomeViewModel(
     private val navigationDispatcher: NavigationDispatcher
 ) : BaseViewModel<HomeViewState, HomeAction>(HomeViewState()) {
 
-    private companion object {
+    companion object {
         const val MINIMUM_AMOUNT_REQUIRED = 1
     }
 

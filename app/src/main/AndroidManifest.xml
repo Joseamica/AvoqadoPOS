@@ -26,6 +26,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".screens.CardRulesValidationActivity" android:exported="false"/>
+        <activity android:name=".screens.DeclinedPaymentActivity" android:exported="false"/>
+        <activity android:name=".screens.DoPaymentActivity" android:exported="false"/>
+        <activity android:name=".screens.ProcessPaymentActivity" android:exported="false"/>
+        <activity android:name=".screens.SuccessPaymentActivity" android:exported="false"/>
     </application>
 
 </manifest>
