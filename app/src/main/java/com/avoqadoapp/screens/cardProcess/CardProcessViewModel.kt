@@ -35,6 +35,16 @@ class CardProcessViewModel constructor (
     val clearAmount: String
         get() = amount?.replace(",", "")?.replace(".", "") ?: ""
 
+    init {
+        updateState {
+            copy(
+                info = info.toMutableList().apply {
+                    add("Inserta tarjeta para continuar")
+                }
+            )
+        }
+    }
+
     override suspend fun handleActions(action: CardProcessAction) {
         when (action) {
             is CardProcessAction.LogCardProcess -> {

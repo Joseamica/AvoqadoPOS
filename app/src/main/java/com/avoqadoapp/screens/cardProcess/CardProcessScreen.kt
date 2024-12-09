@@ -210,8 +210,8 @@ fun CardProcessScreen(
     }
 
     LaunchedEffect(key1 = opResponse?.value) {
-        viewModel.submitAction(CardProcessAction.LogCardProcess("Operation response: ${opResponse?.value?.status?.message}"))
         opResponse?.value?.let {
+            viewModel.submitAction(CardProcessAction.LogCardProcess("Operation response: ${opResponse?.value?.status?.message}"))
             val operationResponse = it as Adquirer
 
             val gson = Gson()
@@ -231,7 +231,7 @@ fun CardProcessScreen(
                 viewModel.submitAction(CardProcessAction.LogCardProcess("Pago Declinado!"))
             }
         }?: run {
-            viewModel.submitAction(CardProcessAction.LogCardProcess("Pago declinado por response null"))
+//            viewModel.submitAction(CardProcessAction.LogCardProcess("Pago declinado por response null"))
         }
     }
 
