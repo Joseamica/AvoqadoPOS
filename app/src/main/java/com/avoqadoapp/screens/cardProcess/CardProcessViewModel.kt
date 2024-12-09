@@ -1,14 +1,13 @@
 package com.avoqadoapp.screens.cardProcess
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import com.avoqadoapp.Country
 import com.avoqadoapp.core.OperationFlowHolder
+import com.avoqadoapp.core.base.BaseViewModel
 import com.avoqadoapp.doTagListMxTest
 import com.avoqadoapp.doTagListTest
 import com.avoqadoapp.isNotNull
 import com.menta.android.common_cross.util.Acquirer
-import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
 import com.menta.android.core.consts.Amount
 import com.menta.android.core.consts.Breakdown
 import com.menta.android.core.consts.Capture
@@ -20,13 +19,12 @@ import com.menta.android.core.model.CardData
 import com.menta.android.core.model.Currency
 import com.menta.android.core.model.OperationFlow
 import com.menta.android.core.model.OperationType
-import com.menta.android.core.utils.DateUtil.isToday
 import com.menta.android.core.utils.OPERATION
 import com.menta.android.core.utils.StringUtils
 
-class CardProcessViewModel constructor(
+class CardProcessViewModel constructor (
     private val savedStateHandle: SavedStateHandle
-) : ViewModel() {
+) : BaseViewModel<CardProcessViewState, CardProcessAction>(CardProcessViewState()) {
 
     val amount: String? = savedStateHandle.get("amount")
     val currency: String? = savedStateHandle.get("currency")
@@ -37,6 +35,29 @@ class CardProcessViewModel constructor(
     val clearAmount: String
         get() = amount?.replace(",", "")?.replace(".", "") ?: ""
 
+    override suspend fun handleActions(action: CardProcessAction) {
+        when (action) {
+            is CardProcessAction.LogCardProcess -> {
+                updateState {
+                    copy(
+                        info = info.toMutableList().apply {
+                            add(action.log)
+                        }
+                    )
+                }
+            }
+
+            CardProcessAction.StartPaymentProcess -> {
+                updateState {
+                    copy(
+                        isPaymentStarted = true
+                    )
+                }
+            }
+        }
+    }
+
+    fun doPayment(){}
 
     fun getCardData(): CardData {
         return CardData(

@@ -2,6 +2,7 @@ package com.avoqadoapp.screens.home
 
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -36,7 +37,10 @@ class HomeViewModel(
             )
         )
 
+
+
     val textFieldAmount: MutableState<TextFieldState> = inputFieldState
+
 
     override suspend fun handleActions(action: HomeAction) {
         when(action) {
