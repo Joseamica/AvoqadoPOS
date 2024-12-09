@@ -8,7 +8,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
@@ -31,6 +30,9 @@ import com.menta.android.core.viewmodel.CardProcessData
 import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
 import com.menta.android.core.viewmodel.bin.BinValidationData
+import com.menta.android.emv.i9100.reader.emv.EMVImpl
+import com.menta.android.keys.admin.core.repository.DeviceKeyStorage
+import com.menta.android.keys.admin.core.repository.parametro.ParametroDB
 import com.menta.android.restclient.core.RestClientConfiguration.configure
 import com.menta.android.restclient.core.Storage
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -95,8 +97,20 @@ class MainActivity : ComponentActivity() {
                                 CardProcessData()
 
                             val binValidationData: BinValidationData = BinValidationData(context)
+                            val storage = Storage(context = context)
+                            val emvImpl = EMVImpl()
+                            val deviceKeyStorage = DeviceKeyStorage(context = context)
+                            val dbParams = ParametroDB(context)
 
-                            CardProcessScreen(viewModel, cardProcessData, binValidationData)
+                            CardProcessScreen(
+                                viewModel,
+                                cardProcessData,
+                                binValidationData,
+                                dbParams = dbParams,
+                                storage = storage,
+                                emvImpl = emvImpl,
+                                deviceKeyStorage = deviceKeyStorage
+                            )
                         }
                     }
                 }

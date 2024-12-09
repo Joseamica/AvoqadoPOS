@@ -44,7 +44,11 @@ import timber.log.Timber
 fun CardProcessScreen(
     viewModel: CardProcessViewModel,
     cardProcessData: CardProcessData,
-    binValidationData: BinValidationData
+    binValidationData: BinValidationData,
+    dbParams: ParametroDB,
+    deviceKeyStorage: DeviceKeyStorage,
+    storage: Storage,
+    emvImpl: EMVImpl
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -58,11 +62,23 @@ fun CardProcessScreen(
 
 
     val binResponse by binValidationData.binValidationResponse.observeAsState()
-    val storage = Storage(context = context)
-    val emvImpl = EMVImpl()
-    val deviceKeyStorage = DeviceKeyStorage(context = context)
-    val dbParams = ParametroDB(context)
+
     val opResponse : State<OperationResponseModel?>? = doPayment2?.operationResponse?.observeAsState()
+
+
+    LaunchedEffect(key1 = Unit) {
+        Timber.d("Inicio de lectura de tarjeta...")
+        viewModel.submitAction(CardProcessAction.LogCardProcess("Inicio de lectura de tarjeta..."))
+        cardProcessData.findCardProcess(
+            operationFlow = viewModel.doOperationFlow(),
+            cardData = viewModel.getCardData(),
+            context = context,
+            inputModeType = InputMode.ALL
+        )
+
+        viewModel.submitAction(CardProcessAction.LogCardProcess("Inserta tarjeta para continuar..."))
+    }
+
 
     LaunchedEffect(key1 = state.isPaymentStarted) {
         if (state.isPaymentStarted) {
@@ -94,18 +110,6 @@ fun CardProcessScreen(
 
             doPayment2?.doOperation(operationType = viewModel.operationFlow.transactionType!!)
         }
-    }
-
-    LaunchedEffect(key1 = Unit) {
-        viewModel.submitAction(CardProcessAction.LogCardProcess("Inicio de lectura de tarjeta..."))
-        cardProcessData.findCardProcess(
-            operationFlow = viewModel.doOperationFlow(),
-            cardData = viewModel.getCardData(),
-            context = context,
-            inputModeType = InputMode.ALL
-        )
-
-        viewModel.submitAction(CardProcessAction.LogCardProcess("Inserta tarjeta para continuar..."))
     }
 
     LaunchedEffect(key1 = selectApp) {
