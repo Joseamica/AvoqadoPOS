@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
@@ -90,19 +91,33 @@ class MainActivity : ComponentActivity() {
                         }
                         composableHolder(MainDests.CardProcess) {
                             val context = LocalContext.current
-                            val viewModel = CardProcessViewModel(
-                                savedStateHandle = it.savedStateHandle
-                            )
-                            val cardProcessData = CardProcessData()
+                            val viewModel = remember {
+                                CardProcessViewModel(
+                                    savedStateHandle = it.savedStateHandle
+                                )
+                            }
+                            val cardProcessData = remember {
+                                CardProcessData()
+                            }
 
-                            val binValidationData: BinValidationData = BinValidationData(context)
-                            val storage = Storage(context = context)
-                            val emvImpl = EMVImpl()
-                            val deviceKeyStorage = DeviceKeyStorage(context = context)
-                            val dbParams = ParametroDB(context)
+                            val binValidationData: BinValidationData = remember {
+                                BinValidationData(context)
+                            }
+                            val storage = remember {
+                                Storage(context = context)
+                            }
+                            val emvImpl = remember{
+                                EMVImpl()
+                            }
+                            val deviceKeyStorage = remember {
+                                DeviceKeyStorage(context = context)
+                            }
+                            val dbParams = remember {
+                                ParametroDB(context)
+                            }
 
                             CardProcessScreen(
-                                viewModel,
+                                viewModel= viewModel,
                                 cardProcessData,
                                 binValidationData,
                                 dbParams = dbParams,
