@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Gradle: ./app/libs/com_menta_android_emv_i9100_reader_reader_1.6.4_reader-1.6.4.aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-4/ef7d7b7a8875ab88f4f2b5f2ec50dd8b/transformed/com_menta_android_emv_i9100_reader_reader_1.6.4_reader-1.6.4/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/ef7d7b7a8875ab88f4f2b5f2ec50dd8b/transformed/com_menta_android_emv_i9100_reader_reader_1.6.4_reader-1.6.4/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

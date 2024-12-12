@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="Gradle: com.google.accompanist:accompanist-placeholder:0.24.13-rc@aar" external-system-id="GRADLE">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-4/0399936443d515ac0014060c73ef386b/transformed/accompanist-placeholder-0.24.13-rc/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-4/0399936443d515ac0014060c73ef386b/transformed/accompanist-placeholder-0.24.13-rc/AndroidManifest.xml" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.accompanist/accompanist-placeholder/0.24.13-rc/1e391d05a793ce2cc3a9067fbdc94a7c6c8215d3/accompanist-placeholder-0.24.13-rc-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.accompanist/accompanist-placeholder/0.24.13-rc/768f85cb764644b5578b73b09ae70237007ba2da/accompanist-placeholder-0.24.13-rc-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
