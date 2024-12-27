@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.avoqado.pos.MainActivity
 import com.avoqado.pos.ui.screen.SuccessScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +32,10 @@ class SuccessPaymentActivity : ComponentActivity() {
             {
                 CoroutineScope(Dispatchers.Main).launch {
                     Log.i(TAG, "goToInputAmount")
-                    Intent(this@SuccessPaymentActivity, InputAmountActivity::class.java)
+                    Intent(this@SuccessPaymentActivity, MainActivity::class.java)
+                        .apply {
+                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                        }
                         .let(::startActivity)
                 }
             }, 3000

@@ -50,7 +50,7 @@ class SnackbarDelegate {
         }
 
     fun showSnackbar(
-        state: SnackbarState,
+        state: SnackbarState = SnackbarState.Default,
         message: String,
         actionLabel: String? = null,
         duration: SnackbarDuration = SnackbarDuration.Short

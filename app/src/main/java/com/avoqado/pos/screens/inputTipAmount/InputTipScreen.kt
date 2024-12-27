@@ -92,7 +92,7 @@ fun InputTipScreen(
                         intent.putExtra("operationType", OperationType.PAYMENT.name)
                         context.startActivity(intent)
                     }
-
+                    inputTipViewModel.navigateBack()
                 }
             )
             PrimaryButton(
@@ -110,7 +110,7 @@ fun InputTipScreen(
                         intent.putExtra("operationType", OperationType.PAYMENT.name)
                         context.startActivity(intent)
                     }
-
+                    inputTipViewModel.navigateBack()
                 }
             )
 

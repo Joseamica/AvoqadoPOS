@@ -1,6 +1,5 @@
 package com.avoqado.pos
-import android.util.Log
-import android.content.Intent
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -15,9 +14,6 @@ import com.avoqado.pos.core.navigation.NavigationManager
 import com.avoqado.pos.core.navigation.NavigationManagerImpl
 import com.avoqado.pos.router.AppRouter
 import com.avoqado.pos.ui.theme.DemoandroidsdkmentaTheme
-import com.avoqado.pos.views.InitActivity
-import com.avoqado.pos.views.MenuActivity
-import com.menta.android.restclient.core.Storage
 
 class MainActivity : ComponentActivity() {
 

@@ -22,13 +22,18 @@ sealed class MainDests : NavigationAction {
 
     data object TableDetail: MainDests(){
         const val ARG_TABLE_ID = "navigate_to_table"
+        const val ARG_VENUE_ID = "ARG_VENUE_ID"
 
         override val route: String
-            get() = "table/${ARG_TABLE_ID}"
+            get() = "table/${ARG_VENUE_ID}/${ARG_TABLE_ID}"
 
         override val arguments: List<NamedNavArgument>
             get() = listOf(
                 navArgument(ARG_TABLE_ID) {
+                    type = NavType.StringType
+                    nullable = false
+                },
+                navArgument(ARG_VENUE_ID) {
                     type = NavType.StringType
                     nullable = false
                 }

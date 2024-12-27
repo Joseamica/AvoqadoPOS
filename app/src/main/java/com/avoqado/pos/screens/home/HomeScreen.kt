@@ -13,11 +13,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,10 +39,18 @@ fun HomeScreen(
     homeViewModel: HomeViewModel
 ) {
     val tables by homeViewModel.tables.collectAsStateWithLifecycle()
+    val venues by homeViewModel.venues.collectAsStateWithLifecycle()
+    val selectedVenue by homeViewModel.selectedVenue.collectAsStateWithLifecycle()
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
+        VenuesDropdownMenu(
+            items = venues.map { venue -> venue.name ?: "" },
+            selectedItem = selectedVenue?.name ?: "",
+            onItemSelected = { index -> homeViewModel.setSelectedVenue(index)}
+        )
+
         Row {
             // “Confirm” button
             Button(
@@ -56,10 +72,12 @@ fun HomeScreen(
         }
 
         LazyColumn {
-            items(tables) { table ->
+            items(selectedVenue?.tables ?: emptyList()) { table ->
                 Card(
                     modifier = Modifier.clickable {
-                        homeViewModel.onTableSelected(table)
+                        table?.let {
+                            homeViewModel.onTableSelected(it)
+                        }
                     }
                 ) {
                     Row(
@@ -68,7 +86,7 @@ fun HomeScreen(
                     ) {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = table.name
+                            text = "${table?.venueId} - ${table?.tableNumber}"
                         )
 
                         Icon(
@@ -78,6 +96,51 @@ fun HomeScreen(
                         )
                     }
                 }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun VenuesDropdownMenu(
+    modifier: Modifier = Modifier,
+    items: List<String>,
+    label: String = "Select an Item",
+    selectedItem: String,
+    onItemSelected: (Int) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
+        modifier = modifier
+    ) {
+        TextField(
+            value = selectedItem,
+            onValueChange = { },
+            label = { Text(label) },
+            readOnly = true,
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            modifier = Modifier
+                .menuAnchor() // Attach the ExposedDropdownMenu to this anchor
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            items.forEachIndexed { index,item ->
+                DropdownMenuItem(
+                    onClick = {
+                        onItemSelected(index)
+                        expanded = false
+                    },
+                    text = { Text(item) }
+                )
             }
         }
     }
