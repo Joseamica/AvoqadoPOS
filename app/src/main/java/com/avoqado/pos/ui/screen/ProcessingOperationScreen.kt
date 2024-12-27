@@ -25,17 +25,21 @@ import com.avoqado.pos.ui.theme.textlightGrayColor
 fun ProcessingOperationScreen(
     title: String,
     message: String,
+    showLoading: Boolean = true
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(textlightGrayColor)
     ) {
-        Column(
-            modifier = Modifier.weight(1f).fillMaxWidth().padding(120.dp), horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            ProgressCircleSmart()
+        if (showLoading) {
+            Column(
+                modifier = Modifier.weight(1f).fillMaxWidth().padding(120.dp), horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ProgressCircleSmart()
+            }
         }
+
         Column(
             modifier = Modifier
                 .padding(start = 24.dp,end=24.dp, bottom = 50.dp)

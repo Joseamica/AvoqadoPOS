@@ -125,5 +125,6 @@ dependencies {
     //room database
     implementation("androidx.room:room-ktx:$roomVersion")
 
+    implementation ("androidx.compose.runtime:runtime-livedata:1.7.6")
 
 }

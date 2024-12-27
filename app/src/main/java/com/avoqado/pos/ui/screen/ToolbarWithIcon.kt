@@ -27,7 +27,7 @@ import com.avoqado.pos.views.MenuActivity
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ToolbarWithIcon(title: String, iconAction: IconAction? = null) {
+fun ToolbarWithIcon(title: String, iconAction: IconAction? = null, onAction: () -> Unit = {}) {
     TopAppBar(
         title = {
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -54,6 +54,7 @@ fun ToolbarWithIcon(title: String, iconAction: IconAction? = null) {
                         }
 
                         else -> {
+                            onAction.invoke()
                         }
                     }
                 }
