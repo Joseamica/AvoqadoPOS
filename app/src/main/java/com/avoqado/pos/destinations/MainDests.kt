@@ -25,7 +25,7 @@ sealed class MainDests : NavigationAction {
         const val ARG_VENUE_ID = "ARG_VENUE_ID"
 
         override val route: String
-            get() = "table/${ARG_VENUE_ID}/${ARG_TABLE_ID}"
+            get() = "table/{${ARG_VENUE_ID}}/{${ARG_TABLE_ID}}"
 
         override val arguments: List<NamedNavArgument>
             get() = listOf(

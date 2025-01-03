@@ -3,6 +3,7 @@ package com.avoqado.pos.router
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -32,6 +33,7 @@ import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
 import com.menta.android.restclient.core.Storage
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun AppRouter(
@@ -39,6 +41,7 @@ fun AppRouter(
     snackbarDelegate: SnackbarDelegate,
     context: Context
 ) {
+    Log.i("AppRouter", "StartComposable")
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -48,87 +51,68 @@ fun AppRouter(
     }
 
     LaunchedEffect(key1 = Unit) {
-        navigationDispatcher.navigationCommands.collectLatest { navigationCommand ->
-            when (navigationCommand) {
-                NavigationCommand.Back -> navController.popBackStack()
-
-                is NavigationCommand.NavigateWithAction ->
-                    navController.navigate(
-                        route = navigationCommand.navAction.route,
-                        navOptions = navigationCommand.navAction.navOptions
-                    )
-
-                is NavigationCommand.PopToDestination ->
-                    navController.popBackStack(
-                        route = navigationCommand.route,
-                        inclusive = navigationCommand.inclusive
-                    )
-
-                is NavigationCommand.NavigateWithArguments -> {
-                    var route = navigationCommand.navAction.route
-                    for (arg in navigationCommand.args) {
-                        val value = when (arg) {
-                            is NavigationArg.IntArg -> arg.value.toString()
-                            is NavigationArg.StringArg -> arg.value
-                            is NavigationArg.BooleanArg -> arg.value.toString()
-                            is NavigationArg.StringArrayArg -> {
-                                arg.value.joinToString("&") { "${arg.key}=$it" }
-                                    .removePrefix("${arg.key}=")
-                            }
-                        }
-                        route = route.replace(
-                            "{${arg.key}}",
-                            value
+        Log.i("AppRouter", "Launched triggered")
+        try {
+            navigationDispatcher.navigationCommands
+                .onEach {
+                    Log.i("AppRouter", "Navigation command received: $it")
+                }
+                .collectLatest { navigationCommand ->
+                    Log.i("AppRouter", "Processing navigation command: $navigationCommand")
+                    when (navigationCommand) {
+                        NavigationCommand.Back -> navController.popBackStack()
+                        is NavigationCommand.NavigateWithAction -> navController.navigate(
+                            route = navigationCommand.navAction.route,
+                            navOptions = navigationCommand.navAction.navOptions
                         )
-                    }
-                    navController.navigate(
-                        route = route,
-                        navOptions = navigationCommand.navAction.navOptions
-                    )
-                }
-
-                is NavigationCommand.NavigateWithRoute ->
-                    navController.navigate(
-                        route = navigationCommand.route,
-                        navOptions = navigationCommand.navOptions
-                    )
-
-                is NavigationCommand.BackWithArguments -> {
-                    for (arg in navigationCommand.args) {
-                        when (arg) {
-                            is NavigationArg.IntArg -> navController.previousBackStackEntry?.savedStateHandle?.set(
-                                arg.key,
-                                arg.value
+                        is NavigationCommand.PopToDestination -> navController.popBackStack(
+                            route = navigationCommand.route,
+                            inclusive = navigationCommand.inclusive
+                        )
+                        is NavigationCommand.NavigateWithArguments -> {
+                            var route = navigationCommand.navAction.route
+                            for (arg in navigationCommand.args) {
+                                val value = when (arg) {
+                                    is NavigationArg.IntArg -> arg.value.toString()
+                                    is NavigationArg.StringArg -> arg.value
+                                    is NavigationArg.BooleanArg -> arg.value.toString()
+                                    is NavigationArg.StringArrayArg -> {
+                                        arg.value.joinToString("&") { "${arg.key}=$it" }
+                                            .removePrefix("${arg.key}=")
+                                    }
+                                }
+                                route = route.replace("{${arg.key}}", value)
+                            }
+                            navController.navigate(
+                                route = route,
+                                navOptions = navigationCommand.navAction.navOptions
                             )
-
-                            is NavigationArg.StringArg -> navController.previousBackStackEntry?.savedStateHandle?.set(
-                                arg.key,
-                                arg.value
-                            )
-
-                            is NavigationArg.BooleanArg -> navController.previousBackStackEntry?.savedStateHandle?.set(
-                                arg.key,
-                                arg.value
-                            )
-
-                            is NavigationArg.StringArrayArg -> navController.previousBackStackEntry?.savedStateHandle?.set(
-                                arg.key,
-                                arg.value
+                        }
+                        is NavigationCommand.NavigateWithRoute -> navController.navigate(
+                            route = navigationCommand.route,
+                            navOptions = navigationCommand.navOptions
+                        )
+                        is NavigationCommand.BackWithArguments -> {
+                            for (arg in navigationCommand.args) {
+                                when (arg) {
+                                    is NavigationArg.IntArg -> navController.previousBackStackEntry?.savedStateHandle?.set(arg.key, arg.value)
+                                    is NavigationArg.StringArg -> navController.previousBackStackEntry?.savedStateHandle?.set(arg.key, arg.value)
+                                    is NavigationArg.BooleanArg -> navController.previousBackStackEntry?.savedStateHandle?.set(arg.key, arg.value)
+                                    is NavigationArg.StringArrayArg -> navController.previousBackStackEntry?.savedStateHandle?.set(arg.key, arg.value)
+                                }
+                            }
+                            navController.popBackStack()
+                        }
+                        is NavigationCommand.NavigateToUrlExternally -> {
+                            context.startActivity(
+                                Intent(Intent.ACTION_VIEW, Uri.parse(navigationCommand.httpLink)).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             )
                         }
                     }
-                    navController.popBackStack()
                 }
 
-                is NavigationCommand.NavigateToUrlExternally -> {
-                    context.startActivity(
-                        Intent(
-                            Intent.ACTION_VIEW,
-                            Uri.parse(navigationCommand.httpLink)
-                        ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    )
-                }
-            }
+        } catch (e: Exception) {
+            Log.e("AppRouter", "Error collecting navigation commands", e)
         }
     }
 
@@ -139,6 +123,7 @@ fun AppRouter(
             }
         },
         content = { padding ->
+            Log.i("AppRouter", "Composing content")
             NavHost(
                 modifier = Modifier.padding(padding),
                 navController = navController,
@@ -173,7 +158,8 @@ fun AppRouter(
                 composableHolder(MainDests.TableDetail) {
                     val tableDetailViewModel = TableDetailViewModel(
                         navigationDispatcher = navigationDispatcher,
-                        savedStateHandle = it.savedStateHandle
+                        savedStateHandle = it.savedStateHandle,
+                        snackbarDelegate = snackbarDelegate
                     )
 
                     TableDetailScreen(

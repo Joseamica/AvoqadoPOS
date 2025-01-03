@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavOptions
+import androidx.navigation.navOptions
 import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.core.navigation.NavigationDispatcher
 import com.avoqado.pos.destinations.MainDests
@@ -35,13 +36,16 @@ class SplashViewModel(
     val events = _events.receiveAsFlow()
 
     init {
+        Log.i("SplashViewModel", "Init")
         startup()
     }
 
     private fun startup() {
         if (storage.getIdToken().isNotEmpty()) {
             Log.i("SplashViewModel", "Navigating to MenuActivity")
-
+            navigationDispatcher.navigateTo(
+                MainDests.Tables
+            )
         } else {
             Log.i("SplashViewModel", "Navigating to InitActivity")
             startConfiguring()

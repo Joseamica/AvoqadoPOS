@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object AvoqadoAPI {
     private val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("https://api.avoqado.io/v1")
+        .baseUrl("https://api.avoqado.io/v1/")
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
