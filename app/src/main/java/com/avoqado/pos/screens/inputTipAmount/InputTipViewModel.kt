@@ -13,12 +13,10 @@ import com.avoqado.pos.ui.screen.TextFieldState
 import com.menta.android.core.utils.StringUtils
 
 class InputTipViewModel(
-    private val savedStateHandle: SavedStateHandle,
+    private val subtotal: String,
     private val validateAmountUseCase: ValidateAmountUseCase,
     private val navigationDispatcher: NavigationDispatcher
 ) : ViewModel() {
-
-    val subtotal: String = savedStateHandle.get<String>(MainDests.InputTip.ARG_SUBTOTAL) ?: "0.00"
 
     private val _textFieldAmount = mutableStateOf(
         TextFieldState(

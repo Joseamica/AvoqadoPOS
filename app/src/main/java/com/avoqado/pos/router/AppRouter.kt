@@ -158,8 +158,9 @@ fun AppRouter(
                 composableHolder(MainDests.TableDetail) {
                     val tableDetailViewModel = TableDetailViewModel(
                         navigationDispatcher = navigationDispatcher,
-                        savedStateHandle = it.savedStateHandle,
-                        snackbarDelegate = snackbarDelegate
+                        snackbarDelegate = snackbarDelegate,
+                        tableNumber = it.arguments?.getString(MainDests.TableDetail.ARG_TABLE_ID) ?: "",
+                        venueId = it.arguments?.getString(MainDests.TableDetail.ARG_VENUE_ID) ?: ""
                     )
 
                     TableDetailScreen(
@@ -169,7 +170,7 @@ fun AppRouter(
 
                 composableHolder(MainDests.InputTip) {
                     val inputTipViewModel = InputTipViewModel(
-                        savedStateHandle = it.savedStateHandle,
+                        subtotal = it.arguments?.getString(MainDests.InputTip.ARG_SUBTOTAL) ?: "0.00",
                         navigationDispatcher = navigationDispatcher,
                         validateAmountUseCase = ValidateAmountUseCase()
                     )

@@ -71,8 +71,7 @@ fun PreviewProductItemRow() {
                     id = "",
                     name = "Spicy instant noodles",
                     quantity = 3,
-                    price = 3.49f,
-                    totalPrice = 10.47f
+                    price = 3.49,
                 )
             )
         }

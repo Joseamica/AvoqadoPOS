@@ -95,7 +95,7 @@ fun TableDetailScreen(
                     tableDetailViewModel.togglePaymentPicker()
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Gray.copy(alpha = 0.2f)
+                    containerColor = Color.Green.copy(alpha = 0.2f)
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -121,7 +121,7 @@ fun TableDetailScreen(
                     tableDetailViewModel.goToPayment("total")
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Gray.copy(alpha = 0.2f)
+                    containerColor = Color.Green.copy(alpha = 0.2f)
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -138,7 +138,7 @@ fun TableDetailScreen(
                     tableDetailViewModel.goToPayment("product")
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Gray.copy(alpha = 0.2f)
+                    containerColor = Color.Green.copy(alpha = 0.2f)
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -155,7 +155,7 @@ fun TableDetailScreen(
                     tableDetailViewModel.goToPayment("amount")
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Gray.copy(alpha = 0.2f)
+                    containerColor = Color.Green.copy(alpha = 0.2f)
                 ),
                 modifier = Modifier
                     .fillMaxWidth()

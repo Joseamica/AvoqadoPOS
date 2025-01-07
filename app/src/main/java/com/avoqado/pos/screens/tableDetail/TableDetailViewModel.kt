@@ -8,6 +8,7 @@ import com.avoqado.pos.core.navigation.NavigationArg
 import com.avoqado.pos.core.navigation.NavigationDispatcher
 import com.avoqado.pos.data.network.AvoqadoAPI
 import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.screens.tableDetail.model.Product
 import com.avoqado.pos.screens.tableDetail.model.TableDetail
 import com.menta.android.core.utils.StringUtils
 import kotlinx.coroutines.Dispatchers
@@ -17,13 +18,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class TableDetailViewModel (
-    private val savedStateHandle: SavedStateHandle,
+    private val tableNumber: String,
+    private val venueId: String,
     private val navigationDispatcher: NavigationDispatcher,
     private val snackbarDelegate: SnackbarDelegate
 ) : ViewModel() {
-
-    private val tableNumber = savedStateHandle.get<String>(MainDests.TableDetail.ARG_TABLE_ID) ?: ""
-    private val venueId = savedStateHandle.get<String>(MainDests.TableDetail.ARG_VENUE_ID) ?: ""
 
     private val _tableDetail = MutableStateFlow<TableDetail>(TableDetail())
     val tableDetail: StateFlow<TableDetail> = _tableDetail.asStateFlow()
@@ -39,14 +38,30 @@ class TableDetailViewModel (
         _showPaymentPicker.value = _showPaymentPicker.value.not()
     }
 
-    fun getTableDetail(){
+    init {
+        fetchTableDetail()
+    }
+
+    fun fetchTableDetail(){
         viewModelScope.launch(Dispatchers.IO) {
             val result = AvoqadoAPI.apiService.getVenueTableDetail(venueId = venueId, tableNumber = tableNumber)
 
             _tableDetail.value = TableDetail(
                 tableId = tableNumber,
                 name = "Mesa $tableNumber",
-                totalAmount = StringUtils.toDoubleAmount(result.table?.bill?.total ?: "0.00")
+                totalAmount = StringUtils.toDoubleAmount(StringUtils.notFormatAmount(result.table?.bill?.total ?: "0.00"))
+            )
+
+            val billDetail = AvoqadoAPI.apiService.getTableBill(venueId = venueId, billId = result.table?.bill?.id ?: "")
+            _tableDetail.value = _tableDetail.value.copy(
+                products = billDetail.products.map {
+                    Product(
+                        id = it.id ?: "",
+                        name = it.name ?: "",
+                        price = StringUtils.toDoubleAmount(StringUtils.notFormatAmount(it.price)),
+                        quantity = it.quantity ?: 0
+                    )
+                },
             )
         }
     }
