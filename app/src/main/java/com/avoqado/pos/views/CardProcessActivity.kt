@@ -34,6 +34,7 @@ import com.menta.android.core.utils.PAYMENT
 import com.menta.android.core.utils.SelectApp
 import com.menta.android.core.utils.StringUtils
 import com.menta.android.core.utils.StringUtils.toStringThousandAmount
+import com.menta.android.core.utils.TIP
 import com.menta.android.core.viewmodel.CardProcessData
 import com.menta.android.emv.i9100.reader.util.InputMode
 
@@ -42,6 +43,11 @@ class CardProcessActivity : ComponentActivity() {
     private val amount: String by lazy {
         intent.getStringExtra("amount").toString()
     }
+
+    private val tipAmount: String by lazy {
+        intent.getStringExtra("tipAmount").toString()
+    }
+
     private val currency: String by lazy {
         intent.getStringExtra("currency").toString()
     }
@@ -59,10 +65,12 @@ class CardProcessActivity : ComponentActivity() {
         cardProcessData = CardProcessData()
         setContent {
             val clearAmount = amount.replace(",", "").replace(".", "")
-            val formattedAmount = toStringThousandAmount(clearAmount)
+            val clearTip = tipAmount.replace(",", "").replace(".", "")
+            val total = clearAmount.toInt() + clearTip.toInt()
+            val formattedAmount = toStringThousandAmount(total.toString())
             val currencySymbol = "$"
             CardReaderScreen(formattedAmount, currencySymbol)
-            cardReader(clearAmount)
+            cardReader(clearAmount, clearTip)
         }
 
 
@@ -71,7 +79,7 @@ class CardProcessActivity : ComponentActivity() {
     override fun onBackPressed() {
     }
 
-    private fun cardReader(amount: String) {
+    private fun cardReader(amount: String, tipAmount: String) {
         if (operationType.isNotNull()) {
             if (operationType != "PAYMENT" && operationType != "PREAUTHORIZATION") {
                 transaction = intent.getParcelableExtra("transaction")!!
@@ -85,28 +93,35 @@ class CardProcessActivity : ComponentActivity() {
         cardProcessData.navigate.observe(this, navigateObserver)
 
         cardProcessData.findCardProcess(
-            operationFlow = doOperationFlow(amount),
+            operationFlow = doOperationFlow(amount, tipAmount),
             cardData = doCardData(),
             context = this,
             inputModeType = InputMode.ALL
         )
     }
 
-    private fun doOperationFlow(inputAmount: String): OperationFlow {
+    private fun doOperationFlow(inputAmount: String, tipAmount: String): OperationFlow {
         operationFlow.amount = Amount()
         val breakdownList = Breakdown()
         breakdownList.description = OPERATION //TODO para propina se debe usar TIP
         breakdownList.amount =
             StringUtils.notFormatAmount(inputAmount) //TODO para propina SOLO se agrega el valor de la propina
 
+        val tipBreakdown = Breakdown()
+        tipBreakdown.description = TIP //TODO para propina se debe usar TIP
+        tipBreakdown.amount =
+            StringUtils.notFormatAmount(tipAmount) //TODO para propina SOLO se agrega el valor de la propina
+
+
+        val total = inputAmount.toInt() + tipAmount.toInt()
         operationFlow.capture = Capture()
         operationFlow.capture!!.card = Card()
         operationFlow.apply {
             amount?.let {
                 it.total =
-                    StringUtils.notFormatAmount(inputAmount) //TODO si hay propina,se debe enviar el valor total de monto + propina
+                    StringUtils.notFormatAmount(total.toString()) //TODO si hay propina,se debe enviar el valor total de monto + propina
                 it.currency = currency
-                it.breakdown = listOf(breakdownList)
+                it.breakdown = listOf(breakdownList, tipBreakdown)
             }
         }
         if (operationType.isNotNull()) {

@@ -13,7 +13,7 @@ import com.avoqado.pos.ui.screen.TextFieldState
 import com.menta.android.core.utils.StringUtils
 
 class InputTipViewModel(
-    private val subtotal: String,
+    val subtotal: String,
     private val validateAmountUseCase: ValidateAmountUseCase,
     private val navigationDispatcher: NavigationDispatcher
 ) : ViewModel() {
@@ -42,7 +42,7 @@ class InputTipViewModel(
 
     fun isValidAmount(clearTip: Boolean = false): String? {
         val tip = if (clearTip) "0" else _textFieldAmount.value.textFieldValue.text
-        val total = StringUtils.toDoubleAmount(subtotal) + StringUtils.toDoubleAmount(tip)
+        val total = StringUtils.toDoubleAmount(tip)
 
         return if (validateAmountUseCase.doExecute(total.toString())) {
             total.toString().replace(",", "").replace(".", "")
