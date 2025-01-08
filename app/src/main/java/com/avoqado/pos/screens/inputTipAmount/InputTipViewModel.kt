@@ -47,7 +47,11 @@ class InputTipViewModel(
         return if (validateAmountUseCase.doExecute(total.toString())) {
             total.toString().replace(",", "").replace(".", "")
         } else {
-            null
+            if (clearTip) {
+                "0"
+            } else {
+                null
+            }
         }
     }
 

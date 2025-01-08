@@ -112,7 +112,6 @@ class CardProcessActivity : ComponentActivity() {
         tipBreakdown.amount =
             StringUtils.notFormatAmount(tipAmount) //TODO para propina SOLO se agrega el valor de la propina
 
-
         val total = inputAmount.toInt() + tipAmount.toInt()
         operationFlow.capture = Capture()
         operationFlow.capture!!.card = Card()
@@ -121,7 +120,11 @@ class CardProcessActivity : ComponentActivity() {
                 it.total =
                     StringUtils.notFormatAmount(total.toString()) //TODO si hay propina,se debe enviar el valor total de monto + propina
                 it.currency = currency
-                it.breakdown = listOf(breakdownList, tipBreakdown)
+                if (tipAmount.toInt() > 0) {
+                    it.breakdown = listOf(breakdownList, tipBreakdown)
+                } else {
+                    it.breakdown = listOf(breakdownList)
+                }
             }
         }
         if (operationType.isNotNull()) {
