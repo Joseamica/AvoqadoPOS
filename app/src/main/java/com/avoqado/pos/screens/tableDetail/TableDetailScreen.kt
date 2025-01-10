@@ -81,12 +81,23 @@ fun TableDetailScreen(
 
             Row {
                 Text(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.weight(1f),
                     text = "Sub total"
                 )
 
                 Text(
                     text = "$CURRENCY_LABEL ${tableDetails.totalAmount}"
+                )
+            }
+
+            Row {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = "Pendiente de pago"
+                )
+
+                Text(
+                    text = "$CURRENCY_LABEL ${tableDetails.totalPending}"
                 )
             }
 

@@ -6,13 +6,12 @@ data class Product(
     val id: String,
     val name: String,
     val price: Double,
-    val quantity: Int
+    val quantity: Int,
+    val totalPrice: Double
 ) {
     val formattedPrice : String
-        get() = StringUtils.toStringThousandAmount(StringUtils.notFormatAmount(price.toString()))
-
-    val totalPrice: Double = quantity * price
+        get() = price.toString()
 
     val formattedTotalPrice : String
-        get() = StringUtils.toStringThousandAmount(StringUtils.notFormatAmount(totalPrice.toString()))
+        get() = totalPrice.toString()
 }

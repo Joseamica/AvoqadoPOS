@@ -39,7 +39,7 @@ data class NetworkBillDetail(
     @SerializedName("tableNumber")
     val tableNumber: Int,
     @SerializedName("total")
-    val total: String,
+    val total: Int,
     @SerializedName("updatedAt")
     val updatedAt: String,
     @SerializedName("usertableId")

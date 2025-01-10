@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.core.delegates.SnackbarDelegate
 import com.avoqado.pos.core.navigation.NavigationArg
 import com.avoqado.pos.core.navigation.NavigationDispatcher
+import com.avoqado.pos.core.utils.toAmountMXDouble
+import com.avoqado.pos.core.utils.toAmountMx
 import com.avoqado.pos.data.network.AvoqadoAPI
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.screens.tableDetail.model.Product
@@ -49,17 +51,20 @@ class TableDetailViewModel (
             _tableDetail.value = TableDetail(
                 tableId = tableNumber,
                 name = "Mesa $tableNumber",
-                totalAmount = StringUtils.toDoubleAmount(StringUtils.notFormatAmount(result.table?.bill?.total ?: "0.00"))
             )
 
             val billDetail = AvoqadoAPI.apiService.getTableBill(venueId = venueId, billId = result.table?.bill?.id ?: "")
             _tableDetail.value = _tableDetail.value.copy(
-                products = billDetail.products.map {
+                totalAmount = billDetail.total.toString().toAmountMXDouble(),
+                totalPending = billDetail.amountLeft.toString().toAmountMXDouble(),
+                products = billDetail.products.groupBy { it.name }.map { pair ->
+                    val item = pair.value.first()
                     Product(
-                        id = it.id ?: "",
-                        name = it.name ?: "",
-                        price = StringUtils.toDoubleAmount(StringUtils.notFormatAmount(it.price)),
-                        quantity = it.quantity ?: 0
+                        id = item.name,
+                        name = item.name,
+                        price = pair.value.maxOf { it.price.toAmountMXDouble() },
+                        quantity = pair.value.sumOf { it.quantity },
+                        totalPrice = pair.value.sumOf { it.price.toAmountMXDouble() }
                     )
                 },
             )
@@ -74,7 +79,7 @@ class TableDetailViewModel (
                     MainDests.InputTip,
                     NavigationArg.StringArg(
                         MainDests.InputTip.ARG_SUBTOTAL,
-                        _tableDetail.value.formattedTotalPrice
+                        _tableDetail.value.formattedPendingTotalPrice
                     )
                 )
             }

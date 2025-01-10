@@ -9,8 +9,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.avoqado.pos.Acquirer
+import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.Country
 import com.avoqado.pos.OperationFlowHolder
+import com.avoqado.pos.core.utils.toAmountMx
 import com.avoqado.pos.doTagListMxTest
 import com.avoqado.pos.doTagListTest
 import com.avoqado.pos.ui.screen.CardReaderScreen
@@ -67,8 +69,8 @@ class CardProcessActivity : ComponentActivity() {
             val clearAmount = amount.replace(",", "").replace(".", "")
             val clearTip = tipAmount.replace(",", "").replace(".", "")
             val total = clearAmount.toInt() + clearTip.toInt()
-            val formattedAmount = toStringThousandAmount(total.toString())
-            val currencySymbol = "$"
+            val formattedAmount = total.toString().toAmountMx()
+            val currencySymbol = "$CURRENCY_LABEL"
             CardReaderScreen(formattedAmount, currencySymbol)
             cardReader(clearAmount, clearTip)
         }
