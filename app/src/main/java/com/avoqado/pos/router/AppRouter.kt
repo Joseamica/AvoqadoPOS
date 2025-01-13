@@ -21,6 +21,8 @@ import com.avoqado.pos.core.navigation.NavigationCommand
 import com.avoqado.pos.core.navigation.NavigationDispatcher
 import com.avoqado.pos.core.usecase.ValidateAmountUseCase
 import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.screens.authorization.AuthorizationDialog
+import com.avoqado.pos.screens.authorization.AuthorizationViewModel
 import com.avoqado.pos.screens.home.HomeScreen
 import com.avoqado.pos.screens.home.HomeViewModel
 import com.avoqado.pos.screens.inputTipAmount.InputTipScreen
@@ -178,6 +180,14 @@ fun AppRouter(
                     InputTipScreen(
                         inputTipViewModel = inputTipViewModel
                     )
+                }
+
+                dialogHolder(MainDests.Authorization) {
+                    val viewModel = AuthorizationViewModel(
+                        navigationDispatcher = navigationDispatcher,
+                        storage = Storage(context)
+                    )
+                    AuthorizationDialog(viewModel = viewModel, externalTokenData = ExternalTokenData(context), masterKeyData = MasterKeyData(context))
                 }
             }
         }
