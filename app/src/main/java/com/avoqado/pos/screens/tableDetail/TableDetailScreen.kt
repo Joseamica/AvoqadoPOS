@@ -1,23 +1,13 @@
 package com.avoqado.pos.screens.tableDetail
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -40,143 +30,99 @@ fun TableDetailScreen(
     val sheetState = rememberModalBottomSheetState()
     val tableDetails by tableDetailViewModel.tableDetail.collectAsStateWithLifecycle()
     val showPaymentPicker by tableDetailViewModel.showPaymentPicker.collectAsStateWithLifecycle()
+    val isLoading by tableDetailViewModel.isLoading.collectAsStateWithLifecycle()
 
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        ToolbarWithIcon(
-            "Detalle de mesa",
-            iconAction = IconAction(
-                flowStep = FlowStep.NAVIGATE_BACK,
-                context = context,
-                iconType = IconType.BACK
-            ),
-            onAction = {
-                tableDetailViewModel.navigateBack()
-            }
-        )
-
+    if (isLoading) {
+        // Loader mientras se cargan los datos
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    } else {
         Column(
             modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
+                .fillMaxSize()
+                .padding(16.dp)
         ) {
-            Text(text = "Mesa: ${tableDetails.name}")
-
-            LazyColumn(
-                modifier = Modifier.weight(1f)
-                    .fillMaxWidth()
-            ) {
-                items(tableDetails.products) { product ->
-                    ProductItemRow(product)
-                }
-            }
-
-            Box(
-                modifier = Modifier.fillMaxWidth()
-                    .height(1.dp)
-                    .padding(horizontal = 24.dp, vertical = 24.dp)
-                    .background(Color.DarkGray)
+            // Título de la mesa
+            Text(
+                text = "Mesa ${tableDetails.name}",
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             )
 
-            Row {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = "Sub total"
-                )
+            Spacer(modifier = Modifier.height(24.dp))
 
-                Text(
-                    text = "$CURRENCY_LABEL ${tableDetails.totalAmount}"
-                )
+            // Monto pendiente
+            Text(
+                text = "Queda por pagar",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+            Text(
+                text = "$CURRENCY_LABEL ${tableDetails.totalPending}",
+                style = MaterialTheme.typography.displayMedium,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Botones de selección de tipo de pago
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                PaymentOptionButton("Productos") { tableDetailViewModel.goToPayment("product") }
+                PaymentOptionButton("Personas") { /* Acción pendiente */ }
+                PaymentOptionButton("Cantidad personalizada") { tableDetailViewModel.goToPayment("amount") }
             }
 
-            Row {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = "Pendiente de pago"
-                )
+            Spacer(modifier = Modifier.weight(1f))
 
-                Text(
-                    text = "$CURRENCY_LABEL ${tableDetails.totalPending}"
-                )
-            }
-
+            // Botón principal de pago
             Button(
-                onClick = {
-                    tableDetailViewModel.togglePaymentPicker()
-                },
+                onClick = { tableDetailViewModel.togglePaymentPicker() },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Green.copy(alpha = 0.2f)
+                    containerColor = MaterialTheme.colorScheme.primary
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
             ) {
-                androidx.compose.material3.Text(
-                    text = "Pagar",
-                    style = MaterialTheme.typography.titleMedium
+                Text(
+                    text = "Pagar $CURRENCY_LABEL ${tableDetails.totalPending}",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }
     }
+}
 
-    if (showPaymentPicker) {
-        ModalBottomSheet(
-            onDismissRequest = {
-                tableDetailViewModel.togglePaymentPicker()
-            },
-            sheetState = sheetState
-        ) {
-            Button(
-                onClick = {
-                    tableDetailViewModel.goToPayment("total")
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Green.copy(alpha = 0.2f)
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-            ) {
-                androidx.compose.material3.Text(
-                    text = "Pagar Total",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            Button(
-                onClick = {
-                    tableDetailViewModel.goToPayment("product")
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Green.copy(alpha = 0.2f)
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-            ) {
-                androidx.compose.material3.Text(
-                    text = "Pagar por producto",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            Button(
-                onClick = {
-                    tableDetailViewModel.goToPayment("amount")
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Green.copy(alpha = 0.2f)
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-            ) {
-                androidx.compose.material3.Text(
-                    text = "Pagar monto",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-        }
+@Composable
+fun PaymentOptionButton(
+    text: String,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
+        ),
+        modifier = Modifier
+            .width(110.dp)
+            .height(48.dp),
+        shape = MaterialTheme.shapes.medium
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
     }
 }

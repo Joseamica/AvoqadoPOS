@@ -112,6 +112,10 @@ class DoPaymentActivity : ComponentActivity() {
                 if (operationResponse.status?.code == OperationResponseCode.APPROVED) {
                     Log.i(TAG, "PaymentId: ${operationResponse.id}")
                     Log.i(TAG, "OperationNumber: ${operationResponse.ticketId}")
+
+                    // Call printPayment here
+                    printPayment(operationResponse)
+
                     val intent = Intent(this, SuccessPaymentActivity::class.java)
                     startActivity(intent)
 

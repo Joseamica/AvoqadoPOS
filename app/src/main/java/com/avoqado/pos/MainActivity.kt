@@ -1,7 +1,10 @@
 package com.avoqado.pos
 
-import android.os.Bundle
+
+import android.os.Build
+import android.provider.Settings
 import android.util.Log
+import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -30,6 +33,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         configure(AppfinRestClientConfigure())
+
+        // Obtener el serial number y mostrarlo en el log
+        val serialNumber = getDeviceSerialNumber()
+        Log.d("MainActivity", "Device Serial Number: $serialNumber")
+
         setContent {
             AppRouter(
                 navigationDispatcher = navigationDispatcher,
@@ -41,6 +49,14 @@ class MainActivity : ComponentActivity() {
 
 
     override fun onBackPressed() {
+    }
+
+    private fun getDeviceSerialNumber(): String {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+        } else {
+            Build.SERIAL ?: "Unknown"
+        }
     }
 }
 

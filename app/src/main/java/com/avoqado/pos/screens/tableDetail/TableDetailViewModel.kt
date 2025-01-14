@@ -40,13 +40,19 @@ class TableDetailViewModel (
         _showPaymentPicker.value = _showPaymentPicker.value.not()
     }
 
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
     init {
         fetchTableDetail()
     }
 
     fun fetchTableDetail(){
         viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.value = true
+            try {
             val result = AvoqadoAPI.apiService.getVenueTableDetail(venueId = venueId, tableNumber = tableNumber)
+
 
             _tableDetail.value = TableDetail(
                 tableId = tableNumber,
@@ -67,7 +73,9 @@ class TableDetailViewModel (
                         totalPrice = pair.value.sumOf { it.price.toAmountMXDouble() }
                     )
                 },
-            )
+            )    } finally {
+                _isLoading.value = false
+            }
         }
     }
 
