@@ -32,97 +32,181 @@ fun TableDetailScreen(
     val showPaymentPicker by tableDetailViewModel.showPaymentPicker.collectAsStateWithLifecycle()
     val isLoading by tableDetailViewModel.isLoading.collectAsStateWithLifecycle()
 
-    if (isLoading) {
-        // Loader mientras se cargan los datos
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-        ) {
-            // Título de la mesa
-            Text(
-                text = "Mesa ${tableDetails.name}",
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Monto pendiente
-            Text(
-                text = "Queda por pagar",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Text(
-                text = "$CURRENCY_LABEL ${tableDetails.totalPending}",
-                style = MaterialTheme.typography.displayMedium,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Botones de selección de tipo de pago
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                PaymentOptionButton("Productos") { tableDetailViewModel.goToPayment("product") }
-                PaymentOptionButton("Personas") { /* Acción pendiente */ }
-                PaymentOptionButton("Cantidad personalizada") { tableDetailViewModel.goToPayment("amount") }
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        ToolbarWithIcon(
+            title = "Detalle de mesa",
+            iconAction = IconAction(
+                flowStep = FlowStep.NAVIGATE_BACK,
+                context = context,
+                iconType = IconType.BACK
+            ),
+            onAction = {
+                tableDetailViewModel.navigateBack()
             }
+        )
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Botón principal de pago
-            Button(
-                onClick = { tableDetailViewModel.togglePaymentPicker() },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
+        if (isLoading) {
+            // Mostrar loader mientras se carga la información
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Column(
                 modifier = Modifier
+                    .weight(1f)
                     .fillMaxWidth()
-                    .height(56.dp)
+                    .padding(16.dp)
             ) {
                 Text(
-                    text = "Pagar $CURRENCY_LABEL ${tableDetails.totalPending}",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    text = "Mesa: ${tableDetails.name}",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                LazyColumn(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    items(tableDetails.products) { product ->
+                        ProductItemRow(product)
+                    }
+                }
+
+                Divider(
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
+                    thickness = 1.dp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp)
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Sub total:",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = "$CURRENCY_LABEL ${tableDetails.totalAmount}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "Pendiente de pago:",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = "$CURRENCY_LABEL ${tableDetails.totalPending}",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { tableDetailViewModel.togglePaymentPicker() },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                ) {
+                    Text(
+                        text = "Pagar",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
             }
         }
     }
-}
 
-@Composable
-fun PaymentOptionButton(
-    text: String,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
-        modifier = Modifier
-            .width(110.dp)
-            .height(48.dp),
-        shape = MaterialTheme.shapes.medium
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+    if (showPaymentPicker) {
+        ModalBottomSheet(
+            onDismissRequest = { tableDetailViewModel.togglePaymentPicker() },
+            sheetState = sheetState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "Seleccione el tipo de pago",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                Button(
+                    onClick = { tableDetailViewModel.goToPayment("total") },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                ) {
+                    Text(
+                        text = "Pagar Total",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = { tableDetailViewModel.goToPayment("product") },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                ) {
+                    Text(
+                        text = "Pagar por producto",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(
+                    onClick = { tableDetailViewModel.goToPayment("amount") },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                ) {
+                    Text(
+                        text = "Pagar monto",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+            }
+        }
     }
 }
