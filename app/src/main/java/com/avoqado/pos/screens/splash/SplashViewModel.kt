@@ -7,6 +7,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.navOptions
 import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.core.navigation.NavigationDispatcher
+import com.avoqado.pos.data.network.AvoqadoAPI
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.views.InitActivity.Companion.TAG
 import com.menta.android.keys.admin.core.response.keys.SecretsV2
@@ -42,6 +43,8 @@ class SplashViewModel(
 
     private fun startup() {
         if (storage.getIdToken().isNotEmpty()) {
+
+
             Log.i("SplashViewModel", "Navigating to MenuActivity")
             navigationDispatcher.navigateTo(
                 MainDests.Tables
@@ -49,6 +52,19 @@ class SplashViewModel(
         } else {
             Log.i("SplashViewModel", "Navigating to InitActivity")
             startConfiguring()
+        }
+    }
+
+    private fun getTerminalInfo(serial: String){
+        viewModelScope.launch {
+            try {
+                val terminals = AvoqadoAPI.mentaService.getTerminals("${storage.getTokenType()} ${storage.getIdToken()}")
+                val currentTerminal = terminals.embedded.terminals.firstOrNull { terminal -> terminal.serialCode == serial }
+                //TODO: Guardar terminal en storage
+                Log.i("SplashViewModel", "Terminal: $currentTerminal")
+            } catch (e: Exception) {
+                Log.e("SplashViewModel", "Error initializing storage", e)
+            }
         }
     }
 
@@ -65,9 +81,12 @@ class SplashViewModel(
         viewModelScope.launch { _events.send(GET_MASTER_KEY) }
     }
 
-    fun handleMasterKey(secretsList: ArrayList<SecretsV2>?) {
+    fun handleMasterKey(secretsList: ArrayList<SecretsV2>?, serialNumber: String) {
         if (secretsList != null) {
             //TODO: aca se debe verificar si el usuario esta logeado en Avoqado API
+
+            getTerminalInfo(serialNumber)
+
             navigationDispatcher.navigateTo(
                 MainDests.Tables.route,
                 navOptions = NavOptions.Builder()

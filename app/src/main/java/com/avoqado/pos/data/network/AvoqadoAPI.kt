@@ -10,7 +10,16 @@ object AvoqadoAPI {
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
+    private val retrofitMenta: Retrofit = Retrofit.Builder()
+        .baseUrl("https://api.menta.global/")
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
     val apiService: AvoqadoService by lazy {
         retrofit.create(AvoqadoService::class.java)
+    }
+
+    val mentaService: MentaService by lazy {
+        retrofitMenta.create(MentaService::class.java)
     }
 }

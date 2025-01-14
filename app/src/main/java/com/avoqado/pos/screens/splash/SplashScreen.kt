@@ -1,10 +1,13 @@
 package com.avoqado.pos.screens.splash
 
+import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.ACQUIRER_NAME
@@ -29,6 +32,7 @@ fun SplashScreen(
     val externalToken by externalTokenData.getExternalToken.observeAsState()
     val masterKey by masterKeyData.getMasterKey.observeAsState()
     val isConfiguring by viewModel.isConfiguring.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     LaunchedEffect( key1 = Unit) {
         viewModel.events.collectLatest {
@@ -63,7 +67,12 @@ fun SplashScreen(
 
     LaunchedEffect(key1 = masterKey) {
         masterKey?.let { key ->
-            viewModel.handleMasterKey(key.secretsList)
+            val serialNumber = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+            } else {
+                Build.SERIAL ?: "Unknown"
+            }
+            viewModel.handleMasterKey(key.secretsList, serialNumber)
         }
     }
 
