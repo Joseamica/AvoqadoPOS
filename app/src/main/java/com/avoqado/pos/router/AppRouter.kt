@@ -3,6 +3,8 @@ package com.avoqado.pos.router
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -134,7 +136,12 @@ fun AppRouter(
                 composableHolder(MainDests.Splash) {
                     val splashViewModel = SplashViewModel(
                         navigationDispatcher = navigationDispatcher,
-                        storage = Storage(context)
+                        storage = Storage(context),
+                        serialNumber =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+                        } else {
+                            Build.SERIAL ?: "Unknown"
+                        }
                     )
 
                     SplashScreen(
