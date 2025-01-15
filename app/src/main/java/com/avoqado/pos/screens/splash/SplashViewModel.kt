@@ -7,12 +7,14 @@ import androidx.navigation.NavOptions
 import androidx.navigation.navOptions
 import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.core.navigation.NavigationDispatcher
+import com.avoqado.pos.data.local.SessionManager
 import com.avoqado.pos.data.network.AvoqadoAPI
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.views.InitActivity.Companion.TAG
 import com.menta.android.keys.admin.core.response.keys.SecretsV2
 import com.menta.android.restclient.core.RestClientConfiguration.configure
 import com.menta.android.restclient.core.Storage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +26,8 @@ import retrofit2.HttpException
 class SplashViewModel constructor(
     private val navigationDispatcher: NavigationDispatcher,
     private val storage: Storage,
-    private val serialNumber: String
+    private val serialNumber: String,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     companion object {
@@ -44,6 +47,17 @@ class SplashViewModel constructor(
 
     init {
         Log.i("SplashViewModel", "Init with serial number -> $serialNumber")
+        viewModelScope.launch (Dispatchers.IO) {
+            try {
+                val result = AvoqadoAPI.apiService.getTPV(serialNumber)
+                result.venueId?.let {
+                    sessionManager.saveVenueId(it)
+                }
+            } catch (e: Exception) {
+                Log.e("SplashViewModel", "Error fetching TPV", e)
+            }
+        }
+
         startup()
     }
 
@@ -64,6 +78,9 @@ class SplashViewModel constructor(
                 val currentTerminal = terminals.embedded.terminals.firstOrNull { terminal -> terminal.serialCode == serial }
                 //TODO: Guardar terminal en storage
                 Log.i("SplashViewModel", "Terminal: $currentTerminal")
+                currentTerminal?.let {
+                    sessionManager.saveTerminalInfo(it)
+                }
                 Log.i("SplashViewModel", "Navigating to MenuActivity")
                 navigationDispatcher.navigateTo(
                     MainDests.Tables

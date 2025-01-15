@@ -22,6 +22,7 @@ import com.avoqado.pos.core.navigation.NavigationArg
 import com.avoqado.pos.core.navigation.NavigationCommand
 import com.avoqado.pos.core.navigation.NavigationDispatcher
 import com.avoqado.pos.core.usecase.ValidateAmountUseCase
+import com.avoqado.pos.data.local.SessionManager
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.screens.authorization.AuthorizationDialog
 import com.avoqado.pos.screens.authorization.AuthorizationViewModel
@@ -137,6 +138,7 @@ fun AppRouter(
                     val splashViewModel = SplashViewModel(
                         navigationDispatcher = navigationDispatcher,
                         storage = Storage(context),
+                        sessionManager = SessionManager(context),
                         serialNumber =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                             Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
                         } else {
@@ -157,7 +159,8 @@ fun AppRouter(
 
                 composableHolder(MainDests.Tables) {
                     val homeViewModel = HomeViewModel(
-                        navigationDispatcher = navigationDispatcher
+                        navigationDispatcher = navigationDispatcher,
+                        sessionManager = SessionManager(context)
                     )
                     HomeScreen(
                         homeViewModel = homeViewModel

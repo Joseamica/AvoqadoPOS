@@ -56,8 +56,8 @@ class CardProcessActivity : ComponentActivity() {
     private val operationType: String by lazy {
         intent.getStringExtra("operationType").toString()
     }
-    private lateinit var transaction: Transaction
 
+    private lateinit var transaction: Transaction
     private lateinit var cardProcessData: CardProcessData
     private var operationFlow: OperationFlow = OperationFlow()
 
@@ -221,6 +221,7 @@ class CardProcessActivity : ComponentActivity() {
                     val intent = Intent(this, DoRefundActivity::class.java)
                     startActivity(intent)
                 }
+                    finish()
             }
         }
     }

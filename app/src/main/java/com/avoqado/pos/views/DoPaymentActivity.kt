@@ -118,7 +118,6 @@ class DoPaymentActivity : ComponentActivity() {
 
                     val intent = Intent(this, SuccessPaymentActivity::class.java)
                     startActivity(intent)
-
                 } else {
                     Log.i(TAG, "Pago declinado!")
                     val intent = Intent(this, DeclinedPaymentActivity::class.java)
@@ -128,6 +127,8 @@ class DoPaymentActivity : ComponentActivity() {
                 val intent = Intent(this, DeclinedPaymentActivity::class.java)
                 startActivity(intent)
             }
+
+            finish()
         }
     }
 
