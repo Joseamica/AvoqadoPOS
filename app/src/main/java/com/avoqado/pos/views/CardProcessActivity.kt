@@ -16,6 +16,7 @@ import com.avoqado.pos.core.utils.toAmountMx
 import com.avoqado.pos.doTagListMxTest
 import com.avoqado.pos.doTagListTest
 import com.avoqado.pos.ui.screen.CardReaderScreen
+import com.avoqado.pos.views.SuccessPaymentActivity.Companion
 import com.menta.android.common_cross.data.datasource.local.model.Transaction
 import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
 import com.menta.android.common_cross.util.StatusResult
@@ -61,6 +62,7 @@ class CardProcessActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i("$TAG-AvoqadoTest", "New instance of $TAG")
         enableEdgeToEdge()
         cardProcessData = CardProcessData()
         setContent {
@@ -194,6 +196,8 @@ class CardProcessActivity : ComponentActivity() {
                 val intent = Intent(this, CardErrorActivity::class.java)
                 intent.putExtra("status", statusResult)
                 startActivity(intent)
+                Log.i("$TAG-AvoqadoTest", "CardProcessActivity closed by navigateObserver with StatusResult: $statusResult")
+                finish()
             }
 
             is String -> {
@@ -219,6 +223,7 @@ class CardProcessActivity : ComponentActivity() {
                     val intent = Intent(this, DoRefundActivity::class.java)
                     startActivity(intent)
                 }
+                    Log.i("$TAG-AvoqadoTest", "CardProcessActivity closed by navigateObserver")
                     finish()
             }
         }

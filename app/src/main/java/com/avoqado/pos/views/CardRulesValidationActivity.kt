@@ -13,6 +13,7 @@ import com.avoqado.pos.R
 import com.avoqado.pos.customerId
 import com.avoqado.pos.merchantId
 import com.avoqado.pos.ui.screen.ProcessingOperationScreen
+import com.avoqado.pos.views.SuccessPaymentActivity.Companion
 import com.menta.android.common_cross.util.CURRENCY_LABEL_ARG
 import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
 import com.menta.android.core.model.Currency
@@ -35,6 +36,7 @@ class CardRulesValidationActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i("${TAG}-AvoqadoTest", "New instance of ${TAG}")
         enableEdgeToEdge()
         setContent {
             ProcessingOperationScreen(
@@ -83,6 +85,7 @@ class CardRulesValidationActivity : ComponentActivity() {
                             )
                         }
                         startActivity(intent)
+                        finish()
                     }
 
                     else -> { //Debit y Prepaid
@@ -90,6 +93,7 @@ class CardRulesValidationActivity : ComponentActivity() {
                         Log.i(TAG, "Ir directo al pago")
                         val intent = Intent(this, DoPaymentActivity::class.java)
                         startActivity(intent)
+                        finish()
                     }
                 }
 

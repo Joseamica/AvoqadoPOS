@@ -25,6 +25,7 @@ import com.avoqado.pos.merchantId
 import com.avoqado.pos.terminalId
 import com.avoqado.pos.ui.screen.ProcessingOperationScreen
 import com.avoqado.pos.util.Utils.incrementBatch
+import com.avoqado.pos.views.SuccessPaymentActivity.Companion
 import com.google.gson.Gson
 import com.menta.android.common_cross.util.CURRENCY_LABEL_ARG
 import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
@@ -54,6 +55,7 @@ class DoPaymentActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i("${TAG}-AvoqadoTest", "New instance of ${TAG}")
         enableEdgeToEdge()
         setContent {
             ProcessingOperationScreen(
@@ -229,9 +231,9 @@ class DoPaymentActivity : ComponentActivity() {
 
     private val resultObserver = Observer<Int> { result ->
         if (result == 0) {
-            Log.i(MenuActivity.TAG, "Impresión exitosa")
+            Log.i(TAG, "Impresión exitosa")
         } else {
-            Log.i(MenuActivity.TAG, "Error de impresión: $result")
+            Log.i(TAG, "Error de impresión: $result")
         }
     }
 
