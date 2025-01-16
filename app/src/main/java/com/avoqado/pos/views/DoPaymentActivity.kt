@@ -15,7 +15,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Observer
-import com.avoqado.pos.Acquirer
+import com.avoqado.pos.enums.Acquirer
 import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.OperationFlowHolder
@@ -25,7 +25,6 @@ import com.avoqado.pos.merchantId
 import com.avoqado.pos.terminalId
 import com.avoqado.pos.ui.screen.ProcessingOperationScreen
 import com.avoqado.pos.util.Utils.incrementBatch
-import com.avoqado.pos.views.MenuActivity.Companion
 import com.google.gson.Gson
 import com.menta.android.common_cross.util.CURRENCY_LABEL_ARG
 import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
@@ -34,7 +33,6 @@ import com.menta.android.core.model.Adquirer
 import com.menta.android.core.model.LocalData
 import com.menta.android.core.model.OperationFlow
 import com.menta.android.core.model.OperationResponseCode
-import com.menta.android.core.model.OperationType
 import com.menta.android.core.utils.DateUtil
 import com.menta.android.core.viewmodel.DoProcessAdquirerOperationData
 import com.menta.android.emv.i9100.reader.emv.EMVImpl
@@ -43,7 +41,6 @@ import com.menta.android.keys.admin.core.repository.parametro.ParametroDB
 import com.menta.android.printer.i9100.core.DevicePrintImpl
 import com.menta.android.printer.i9100.model.Align
 import com.menta.android.printer.i9100.model.TextFormat
-import com.menta.android.printer.i9100.util.INSTALLMENT_LABEL
 import com.menta.android.printer.i9100.util.TOTAL_LABEL
 import com.menta.android.restclient.core.RestClientConfiguration
 import com.menta.android.restclient.core.Storage

@@ -1,4 +1,4 @@
-package com.avoqado.pos
+package com.avoqado.pos.enums
 
 enum class Country(val code: String) {
     ARG("032"),

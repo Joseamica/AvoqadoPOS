@@ -9,6 +9,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,7 +44,7 @@ fun ToolbarWithIcon(title: String, iconAction: IconAction? = null, onAction: () 
                 )
             }
         },
-        backgroundColor = primary,
+        backgroundColor = Color.White,
         navigationIcon = {
             iconAction?.let {
                 IconButton(onClick = {
@@ -57,8 +58,7 @@ fun ToolbarWithIcon(title: String, iconAction: IconAction? = null, onAction: () 
                             onAction.invoke()
                         }
                     }
-                }
-                ) {
+                }) {
                     when (iconAction.iconType) {
                         IconType.CANCEL -> {
                             Icon(Icons.Filled.Close, contentDescription = null)
@@ -70,8 +70,16 @@ fun ToolbarWithIcon(title: String, iconAction: IconAction? = null, onAction: () 
                     }
                 }
             }
+        },
+        actions = {
+            IconButton(onClick = {
+                onAction.invoke()
+            }) {
+                Icon(Icons.Filled.Settings, contentDescription = "Configuración")
+            }
         }
     )
+
 }
 
 @Preview

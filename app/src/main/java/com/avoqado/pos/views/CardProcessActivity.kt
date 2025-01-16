@@ -8,9 +8,9 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.avoqado.pos.Acquirer
+import com.avoqado.pos.enums.Acquirer
 import com.avoqado.pos.CURRENCY_LABEL
-import com.avoqado.pos.Country
+import com.avoqado.pos.enums.Country
 import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.core.utils.toAmountMx
 import com.avoqado.pos.doTagListMxTest
@@ -32,10 +32,8 @@ import com.menta.android.core.model.OperationFlow
 import com.menta.android.core.model.OperationType
 import com.menta.android.core.utils.DateUtil.isToday
 import com.menta.android.core.utils.OPERATION
-import com.menta.android.core.utils.PAYMENT
 import com.menta.android.core.utils.SelectApp
 import com.menta.android.core.utils.StringUtils
-import com.menta.android.core.utils.StringUtils.toStringThousandAmount
 import com.menta.android.core.utils.TIP
 import com.menta.android.core.viewmodel.CardProcessData
 import com.menta.android.emv.i9100.reader.util.InputMode

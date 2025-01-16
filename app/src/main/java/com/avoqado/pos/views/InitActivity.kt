@@ -10,7 +10,6 @@ import androidx.compose.ui.res.stringResource
 import com.avoqado.pos.ACQUIRER_NAME
 import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.COUNTRY_CODE
-import com.avoqado.pos.Country
 import com.avoqado.pos.R
 import com.avoqado.pos.merchantApiKey
 import com.avoqado.pos.merchantId

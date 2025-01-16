@@ -1,4 +1,4 @@
-package com.avoqado.pos
+package com.avoqado.pos.enums
 
 enum class Acquirer {
     GPS,
