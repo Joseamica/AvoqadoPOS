@@ -1,5 +1,6 @@
 package com.avoqado.pos.screens.tableDetail
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,7 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class TableDetailViewModel (
+class TableDetailViewModel(
     private val tableNumber: String,
     private val venueId: String,
     private val navigationDispatcher: NavigationDispatcher,
@@ -32,11 +33,11 @@ class TableDetailViewModel (
     private val _showPaymentPicker = MutableStateFlow(false)
     val showPaymentPicker: StateFlow<Boolean> = _showPaymentPicker.asStateFlow()
 
-    fun navigateBack(){
+    fun navigateBack() {
         navigationDispatcher.navigateBack()
     }
 
-    fun togglePaymentPicker(){
+    fun togglePaymentPicker() {
         _showPaymentPicker.value = _showPaymentPicker.value.not()
     }
 
@@ -47,40 +48,53 @@ class TableDetailViewModel (
         fetchTableDetail()
     }
 
-    fun fetchTableDetail(){
+    fun fetchTableDetail() {
         viewModelScope.launch(Dispatchers.IO) {
             _isLoading.value = true
             try {
-            val result = AvoqadoAPI.apiService.getVenueTableDetail(venueId = venueId, tableNumber = tableNumber)
+                val result = AvoqadoAPI.apiService.getVenueTableDetail(
+                    venueId = venueId,
+                    tableNumber = tableNumber
+                )
 
 
-            _tableDetail.value = TableDetail(
-                tableId = tableNumber,
-                name = "Mesa $tableNumber",
-            )
+                _tableDetail.value = TableDetail(
+                    tableId = tableNumber,
+                    name = "Mesa $tableNumber",
+                )
 
-            val billDetail = AvoqadoAPI.apiService.getTableBill(venueId = venueId, billId = result.table?.bill?.id ?: "")
-            _tableDetail.value = _tableDetail.value.copy(
-                totalAmount = billDetail.total.toString().toAmountMXDouble(),
-                totalPending = billDetail.amountLeft.toString().toAmountMXDouble(),
-                products = billDetail.products.groupBy { it.name }.map { pair ->
-                    val item = pair.value.first()
-                    Product(
-                        id = item.name,
-                        name = item.name,
-                        price = pair.value.maxOf { it.price.toAmountMXDouble() },
-                        quantity = pair.value.sumOf { it.quantity },
-                        totalPrice = pair.value.sumOf { it.price.toAmountMXDouble() }
-                    )
-                },
-            )    } finally {
+                val billDetail = AvoqadoAPI.apiService.getTableBill(
+                    venueId = venueId,
+                    billId = result.table?.bill?.id ?: ""
+                )
+                _tableDetail.value = _tableDetail.value.copy(
+                    totalAmount = billDetail.total.toString().toAmountMXDouble(),
+                    totalPending = billDetail.amountLeft.toString().toAmountMXDouble(),
+                    products = billDetail.products.groupBy { it.name }.map { pair ->
+                        val item = pair.value.first()
+                        Product(
+                            id = item.name,
+                            name = item.name,
+                            price = pair.value.maxOf { it.price.toAmountMXDouble() },
+                            quantity = pair.value.sumOf { it.quantity },
+                            totalPrice = pair.value.sumOf { it.price.toAmountMXDouble() }
+                        )
+                    },
+                )
+            } catch (e: Exception) {
+                Log.i("TableDetailViewModel", "Error fetching table detail", e)
+                snackbarDelegate.showSnackbar(
+                    message = e.message ?: "Ocurrio un error!"
+                )
+            }
+            finally {
                 _isLoading.value = false
             }
         }
     }
 
-    fun goToPayment(type: String){
-        when(type) {
+    fun goToPayment(type: String) {
+        when (type) {
             "total" -> {
                 _showPaymentPicker.value = false
                 navigationDispatcher.navigateWithArgs(
