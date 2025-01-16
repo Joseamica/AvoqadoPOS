@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.core.navigation.NavigationArg
 import com.avoqado.pos.core.navigation.NavigationDispatcher
+import com.avoqado.pos.data.local.SessionManager
 import com.avoqado.pos.data.network.AvoqadoAPI
 import com.avoqado.pos.data.network.models.NetworkTable
 import com.avoqado.pos.data.network.models.NetworkVenue
@@ -16,7 +17,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel (
-    private val navigationDispatcher: NavigationDispatcher
+    private val navigationDispatcher: NavigationDispatcher,
+    private val sessionManager: SessionManager
 ): ViewModel() {
 
     private val _venues = MutableStateFlow(listOf<NetworkVenue>())
@@ -36,7 +38,14 @@ class HomeViewModel (
         //TODO: usar Avoqado api para cargar mesas
         viewModelScope.launch(Dispatchers.IO) {
             val result = AvoqadoAPI.apiService.getVenues()
-            _venues.value = result
+            val venueId = sessionManager.getVenueId()
+
+            if (venueId.isNotEmpty()) {
+                _venues.value = result.filter { it.id == venueId }
+                _selectedVenue.value = result.firstOrNull { it.id == venueId }
+            } else {
+                _venues.value = result
+            }
         }
     }
 

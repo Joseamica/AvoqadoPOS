@@ -37,6 +37,7 @@ class SuccessPaymentActivity : ComponentActivity() {
                             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                         }
                         .let(::startActivity)
+                    finish()
                 }
             }, 3000
         )

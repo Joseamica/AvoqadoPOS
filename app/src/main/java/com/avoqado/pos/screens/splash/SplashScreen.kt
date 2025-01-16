@@ -67,12 +67,7 @@ fun SplashScreen(
 
     LaunchedEffect(key1 = masterKey) {
         masterKey?.let { key ->
-            val serialNumber = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
-            } else {
-                Build.SERIAL ?: "Unknown"
-            }
-            viewModel.handleMasterKey(key.secretsList, serialNumber)
+            viewModel.handleMasterKey(key.secretsList)
         }
     }
 

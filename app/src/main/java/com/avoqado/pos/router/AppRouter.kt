@@ -3,6 +3,8 @@ package com.avoqado.pos.router
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -20,6 +22,7 @@ import com.avoqado.pos.core.navigation.NavigationArg
 import com.avoqado.pos.core.navigation.NavigationCommand
 import com.avoqado.pos.core.navigation.NavigationDispatcher
 import com.avoqado.pos.core.usecase.ValidateAmountUseCase
+import com.avoqado.pos.data.local.SessionManager
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.screens.authorization.AuthorizationDialog
 import com.avoqado.pos.screens.authorization.AuthorizationViewModel
@@ -134,7 +137,13 @@ fun AppRouter(
                 composableHolder(MainDests.Splash) {
                     val splashViewModel = SplashViewModel(
                         navigationDispatcher = navigationDispatcher,
-                        storage = Storage(context)
+                        storage = Storage(context),
+                        sessionManager = SessionManager(context),
+                        serialNumber =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+                        } else {
+                            Build.SERIAL ?: "Unknown"
+                        }
                     )
 
                     SplashScreen(
@@ -150,7 +159,8 @@ fun AppRouter(
 
                 composableHolder(MainDests.Tables) {
                     val homeViewModel = HomeViewModel(
-                        navigationDispatcher = navigationDispatcher
+                        navigationDispatcher = navigationDispatcher,
+                        sessionManager = SessionManager(context)
                     )
                     HomeScreen(
                         homeViewModel = homeViewModel
