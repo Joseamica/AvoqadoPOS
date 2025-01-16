@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class TableDetailViewModel(
     private val tableNumber: String,
@@ -83,9 +84,15 @@ class TableDetailViewModel(
                 )
             } catch (e: Exception) {
                 Log.i("TableDetailViewModel", "Error fetching table detail", e)
-                snackbarDelegate.showSnackbar(
-                    message = e.message ?: "Ocurrio un error!"
-                )
+                if (e is HttpException) {
+                    snackbarDelegate.showSnackbar(
+                        message = e.message() ?: "Ocurrio un error!"
+                    )
+                } else  {
+                    snackbarDelegate.showSnackbar(
+                        message = e.message ?: "Ocurrio un error!"
+                    )
+                }
             }
             finally {
                 _isLoading.value = false

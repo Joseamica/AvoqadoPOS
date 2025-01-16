@@ -57,6 +57,7 @@ class InstallmentsActivity : ComponentActivity() {
             Log.i(TAG, "Ir a procesar el pago")
             val intent = Intent(this, DoPaymentActivity::class.java)
             startActivity(intent)
+            finish()
         }
     }
 

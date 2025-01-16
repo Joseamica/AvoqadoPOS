@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.avoqado.pos.MainActivity
 import com.avoqado.pos.R
 import com.avoqado.pos.ui.screen.PrimaryButton
 import com.avoqado.pos.ui.theme.textColor
@@ -117,8 +118,9 @@ class CardErrorActivity : ComponentActivity() {
                         .align(Alignment.End),
                     onClick = {
                         Log.i(TAG, "goToInputAmount")
-                        Intent(this@CardErrorActivity, MenuActivity::class.java)
+                        Intent(this@CardErrorActivity, MainActivity::class.java)
                             .let(::startActivity)
+                        finish()
                     }
                 )
             }

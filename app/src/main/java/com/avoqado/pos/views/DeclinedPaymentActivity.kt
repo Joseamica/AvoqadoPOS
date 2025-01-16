@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.avoqado.pos.MainActivity
 import com.avoqado.pos.ui.screen.ErrorScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +32,7 @@ class DeclinedPaymentActivity : ComponentActivity() {
             {
                 CoroutineScope(Dispatchers.Main).launch {
                     Log.i(TAG, "goToInputAmount")
-                    Intent(this@DeclinedPaymentActivity, InputAmountActivity::class.java)
+                    Intent(this@DeclinedPaymentActivity, MainActivity::class.java)
                         .let(::startActivity)
                 }
             }, 3000
