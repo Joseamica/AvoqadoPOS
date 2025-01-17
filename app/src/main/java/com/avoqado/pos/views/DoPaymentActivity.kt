@@ -135,7 +135,7 @@ class DoPaymentActivity : ComponentActivity() {
         Log.i("", "Probar impresora")
         val devicePrintImpl = DevicePrintImpl(context = applicationContext)
         val status = devicePrintImpl.getStatus()
-        Log.i(MenuActivity.TAG, "status impresora: $status")
+        Log.i(TAG, "status impresora: $status")
         if (status == 0) {
             val thread = Thread {
                 devicePrintImpl.addLine(

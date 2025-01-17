@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.avoqado.pos.MainActivity
 import com.avoqado.pos.ui.screen.SuccessScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,8 +37,9 @@ class SuccessMessageActivity : ComponentActivity() {
             {
                 CoroutineScope(Dispatchers.Main).launch {
                     Log.i(TAG, "goToMenu")
-                    Intent(this@SuccessMessageActivity, MenuActivity::class.java)
+                    Intent(this@SuccessMessageActivity, MainActivity::class.java)
                         .let(::startActivity)
+                    finish()
                 }
             }, 3000
         )

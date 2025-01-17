@@ -11,6 +11,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.avoqado.pos.MainActivity
 import com.avoqado.pos.R
 import com.avoqado.pos.ui.screen.ErrorScreen
 import kotlinx.coroutines.CoroutineScope
@@ -40,8 +41,9 @@ class ErrorActivity : ComponentActivity() {
             {
                 CoroutineScope(Dispatchers.Main).launch {
                     Log.i(SuccessMessageActivity.TAG, "goToMenu")
-                    Intent(this@ErrorActivity, MenuActivity::class.java)
+                    Intent(this@ErrorActivity, MainActivity::class.java)
                         .let(::startActivity)
+                    finish()
                 }
             }, 3000
         )

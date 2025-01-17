@@ -55,6 +55,7 @@ import com.avoqado.pos.core.model.FlowStep
 import com.avoqado.pos.core.model.IconAction
 import com.avoqado.pos.core.model.IconType
 import com.avoqado.pos.screens.tableDetail.components.ProductItemRow
+import com.avoqado.pos.ui.screen.ObserverLifecycleEvents
 import com.avoqado.pos.ui.screen.Text
 import com.avoqado.pos.ui.screen.ToolbarWithIcon
 import com.avoqado.pos.util.Utils

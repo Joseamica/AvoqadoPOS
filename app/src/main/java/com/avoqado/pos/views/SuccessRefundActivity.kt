@@ -11,6 +11,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.avoqado.pos.MainActivity
 import com.avoqado.pos.R
 import com.avoqado.pos.ui.screen.SuccessScreen
 import kotlinx.coroutines.CoroutineScope
@@ -32,8 +33,9 @@ class SuccessRefundActivity : ComponentActivity() {
             {
                 CoroutineScope(Dispatchers.Main).launch {
                     Log.i(TAG, "goToInputAmount")
-                    Intent(this@SuccessRefundActivity, MenuActivity::class.java)
+                    Intent(this@SuccessRefundActivity, MainActivity::class.java)
                         .let(::startActivity)
+                    finish()
                 }
             }, 3000
         )

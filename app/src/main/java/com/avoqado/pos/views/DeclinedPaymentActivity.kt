@@ -34,6 +34,7 @@ class DeclinedPaymentActivity : ComponentActivity() {
                     Log.i(TAG, "goToInputAmount")
                     Intent(this@DeclinedPaymentActivity, MainActivity::class.java)
                         .let(::startActivity)
+                    finish()
                 }
             }, 3000
         )

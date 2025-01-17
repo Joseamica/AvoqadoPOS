@@ -19,6 +19,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import com.avoqado.pos.MainActivity
 import com.avoqado.pos.core.model.FlowStep
 import com.avoqado.pos.core.model.IconAction
 import com.avoqado.pos.core.model.IconType
@@ -50,7 +51,7 @@ fun ToolbarWithIcon(title: String, iconAction: IconAction? = null, onAction: () 
                 IconButton(onClick = {
                     when (iconAction.flowStep) {
                         FlowStep.GO_TO_MENU -> {
-                            val intent = Intent(iconAction.context, MenuActivity::class.java)
+                            val intent = Intent(iconAction.context, MainActivity::class.java)
                             iconAction.context.startActivity(intent)
                         }
 
