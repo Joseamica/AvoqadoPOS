@@ -12,6 +12,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,14 +25,30 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.MainActivity
 import com.avoqado.pos.R
 import com.avoqado.pos.ui.screen.PrimaryButton
 import com.avoqado.pos.ui.theme.textColor
 import com.menta.android.common_cross.util.StatusResult
+import com.menta.android.core.model.OperationType
+import com.menta.android.core.utils.StringUtils
 
 
 class CardErrorActivity : ComponentActivity() {
+
+    private val amount: String by lazy {
+        intent.getStringExtra("amount").toString()
+    }
+    private val tipAmount: String by lazy {
+        intent.getStringExtra("tipAmount").toString()
+    }
+    private val currency: String by lazy {
+        intent.getStringExtra("currency").toString()
+    }
+    private val operationType: String by lazy {
+        intent.getStringExtra("operationType").toString()
+    }
 
     private var statusResult: StatusResult? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -109,6 +126,30 @@ class CardErrorActivity : ComponentActivity() {
                     color = textColor,
                     fontSize = 25.sp
                 )
+
+                PrimaryButton(
+                    text = "Reintentar",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(0.dp, 14.dp, 0.dp)
+                        .height(57.dp)
+                        .align(Alignment.End),
+                    onClick = {
+                        Log.i(TAG, "goToInputAmount")
+                        Intent(this@CardErrorActivity, CardProcessActivity::class.java)
+                            .apply {
+                                putExtra("amount", amount)
+                                putExtra("tipAmount", tipAmount)
+                                putExtra("currency", currency)
+                                putExtra("operationType", operationType)
+                            }
+                            .let(::startActivity)
+                        finish()
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 PrimaryButton(
                     text = "Listo",
                     modifier = Modifier
