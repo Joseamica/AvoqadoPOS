@@ -108,7 +108,7 @@ class TableDetailViewModel(
                     MainDests.InputTip,
                     NavigationArg.StringArg(
                         MainDests.InputTip.ARG_SUBTOTAL,
-                        _tableDetail.value.formattedPendingTotalPrice
+                        _tableDetail.value.totalPending.toString()
                     )
                 )
             }
