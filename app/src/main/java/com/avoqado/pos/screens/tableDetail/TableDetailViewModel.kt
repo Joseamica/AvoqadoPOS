@@ -22,8 +22,8 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
 class TableDetailViewModel(
-    private val tableNumber: String,
-    private val venueId: String,
+    private val tableNumber: String="",
+    private val venueId: String="",
     private val navigationDispatcher: NavigationDispatcher,
     private val snackbarDelegate: SnackbarDelegate
 ) : ViewModel() {

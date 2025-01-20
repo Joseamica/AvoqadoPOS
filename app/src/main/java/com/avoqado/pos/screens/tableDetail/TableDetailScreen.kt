@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,10 +18,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -43,19 +40,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.CURRENCY_LABEL
+import com.avoqado.pos.R
 import com.avoqado.pos.core.model.FlowStep
 import com.avoqado.pos.core.model.IconAction
 import com.avoqado.pos.core.model.IconType
-import com.avoqado.pos.screens.tableDetail.components.ProductItemRow
-import com.avoqado.pos.ui.screen.ObserverLifecycleEvents
+import com.avoqado.pos.ui.screen.ProductRow
 import com.avoqado.pos.ui.screen.Text
 import com.avoqado.pos.ui.screen.ToolbarWithIcon
 import com.avoqado.pos.util.Utils
@@ -70,12 +69,13 @@ fun TableDetailScreen(
     val tableDetails by tableDetailViewModel.tableDetail.collectAsStateWithLifecycle()
     val showPaymentPicker by tableDetailViewModel.showPaymentPicker.collectAsStateWithLifecycle()
     val isLoading by tableDetailViewModel.isLoading.collectAsStateWithLifecycle()
-
+    var showModalSheet by rememberSaveable { mutableStateOf(false) }
+    var stateScreenProducts by rememberSaveable { mutableStateOf(false) }
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         ToolbarWithIcon(
-            title = "${tableDetails.name}",
+            title = tableDetails.name,
             iconAction = IconAction(
                 flowStep = FlowStep.NAVIGATE_BACK,
                 context = context,
@@ -83,6 +83,9 @@ fun TableDetailScreen(
             ),
             onAction = {
                 tableDetailViewModel.navigateBack()
+            },
+            onActionSecond = {
+                showModalSheet = true
             }
         )
 
@@ -95,7 +98,6 @@ fun TableDetailScreen(
                 CircularProgressIndicator()
             }
         } else {
-
             Column(
                 modifier = Modifier,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -126,7 +128,11 @@ fun TableDetailScreen(
                         .weight(0.4f),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    GenericOptionsUI()
+                    GenericOptionsUI(
+                        onClickProducts = {
+                            stateScreenProducts = true
+                        }
+                    )
                     //Para verla lista de productos descomente la linea de abajo
                     // ProductsScreen(listProducts = tableDetails.products)
                 }
@@ -145,20 +151,35 @@ fun TableDetailScreen(
                     )
                 }
             }
+        }
+    }
+    if (stateScreenProducts) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .zIndex(1f)
+        ) {
+            ToolbarWithIcon(
+                title = "Productos",
+                iconAction = IconAction(
+                    flowStep = FlowStep.NAVIGATE_BACK,
+                    context = context,
+                    iconType = IconType.BACK
+                ),
+                onAction = {
+                    stateScreenProducts = false
+                },
+                showSecondIcon = true
+            )
+
             Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .padding(16.dp)
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                LazyColumn(
-                    modifier = Modifier.weight(1f)
-                ) {
-                    items(tableDetails.products) { product ->
-                        ProductItemRow(product)
-                    }
-                }
+                Spacer(modifier = Modifier.height(46.dp))
+                ProductsScreen(tableDetails.products)
                 Divider(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
                     thickness = 1.dp,
@@ -166,24 +187,7 @@ fun TableDetailScreen(
                         .fillMaxWidth()
                         .padding(vertical = 16.dp)
                 )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "Sub total:",
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    Text(
-                        text = "$CURRENCY_LABEL ${tableDetails.totalAmount}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                }
-
                 Spacer(modifier = Modifier.height(8.dp))
-
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -215,6 +219,51 @@ fun TableDetailScreen(
                         color = Color.Black,
                         textColor = Color.White
                     )
+                }
+            }
+        }
+    }
+    if (showModalSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showModalSheet = false },
+            sheetState = sheetState
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = tableDetails.name,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = tableDetails.totalAmount.toString(),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Divider(color = Color.Gray.copy(alpha = 0.5f), thickness = 1.dp)
+
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentPadding = PaddingValues(vertical = 8.dp)
+                ) {
+                    items(tableDetails.products) { product ->
+                        ProductRow(
+                            number = product.quantity,
+                            name = product.name,
+                            price = product.price.toString()
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
                 }
             }
         }
@@ -294,7 +343,7 @@ fun TableDetailScreen(
 
 @Composable
 fun GenericOptionCard(
-    icon: ImageVector,
+    icon: Painter,
     title: String,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
@@ -307,7 +356,7 @@ fun GenericOptionCard(
             },
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
         border = BorderStroke(1.dp, Color.LightGray)
     ) {
         Column(
@@ -317,7 +366,7 @@ fun GenericOptionCard(
             verticalArrangement = Arrangement.Center
         ) {
             Icon(
-                imageVector = icon,
+                painter = icon,
                 contentDescription = null,
                 modifier = Modifier.size(32.dp),
                 tint = Color.Black
@@ -334,7 +383,11 @@ fun GenericOptionCard(
 }
 
 @Composable
-fun GenericOptionsUI() {
+fun GenericOptionsUI(
+    onClickProducts: () -> Unit,
+    onClickPeople: () -> Unit = {},
+    onClickCustom: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -347,26 +400,31 @@ fun GenericOptionsUI() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             GenericOptionCard(
-                icon = Icons.Default.AccountBox,
+                icon = painterResource(R.drawable.icon_products),
                 title = "Productos",
                 onClick = {
+                    onClickProducts()
                 },
                 modifier = Modifier.weight(1f)
 
             )
             Spacer(modifier = Modifier.width(16.dp))
             GenericOptionCard(
-                icon = Icons.Default.AccountCircle,
+                icon = painterResource(R.drawable.icon_people),
                 title = "Personas",
-                onClick = {},
+                onClick = {
+                    onClickPeople()
+                },
                 modifier = Modifier.weight(1f)
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
         GenericOptionCard(
-            icon = Icons.Default.Edit,
+            icon = painterResource(R.drawable.icon_edit),
             title = "Cantidad personalizada",
-            onClick = {},
+            onClick = {
+                onClickCustom()
+            },
             modifier = Modifier.fillMaxWidth()
         )
     }

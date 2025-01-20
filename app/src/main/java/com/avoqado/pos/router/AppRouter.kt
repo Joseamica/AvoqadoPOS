@@ -34,6 +34,7 @@ import com.avoqado.pos.screens.splash.SplashScreen
 import com.avoqado.pos.screens.splash.SplashViewModel
 import com.avoqado.pos.screens.tableDetail.TableDetailScreen
 import com.avoqado.pos.screens.tableDetail.TableDetailViewModel
+import com.avoqado.pos.ui.screen.TipSelectionScreen
 import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
 import com.menta.android.restclient.core.Storage
@@ -70,10 +71,12 @@ fun AppRouter(
                             route = navigationCommand.navAction.route,
                             navOptions = navigationCommand.navAction.navOptions
                         )
+
                         is NavigationCommand.PopToDestination -> navController.popBackStack(
                             route = navigationCommand.route,
                             inclusive = navigationCommand.inclusive
                         )
+
                         is NavigationCommand.NavigateWithArguments -> {
                             var route = navigationCommand.navAction.route
                             for (arg in navigationCommand.args) {
@@ -93,24 +96,45 @@ fun AppRouter(
                                 navOptions = navigationCommand.navAction.navOptions
                             )
                         }
+
                         is NavigationCommand.NavigateWithRoute -> navController.navigate(
                             route = navigationCommand.route,
                             navOptions = navigationCommand.navOptions
                         )
+
                         is NavigationCommand.BackWithArguments -> {
                             for (arg in navigationCommand.args) {
                                 when (arg) {
-                                    is NavigationArg.IntArg -> navController.previousBackStackEntry?.savedStateHandle?.set(arg.key, arg.value)
-                                    is NavigationArg.StringArg -> navController.previousBackStackEntry?.savedStateHandle?.set(arg.key, arg.value)
-                                    is NavigationArg.BooleanArg -> navController.previousBackStackEntry?.savedStateHandle?.set(arg.key, arg.value)
-                                    is NavigationArg.StringArrayArg -> navController.previousBackStackEntry?.savedStateHandle?.set(arg.key, arg.value)
+                                    is NavigationArg.IntArg -> navController.previousBackStackEntry?.savedStateHandle?.set(
+                                        arg.key,
+                                        arg.value
+                                    )
+
+                                    is NavigationArg.StringArg -> navController.previousBackStackEntry?.savedStateHandle?.set(
+                                        arg.key,
+                                        arg.value
+                                    )
+
+                                    is NavigationArg.BooleanArg -> navController.previousBackStackEntry?.savedStateHandle?.set(
+                                        arg.key,
+                                        arg.value
+                                    )
+
+                                    is NavigationArg.StringArrayArg -> navController.previousBackStackEntry?.savedStateHandle?.set(
+                                        arg.key,
+                                        arg.value
+                                    )
                                 }
                             }
                             navController.popBackStack()
                         }
+
                         is NavigationCommand.NavigateToUrlExternally -> {
                             context.startActivity(
-                                Intent(Intent.ACTION_VIEW, Uri.parse(navigationCommand.httpLink)).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse(navigationCommand.httpLink)
+                                ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                             )
                         }
                     }
@@ -139,8 +163,11 @@ fun AppRouter(
                         navigationDispatcher = navigationDispatcher,
                         storage = Storage(context),
                         sessionManager = SessionManager(context),
-                        serialNumber =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+                        serialNumber = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                            Settings.Secure.getString(
+                                context.contentResolver,
+                                Settings.Secure.ANDROID_ID
+                            )
                         } else {
                             Build.SERIAL ?: "Unknown"
                         }
@@ -171,7 +198,8 @@ fun AppRouter(
                     val tableDetailViewModel = TableDetailViewModel(
                         navigationDispatcher = navigationDispatcher,
                         snackbarDelegate = snackbarDelegate,
-                        tableNumber = it.arguments?.getString(MainDests.TableDetail.ARG_TABLE_ID) ?: "",
+                        tableNumber = it.arguments?.getString(MainDests.TableDetail.ARG_TABLE_ID)
+                            ?: "",
                         venueId = it.arguments?.getString(MainDests.TableDetail.ARG_VENUE_ID) ?: ""
                     )
 
@@ -181,14 +209,15 @@ fun AppRouter(
                 }
 
                 composableHolder(MainDests.InputTip) {
-                    val subtotal = it.arguments?.getString(MainDests.InputTip.ARG_SUBTOTAL) ?: "0.00"
+                    val subtotal =
+                        it.arguments?.getString(MainDests.InputTip.ARG_SUBTOTAL) ?: "0.00"
                     val inputTipViewModel = InputTipViewModel(
                         subtotal = subtotal,
                         navigationDispatcher = navigationDispatcher,
                         validateAmountUseCase = ValidateAmountUseCase()
                     )
 
-                    InputTipScreen(
+                    TipSelectionScreen(
                         inputTipViewModel = inputTipViewModel
                     )
                 }
@@ -198,7 +227,11 @@ fun AppRouter(
                         navigationDispatcher = navigationDispatcher,
                         storage = Storage(context)
                     )
-                    AuthorizationDialog(viewModel = viewModel, externalTokenData = ExternalTokenData(context), masterKeyData = MasterKeyData(context))
+                    AuthorizationDialog(
+                        viewModel = viewModel,
+                        externalTokenData = ExternalTokenData(context),
+                        masterKeyData = MasterKeyData(context)
+                    )
                 }
             }
         }

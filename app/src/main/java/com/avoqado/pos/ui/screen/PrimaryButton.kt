@@ -68,6 +68,11 @@ fun PreviewButtons() {
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        //PrimaryButton(text = "Primary Button", icon = null, onClick = {})
+        PrimaryButton(
+            text = "Primary Button",
+            icon = null,
+            onClick = {},
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }

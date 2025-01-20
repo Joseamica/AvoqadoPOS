@@ -8,7 +8,6 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -19,6 +18,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AvoqadoPOS"
         tools:targetApi="31">
+        <activity
+            android:name=".views.ProductsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AvoqadoPOS" />
         <activity
             android:name=".views.ErrorActivity"
             android:exported="false" />
@@ -64,11 +67,9 @@
         <activity
             android:name=".views.SuccessMessageActivity"
             android:exported="false" />
-        <activity android:name=".views.InitActivity"
-            android:exported="true">
-
-
-        </activity>
+        <activity
+            android:name=".views.InitActivity"
+            android:exported="true"></activity>
         <activity
             android:name=".views.InputAmountActivity"
             android:exported="true" />
@@ -89,15 +90,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
-                    android:scheme="menta"
                     android:host="login.ui"
-                    android:path="/unauthorized" />
+                    android:path="/unauthorized"
+                    android:scheme="menta" />
             </intent-filter>
         </activity>
     </application>

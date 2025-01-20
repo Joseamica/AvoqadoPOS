@@ -50,7 +50,7 @@ fun AVProductItem(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp),
-        elevation = CardDefaults.cardElevation(4.dp),
+        elevation = CardDefaults.cardElevation(12.dp),
         colors = CardDefaults.cardColors(Color.White),
         shape = RoundedCornerShape(12.dp)
     ) {

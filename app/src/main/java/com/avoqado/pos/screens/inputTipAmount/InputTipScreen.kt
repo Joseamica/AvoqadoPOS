@@ -17,6 +17,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.core.model.FlowStep
@@ -24,6 +25,7 @@ import com.avoqado.pos.core.model.IconAction
 import com.avoqado.pos.core.model.IconType
 import com.avoqado.pos.ui.screen.PrimaryButton
 import com.avoqado.pos.ui.screen.TextFieldAmount
+import com.avoqado.pos.ui.screen.TipSelectionScreen
 import com.avoqado.pos.ui.screen.ToolbarWithIcon
 import com.avoqado.pos.views.CardProcessActivity
 import com.menta.android.core.model.OperationType
@@ -40,7 +42,6 @@ fun InputTipScreen(
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-
         ToolbarWithIcon(
             "Ingresar propina",
             iconAction = IconAction(
@@ -54,7 +55,9 @@ fun InputTipScreen(
         )
 
         Column(
-            modifier = Modifier.weight(1f).padding(16.dp),
+            modifier = Modifier
+                .weight(1f)
+                .padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -88,7 +91,10 @@ fun InputTipScreen(
                 onClick = {
                     inputTipViewModel.isValidAmount(clearTip = false)?.let { amount ->
                         val intent = Intent(context, CardProcessActivity::class.java)
-                        intent.putExtra("amount", StringUtils.notFormatAmount(inputTipViewModel.subtotal))
+                        intent.putExtra(
+                            "amount",
+                            StringUtils.notFormatAmount(inputTipViewModel.subtotal)
+                        )
                         intent.putExtra("tipAmount", amount)
                         intent.putExtra("currency", CURRENCY_LABEL)
                         intent.putExtra("operationType", OperationType.PAYMENT.name)
@@ -107,7 +113,10 @@ fun InputTipScreen(
                 onClick = {
                     inputTipViewModel.isValidAmount(clearTip = true)?.let { amount ->
                         val intent = Intent(context, CardProcessActivity::class.java)
-                        intent.putExtra("amount", StringUtils.notFormatAmount(inputTipViewModel.subtotal))
+                        intent.putExtra(
+                            "amount",
+                            StringUtils.notFormatAmount(inputTipViewModel.subtotal)
+                        )
                         intent.putExtra("tipAmount", "0")
                         intent.putExtra("currency", CURRENCY_LABEL)
                         intent.putExtra("operationType", OperationType.PAYMENT.name)
@@ -116,8 +125,12 @@ fun InputTipScreen(
                     inputTipViewModel.navigateBack()
                 }
             )
-
         }
-
     }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun tipSelection() {
+   // InputTipScreen(inputTipViewModel = InputTipViewModel())
 }

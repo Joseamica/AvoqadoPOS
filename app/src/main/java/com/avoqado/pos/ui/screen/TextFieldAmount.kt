@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.sp
 import com.avoqado.pos.R
 import com.avoqado.pos.ui.theme.textColor
 
-@OptIn(ExperimentalComposeUiApi::class, ExperimentalFoundationApi::class)
+
 @Composable
 fun TextFieldAmount(
     modifier: Modifier = Modifier,

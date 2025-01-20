@@ -1,97 +1,83 @@
 package com.avoqado.pos.ui.screen
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.avoqado.pos.MainActivity
+import com.avoqado.pos.R
 import com.avoqado.pos.core.model.FlowStep
 import com.avoqado.pos.core.model.IconAction
 import com.avoqado.pos.core.model.IconType
-import com.avoqado.pos.ui.theme.primary
-import com.avoqado.pos.views.InputAmountActivity
 import com.avoqado.pos.views.MenuActivity
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ToolbarWithIcon(title: String, iconAction: IconAction? = null, onAction: () -> Unit = {}) {
-    TopAppBar(
-        title = {
-            Box(modifier = Modifier.fillMaxWidth()) {
-                androidx.compose.material3.Text(
-                    modifier = Modifier
-                        .align(Alignment.CenterStart),
-                    text = title,
-                    style = TextStyle(
-                        fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
+fun ToolbarWithIcon(
+    title: String,
+    iconAction: IconAction? = null,
+    onAction: () -> Unit = {},
+    onActionSecond: () -> Unit = {},
+    showSecondIcon: Boolean = false
+) {
+    TopAppBar(title = {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            androidx.compose.material3.Text(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(end = if (showSecondIcon) 46.dp else 0.dp),
+                text = title,
+                style = TextStyle(
+                    fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.Black
                 )
-            }
-        },
-        backgroundColor = Color.White,
-        navigationIcon = {
-            iconAction?.let {
-                IconButton(onClick = {
-                    when (iconAction.flowStep) {
-                        FlowStep.GO_TO_MENU -> {
-                            val intent = Intent(iconAction.context, MainActivity::class.java)
-                            iconAction.context.startActivity(intent)
-                        }
-
-                        else -> {
-                            onAction.invoke()
-                        }
+            )
+        }
+    }, backgroundColor = Color.White, navigationIcon = {
+        iconAction?.let {
+            IconButton(onClick = {
+                when (iconAction.flowStep) {
+                    FlowStep.GO_TO_MENU -> {
+                        val intent = Intent(iconAction.context, MenuActivity::class.java)
+                        iconAction.context.startActivity(intent)
                     }
-                }) {
-                    when (iconAction.iconType) {
-                        IconType.CANCEL -> {
-                            Icon(Icons.Filled.Close, contentDescription = null)
-                        }
 
-                        else -> {
-                            Icon(Icons.Filled.ArrowBack, contentDescription = null)
-                        }
+                    else -> {
+                        onAction.invoke()
+                    }
+                }
+            }) {
+                when (iconAction.iconType) {
+                    IconType.CANCEL -> {
+                        Icon(painterResource(R.drawable.icon_home), contentDescription = null)
+                    }
+
+                    else -> {
+                        Icon(
+                            painterResource(if (!showSecondIcon) R.drawable.icon_home else R.drawable.icon_back),
+                            contentDescription = null
+                        )
                     }
                 }
             }
-        },
-        actions = {
+        }
+    }, actions = {
+        if (!showSecondIcon) {
             IconButton(onClick = {
-                onAction.invoke()
+                onActionSecond()
             }) {
-                Icon(Icons.Filled.Settings, contentDescription = "Configuración")
+                Icon(painterResource(R.drawable.icon_note), contentDescription = "Note")
             }
         }
-    )
-
-}
-
-@Preview
-@Composable
-fun Preview() {
-    ToolbarWithIcon(
-        "Transacciones",
-        IconAction(
-            IconType.CANCEL,
-            FlowStep.GO_TO_MENU,
-            InputAmountActivity()
-        )
+    }
     )
 }
