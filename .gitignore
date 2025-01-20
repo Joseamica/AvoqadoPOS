@@ -1,3 +1,4 @@
 local.properties
 .idea
-.gradle
+# Ignore Gradle build system files
+.gradle/

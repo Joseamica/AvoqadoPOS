@@ -1,2 +1,3 @@
 /build
-.gradle
+# Ignore Gradle build system files
+.gradle/
