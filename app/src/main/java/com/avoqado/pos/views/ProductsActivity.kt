@@ -17,7 +17,6 @@ import com.avoqado.pos.screens.tableDetail.components.ProductItemRow
 import com.avoqado.pos.util.Utils
 
 class ProductsActivity : AppCompatActivity() {
-    private val viewModelTableDetail by viewModels<TableDetailViewModel>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

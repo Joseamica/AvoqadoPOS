@@ -25,7 +25,6 @@ import com.avoqado.pos.core.model.IconAction
 import com.avoqado.pos.core.model.IconType
 import com.avoqado.pos.ui.screen.PrimaryButton
 import com.avoqado.pos.ui.screen.TextFieldAmount
-import com.avoqado.pos.ui.screen.TipSelectionScreen
 import com.avoqado.pos.ui.screen.ToolbarWithIcon
 import com.avoqado.pos.views.CardProcessActivity
 import com.menta.android.core.model.OperationType

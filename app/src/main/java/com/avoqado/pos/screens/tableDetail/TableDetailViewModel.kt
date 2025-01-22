@@ -27,7 +27,6 @@ class TableDetailViewModel(
     private val navigationDispatcher: NavigationDispatcher,
     private val snackbarDelegate: SnackbarDelegate
 ) : ViewModel() {
-
     private val _tableDetail = MutableStateFlow<TableDetail>(TableDetail())
     val tableDetail: StateFlow<TableDetail> = _tableDetail.asStateFlow()
 

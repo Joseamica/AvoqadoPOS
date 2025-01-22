@@ -201,7 +201,10 @@ object Utils {
                             Text(
                                 color = textColor,
                                 text = "$",
-                                style = font
+                                style = font.copy(
+                                    fontSize = if (bigInt) baseSize.sp else (baseSize / INT_2).sp,
+                                    color = textColor
+                                )
                             )
                         }
                     }
@@ -217,7 +220,10 @@ object Utils {
                             Text(
                                 color = textColor,
                                 text = entero,
-                                style = font
+                                style = font.copy(
+                                    fontSize = if (bigInt) baseSize.sp else (baseSize / INT_2).sp,
+                                    color = textColor
+                                )
                             )
                             if (bigDecimal && !bigInt) decimal = ".$decimal"
                             Text(
@@ -245,7 +251,10 @@ object Utils {
                     Text(
                         modifier = Modifier.padding(start = 5.dp),
                         text = currencyType,
-                        style = font
+                        style = font.copy(
+                            fontSize = if (bigInt) baseSize.sp else (baseSize / INT_2).sp,
+                            color = textColor
+                        )
                     )
                 }
             }

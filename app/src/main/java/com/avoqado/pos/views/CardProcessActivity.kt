@@ -8,15 +8,14 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import com.avoqado.pos.enums.Acquirer
 import com.avoqado.pos.CURRENCY_LABEL
-import com.avoqado.pos.enums.Country
 import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.core.utils.toAmountMx
 import com.avoqado.pos.doTagListMxTest
 import com.avoqado.pos.doTagListTest
+import com.avoqado.pos.enums.Acquirer
+import com.avoqado.pos.enums.Country
 import com.avoqado.pos.ui.screen.CardReaderScreen
-import com.avoqado.pos.views.SuccessPaymentActivity.Companion
 import com.menta.android.common_cross.data.datasource.local.model.Transaction
 import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
 import com.menta.android.common_cross.util.StatusResult
@@ -48,6 +47,9 @@ class CardProcessActivity : ComponentActivity() {
     private val tipAmount: String by lazy {
         intent.getStringExtra("tipAmount").toString()
     }
+    private val isCustomTip: String by lazy {
+        intent.getStringExtra("isCustomTip").toString()
+    }
 
     private val currency: String by lazy {
         intent.getStringExtra("currency").toString()
@@ -66,19 +68,20 @@ class CardProcessActivity : ComponentActivity() {
         enableEdgeToEdge()
         cardProcessData = CardProcessData()
         setContent {
+            val validAmount = amount?.toDoubleOrNull()
+                ?: 0.0 // Usa un valor por defecto (0.0) si es nulo o inválido
+            val validTipAmount = tipAmount?.toDoubleOrNull() ?: 0.0
+            val tipAmountPercentage = calculatePercentage(validAmount, validTipAmount)
+            val validationIsCustomTip =
+                if (isCustomTip.isNullOrEmpty()) tipAmount else tipAmountPercentage.toString()
             val clearAmount = amount.replace(",", "").replace(".", "")
-            val clearTip = tipAmount.replace(",", "").replace(".", "")
+            val clearTip = validationIsCustomTip.replace(",", "").replace(".", "")
             val total = clearAmount.toInt() + clearTip.toInt()
             val formattedAmount = total.toString().toAmountMx()
             val currencySymbol = "$CURRENCY_LABEL"
             CardReaderScreen(formattedAmount, currencySymbol)
             cardReader(clearAmount, clearTip)
         }
-
-
-    }
-
-    override fun onBackPressed() {
     }
 
     private fun cardReader(amount: String, tipAmount: String) {
@@ -200,7 +203,10 @@ class CardProcessActivity : ComponentActivity() {
                 intent.putExtra("currency", currency)
                 intent.putExtra("operationType", operationType)
                 startActivity(intent)
-                Log.i("$TAG-AvoqadoTest", "CardProcessActivity closed by navigateObserver with StatusResult: $statusResult")
+                Log.i(
+                    "$TAG-AvoqadoTest",
+                    "CardProcessActivity closed by navigateObserver with StatusResult: $statusResult"
+                )
                 finish()
             }
 
@@ -227,10 +233,14 @@ class CardProcessActivity : ComponentActivity() {
                     val intent = Intent(this, DoRefundActivity::class.java)
                     startActivity(intent)
                 }
-                    Log.i("$TAG-AvoqadoTest", "CardProcessActivity closed by navigateObserver")
-                    finish()
+                Log.i("$TAG-AvoqadoTest", "CardProcessActivity closed by navigateObserver")
+                finish()
             }
         }
+    }
+
+    fun calculatePercentage(value: Double, percentage: Double): Double {
+        return (value * percentage) / 100
     }
 
     private fun String.isNotNull(): Boolean {

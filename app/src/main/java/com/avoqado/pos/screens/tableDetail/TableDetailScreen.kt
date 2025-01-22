@@ -35,6 +35,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -55,7 +56,6 @@ import com.avoqado.pos.core.model.FlowStep
 import com.avoqado.pos.core.model.IconAction
 import com.avoqado.pos.core.model.IconType
 import com.avoqado.pos.ui.screen.ProductRow
-import com.avoqado.pos.ui.screen.Text
 import com.avoqado.pos.ui.screen.ToolbarWithIcon
 import com.avoqado.pos.util.Utils
 
@@ -113,12 +113,14 @@ fun TableDetailScreen(
                     Text(
                         text = "Queda por pagar: ",
                         modifier = Modifier.padding(vertical = 8.dp),
-                        fontSize = 24.sp
+                        fontSize = 24.sp,
+                        color = Color.Black
                     )
                     Utils.MmUtlAmountTextViewV2(
                         amount = "${tableDetails.totalAmount}",
                         currencyType = "MXN",
                         isVisible = true,
+                        baseSize = 22
                     )
                 }
                 Column(
@@ -131,7 +133,9 @@ fun TableDetailScreen(
                     GenericOptionsUI(
                         onClickProducts = {
                             stateScreenProducts = true
-                        }
+                        },
+                        onClickPeople = {},
+                        onClickCustom = {}
                     )
                     //Para verla lista de productos descomente la linea de abajo
                     // ProductsScreen(listProducts = tableDetails.products)
@@ -154,6 +158,8 @@ fun TableDetailScreen(
         }
     }
     if (stateScreenProducts) {
+        //val totalPrice = remember { mutableStateOf(0.0) }
+        //val leftToPay = tableDetails.totalAmount - totalPrice.value
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -161,7 +167,7 @@ fun TableDetailScreen(
                 .zIndex(1f)
         ) {
             ToolbarWithIcon(
-                title = "Productos",
+                title = "Queda por pagar: ${tableDetails.totalAmount}",
                 iconAction = IconAction(
                     flowStep = FlowStep.NAVIGATE_BACK,
                     context = context,
@@ -179,7 +185,7 @@ fun TableDetailScreen(
                     .padding(16.dp)
             ) {
                 Spacer(modifier = Modifier.height(46.dp))
-                ProductsScreen(tableDetails.products)
+                ProductsScreen(tableDetails.products)//totalPrice = totalPrice)
                 Divider(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
                     thickness = 1.dp,
@@ -226,7 +232,8 @@ fun TableDetailScreen(
     if (showModalSheet) {
         ModalBottomSheet(
             onDismissRequest = { showModalSheet = false },
-            sheetState = sheetState
+            sheetState = sheetState,
+            modifier = Modifier.fillMaxWidth()
         ) {
             Column(
                 modifier = Modifier
@@ -260,7 +267,7 @@ fun TableDetailScreen(
                         ProductRow(
                             number = product.quantity,
                             name = product.name,
-                            price = product.price.toString()
+                            price = product.price.toString(),
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                     }
@@ -286,7 +293,9 @@ fun TableDetailScreen(
                 )
 
                 Button(
-                    onClick = { tableDetailViewModel.goToPayment("total") },
+                    onClick = {
+                        tableDetailViewModel.goToPayment("total")
+                    },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary
                     ),
@@ -346,7 +355,8 @@ fun GenericOptionCard(
     icon: Painter,
     title: String,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    iscustom: Boolean = false
 ) {
     Card(
         modifier = modifier
@@ -365,19 +375,43 @@ fun GenericOptionCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Icon(
-                painter = icon,
-                contentDescription = null,
-                modifier = Modifier.size(32.dp),
-                tint = Color.Black
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = title,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                color = Color.Black
-            )
+            if (iscustom) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.icon_edit),
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp),
+                        tint = Color.Black
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black
+                )
+            } else {
+                Icon(
+                    painter = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                    tint = Color.Black
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black
+                )
+            }
         }
     }
 }
@@ -422,10 +456,13 @@ fun GenericOptionsUI(
         GenericOptionCard(
             icon = painterResource(R.drawable.icon_edit),
             title = "Cantidad personalizada",
+            iscustom = true,
             onClick = {
                 onClickCustom()
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
         )
     }
 }

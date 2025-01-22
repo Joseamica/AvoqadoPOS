@@ -41,6 +41,7 @@ fun TextFieldAmount(
     textFieldState: MutableState<TextFieldState>,
     onTextChange: (String) -> Unit,
     shimmer: Boolean = false,
+    clickOnDone: () -> Unit = {}
 ) {
     if (shimmer) {
         ShimmerTextFieldAmount(
@@ -75,6 +76,7 @@ fun TextFieldAmount(
             imeAction = ImeAction.Done
         ),
         keyboardActions = KeyboardActions(onDone = {
+            clickOnDone()
             keyboardController?.hide()
         }),
         decorationBox = { innerText ->

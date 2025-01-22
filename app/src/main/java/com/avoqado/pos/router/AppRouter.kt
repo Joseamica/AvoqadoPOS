@@ -217,9 +217,8 @@ fun AppRouter(
                         validateAmountUseCase = ValidateAmountUseCase()
                     )
 
-                    TipSelectionScreen(
-                        inputTipViewModel = inputTipViewModel
-                    )
+                    TipSelectionScreen(inputTipViewModel = inputTipViewModel)
+                    //InputTipScreen(inputTipViewModel = inputTipViewModel)
                 }
 
                 dialogHolder(MainDests.Authorization) {

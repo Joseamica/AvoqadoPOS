@@ -60,6 +60,7 @@ class HomeViewModel (
                 MainDests.TableDetail.ARG_TABLE_ID,
                 table.tableNumber?.toString() ?: ""
             )
+
         )
     }
 
