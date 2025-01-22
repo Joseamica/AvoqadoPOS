@@ -66,6 +66,10 @@ fun TipSelectionScreen(
             ),
             onAction = {
                 inputTipViewModel.navigateBack()
+
+
+
+
             },
             showSecondIcon = true
         )
