@@ -159,19 +159,18 @@ fun AppRouter(
                 startDestination = MainDests.Splash.route
             ) {
                 composableHolder(MainDests.Splash) {
-                    val splashViewModel = SplashViewModel(
-                        navigationDispatcher = navigationDispatcher,
-                        storage = Storage(context),
-                        sessionManager = SessionManager(context),
-                        serialNumber = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                            Settings.Secure.getString(
-                                context.contentResolver,
-                                Settings.Secure.ANDROID_ID
-                            )
-                        } else {
-                            Build.SERIAL ?: "Unknown"
-                        }
-                    )
+                    val splashViewModel = remember {
+                        SplashViewModel(
+                            navigationDispatcher = navigationDispatcher,
+                            storage = Storage(context),
+                            sessionManager = SessionManager(context),
+                            serialNumber =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                                Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+                            } else {
+                                Build.SERIAL ?: "Unknown"
+                            }
+                        )
+                    }
 
                     SplashScreen(
                         viewModel = splashViewModel,
@@ -185,23 +184,26 @@ fun AppRouter(
                 }
 
                 composableHolder(MainDests.Tables) {
-                    val homeViewModel = HomeViewModel(
-                        navigationDispatcher = navigationDispatcher,
-                        sessionManager = SessionManager(context)
-                    )
+                    val homeViewModel = remember {
+                        HomeViewModel(
+                            navigationDispatcher = navigationDispatcher,
+                            sessionManager = SessionManager(context)
+                        )
+                    }
                     HomeScreen(
                         homeViewModel = homeViewModel
                     )
                 }
 
                 composableHolder(MainDests.TableDetail) {
-                    val tableDetailViewModel = TableDetailViewModel(
-                        navigationDispatcher = navigationDispatcher,
-                        snackbarDelegate = snackbarDelegate,
-                        tableNumber = it.arguments?.getString(MainDests.TableDetail.ARG_TABLE_ID)
-                            ?: "",
-                        venueId = it.arguments?.getString(MainDests.TableDetail.ARG_VENUE_ID) ?: ""
-                    )
+                    val tableDetailViewModel = remember {
+                        TableDetailViewModel(
+                            navigationDispatcher = navigationDispatcher,
+                            snackbarDelegate = snackbarDelegate,
+                            tableNumber = it.arguments?.getString(MainDests.TableDetail.ARG_TABLE_ID) ?: "",
+                            venueId = it.arguments?.getString(MainDests.TableDetail.ARG_VENUE_ID) ?: ""
+                        )
+                    }
 
                     TableDetailScreen(
                         tableDetailViewModel = tableDetailViewModel
@@ -209,28 +211,27 @@ fun AppRouter(
                 }
 
                 composableHolder(MainDests.InputTip) {
-                    val subtotal =
-                        it.arguments?.getString(MainDests.InputTip.ARG_SUBTOTAL) ?: "0.00"
-                    val inputTipViewModel = InputTipViewModel(
-                        subtotal = subtotal,
-                        navigationDispatcher = navigationDispatcher,
-                        validateAmountUseCase = ValidateAmountUseCase()
-                    )
+                    val subtotal = it.arguments?.getString(MainDests.InputTip.ARG_SUBTOTAL) ?: "0.00"
+                    val inputTipViewModel = remember {
+                        InputTipViewModel(
+                            subtotal = subtotal,
+                            navigationDispatcher = navigationDispatcher,
+                            validateAmountUseCase = ValidateAmountUseCase()
+                        )
+                    }
 
                     TipSelectionScreen(inputTipViewModel = inputTipViewModel)
                     //InputTipScreen(inputTipViewModel = inputTipViewModel)
                 }
 
                 dialogHolder(MainDests.Authorization) {
-                    val viewModel = AuthorizationViewModel(
-                        navigationDispatcher = navigationDispatcher,
-                        storage = Storage(context)
-                    )
-                    AuthorizationDialog(
-                        viewModel = viewModel,
-                        externalTokenData = ExternalTokenData(context),
-                        masterKeyData = MasterKeyData(context)
-                    )
+                    val viewModel = remember {
+                        AuthorizationViewModel(
+                            navigationDispatcher = navigationDispatcher,
+                            storage = Storage(context)
+                        )
+                    }
+                    AuthorizationDialog(viewModel = viewModel, externalTokenData = ExternalTokenData(context), masterKeyData = MasterKeyData(context))
                 }
             }
         }
