@@ -18,6 +18,7 @@ import com.avoqado.pos.core.navigation.NavigationDispatcher
 import com.avoqado.pos.core.navigation.NavigationManager
 import com.avoqado.pos.core.navigation.NavigationManagerImpl
 import com.avoqado.pos.router.AppRouter
+import com.avoqado.pos.ui.theme.AvoqadoTheme
 import com.avoqado.pos.ui.theme.DemoandroidsdkmentaTheme
 import com.menta.android.restclient.core.RestClientConfiguration.configure
 import kotlinx.coroutines.launch
@@ -39,11 +40,13 @@ class MainActivity : ComponentActivity() {
         Log.d("MainActivity", "Device Serial Number: $serialNumber")
 
         setContent {
-            AppRouter(
-                navigationDispatcher = navigationDispatcher,
-                snackbarDelegate = snackbarDelegate,
-                context = this
-            )
+            AvoqadoTheme {
+                AppRouter(
+                    navigationDispatcher = navigationDispatcher,
+                    snackbarDelegate = snackbarDelegate,
+                    context = this
+                )
+            }
         }
     }
 

@@ -55,8 +55,12 @@ import com.avoqado.pos.R
 import com.avoqado.pos.core.model.FlowStep
 import com.avoqado.pos.core.model.IconAction
 import com.avoqado.pos.core.model.IconType
+import com.avoqado.pos.core.presentation.components.MainButton
+import com.avoqado.pos.screens.tableDetail.components.GenericOptionsUI
+import com.avoqado.pos.screens.tableDetail.model.TableDetail
 import com.avoqado.pos.ui.screen.ProductRow
 import com.avoqado.pos.ui.screen.ToolbarWithIcon
+import com.avoqado.pos.ui.theme.AvoqadoTheme
 import com.avoqado.pos.util.Utils
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,92 +75,20 @@ fun TableDetailScreen(
     val isLoading by tableDetailViewModel.isLoading.collectAsStateWithLifecycle()
     var showModalSheet by rememberSaveable { mutableStateOf(false) }
     var stateScreenProducts by rememberSaveable { mutableStateOf(false) }
-    Column(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        ToolbarWithIcon(
-            title = tableDetails.name,
-            iconAction = IconAction(
-                flowStep = FlowStep.NAVIGATE_BACK,
-                context = context,
-                iconType = IconType.BACK
-            ),
-            onAction = {
-                tableDetailViewModel.navigateBack()
-            },
-            onActionSecond = {
-                showModalSheet = true
-            }
-        )
 
-        if (isLoading) {
-            // Mostrar loader mientras se carga la información
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else {
-            Column(
-                modifier = Modifier,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(0.6f),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Queda por pagar: ",
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        fontSize = 24.sp,
-                        color = Color.Black
-                    )
-                    Utils.MmUtlAmountTextViewV2(
-                        amount = "${tableDetails.totalAmount}",
-                        currencyType = "MXN",
-                        isVisible = true,
-                        baseSize = 22
-                    )
-                }
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp)
-                        .weight(0.4f),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    GenericOptionsUI(
-                        onClickProducts = {
-                            stateScreenProducts = true
-                        },
-                        onClickPeople = {},
-                        onClickCustom = {}
-                    )
-                    //Para verla lista de productos descomente la linea de abajo
-                    // ProductsScreen(listProducts = tableDetails.products)
-                }
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                ) {
-                    Utils.UtilButtonView(
-                        text = "Pagar",
-                        onClickR = {
-                            tableDetailViewModel.togglePaymentPicker()
-                        },
-                        color = Color.Black,
-                        textColor = Color.White
-                    )
-                }
-            }
-        }
-    }
+    TableDetailContent(
+        isLoading = isLoading,
+        tableDetails = tableDetails,
+        onNavigateBack = {
+            tableDetailViewModel.navigateBack()
+        },
+        onOpenPayByProduct = {},
+        onTogglePaymentSheet = {
+            tableDetailViewModel.togglePaymentPicker()
+        },
+        onShowBillProducts = {}
+    )
+
     if (stateScreenProducts) {
         //val totalPrice = remember { mutableStateOf(0.0) }
         //val leftToPay = tableDetails.totalAmount - totalPrice.value
@@ -275,7 +207,6 @@ fun TableDetailScreen(
             }
         }
     }
-
     if (showPaymentPicker) {
         ModalBottomSheet(
             onDismissRequest = { tableDetailViewModel.togglePaymentPicker() },
@@ -351,161 +282,117 @@ fun TableDetailScreen(
 }
 
 @Composable
-fun GenericOptionCard(
-    icon: Painter,
-    title: String,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit,
-    iscustom: Boolean = false
-) {
-    Card(
-        modifier = modifier
-            .padding(8.dp)
-            .clickable {
-                onClick()
-            },
-        shape = RoundedCornerShape(8.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 12.dp),
-        border = BorderStroke(1.dp, Color.LightGray)
+private fun TableDetailContent(
+    tableDetails: TableDetail,
+    onNavigateBack: () -> Unit,
+    isLoading: Boolean,
+    onTogglePaymentSheet: () -> Unit,
+    onShowBillProducts: () -> Unit,
+    onOpenPayByProduct: () -> Unit
+){
+    val context = LocalContext.current
+    Column(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column(
-            modifier = Modifier
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            if (iscustom) {
-                Row(
+        ToolbarWithIcon(
+            title = tableDetails.name,
+            iconAction = IconAction(
+                flowStep = FlowStep.NAVIGATE_BACK,
+                context = context,
+                iconType = IconType.BACK
+            ),
+            onAction = {
+                onNavigateBack()
+            },
+            onActionSecond = {
+                onShowBillProducts()
+            }
+        )
+
+        if (isLoading) {
+            // Mostrar loader mientras se carga la información
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+            Column(
+                modifier = Modifier,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                        .weight(1f),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Icon(
-                        painter = painterResource(R.drawable.icon_edit),
-                        contentDescription = null,
-                        modifier = Modifier.size(32.dp),
-                        tint = Color.Black
+                    Text(
+                        text = "Queda por pagar: ",
+                        modifier = Modifier.padding(vertical = 8.dp),
+                        fontSize = 24.sp,
+                        color = Color.Black
+                    )
+                    Utils.MmUtlAmountTextViewV2(
+                        amount = "${tableDetails.totalAmount}",
+                        currencyType = "MXN",
+                        isVisible = true,
+                        baseSize = 22
                     )
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black
-                )
-            } else {
-                Icon(
-                    painter = icon,
-                    contentDescription = null,
-                    modifier = Modifier.size(32.dp),
-                    tint = Color.Black
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black
-                )
-            }
-        }
-    }
-}
 
-@Composable
-fun GenericOptionsUI(
-    onClickProducts: () -> Unit,
-    onClickPeople: () -> Unit = {},
-    onClickCustom: () -> Unit = {}
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            GenericOptionCard(
-                icon = painterResource(R.drawable.icon_products),
-                title = "Productos",
-                onClick = {
-                    onClickProducts()
-                },
-                modifier = Modifier.weight(1f)
-
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            GenericOptionCard(
-                icon = painterResource(R.drawable.icon_people),
-                title = "Personas",
-                onClick = {
-                    onClickPeople()
-                },
-                modifier = Modifier.weight(1f)
-            )
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        GenericOptionCard(
-            icon = painterResource(R.drawable.icon_edit),
-            title = "Cantidad personalizada",
-            iscustom = true,
-            onClick = {
-                onClickCustom()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        )
-    }
-}
-
-@Preview(showSystemUi = true)
-@Composable
-fun AmountDisplayPreview() {
-    MaterialTheme {
-        var visible by rememberSaveable { mutableStateOf(true) }
-        Surface(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.onPrimary)
-        ) {
-            Scaffold { innerPadding ->
                 Column(
-                    modifier = Modifier.padding(innerPadding)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 30.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Utils.MmUtlAmountTextViewV2(
-                        amount = "1598.62",
-                        currencyType = "MXN",
-                        isVisible = visible,
-                        modifier = Modifier.clickable {
-                            visible = !visible
+                    GenericOptionsUI(
+                        onClickProducts = {
+                            onOpenPayByProduct()
+                        },
+                        onClickPeople = {},
+                        onClickCustom = {}
+                    )
+                    //Para verla lista de productos descomente la linea de abajo
+                    // ProductsScreen(listProducts = tableDetails.products)
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    MainButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Pagar",
+                        onClickR = {
+                            onTogglePaymentSheet()
                         }
                     )
-                    Utils.MmUtlAmountTextViewV2(
-                        amount = "0.0505",
-                        isVisible = visible,
-                        currencyType = "MXN",
-                        fullVisibility = true,
-                        maxDecimal = 6
-                    )
-                    Utils.MmUtlAmountTextViewV2(
-                        amount = "1.0505",
-                        isVisible = visible,
-                        currencyType = "USD",
-                        fullVisibility = true,
-                        maxDecimal = 6
-                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
+    }
+}
+
+
+
+
+@Preview(showSystemUi = false)
+@Composable
+fun AmountDisplayPreview() {
+    AvoqadoTheme {
+        TableDetailContent(
+            isLoading = false,
+            onNavigateBack = {},
+            onTogglePaymentSheet = {},
+            onShowBillProducts = {},
+            onOpenPayByProduct = {},
+            tableDetails = TableDetail(
+
+            )
+        )
     }
 }
