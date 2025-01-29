@@ -222,15 +222,16 @@ fun AppRouter(
 
                 composableHolder(MainDests.InputTip) {
                     val subtotal = it.arguments?.getString(MainDests.InputTip.ARG_SUBTOTAL) ?: "0.00"
+                    val waiterName = it.arguments?.getString(MainDests.InputTip.ARG_WAITER) ?: ""
                     val inputTipViewModel = remember {
                         InputTipViewModel(
                             subtotal = subtotal,
+                            waiterName = waiterName,
                             navigationDispatcher = navigationDispatcher,
                             validateAmountUseCase = ValidateAmountUseCase()
                         )
                     }
 
-//                    TipSelectionScreen(inputTipViewModel = inputTipViewModel)
                     InputTipScreen(inputTipViewModel = inputTipViewModel)
                 }
 

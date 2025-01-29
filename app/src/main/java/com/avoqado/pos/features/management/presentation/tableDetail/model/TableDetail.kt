@@ -6,6 +6,7 @@ import com.menta.android.core.utils.StringUtils
 data class TableDetail(
     val tableId: String = "",
     val name: String = "",
+    val waiterName: String = "",
     val products: List<Product> = emptyList(),
     val totalAmount: Double = 0.0,
     val totalPending: Double = 0.0

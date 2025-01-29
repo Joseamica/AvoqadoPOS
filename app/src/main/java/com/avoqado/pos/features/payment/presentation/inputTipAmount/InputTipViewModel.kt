@@ -14,6 +14,7 @@ import com.menta.android.core.utils.StringUtils
 
 class InputTipViewModel(
     val subtotal: String,
+    val waiterName: String,
     private val validateAmountUseCase: ValidateAmountUseCase,
     private val navigationDispatcher: NavigationDispatcher
 ) : ViewModel() {

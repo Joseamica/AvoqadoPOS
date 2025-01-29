@@ -11,7 +11,8 @@ fun TableCacheEntity.toDomain() : TableDetail {
         products = this.products.map { it.toDomain() },
         name = this.name,
         totalPending = totalPending,
-        totalAmount = totalAmount
+        totalAmount = totalAmount,
+        waiterName = waiterName
     )
 }
 
@@ -21,7 +22,8 @@ fun TableDetail.toCache(): TableCacheEntity {
         name = this.name,
         products = this.products.map { it.toCache() },
         totalPending = this.totalPending,
-        totalAmount = this.totalAmount
+        totalAmount = this.totalAmount,
+        waiterName = waiterName
     )
 }
 

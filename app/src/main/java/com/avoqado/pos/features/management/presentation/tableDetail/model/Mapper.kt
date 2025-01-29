@@ -6,7 +6,8 @@ fun TableDetail.toDomain() : com.avoqado.pos.features.management.domain.models.T
         name = this.name,
         products = this.products.map { it.toDomain() },
         totalAmount = this.totalAmount,
-        totalPending = this.totalPending
+        totalPending = this.totalPending,
+        waiterName = waiterName
     )
 }
 

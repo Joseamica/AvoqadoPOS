@@ -57,7 +57,6 @@ class TableDetailViewModel(
                     tableNumber = tableNumber
                 )
 
-
                 _tableDetail.value = TableDetail(
                     tableId = tableNumber,
                     name = "Mesa $tableNumber",
@@ -71,6 +70,7 @@ class TableDetailViewModel(
                     _tableDetail.value.copy(
                         totalAmount = billDetail.total.toString().toAmountMXDouble(),
                         totalPending = billDetail.amountLeft.toString().toAmountMXDouble(),
+                        waiterName = billDetail.waiterName ?: "",
                         products = billDetail.products.groupBy { it.name }.map { pair ->
                             val item = pair.value.first()
                             Product(
@@ -117,7 +117,11 @@ class TableDetailViewModel(
             NavigationArg.StringArg(
                 MainDests.InputTip.ARG_SUBTOTAL,
                 _tableDetail.value.totalPending.toString()
-            )
+            ),
+            NavigationArg.StringArg(
+                MainDests.InputTip.ARG_SUBTOTAL,
+                _tableDetail.value.waiterName
+            ),
         )
     }
 }

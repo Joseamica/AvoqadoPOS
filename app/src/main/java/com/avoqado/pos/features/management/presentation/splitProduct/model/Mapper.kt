@@ -8,7 +8,8 @@ fun TableDetail.toUI(): SplitByProductViewState {
     return SplitByProductViewState(
         totalPending = totalPending.toString().toAmountMx(),
         products = products.map { it.toUI() },
-        selectedProducts = emptyList()
+        selectedProducts = emptyList(),
+        waiterName = waiterName ?: ""
     )
 }
 

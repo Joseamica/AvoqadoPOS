@@ -5,5 +5,6 @@ data class TableCacheEntity(
     val name: String,
     val products: List<ProductCacheEntity>,
     val totalPending: Double,
-    val totalAmount: Double
+    val totalAmount: Double,
+    val waiterName: String?
 )

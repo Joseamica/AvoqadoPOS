@@ -1,7 +1,9 @@
 package com.avoqado.pos.features.management.presentation.splitProduct
 
 import androidx.lifecycle.ViewModel
+import com.avoqado.pos.core.navigation.NavigationArg
 import com.avoqado.pos.core.navigation.NavigationDispatcher
+import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.presentation.splitProduct.model.SplitByProductViewState
 import com.avoqado.pos.features.management.presentation.splitProduct.model.toUI
@@ -43,6 +45,16 @@ class SplitByProductViewModel constructor(
     }
 
     fun navigateToPayment(){
-
+        navigationDispatcher.navigateWithArgs(
+            MainDests.InputTip,
+            NavigationArg.StringArg(
+                MainDests.InputTip.ARG_SUBTOTAL,
+                _tableDetail.value.totalSelected.toString()
+            ),
+            NavigationArg.StringArg(
+                MainDests.InputTip.ARG_SUBTOTAL,
+                _tableDetail.value.waiterName
+            ),
+        )
     }
 }
