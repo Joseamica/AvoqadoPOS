@@ -2,8 +2,8 @@ package com.avoqado.pos.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avoqado.pos.core.navigation.NavigationArg
-import com.avoqado.pos.core.navigation.NavigationDispatcher
+import com.avoqado.pos.core.presentation.navigation.NavigationArg
+import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.data.local.SessionManager
 import com.avoqado.pos.data.network.AvoqadoAPI
 import com.avoqado.pos.data.network.models.NetworkTable

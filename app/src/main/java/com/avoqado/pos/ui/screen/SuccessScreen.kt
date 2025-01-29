@@ -17,8 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.avoqado.pos.R
-import com.avoqado.pos.ui.theme.primary
-import com.avoqado.pos.ui.theme.textColor
+import com.avoqado.pos.core.presentation.theme.primary
+import com.avoqado.pos.core.presentation.theme.textColor
 
 @Composable
 fun SuccessScreen(message: String) {

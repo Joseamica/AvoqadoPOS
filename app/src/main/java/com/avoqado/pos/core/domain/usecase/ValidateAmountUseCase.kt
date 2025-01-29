@@ -1,4 +1,4 @@
-package com.avoqado.pos.core.usecase
+package com.avoqado.pos.core.domain.usecase
 
 import com.menta.android.core.usecase.UseCase
 import com.menta.android.core.utils.StringUtils

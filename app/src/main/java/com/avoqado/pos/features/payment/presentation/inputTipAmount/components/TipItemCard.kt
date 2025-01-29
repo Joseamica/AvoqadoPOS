@@ -20,8 +20,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.avoqado.pos.ui.theme.chipContainerColor
-import com.avoqado.pos.ui.theme.chipContentColor
+import com.avoqado.pos.core.presentation.theme.chipContainerColor
+import com.avoqado.pos.core.presentation.theme.chipContentColor
 
 @Composable
 fun TipItemCard(

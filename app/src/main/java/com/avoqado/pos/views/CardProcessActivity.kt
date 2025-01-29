@@ -10,7 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.OperationFlowHolder
-import com.avoqado.pos.core.utils.toAmountMx
+import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.doTagListMxTest
 import com.avoqado.pos.doTagListTest
 import com.avoqado.pos.enums.Acquirer

@@ -32,7 +32,7 @@ import androidx.compose.ui.graphics.Color
 import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.core.viewmodel.InstallmentViewModel
 import com.avoqado.pos.ui.screen.PrimaryButton
-import com.avoqado.pos.ui.theme.primary
+import com.avoqado.pos.core.presentation.theme.primary
 import com.menta.android.core.model.OperationFlow
 import com.menta.android.core.model.bin.InstallmentsApp
 

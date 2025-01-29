@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavOptions
 import com.avoqado.pos.AppfinRestClientConfigure
-import com.avoqado.pos.core.navigation.NavigationDispatcher
+import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.screens.splash.SplashViewModel.Companion.GET_MASTER_KEY
 import com.avoqado.pos.screens.splash.SplashViewModel.Companion.START_CONFIG

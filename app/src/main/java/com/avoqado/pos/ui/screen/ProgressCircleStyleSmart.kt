@@ -3,11 +3,11 @@ package com.avoqado.pos.ui.screen
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.unit.Dp
-import com.avoqado.pos.ui.theme.dp_10
-import com.avoqado.pos.ui.theme.dp_2
-import com.avoqado.pos.ui.theme.dp_25
-import com.avoqado.pos.ui.theme.dp_95
-import com.avoqado.pos.ui.theme.primary
+import com.avoqado.pos.core.presentation.theme.dp_10
+import com.avoqado.pos.core.presentation.theme.dp_2
+import com.avoqado.pos.core.presentation.theme.dp_25
+import com.avoqado.pos.core.presentation.theme.dp_95
+import com.avoqado.pos.core.presentation.theme.primary
 
 data class ProgressCircleStyleSmart (
     val color: Color = primary,

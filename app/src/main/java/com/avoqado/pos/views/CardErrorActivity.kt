@@ -25,14 +25,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.MainActivity
 import com.avoqado.pos.R
 import com.avoqado.pos.ui.screen.PrimaryButton
-import com.avoqado.pos.ui.theme.textColor
+import com.avoqado.pos.core.presentation.theme.textColor
 import com.menta.android.common_cross.util.StatusResult
-import com.menta.android.core.model.OperationType
-import com.menta.android.core.utils.StringUtils
 
 
 class CardErrorActivity : ComponentActivity() {

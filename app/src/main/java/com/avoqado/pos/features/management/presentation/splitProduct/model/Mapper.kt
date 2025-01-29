@@ -1,6 +1,6 @@
 package com.avoqado.pos.features.management.presentation.splitProduct.model
 
-import com.avoqado.pos.core.utils.toAmountMx
+import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.features.management.domain.models.Product
 import com.avoqado.pos.features.management.domain.models.TableDetail
 

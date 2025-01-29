@@ -1,9 +1,9 @@
 package com.avoqado.pos.ui.screen
 
 import androidx.compose.ui.graphics.Color
-import com.avoqado.pos.ui.theme.primary
-import com.avoqado.pos.ui.theme.textColor
-import com.avoqado.pos.ui.theme.textlightGrayColor
+import com.avoqado.pos.core.presentation.theme.primary
+import com.avoqado.pos.core.presentation.theme.textColor
+import com.avoqado.pos.core.presentation.theme.textlightGrayColor
 
 data class TextFieldType(
     val textFieldStyle: TextFieldStyle

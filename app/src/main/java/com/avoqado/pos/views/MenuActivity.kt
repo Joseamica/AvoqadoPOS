@@ -31,7 +31,7 @@ import androidx.lifecycle.Observer
 import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.R
 import com.avoqado.pos.ui.screen.PrimaryButton
-import com.avoqado.pos.ui.theme.primary
+import com.avoqado.pos.core.presentation.theme.primary
 import com.menta.android.core.model.OperationType
 import com.menta.android.printer.i9100.core.DevicePrintImpl
 import com.menta.android.printer.i9100.model.Align

@@ -1,4 +1,4 @@
-package com.avoqado.pos.core.model
+package com.avoqado.pos.core.presentation.model
 
 enum class FlowStep {
     GO_TO_MENU,

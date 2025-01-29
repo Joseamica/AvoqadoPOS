@@ -24,7 +24,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -40,13 +39,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.R
-import com.avoqado.pos.core.model.FlowStep
-import com.avoqado.pos.core.model.IconAction
-import com.avoqado.pos.core.model.IconType
+import com.avoqado.pos.core.presentation.model.FlowStep
+import com.avoqado.pos.core.presentation.model.IconAction
+import com.avoqado.pos.core.presentation.model.IconType
 import com.avoqado.pos.core.viewmodel.ListTransactionViewModel
 import com.avoqado.pos.ui.screen.ToolbarWithIcon
-import com.avoqado.pos.ui.theme.primary
-import com.avoqado.pos.ui.theme.red
+import com.avoqado.pos.core.presentation.theme.primary
+import com.avoqado.pos.core.presentation.theme.red
 import com.menta.android.common_cross.data.datasource.local.model.Transaction
 import com.menta.android.core.utils.StringUtils.formatAmount
 

@@ -5,7 +5,7 @@ import androidx.navigation.NavDeepLink
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import com.avoqado.pos.core.navigation.NavigationAction
+import com.avoqado.pos.core.presentation.navigation.NavigationAction
 
 sealed class MainDests : NavigationAction {
 

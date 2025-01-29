@@ -1,8 +1,8 @@
 package com.avoqado.pos.features.management.presentation.splitProduct
 
 import androidx.lifecycle.ViewModel
-import com.avoqado.pos.core.navigation.NavigationArg
-import com.avoqado.pos.core.navigation.NavigationDispatcher
+import com.avoqado.pos.core.presentation.navigation.NavigationArg
+import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.presentation.splitProduct.model.SplitByProductViewState

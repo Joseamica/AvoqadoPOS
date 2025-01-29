@@ -9,7 +9,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avoqado.pos.core.usecase.ValidateAmountUseCase
+import com.avoqado.pos.core.domain.usecase.ValidateAmountUseCase
 import com.avoqado.pos.ui.screen.TextFieldState
 import com.menta.android.core.utils.StringUtils
 import kotlinx.coroutines.launch

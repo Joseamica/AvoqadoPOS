@@ -6,6 +6,8 @@ import android.net.Uri
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -18,11 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.avoqado.pos.OperationFlowHolder
-import com.avoqado.pos.core.delegates.SnackbarDelegate
-import com.avoqado.pos.core.navigation.NavigationArg
-import com.avoqado.pos.core.navigation.NavigationCommand
-import com.avoqado.pos.core.navigation.NavigationDispatcher
-import com.avoqado.pos.core.usecase.ValidateAmountUseCase
+import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
+import com.avoqado.pos.core.presentation.navigation.NavigationArg
+import com.avoqado.pos.core.presentation.navigation.NavigationCommand
+import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
+import com.avoqado.pos.core.domain.usecase.ValidateAmountUseCase
 import com.avoqado.pos.data.local.SessionManager
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.presentation.splitProduct.SplitByProductScreen
@@ -152,7 +154,13 @@ fun AppRouter(
             NavHost(
                 modifier = Modifier.padding(padding),
                 navController = navController,
-                startDestination = MainDests.Splash.route
+                startDestination = MainDests.Splash.route,
+                enterTransition = {
+                    EnterTransition.None
+                },
+                exitTransition = {
+                    ExitTransition.None
+                }
             ) {
                 composableHolder(MainDests.Splash) {
                     val splashViewModel = remember {

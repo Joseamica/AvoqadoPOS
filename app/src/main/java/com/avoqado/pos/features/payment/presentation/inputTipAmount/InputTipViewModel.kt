@@ -6,8 +6,8 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.avoqado.pos.core.navigation.NavigationDispatcher
-import com.avoqado.pos.core.usecase.ValidateAmountUseCase
+import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
+import com.avoqado.pos.core.domain.usecase.ValidateAmountUseCase
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.ui.screen.TextFieldState
 import com.menta.android.core.utils.StringUtils

@@ -1,4 +1,4 @@
-package com.avoqado.pos.core.navigation
+package com.avoqado.pos.core.presentation.navigation
 
 import androidx.navigation.NavOptions
 import kotlinx.coroutines.flow.Flow

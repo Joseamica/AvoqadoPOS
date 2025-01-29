@@ -18,7 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.features.management.presentation.tableDetail.model.Product
-import com.avoqado.pos.ui.theme.DemoandroidsdkmentaTheme
+import com.avoqado.pos.core.presentation.theme.DemoandroidsdkmentaTheme
 
 @Composable
 fun ProductItemRow(product: Product) {

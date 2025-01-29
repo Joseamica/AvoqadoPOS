@@ -42,9 +42,9 @@ import androidx.compose.ui.unit.sp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.avoqado.pos.R
-import com.avoqado.pos.core.model.FlowStep
-import com.avoqado.pos.core.model.IconAction
-import com.avoqado.pos.core.model.IconType
+import com.avoqado.pos.core.presentation.model.FlowStep
+import com.avoqado.pos.core.presentation.model.IconAction
+import com.avoqado.pos.core.presentation.model.IconType
 import com.avoqado.pos.ui.screen.PrimaryButton
 import com.avoqado.pos.ui.screen.ToolbarWithIcon
 

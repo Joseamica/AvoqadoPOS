@@ -12,16 +12,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.lifecycleScope
-import com.avoqado.pos.core.delegates.SnackbarDelegate
-import com.avoqado.pos.core.navigation.NavigationDispatcher
-import com.avoqado.pos.core.navigation.NavigationManager
-import com.avoqado.pos.core.navigation.NavigationManagerImpl
+import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
+import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
+import com.avoqado.pos.core.presentation.navigation.NavigationManager
+import com.avoqado.pos.core.presentation.navigation.NavigationManagerImpl
 import com.avoqado.pos.router.AppRouter
-import com.avoqado.pos.ui.theme.AvoqadoTheme
-import com.avoqado.pos.ui.theme.DemoandroidsdkmentaTheme
+import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
+import com.avoqado.pos.core.presentation.theme.DemoandroidsdkmentaTheme
 import com.menta.android.restclient.core.RestClientConfiguration.configure
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     private val snackbarDelegate: SnackbarDelegate = SnackbarDelegate()

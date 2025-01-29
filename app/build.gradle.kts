@@ -98,8 +98,8 @@ dependencies {
     // Compose and UI
     implementation("com.google.android.material:material:$googleMaterialVersion")
     implementation("androidx.compose.ui:ui:$composeVersion")
-    implementation("androidx.compose.material:material:1.6.5")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.6.5")
+    implementation("androidx.compose.material:material:1.7.7")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.7.7")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion")
     implementation("androidx.navigation:navigation-compose:$navVersion")
     implementation("androidx.activity:activity-compose:$activityComposeVersion")

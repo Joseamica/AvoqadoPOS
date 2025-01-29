@@ -9,10 +9,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.Scaffold
 import com.avoqado.pos.CURRENCY_LABEL
-import com.avoqado.pos.core.model.FlowStep
-import com.avoqado.pos.core.model.IconAction
-import com.avoqado.pos.core.model.IconType
-import com.avoqado.pos.core.usecase.ValidateAmountUseCase
+import com.avoqado.pos.core.presentation.model.FlowStep
+import com.avoqado.pos.core.presentation.model.IconAction
+import com.avoqado.pos.core.presentation.model.IconType
+import com.avoqado.pos.core.domain.usecase.ValidateAmountUseCase
 import com.avoqado.pos.core.viewmodel.InputAmountViewModel
 import com.avoqado.pos.ui.screen.AmountScreen
 import com.avoqado.pos.ui.screen.ToolbarWithIcon

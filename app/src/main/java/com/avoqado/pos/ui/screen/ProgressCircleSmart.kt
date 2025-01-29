@@ -14,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
-import com.avoqado.pos.ui.theme.dp_5
+import com.avoqado.pos.core.presentation.theme.dp_5
 
 
 object ConstCircle{

@@ -22,9 +22,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.avoqado.pos.R
-import com.avoqado.pos.ui.theme.AvoqadoTheme
-import com.avoqado.pos.ui.theme.selectedItemColor
-import com.avoqado.pos.ui.theme.unselectedItemColor
+import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
+import com.avoqado.pos.core.presentation.theme.selectedItemColor
+import com.avoqado.pos.core.presentation.theme.unselectedItemColor
 
 @Composable
 fun<T> SelectableItemRow(

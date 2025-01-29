@@ -6,7 +6,7 @@ import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
-import com.avoqado.pos.core.navigation.NavigationAction
+import com.avoqado.pos.core.presentation.navigation.NavigationAction
 
 fun NavGraphBuilder.dialogHolder(
     action: NavigationAction,

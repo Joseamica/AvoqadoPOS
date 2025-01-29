@@ -17,9 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.avoqado.pos.R
-import com.avoqado.pos.ui.theme.primary
-import com.avoqado.pos.ui.theme.textColor
-import com.avoqado.pos.ui.theme.textlightGrayColor
+import com.avoqado.pos.core.presentation.theme.textColor
+import com.avoqado.pos.core.presentation.theme.textlightGrayColor
 
 @Composable
 fun ProcessingOperationScreen(

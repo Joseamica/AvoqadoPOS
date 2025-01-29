@@ -26,10 +26,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.avoqado.pos.core.utils.toAmountMx
+import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.features.management.presentation.tableDetail.model.Product
 import com.avoqado.pos.ui.screen.ProductRow
-import com.avoqado.pos.ui.theme.AvoqadoTheme
+import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

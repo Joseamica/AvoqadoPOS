@@ -1,4 +1,4 @@
-package com.avoqado.pos.ui.theme
+package com.avoqado.pos.core.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

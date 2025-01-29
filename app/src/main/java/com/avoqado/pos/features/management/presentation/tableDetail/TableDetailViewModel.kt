@@ -4,11 +4,11 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avoqado.pos.core.delegates.SnackbarDelegate
-import com.avoqado.pos.core.navigation.NavigationArg
-import com.avoqado.pos.core.navigation.NavigationDispatcher
-import com.avoqado.pos.core.utils.toAmountMXDouble
-import com.avoqado.pos.core.utils.toAmountMx
+import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
+import com.avoqado.pos.core.presentation.navigation.NavigationArg
+import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
+import com.avoqado.pos.core.presentation.utils.toAmountMXDouble
+import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.data.network.AvoqadoAPI
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.domain.ManagementRepository

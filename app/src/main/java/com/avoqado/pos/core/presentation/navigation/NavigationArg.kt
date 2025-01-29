@@ -1,4 +1,4 @@
-package com.avoqado.pos.core.navigation
+package com.avoqado.pos.core.presentation.navigation
 
 sealed class NavigationArg(open val key: String) {
     data class StringArg(

@@ -1,4 +1,4 @@
-package com.avoqado.pos.core.delegates
+package com.avoqado.pos.core.presentation.delegates
 
 
 import androidx.compose.material3.Snackbar
