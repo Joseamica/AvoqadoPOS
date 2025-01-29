@@ -188,9 +188,9 @@ fun InputTipContent(
 
                 Row(
                     modifier = Modifier.fillMaxWidth().padding(
-                        horizontal = 32.dp
+                        horizontal = 16.dp
                     ),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     TipItemCard(
                         percentage = "12%",
