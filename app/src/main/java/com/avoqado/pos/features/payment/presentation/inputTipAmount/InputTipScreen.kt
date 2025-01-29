@@ -60,17 +60,15 @@ fun InputTipScreen(
             inputTipViewModel.navigateBack()
         },
         onPayWithoutTip = {
-            inputTipViewModel.isValidAmount(clearTip = false)?.let { amount ->
-                val intent = Intent(context, CardProcessActivity::class.java)
-                intent.putExtra(
-                    "amount",
-                    StringUtils.notFormatAmount(inputTipViewModel.subtotal.toAmountMx())
-                )
-                intent.putExtra("tipAmount", amount)
-                intent.putExtra("currency", CURRENCY_LABEL)
-                intent.putExtra("operationType", OperationType.PAYMENT.name)
-                context.startActivity(intent)
-            }
+            val intent = Intent(context, CardProcessActivity::class.java)
+            intent.putExtra(
+                "amount",
+                StringUtils.notFormatAmount(inputTipViewModel.subtotal.toAmountMx())
+            )
+            intent.putExtra("tipAmount", "0.00")
+            intent.putExtra("currency", CURRENCY_LABEL)
+            intent.putExtra("operationType", OperationType.PAYMENT.name)
+            context.startActivity(intent)
             inputTipViewModel.navigateBack()
         },
         onPayWithTip = {
