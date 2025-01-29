@@ -119,7 +119,7 @@ class TableDetailViewModel(
                 _tableDetail.value.totalPending.toString()
             ),
             NavigationArg.StringArg(
-                MainDests.InputTip.ARG_SUBTOTAL,
+                MainDests.InputTip.ARG_WAITER,
                 _tableDetail.value.waiterName
             ),
         )

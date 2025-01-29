@@ -30,54 +30,58 @@ fun ToolbarWithIcon(
     onActionSecond: () -> Unit = {},
     showSecondIcon: Boolean = false
 ) {
-    TopAppBar(title = {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            androidx.compose.material3.Text(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(end = if (showSecondIcon) 46.dp else 0.dp),
-                text = title,
-                style = TextStyle(
-                    fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.Black
+    TopAppBar(
+        elevation = 0.dp,
+        title = {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                androidx.compose.material3.Text(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(end = if (showSecondIcon) 46.dp else 0.dp),
+                    text = title,
+                    style = TextStyle(
+                        fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.Black
+                    )
                 )
-            )
-        }
-    }, backgroundColor = Color.White, navigationIcon = {
-        iconAction?.let {
-            IconButton(onClick = {
-                when (iconAction.flowStep) {
-                    FlowStep.GO_TO_MENU -> {
-                        val intent = Intent(iconAction.context, MenuActivity::class.java)
-                        iconAction.context.startActivity(intent)
-                    }
+            }
+        },
+        backgroundColor = Color.White,
+        navigationIcon = {
+            iconAction?.let {
+                IconButton(onClick = {
+                    when (iconAction.flowStep) {
+                        FlowStep.GO_TO_MENU -> {
+                            val intent = Intent(iconAction.context, MenuActivity::class.java)
+                            iconAction.context.startActivity(intent)
+                        }
 
-                    else -> {
-                        onAction.invoke()
+                        else -> {
+                            onAction.invoke()
+                        }
                     }
-                }
-            }) {
-                when (iconAction.iconType) {
-                    IconType.CANCEL -> {
-                        Icon(painterResource(R.drawable.icon_home), contentDescription = null)
-                    }
+                }) {
+                    when (iconAction.iconType) {
+                        IconType.CANCEL -> {
+                            Icon(painterResource(R.drawable.icon_home), contentDescription = null)
+                        }
 
-                    else -> {
-                        Icon(
-                            painterResource(if (!showSecondIcon) R.drawable.icon_home else R.drawable.icon_back),
-                            contentDescription = null
-                        )
+                        else -> {
+                            Icon(
+                                painterResource(if (!showSecondIcon) R.drawable.icon_home else R.drawable.icon_back),
+                                contentDescription = null
+                            )
+                        }
                     }
                 }
             }
-        }
-    }, actions = {
-        if (!showSecondIcon) {
-            IconButton(onClick = {
-                onActionSecond()
-            }) {
-                Icon(painterResource(R.drawable.icon_note), contentDescription = "Note")
+        }, actions = {
+            if (!showSecondIcon) {
+                IconButton(onClick = {
+                    onActionSecond()
+                }) {
+                    Icon(painterResource(R.drawable.icon_note), contentDescription = "Note")
+                }
             }
         }
-    }
     )
 }

@@ -49,10 +49,10 @@ class SplitByProductViewModel constructor(
             MainDests.InputTip,
             NavigationArg.StringArg(
                 MainDests.InputTip.ARG_SUBTOTAL,
-                _tableDetail.value.totalSelected.toString()
+                _tableDetail.value.totalSelected
             ),
             NavigationArg.StringArg(
-                MainDests.InputTip.ARG_SUBTOTAL,
+                MainDests.InputTip.ARG_WAITER,
                 _tableDetail.value.waiterName
             ),
         )

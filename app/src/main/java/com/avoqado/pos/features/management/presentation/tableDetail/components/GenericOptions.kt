@@ -51,7 +51,7 @@ fun GenericOptionsUI(
                 modifier = Modifier.weight(1f)
 
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(10.dp))
             GenericOptionCard(
                 icon = painterResource(R.drawable.icon_edit),
                 title = "Monto",
@@ -86,6 +86,7 @@ fun GenericOptionCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(100.dp)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center

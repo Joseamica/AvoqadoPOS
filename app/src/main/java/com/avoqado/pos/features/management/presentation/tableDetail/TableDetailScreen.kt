@@ -118,7 +118,7 @@ private fun TableDetailContent(
 ){
     val context = LocalContext.current
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(Color.White)
     ) {
         ToolbarWithIcon(
             title = tableDetails.name,
