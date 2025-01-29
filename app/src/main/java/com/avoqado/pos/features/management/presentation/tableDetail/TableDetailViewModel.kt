@@ -1,4 +1,4 @@
-package com.avoqado.pos.screens.tableDetail
+package com.avoqado.pos.features.management.presentation.tableDetail
 
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
@@ -11,13 +11,16 @@ import com.avoqado.pos.core.utils.toAmountMXDouble
 import com.avoqado.pos.core.utils.toAmountMx
 import com.avoqado.pos.data.network.AvoqadoAPI
 import com.avoqado.pos.destinations.MainDests
-import com.avoqado.pos.screens.tableDetail.model.Product
-import com.avoqado.pos.screens.tableDetail.model.TableDetail
+import com.avoqado.pos.features.management.domain.ManagementRepository
+import com.avoqado.pos.features.management.presentation.tableDetail.model.Product
+import com.avoqado.pos.features.management.presentation.tableDetail.model.TableDetail
+import com.avoqado.pos.features.management.presentation.tableDetail.model.toDomain
 import com.menta.android.core.utils.StringUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
@@ -25,7 +28,8 @@ class TableDetailViewModel(
     private val tableNumber: String="",
     private val venueId: String="",
     private val navigationDispatcher: NavigationDispatcher,
-    private val snackbarDelegate: SnackbarDelegate
+    private val snackbarDelegate: SnackbarDelegate,
+    private val managementRepository: ManagementRepository
 ) : ViewModel() {
     private val _tableDetail = MutableStateFlow<TableDetail>(TableDetail())
     val tableDetail: StateFlow<TableDetail> = _tableDetail.asStateFlow()
@@ -43,10 +47,6 @@ class TableDetailViewModel(
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
-    init {
-        fetchTableDetail()
-    }
 
     fun fetchTableDetail() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -67,19 +67,25 @@ class TableDetailViewModel(
                     venueId = venueId,
                     billId = result.table?.bill?.id ?: ""
                 )
-                _tableDetail.value = _tableDetail.value.copy(
-                    totalAmount = billDetail.total.toString().toAmountMXDouble(),
-                    totalPending = billDetail.amountLeft.toString().toAmountMXDouble(),
-                    products = billDetail.products.groupBy { it.name }.map { pair ->
-                        val item = pair.value.first()
-                        Product(
-                            id = item.name,
-                            name = item.name,
-                            price = pair.value.maxOf { it.price.toAmountMXDouble() },
-                            quantity = pair.value.sumOf { it.quantity },
-                            totalPrice = pair.value.sumOf { it.price.toAmountMXDouble() }
-                        )
-                    },
+                _tableDetail.update {
+                    _tableDetail.value.copy(
+                        totalAmount = billDetail.total.toString().toAmountMXDouble(),
+                        totalPending = billDetail.amountLeft.toString().toAmountMXDouble(),
+                        products = billDetail.products.groupBy { it.name }.map { pair ->
+                            val item = pair.value.first()
+                            Product(
+                                id = item.name,
+                                name = item.name,
+                                price = pair.value.maxOf { it.price.toAmountMXDouble() },
+                                quantity = pair.value.sumOf { it.quantity },
+                                totalPrice = pair.value.sumOf { it.price.toAmountMXDouble() }
+                            )
+                        },
+                    )
+                }
+
+                managementRepository.setTableCache(
+                    _tableDetail.value.toDomain()
                 )
             } catch (e: Exception) {
                 Log.i("TableDetailViewModel", "Error fetching table detail", e)
@@ -99,26 +105,19 @@ class TableDetailViewModel(
         }
     }
 
-    fun goToPayment(type: String) {
-        when (type) {
-            "total" -> {
-                _showPaymentPicker.value = false
-                navigationDispatcher.navigateWithArgs(
-                    MainDests.InputTip,
-                    NavigationArg.StringArg(
-                        MainDests.InputTip.ARG_SUBTOTAL,
-                        _tableDetail.value.totalPending.toString()
-                    )
-                )
-            }
+    fun goToSplitBillByProduct(){
+        navigationDispatcher.navigateWithArgs(
+            MainDests.SplitByProduct
+        )
+    }
 
-            //TODO: agregar otras formas de pago
-            else -> {
-                _showPaymentPicker.value = false
-                snackbarDelegate.showSnackbar(
-                    message = "Forma de pago en desarrollo"
-                )
-            }
-        }
+    fun payTotalPendingAmount(){
+        navigationDispatcher.navigateWithArgs(
+            MainDests.InputTip,
+            NavigationArg.StringArg(
+                MainDests.InputTip.ARG_SUBTOTAL,
+                _tableDetail.value.totalPending.toString()
+            )
+        )
     }
 }

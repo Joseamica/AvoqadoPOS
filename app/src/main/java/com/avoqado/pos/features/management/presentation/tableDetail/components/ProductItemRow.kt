@@ -1,4 +1,4 @@
-package com.avoqado.pos.screens.tableDetail.components
+package com.avoqado.pos.features.management.presentation.tableDetail.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.avoqado.pos.CURRENCY_LABEL
-import com.avoqado.pos.screens.tableDetail.model.Product
+import com.avoqado.pos.features.management.presentation.tableDetail.model.Product
 import com.avoqado.pos.ui.theme.DemoandroidsdkmentaTheme
 
 @Composable

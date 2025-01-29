@@ -1,4 +1,4 @@
-package com.avoqado.pos.screens.tableDetail.components
+package com.avoqado.pos.features.management.presentation.tableDetail.components
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable

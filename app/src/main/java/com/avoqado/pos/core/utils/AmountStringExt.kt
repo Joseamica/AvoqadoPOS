@@ -1,7 +1,7 @@
 package com.avoqado.pos.core.utils
 
 fun String.toAmountMx(): String {
-    val amount = this.toDouble() / 100
+    val amount = if (this.contains(".")) this.toDouble() else this.toDouble() / 100
     return "%.2f".format(amount)
 }
 

@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.navigation
 
-import android.util.Log
 import androidx.navigation.NavOptions
 import kotlinx.coroutines.flow.Flow
 
@@ -15,7 +14,6 @@ class NavigationDispatcher (
     }
 
     fun navigateTo(navAction: NavigationAction) {
-        Log.i("NavigationDispatcher", "navigateTo: ${navAction.route}")
         navigationManager.navigate(NavigationCommand.NavigateWithAction(navAction))
     }
 

@@ -1,4 +1,4 @@
-package com.avoqado.pos.screens.tableDetail
+package com.avoqado.pos.features.management.presentation.tableDetail
 
 import android.widget.Toast
 import androidx.compose.foundation.border
@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.avoqado.pos.screens.tableDetail.model.Product
+import com.avoqado.pos.features.management.presentation.tableDetail.model.Product
 import com.avoqado.pos.util.Utils
 
 

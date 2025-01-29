@@ -8,35 +8,29 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun ProductRow(number: Int, name: String, price: String) {
+fun ProductRow(name: String, price: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .weight(0.12f)
-                .background(color = Color.Gray, shape = CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(text = number.toString(), color = Color.White)
-        }
+        Text(
+            text = name,
+            fontSize = 16.sp,
+            modifier = Modifier.weight(1f),
+            color = Color.Black
+        )
         Spacer(modifier = Modifier.width(16.dp))
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.9f),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(text = name, fontSize = 16.sp, modifier = Modifier.weight(0.8f))
-            Text(text = "$$price", fontSize = 16.sp, modifier = Modifier.weight(0.2f))
-        }
+        Text(
+            text = "$$price",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black
+        )
+
     }
 }

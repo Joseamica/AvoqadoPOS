@@ -1,4 +1,4 @@
-package com.avoqado.pos.screens.inputTipAmount
+package com.avoqado.pos.features.payment.presentation.inputTipAmount
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf

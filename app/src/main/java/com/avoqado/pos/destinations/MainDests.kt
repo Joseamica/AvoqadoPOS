@@ -55,6 +55,11 @@ sealed class MainDests : NavigationAction {
             )
     }
 
+    data object SplitByProduct: MainDests(){
+        override val route: String
+            get() = "splitByProduct"
+    }
+
     data object InputTip: MainDests(){
 
         const val ARG_SUBTOTAL = "arg_subtotal"

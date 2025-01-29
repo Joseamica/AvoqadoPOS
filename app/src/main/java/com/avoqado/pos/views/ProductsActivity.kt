@@ -12,8 +12,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.avoqado.pos.screens.tableDetail.TableDetailViewModel
-import com.avoqado.pos.screens.tableDetail.components.ProductItemRow
+import com.avoqado.pos.features.management.presentation.tableDetail.TableDetailViewModel
+import com.avoqado.pos.features.management.presentation.tableDetail.components.ProductItemRow
 import com.avoqado.pos.util.Utils
 
 class ProductsActivity : AppCompatActivity() {

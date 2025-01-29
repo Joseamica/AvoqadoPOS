@@ -1,6 +1,5 @@
-package com.avoqado.pos.screens.tableDetail.model
+package com.avoqado.pos.features.management.presentation.tableDetail.model
 
-import com.menta.android.core.utils.StringUtils
 
 data class Product(
     val id: String,

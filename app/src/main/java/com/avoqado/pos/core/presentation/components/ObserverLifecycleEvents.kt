@@ -1,4 +1,4 @@
-package com.avoqado.pos.ui.screen
+package com.avoqado.pos.core.presentation.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect

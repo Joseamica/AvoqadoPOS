@@ -17,6 +17,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.core.delegates.SnackbarDelegate
 import com.avoqado.pos.core.navigation.NavigationArg
 import com.avoqado.pos.core.navigation.NavigationCommand
@@ -24,16 +25,18 @@ import com.avoqado.pos.core.navigation.NavigationDispatcher
 import com.avoqado.pos.core.usecase.ValidateAmountUseCase
 import com.avoqado.pos.data.local.SessionManager
 import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.features.management.presentation.splitProduct.SplitByProductScreen
+import com.avoqado.pos.features.management.presentation.splitProduct.SplitByProductViewModel
 import com.avoqado.pos.screens.authorization.AuthorizationDialog
 import com.avoqado.pos.screens.authorization.AuthorizationViewModel
 import com.avoqado.pos.screens.home.HomeScreen
 import com.avoqado.pos.screens.home.HomeViewModel
-import com.avoqado.pos.screens.inputTipAmount.InputTipScreen
-import com.avoqado.pos.screens.inputTipAmount.InputTipViewModel
+import com.avoqado.pos.features.payment.presentation.inputTipAmount.InputTipScreen
+import com.avoqado.pos.features.payment.presentation.inputTipAmount.InputTipViewModel
 import com.avoqado.pos.screens.splash.SplashScreen
 import com.avoqado.pos.screens.splash.SplashViewModel
-import com.avoqado.pos.screens.tableDetail.TableDetailScreen
-import com.avoqado.pos.screens.tableDetail.TableDetailViewModel
+import com.avoqado.pos.features.management.presentation.tableDetail.TableDetailScreen
+import com.avoqado.pos.features.management.presentation.tableDetail.TableDetailViewModel
 import com.avoqado.pos.ui.screen.TipSelectionScreen
 import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
@@ -47,7 +50,6 @@ fun AppRouter(
     snackbarDelegate: SnackbarDelegate,
     context: Context
 ) {
-    Log.i("AppRouter", "StartComposable")
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -57,14 +59,9 @@ fun AppRouter(
     }
 
     LaunchedEffect(key1 = Unit) {
-        Log.i("AppRouter", "Launched triggered")
         try {
             navigationDispatcher.navigationCommands
-                .onEach {
-                    Log.i("AppRouter", "Navigation command received: $it")
-                }
                 .collectLatest { navigationCommand ->
-                    Log.i("AppRouter", "Processing navigation command: $navigationCommand")
                     when (navigationCommand) {
                         NavigationCommand.Back -> navController.popBackStack()
                         is NavigationCommand.NavigateWithAction -> navController.navigate(
@@ -152,7 +149,6 @@ fun AppRouter(
             }
         },
         content = { padding ->
-            Log.i("AppRouter", "Composing content")
             NavHost(
                 modifier = Modifier.padding(padding),
                 navController = navController,
@@ -201,12 +197,26 @@ fun AppRouter(
                             navigationDispatcher = navigationDispatcher,
                             snackbarDelegate = snackbarDelegate,
                             tableNumber = it.arguments?.getString(MainDests.TableDetail.ARG_TABLE_ID) ?: "",
-                            venueId = it.arguments?.getString(MainDests.TableDetail.ARG_VENUE_ID) ?: ""
+                            venueId = it.arguments?.getString(MainDests.TableDetail.ARG_VENUE_ID) ?: "",
+                            managementRepository = OperationFlowHolder.managementRepository
                         )
                     }
 
                     TableDetailScreen(
                         tableDetailViewModel = tableDetailViewModel
+                    )
+                }
+
+                composableHolder(MainDests.SplitByProduct) {
+                    val splitByProductViewModel = remember {
+                        SplitByProductViewModel(
+                            navigationDispatcher = navigationDispatcher,
+                            managementRepository = OperationFlowHolder.managementRepository
+                        )
+                    }
+
+                    SplitByProductScreen(
+                        splitByProductViewModel
                     )
                 }
 
@@ -220,8 +230,8 @@ fun AppRouter(
                         )
                     }
 
-                    TipSelectionScreen(inputTipViewModel = inputTipViewModel)
-                    //InputTipScreen(inputTipViewModel = inputTipViewModel)
+//                    TipSelectionScreen(inputTipViewModel = inputTipViewModel)
+                    InputTipScreen(inputTipViewModel = inputTipViewModel)
                 }
 
                 dialogHolder(MainDests.Authorization) {

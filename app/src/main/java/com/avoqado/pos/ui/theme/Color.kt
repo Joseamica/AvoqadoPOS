@@ -18,3 +18,7 @@ val textlightGrayColor = Color(0xFFEAEAEA)
 
 val red = Color(0xFFF4261A)
 
+val unselectedItemColor = Color(0xFFA9A9A9)
+val selectedItemColor = Color.Black
+val chipContainerColor = Color(0xFFEBEDFA)
+val chipContentColor = Color(0xFF40478B)

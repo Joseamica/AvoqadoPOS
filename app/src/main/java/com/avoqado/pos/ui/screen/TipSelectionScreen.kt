@@ -43,8 +43,8 @@ import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.core.model.FlowStep
 import com.avoqado.pos.core.model.IconAction
 import com.avoqado.pos.core.model.IconType
-import com.avoqado.pos.screens.inputTipAmount.InputTipViewModel
-import com.avoqado.pos.screens.tableDetail.TableDetailViewModel
+import com.avoqado.pos.features.payment.presentation.inputTipAmount.InputTipViewModel
+import com.avoqado.pos.features.management.presentation.tableDetail.TableDetailViewModel
 import com.avoqado.pos.views.CardProcessActivity
 import com.menta.android.core.model.OperationType
 import com.menta.android.core.utils.StringUtils
