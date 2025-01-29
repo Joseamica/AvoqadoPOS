@@ -75,7 +75,7 @@ class CardProcessActivity : ComponentActivity() {
             val validationIsCustomTip =
                 if (isCustomTip.isNullOrEmpty()) tipAmount else tipAmountPercentage.toString()
             val clearAmount = amount.replace(",", "").replace(".", "")
-            val clearTip = validationIsCustomTip.replace(",", "").replace(".", "")
+            val clearTip = tipAmount.replace(",", "").replace(".", "")
             val total = clearAmount.toInt() + clearTip.toInt()
             val formattedAmount = total.toString().toAmountMx()
             val currencySymbol = "$CURRENCY_LABEL"
