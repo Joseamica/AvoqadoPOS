@@ -59,7 +59,7 @@ fun InputTipScreen(
                 val intent = Intent(context, CardProcessActivity::class.java)
                 intent.putExtra(
                     "amount",
-                    StringUtils.notFormatAmount(inputTipViewModel.subtotal)
+                    StringUtils.notFormatAmount(inputTipViewModel.subtotal.toAmountMx())
                 )
                 intent.putExtra("tipAmount", amount)
                 intent.putExtra("currency", CURRENCY_LABEL)
@@ -72,7 +72,7 @@ fun InputTipScreen(
             val intent = Intent(context, CardProcessActivity::class.java).apply {
                 putExtra(
                     "amount",
-                    StringUtils.notFormatAmount(inputTipViewModel.subtotal)
+                    StringUtils.notFormatAmount(inputTipViewModel.subtotal.toAmountMx())
                 )
                 putExtra("tipAmount", StringUtils.notFormatAmount(it))
                 putExtra("currency", CURRENCY_LABEL)

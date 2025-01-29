@@ -53,25 +53,14 @@ fun GenericOptionsUI(
             )
             Spacer(modifier = Modifier.width(16.dp))
             GenericOptionCard(
-                icon = painterResource(R.drawable.icon_people),
-                title = "Personas",
+                icon = painterResource(R.drawable.icon_edit),
+                title = "Monto",
                 onClick = {
-                    onClickPeople()
+                    onClickCustom()
                 },
                 modifier = Modifier.weight(1f)
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
-        GenericOptionCard(
-            icon = painterResource(R.drawable.icon_edit),
-            title = "Cantidad personalizada",
-            iscustom = true,
-            onClick = {
-                onClickCustom()
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-        )
     }
 }
 
@@ -91,7 +80,7 @@ fun GenericOptionCard(
             },
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         border = BorderStroke(1.dp, Color.LightGray)
     ) {
         Column(
