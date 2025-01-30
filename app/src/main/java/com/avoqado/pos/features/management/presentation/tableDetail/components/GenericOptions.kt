@@ -74,7 +74,6 @@ fun GenericOptionCard(
 ) {
     Card(
         modifier = modifier
-            .padding(8.dp)
             .clickable {
                 onClick()
             },

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.IconButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,9 +40,7 @@ fun ToolbarWithIcon(
                         .align(Alignment.Center)
                         .padding(end = if (showSecondIcon) 46.dp else 0.dp),
                     text = title,
-                    style = TextStyle(
-                        fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.Black
-                    )
+                    style = MaterialTheme.typography.titleSmall
                 )
             }
         },

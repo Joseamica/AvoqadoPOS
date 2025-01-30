@@ -116,7 +116,7 @@ private fun TableDetailContent(
             }
         } else {
             Column(
-                modifier = Modifier,
+                modifier = Modifier.padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
@@ -143,8 +143,7 @@ private fun TableDetailContent(
 
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 30.dp),
+                        .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     GenericOptionsUI(

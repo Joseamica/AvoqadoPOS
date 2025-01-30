@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.avoqado.pos.R
@@ -82,7 +83,9 @@ fun<T> SelectableItemRow(
                     text = label,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = baseColor
-                    )
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 
@@ -92,6 +95,7 @@ fun<T> SelectableItemRow(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.End,
                 ) {
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         it,
                         style = MaterialTheme.typography.bodyMedium.copy(

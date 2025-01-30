@@ -1,6 +1,7 @@
 package com.avoqado.pos.core.presentation.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -22,6 +23,12 @@ private val defaultTypography = Typography(
         fontSize = 32.sp,
         lineHeight = 36.sp,
         letterSpacing = 0.5.sp,
+    ),
+    titleSmall = TextStyle(
+        fontSize = 22.sp,
+        lineHeight = 24.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color.Black
     ),
     bodyLarge = TextStyle(
         fontWeight = FontWeight.Normal,
