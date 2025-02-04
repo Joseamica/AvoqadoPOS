@@ -70,10 +70,10 @@ class TableDetailViewModel(
                     venueId = venueId,
                     billId = result.table?.bill?.id ?: ""
                 )
+
                 _tableDetail.update {
                     _tableDetail.value.copy(
                         totalAmount = billDetail.total.toString().toAmountMXDouble(),
-                        totalPending = billDetail.amountLeft.toString().toAmountMXDouble(),
                         waiterName = billDetail.waiterName ?: "",
                         products = billDetail.products.groupBy { it.name }.map { pair ->
                             val item = pair.value.first()
@@ -85,6 +85,15 @@ class TableDetailViewModel(
                                 totalPrice = pair.value.sumOf { it.price.toAmountMXDouble() }
                             )
                         },
+                        paymentsDone = billDetail.payments?.map { payment ->
+                            com.avoqado.pos.features.management.presentation.tableDetail.model.Payment(
+                                amount = payment.amount.toAmountMXDouble(),
+                                products = payment.products?.map { it.name } ?: emptyList(),
+                                splitType = payment.splitType,
+                                equalPartsPayedFor = payment.equalPartsPayedFor,
+                                equalPartsPartySize = payment.equalPartsPartySize
+                            )
+                        } ?: emptyList()
                     )
                 }
 

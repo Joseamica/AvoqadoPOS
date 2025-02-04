@@ -8,9 +8,15 @@ data class TableDetail(
     val name: String = "",
     val waiterName: String = "",
     val products: List<Product> = emptyList(),
+    val paymentsDone: List<Payment> = emptyList(),
     val totalAmount: Double = 0.0,
-    val totalPending: Double = 0.0
 ) {
+    val totalPending: Double
+        get() = totalAmount - paymentsDone.sumOf { it.amount }
+
+    val totalPayed: Double
+        get() = paymentsDone.sumOf { it.amount }
+
     val formattedTotalPrice : String
         get() = StringUtils.notFormatAmount(totalAmount.toString()).toAmountMx()
 

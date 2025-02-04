@@ -1,6 +1,7 @@
 package com.avoqado.pos.data.network.models
 
 
+import com.avoqado.pos.features.management.data.network.models.PaymentItemNetwork
 import com.google.gson.annotations.SerializedName
 
 data class NetworkBillDetail(
@@ -23,7 +24,7 @@ data class NetworkBillDetail(
     @SerializedName("key")
     val key: String,
     @SerializedName("payments")
-    val payments: List<Any?>,
+    val payments: List<PaymentItemNetwork>?,
     @SerializedName("posOrder")
     val posOrder: Int,
     @SerializedName("products")
