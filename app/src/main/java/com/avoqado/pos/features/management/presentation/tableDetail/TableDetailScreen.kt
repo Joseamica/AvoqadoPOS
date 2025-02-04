@@ -171,7 +171,9 @@ private fun TableDetailContent(
                             onOpenPayByProduct()
                         },
                         onClickPeople = {},
-                        onClickCustom = {}
+                        onClickCustom = {
+                            onPayCustomAmount()
+                        }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
 

@@ -38,6 +38,7 @@ import com.avoqado.pos.core.presentation.theme.AppFont
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.theme.hintTextColor
 import com.avoqado.pos.core.presentation.theme.lightGrayNumberField
+import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -148,7 +149,7 @@ fun formatAmount(amount: Long): String {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Urovo9100DevicePreview
 @Composable
 fun PreviewKeyboardSheet() {
     AvoqadoTheme {

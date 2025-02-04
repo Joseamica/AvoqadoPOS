@@ -41,6 +41,7 @@ import com.avoqado.pos.core.presentation.model.IconType
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.theme.backgroundPrimaryColor
 import com.avoqado.pos.core.presentation.theme.buttonGrayColor
+import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.ui.screen.SimpleToolbar
 import com.avoqado.pos.ui.screen.ToolbarWithIcon
@@ -151,7 +152,8 @@ fun PaymentResultContent(
                             style = MaterialTheme.typography.titleMedium,
                         )
                         Spacer(Modifier.width(8.dp))
-                        Text("\$${state.totalAmount.toString().toAmountMx()}", style = MaterialTheme.typography.titleMedium)
+                        Text("\$${state.totalAmount.toString().toAmountMx()}",
+                            style = MaterialTheme.typography.titleMedium)
                     }
 
                     Spacer(Modifier.height(16.dp))
@@ -221,7 +223,7 @@ fun PaymentResultContent(
 
 }
 
-@Preview
+@Urovo9100DevicePreview
 @Composable
 fun PaymentResultContentPreview() {
     AvoqadoTheme {

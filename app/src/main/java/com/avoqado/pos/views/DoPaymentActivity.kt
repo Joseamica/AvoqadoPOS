@@ -21,6 +21,7 @@ import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.MainActivity
 import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.R
+import com.avoqado.pos.core.presentation.utils.toAmountMXDouble
 import com.avoqado.pos.customerId
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
@@ -119,9 +120,10 @@ class DoPaymentActivity : ComponentActivity() {
                     OperationFlowHolder.paymentRepository.setCachePaymentInfo(
                         paymentInfoResult = PaymentInfoResult(
                             paymentId = operationResponse.ticketId.toString(),
-                            tipAmount = operationResponse.amount.breakdownList?.firstOrNull { it.description == "TIP" }?.amount?.toDouble() ?: 0.0,
-                            subtotal = operationResponse.amount.breakdownList?.firstOrNull { it.description == "OPERATION" }?.amount?.toDouble() ?: 0.0,
-                            date = LocalDateTime.now()
+                            tipAmount = operationResponse.amount.breakdownList?.firstOrNull { breakdown ->  breakdown.description == "TIP" }?.amount?.toAmountMXDouble() ?: 0.0,
+                            subtotal = operationResponse.amount.breakdownList?.firstOrNull { breakdown ->  breakdown.description == "OPERATION" }?.amount?.toAmountMXDouble() ?: 0.0,
+                            date = LocalDateTime.now(),
+                            rootData = operationResponseJson
                         )
                     )
                     val intent = Intent(this, MainActivity::class.java)

@@ -1,5 +1,6 @@
 package com.avoqado.pos.features.payment.presentation.paymentResult
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.features.payment.domain.repository.PaymentRepository
@@ -17,10 +18,12 @@ class PaymentResultViewModel(
 
     init {
         paymentRepository.getCachePaymentInfo()?.let {
-            _paymentResult.update {
-                it.copy(
+            Log.d("PaymentResultViewModel", it.rootData)
+            _paymentResult.update { state ->
+                state
+                    .copy(
                     tipAmount = it.tipAmount,
-                    subtotalAmount = it.subtotalAmount,
+                    subtotalAmount = it.subtotal,
                 )
             }
         }

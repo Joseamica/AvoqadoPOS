@@ -6,5 +6,6 @@ data class PaymentCacheEntity (
     val tipAmount: Double,
     val subtotal: Double,
     val paymentId: String,
-    val date: LocalDateTime
+    val date: LocalDateTime,
+    val rootData: String
 )

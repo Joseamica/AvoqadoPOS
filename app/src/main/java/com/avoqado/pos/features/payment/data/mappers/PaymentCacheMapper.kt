@@ -9,6 +9,7 @@ fun PaymentCacheEntity.toDomain(): PaymentInfoResult {
         tipAmount = this.tipAmount,
         date = this.date,
         paymentId = this.paymentId,
+        rootData = this.rootData
     )
 }
 
@@ -18,5 +19,6 @@ fun PaymentInfoResult.toCache(): PaymentCacheEntity {
         tipAmount = this.tipAmount,
         date = this.date,
         paymentId = this.paymentId,
+        rootData = this.rootData
     )
 }
