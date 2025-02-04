@@ -80,4 +80,9 @@ sealed class MainDests : NavigationAction {
                 },
             )
     }
+
+    data object PaymentResult: MainDests(){
+        override val route: String
+            get() = "paymentResult"
+    }
 }

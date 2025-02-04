@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,8 +32,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.R
+import com.avoqado.pos.core.presentation.components.CustomKeyboard
+import com.avoqado.pos.core.presentation.components.KeyboardSheet
 import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
 import com.avoqado.pos.core.presentation.model.IconType
@@ -44,12 +48,14 @@ import com.avoqado.pos.views.CardProcessActivity
 import com.menta.android.core.model.OperationType
 import com.menta.android.core.utils.StringUtils
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputTipScreen(
     inputTipViewModel: InputTipViewModel
 ) {
-    val focusRequester = remember { FocusRequester() }
     val context = LocalContext.current
+    val showCustomKeyboard by inputTipViewModel.showCustomAmount.collectAsStateWithLifecycle()
+
     InputTipContent(
         onNavigateBack = {
             inputTipViewModel.navigateBack()
@@ -80,8 +86,24 @@ fun InputTipScreen(
             inputTipViewModel.navigateBack()
         },
         totalAmount = inputTipViewModel.subtotal.toDouble(),
-        waiterName = ""
+        waiterName = "",
+        onCustomAmount = {
+            inputTipViewModel.showCustomAmountKeyboard()
+        }
     )
+
+    if (showCustomKeyboard) {
+        KeyboardSheet(
+            onDismiss = {
+                inputTipViewModel.hideCustomAmountKeyboard()
+            },
+            onAmountEntered = { amount ->
+                inputTipViewModel.hideCustomAmountKeyboard()
+            },
+            title = "Propina"
+        )
+    }
+
 }
 
 @Composable
@@ -90,7 +112,8 @@ fun InputTipContent(
     totalAmount: Double,
     waiterName: String,
     onPayWithoutTip: () -> Unit,
-    onPayWithTip: (String) -> Unit
+    onPayWithTip: (String) -> Unit,
+    onCustomAmount: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -153,7 +176,7 @@ fun InputTipContent(
 
                 Button(
                     onClick = {
-
+                        onCustomAmount()
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -246,7 +269,8 @@ fun PreviewInputTipContent() {
             waiterName = "Juan",
             onNavigateBack = {},
             onPayWithoutTip = {},
-            onPayWithTip = {}
+            onPayWithTip = {},
+            onCustomAmount = {}
         )
     }
 }

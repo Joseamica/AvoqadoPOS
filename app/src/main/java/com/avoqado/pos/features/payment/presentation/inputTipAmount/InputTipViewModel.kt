@@ -11,6 +11,9 @@ import com.avoqado.pos.core.domain.usecase.ValidateAmountUseCase
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.ui.screen.TextFieldState
 import com.menta.android.core.utils.StringUtils
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 
 class InputTipViewModel(
     val subtotal: String,
@@ -19,40 +22,18 @@ class InputTipViewModel(
     private val navigationDispatcher: NavigationDispatcher
 ) : ViewModel() {
 
-    private val _textFieldAmount = mutableStateOf(
-        TextFieldState(
-            textFieldValue = TextFieldValue(
-                text = "0,00",
-                selection = TextRange("0.00".length)
-            ),
-            notifyErrorState = {}
-        )
-    )
-    val textFieldAmount: MutableState<TextFieldState> = _textFieldAmount
+    private val _showCustomAmount = MutableStateFlow(false)
+    val showCustomAmount: StateFlow<Boolean> = _showCustomAmount
 
-    fun formatAmount(value: String) {
-        val currentTextFieldAmount = _textFieldAmount.value
-        val amount = StringUtils.toStringThousandAmount(StringUtils.notFormatAmount(value))
-        _textFieldAmount.value = currentTextFieldAmount.copy(
-            textFieldValue = TextFieldValue(
-                text = amount,
-                selection = TextRange(amount.length)
-            )
-        )
+    fun showCustomAmountKeyboard(){
+        _showCustomAmount.update {
+            true
+        }
     }
 
-    fun isValidAmount(clearTip: Boolean = false): String? {
-        val tip = if (clearTip) "0" else _textFieldAmount.value.textFieldValue.text
-        val total = StringUtils.toDoubleAmount(tip)
-
-        return if (validateAmountUseCase.doExecute(total.toString())) {
-            total.toString().replace(",", "").replace(".", "")
-        } else {
-            if (clearTip) {
-                "0"
-            } else {
-                null
-            }
+    fun hideCustomAmountKeyboard(){
+        _showCustomAmount.update {
+            false
         }
     }
 

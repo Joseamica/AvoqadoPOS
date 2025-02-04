@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.avoqado.pos.MainActivity
 import com.avoqado.pos.OperationFlowHolder
+import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.ui.screen.SuccessScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -39,12 +39,12 @@ import com.avoqado.pos.screens.splash.SplashScreen
 import com.avoqado.pos.screens.splash.SplashViewModel
 import com.avoqado.pos.features.management.presentation.tableDetail.TableDetailScreen
 import com.avoqado.pos.features.management.presentation.tableDetail.TableDetailViewModel
-import com.avoqado.pos.ui.screen.TipSelectionScreen
+import com.avoqado.pos.features.payment.presentation.paymentResult.PaymentResultScreen
+import com.avoqado.pos.features.payment.presentation.paymentResult.PaymentResultViewModel
 import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
 import com.menta.android.restclient.core.Storage
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.onEach
 
 @Composable
 fun AppRouter(
@@ -251,6 +251,16 @@ fun AppRouter(
                         )
                     }
                     AuthorizationDialog(viewModel = viewModel, externalTokenData = ExternalTokenData(context), masterKeyData = MasterKeyData(context))
+                }
+
+                composableHolder(MainDests.PaymentResult) {
+                    val paymentResultViewModel = remember {
+                        PaymentResultViewModel(
+                            navigationDispatcher = navigationDispatcher,
+                            paymentRepository = OperationFlowHolder.paymentRepository
+                        )
+                    }
+                    PaymentResultScreen(paymentResultViewModel)
                 }
             }
         }

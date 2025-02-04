@@ -15,18 +15,36 @@ object AppFont {
         Font(R.font.sourcesanspro_bold, FontWeight.Bold),
         Font(R.font.sourcesanspro_semibold, FontWeight.SemiBold)
     )
+
+    val EffraFamily = FontFamily(
+        Font(R.font.effra_regular),
+        Font(R.font.effra_bold, FontWeight.Bold),
+        Font(R.font.effra_semibold, FontWeight.SemiBold)
+    )
 }
 // Set of Material typography styles to start with
 private val defaultTypography = Typography(
+    headlineLarge = TextStyle(
+        fontWeight = FontWeight.W500,
+        fontSize = 45.sp,
+        lineHeight = 48.sp,
+        letterSpacing = 0.5.sp
+    ),
     titleLarge = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 32.sp,
         lineHeight = 36.sp,
         letterSpacing = 0.5.sp,
     ),
-    titleSmall = TextStyle(
+    titleMedium = TextStyle(
         fontSize = 22.sp,
         lineHeight = 24.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color.Black
+    ),
+    titleSmall = TextStyle(
+        fontSize = 18.sp,
+        lineHeight = 21.sp,
         fontWeight = FontWeight.Bold,
         color = Color.Black
     ),

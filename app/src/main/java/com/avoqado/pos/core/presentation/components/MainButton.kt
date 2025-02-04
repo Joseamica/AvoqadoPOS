@@ -1,6 +1,7 @@
 package com.avoqado.pos.core.presentation.components
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -33,6 +34,7 @@ fun MainButton(
     shape: Shape = RoundedCornerShape(10.dp),
     onClickR: () -> Unit,
     drawableId: Int? = null,
+    contentPadding: PaddingValues = PaddingValues(vertical = 12.dp)
 ){
     Button(
         onClick = onClickR,
@@ -46,7 +48,7 @@ fun MainButton(
         modifier = modifier
     ) {
         Row (
-            modifier = Modifier.padding(vertical = 12.dp)
+            modifier = Modifier.padding(contentPadding)
         ) {
             Text(
                 text = text,

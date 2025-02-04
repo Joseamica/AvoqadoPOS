@@ -22,3 +22,7 @@ val unselectedItemColor = Color(0xFFA9A9A9)
 val selectedItemColor = Color.Black
 val chipContainerColor = Color(0xFFEBEDFA)
 val chipContentColor = Color(0xFF40478B)
+val lightGrayNumberField = Color(0xFFF6F6F9)
+val hintTextColor = Color(0xFF9DA3AF)
+val buttonGrayColor = Color(0xFF5E5E60)
+val backgroundPrimaryColor = Color(0xFFF5F5F9)

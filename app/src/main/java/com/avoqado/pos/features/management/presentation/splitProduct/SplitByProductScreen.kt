@@ -67,7 +67,7 @@ fun SplitByProductContent(
             onAction = {
                 onNavigateBack()
             },
-            showSecondIcon = true
+            showSecondIcon = false
         )
 
         Column(

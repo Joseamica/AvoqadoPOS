@@ -1,6 +1,7 @@
 package com.avoqado.pos
 
 
+import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
@@ -45,6 +46,13 @@ class MainActivity : ComponentActivity() {
                     context = this
                 )
             }
+        }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        intent.getStringExtra("navigate_to")?.let { destination ->
+            navigationDispatcher.navigateTo(destination)
         }
     }
 

@@ -18,9 +18,12 @@ import androidx.lifecycle.Observer
 import com.avoqado.pos.enums.Acquirer
 import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.CURRENCY_LABEL
+import com.avoqado.pos.MainActivity
 import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.R
 import com.avoqado.pos.customerId
+import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
 import com.avoqado.pos.merchantId
 import com.avoqado.pos.terminalId
 import com.avoqado.pos.ui.screen.ProcessingOperationScreen
@@ -45,6 +48,7 @@ import com.menta.android.printer.i9100.model.TextFormat
 import com.menta.android.printer.i9100.util.TOTAL_LABEL
 import com.menta.android.restclient.core.RestClientConfiguration
 import com.menta.android.restclient.core.Storage
+import java.time.LocalDateTime
 import java.util.Locale
 
 
@@ -114,8 +118,16 @@ class DoPaymentActivity : ComponentActivity() {
 
                     // Call printPayment here
                     printPayment(operationResponse)
-
-                    val intent = Intent(this, SuccessPaymentActivity::class.java)
+                    OperationFlowHolder.paymentRepository.setCachePaymentInfo(
+                        paymentInfoResult = PaymentInfoResult(
+                            paymentId = operationResponse.ticketId.toString(),
+                            tipAmount = operationResponse.amount.breakdownList?.firstOrNull { it.description == "TIP" }?.amount?.toDouble() ?: 0.0,
+                            subtotal = operationResponse.amount.breakdownList?.firstOrNull { it.description == "OPERATION" }?.amount?.toDouble() ?: 0.0,
+                            date = LocalDateTime.now()
+                        )
+                    )
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("navigate_to", MainDests.PaymentResult.route)
                     startActivity(intent)
                 } else {
                     Log.i(TAG, "Pago declinado!")

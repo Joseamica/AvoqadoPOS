@@ -49,153 +49,153 @@ import com.avoqado.pos.views.CardProcessActivity
 import com.menta.android.core.model.OperationType
 import com.menta.android.core.utils.StringUtils
 
-@Composable
-fun TipSelectionScreen(
-    inputTipViewModel: InputTipViewModel,
-) {
-    val focusRequester = remember { FocusRequester() }
-    val context = LocalContext.current
-
-    Scaffold(containerColor = Color.White) { paddingValues ->
-        ToolbarWithIcon(
-            title = "Queda por pagar: ${inputTipViewModel.subtotal}",
-            iconAction = IconAction(
-                flowStep = FlowStep.NAVIGATE_BACK,
-                context = context,
-                iconType = IconType.BACK
-            ),
-            onAction = {
-                inputTipViewModel.navigateBack()
-
-
-
-
-            },
-            showSecondIcon = true
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(Color.White)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = "Agregar propina",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Medium
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {},
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Custom amount",
-                    tint = Color.Gray
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                TextFieldAmount(
-                    modifier = Modifier
-                        .layoutId("textFieldAmount")
-                        .padding(horizontal = 20.dp)
-                        .pointerInput(Unit) {
-                            focusRequester.requestFocus()
-                        }
-                        .focusRequester(focusRequester),
-                    textFieldState = inputTipViewModel.textFieldAmount,
-                    onTextChange = {
-                        inputTipViewModel.formatAmount(it)
-                    },
-                    clickOnDone = {
-                        inputTipViewModel.isValidAmount(clearTip = false)?.let { amount ->
-                            val intent = Intent(context, CardProcessActivity::class.java)
-                            intent.putExtra(
-                                "amount",
-                                StringUtils.notFormatAmount(inputTipViewModel.subtotal)
-                            )
-                            intent.putExtra("tipAmount", amount)
-                            intent.putExtra("isCustomTip", "true")
-                            intent.putExtra("currency", CURRENCY_LABEL)
-                            intent.putExtra("operationType", OperationType.PAYMENT.name)
-                            context.startActivity(intent)
-                        }
-                    }
-                )
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                TipCard(percentage = "18%", amount = "+ $9", isPopular = false, onClickTip = {
-                    processTipAndNavigate(
-                        amount = inputTipViewModel.subtotal,
-                        context = context,
-                        0.18,
-                        CURRENCY_LABEL,
-                        OperationType.PAYMENT.name
-                    )
-                })
-                TipCard(percentage = "20%", amount = "+ $10", isPopular = true, onClickTip = {
-                    processTipAndNavigate(
-                        amount = inputTipViewModel.subtotal,
-                        context = context,
-                        0.20,
-                        CURRENCY_LABEL,
-                        OperationType.PAYMENT.name
-                    )
-
-                })
-                TipCard(percentage = "25%", amount = "+ $12.50", isPopular = false, onClickTip = {
-                    processTipAndNavigate(
-                        amount = inputTipViewModel.subtotal,
-                        context = context,
-                        0.25,
-                        CURRENCY_LABEL,
-                        OperationType.PAYMENT.name
-                    )
-                })
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = {
-                    inputTipViewModel.isValidAmount(clearTip = false)?.let { amount ->
-                        val intent = Intent(context, CardProcessActivity::class.java)
-                        intent.putExtra(
-                            "amount",
-                            StringUtils.notFormatAmount(inputTipViewModel.subtotal)
-                        )
-                        intent.putExtra("tipAmount", amount)
-                        intent.putExtra("currency", CURRENCY_LABEL)
-                        intent.putExtra("operationType", OperationType.PAYMENT.name)
-                        context.startActivity(intent)
-                    }
-                    inputTipViewModel.navigateBack()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
-            ) {
-                Text(
-                    text = "Sin propinas",
-                    color = Color.Black,
-                    fontSize = 16.sp
-                )
-            }
-        }
-    }
-}
+//@Composable
+//fun TipSelectionScreen(
+//    inputTipViewModel: InputTipViewModel,
+//) {
+//    val focusRequester = remember { FocusRequester() }
+//    val context = LocalContext.current
+//
+//    Scaffold(containerColor = Color.White) { paddingValues ->
+//        ToolbarWithIcon(
+//            title = "Queda por pagar: ${inputTipViewModel.subtotal}",
+//            iconAction = IconAction(
+//                flowStep = FlowStep.NAVIGATE_BACK,
+//                context = context,
+//                iconType = IconType.BACK
+//            ),
+//            onAction = {
+//                inputTipViewModel.navigateBack()
+//
+//
+//
+//
+//            },
+//            showSecondIcon = true
+//        )
+//        Column(
+//            modifier = Modifier
+//                .fillMaxSize()
+//                .padding(paddingValues)
+//                .background(Color.White)
+//                .padding(16.dp),
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ) {
+//            Spacer(modifier = Modifier.height(16.dp))
+//            Text(
+//                text = "Agregar propina",
+//                fontSize = 20.sp,
+//                fontWeight = FontWeight.Medium
+//            )
+//            Spacer(modifier = Modifier.height(16.dp))
+//
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .clickable {},
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Default.Edit,
+//                    contentDescription = "Custom amount",
+//                    tint = Color.Gray
+//                )
+//                Spacer(modifier = Modifier.width(8.dp))
+//                TextFieldAmount(
+//                    modifier = Modifier
+//                        .layoutId("textFieldAmount")
+//                        .padding(horizontal = 20.dp)
+//                        .pointerInput(Unit) {
+//                            focusRequester.requestFocus()
+//                        }
+//                        .focusRequester(focusRequester),
+//                    textFieldState = inputTipViewModel.textFieldAmount,
+//                    onTextChange = {
+//                        inputTipViewModel.formatAmount(it)
+//                    },
+//                    clickOnDone = {
+//                        inputTipViewModel.isValidAmount(clearTip = false)?.let { amount ->
+//                            val intent = Intent(context, CardProcessActivity::class.java)
+//                            intent.putExtra(
+//                                "amount",
+//                                StringUtils.notFormatAmount(inputTipViewModel.subtotal)
+//                            )
+//                            intent.putExtra("tipAmount", amount)
+//                            intent.putExtra("isCustomTip", "true")
+//                            intent.putExtra("currency", CURRENCY_LABEL)
+//                            intent.putExtra("operationType", OperationType.PAYMENT.name)
+//                            context.startActivity(intent)
+//                        }
+//                    }
+//                )
+//            }
+//            Spacer(modifier = Modifier.height(24.dp))
+//
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceBetween
+//            ) {
+//                TipCard(percentage = "18%", amount = "+ $9", isPopular = false, onClickTip = {
+//                    processTipAndNavigate(
+//                        amount = inputTipViewModel.subtotal,
+//                        context = context,
+//                        0.18,
+//                        CURRENCY_LABEL,
+//                        OperationType.PAYMENT.name
+//                    )
+//                })
+//                TipCard(percentage = "20%", amount = "+ $10", isPopular = true, onClickTip = {
+//                    processTipAndNavigate(
+//                        amount = inputTipViewModel.subtotal,
+//                        context = context,
+//                        0.20,
+//                        CURRENCY_LABEL,
+//                        OperationType.PAYMENT.name
+//                    )
+//
+//                })
+//                TipCard(percentage = "25%", amount = "+ $12.50", isPopular = false, onClickTip = {
+//                    processTipAndNavigate(
+//                        amount = inputTipViewModel.subtotal,
+//                        context = context,
+//                        0.25,
+//                        CURRENCY_LABEL,
+//                        OperationType.PAYMENT.name
+//                    )
+//                })
+//            }
+//            Spacer(modifier = Modifier.height(24.dp))
+//
+//            Button(
+//                onClick = {
+//                    inputTipViewModel.isValidAmount(clearTip = false)?.let { amount ->
+//                        val intent = Intent(context, CardProcessActivity::class.java)
+//                        intent.putExtra(
+//                            "amount",
+//                            StringUtils.notFormatAmount(inputTipViewModel.subtotal)
+//                        )
+//                        intent.putExtra("tipAmount", amount)
+//                        intent.putExtra("currency", CURRENCY_LABEL)
+//                        intent.putExtra("operationType", OperationType.PAYMENT.name)
+//                        context.startActivity(intent)
+//                    }
+//                    inputTipViewModel.navigateBack()
+//                },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(48.dp),
+//                shape = RoundedCornerShape(12.dp),
+//                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+//            ) {
+//                Text(
+//                    text = "Sin propinas",
+//                    color = Color.Black,
+//                    fontSize = 16.sp
+//                )
+//            }
+//        }
+//    }
+//}
 
 @Composable
 fun TipCard(percentage: String, amount: String, isPopular: Boolean, onClickTip: () -> Unit = {}) {
