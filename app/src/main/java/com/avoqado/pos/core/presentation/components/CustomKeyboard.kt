@@ -36,7 +36,7 @@ fun CustomKeyboard(
         listOf(1, 2, 3),
         listOf(4, 5, 6),
         listOf(7, 8, 9),
-        listOf(-3, 0, -3) // -1 for backspace, -2 for confirm, -3 for empty space
+        listOf(-3, 0, -4) // -1 for backspace, -2 for confirm, -3 to clear amount, -4 double zero, -99 for empty space
     )
 
    Row(
@@ -62,7 +62,17 @@ fun CustomKeyboard(
                                isConfirm = true,
                                onClick = onConfirmClick
                            )
-                           -3 -> Spacer(modifier = Modifier.size(80.dp))
+                           -3 -> KeyboardButton(
+                               modifier = Modifier.size(80.dp),
+                               text = "C",
+                               onClick = { onNumberClick(-3) }
+                           )
+                           -4 -> KeyboardButton(
+                               modifier = Modifier.size(80.dp),
+                               text = "00",
+                               onClick = { onNumberClick(-4) }
+                           )
+                           -99 -> Spacer(modifier = Modifier.size(80.dp))
                            else -> KeyboardButton(
                                modifier = Modifier.size(80.dp),
                                text = key.toString(),

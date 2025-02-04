@@ -6,6 +6,7 @@ import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import android.os.Bundle
+import android.util.DisplayMetrics
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -37,6 +38,7 @@ class MainActivity : ComponentActivity() {
         // Obtener el serial number y mostrarlo en el log
         val serialNumber = getDeviceSerialNumber()
         Log.d("MainActivity", "Device Serial Number: $serialNumber")
+        getScreenInfo()
 
         setContent {
             AvoqadoTheme {
@@ -67,20 +69,23 @@ class MainActivity : ComponentActivity() {
             Build.SERIAL ?: "Unknown"
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    fun getScreenInfo() {
+        val displayMetrics = DisplayMetrics()
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    DemoandroidsdkmentaTheme {
-        Greeting("Android")
+        @Suppress("DEPRECATION") // For older APIs
+        this.windowManager.defaultDisplay.getMetrics(displayMetrics)
+
+        val densityDpi = displayMetrics.densityDpi
+        val widthPx = displayMetrics.widthPixels
+        val heightPx = displayMetrics.heightPixels
+        val density = displayMetrics.density
+        val scaledDensity = displayMetrics.scaledDensity
+
+        Log.d("AvoqadoSettings","Screen Width: ${widthPx}px")
+        Log.d("AvoqadoSettings","Screen Height: ${heightPx}px")
+        Log.d("AvoqadoSettings","Density: $density")
+        Log.d("AvoqadoSettings","Density DPI: $densityDpi dpi")
+        Log.d("AvoqadoSettings","Scaled Density: $scaledDensity")
     }
 }

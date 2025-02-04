@@ -47,7 +47,8 @@ fun KeyboardSheet(
     ),
     onDismiss: () -> Unit,
     onAmountEntered: (Double) -> Unit,
-    title: String? = null
+    title: String? = null,
+    maxAmount: Long = 1500000 // Max $15000.00
 ) {
     var amount by remember { mutableStateOf(0L) } // Store amount in cents
     val formattedAmount = remember(amount) { formatAmount(amount) }
@@ -118,7 +119,11 @@ fun KeyboardSheet(
                 CustomKeyboard(
                     modifier = Modifier.fillMaxWidth(),
                     onNumberClick = { digit ->
-                        amount = (amount * 10 + digit).coerceAtMost(999999) // Max $9999.99
+                        when(digit) {
+                            -3 -> amount = 0 // Clear amount
+                            -4 -> amount *= 100 // Add two zeros
+                            else -> amount = (amount * 10 + digit).coerceAtMost(maxAmount)
+                        }
                     },
                     onBackspaceClick = {
                         amount /= 10 // Remove last digit

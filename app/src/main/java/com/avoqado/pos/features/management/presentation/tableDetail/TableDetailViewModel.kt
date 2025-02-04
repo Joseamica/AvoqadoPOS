@@ -41,8 +41,12 @@ class TableDetailViewModel(
         navigationDispatcher.navigateBack()
     }
 
-    fun togglePaymentPicker() {
-        _showPaymentPicker.value = _showPaymentPicker.value.not()
+    fun showPaymentPicker() {
+        _showPaymentPicker.value = true
+    }
+
+    fun hidePaymentPicker() {
+        _showPaymentPicker.value = false
     }
 
     private val _isLoading = MutableStateFlow(true)
@@ -124,4 +128,26 @@ class TableDetailViewModel(
             ),
         )
     }
+
+    fun payCustomPendingAmount(amount: Double){
+        if (amount <= _tableDetail.value.totalPending) {
+            navigationDispatcher.navigateWithArgs(
+                MainDests.InputTip,
+                NavigationArg.StringArg(
+                    MainDests.InputTip.ARG_SUBTOTAL,
+                    amount.toString()
+                ),
+                NavigationArg.StringArg(
+                    MainDests.InputTip.ARG_WAITER,
+                    _tableDetail.value.waiterName
+                ),
+            )
+        } else {
+            snackbarDelegate.showSnackbar(
+                message = "El monto ingresado es mayor al total pendiente"
+            )
+        }
+
+    }
+
 }

@@ -99,6 +99,19 @@ fun InputTipScreen(
             },
             onAmountEntered = { amount ->
                 inputTipViewModel.hideCustomAmountKeyboard()
+                if (amount > 0) {
+                    val intent = Intent(context, CardProcessActivity::class.java).apply {
+                        putExtra(
+                            "amount",
+                            StringUtils.notFormatAmount(inputTipViewModel.subtotal.toAmountMx())
+                        )
+                        putExtra("tipAmount", StringUtils.notFormatAmount(amount.toString().toAmountMx()))
+                        putExtra("currency", CURRENCY_LABEL)
+                        putExtra("operationType", OperationType.PAYMENT.name)
+                    }
+                    context.startActivity(intent)
+                    inputTipViewModel.navigateBack()
+                }
             },
             title = "Propina"
         )

@@ -27,6 +27,7 @@ import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.domain.usecase.ValidateAmountUseCase
 import com.avoqado.pos.data.local.SessionManager
 import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.features.management.presentation.navigation.managementNavigation
 import com.avoqado.pos.features.management.presentation.splitProduct.SplitByProductScreen
 import com.avoqado.pos.features.management.presentation.splitProduct.SplitByProductViewModel
 import com.avoqado.pos.screens.authorization.AuthorizationDialog
@@ -39,6 +40,7 @@ import com.avoqado.pos.screens.splash.SplashScreen
 import com.avoqado.pos.screens.splash.SplashViewModel
 import com.avoqado.pos.features.management.presentation.tableDetail.TableDetailScreen
 import com.avoqado.pos.features.management.presentation.tableDetail.TableDetailViewModel
+import com.avoqado.pos.features.payment.presentation.navigation.paymentNavigation
 import com.avoqado.pos.features.payment.presentation.paymentResult.PaymentResultScreen
 import com.avoqado.pos.features.payment.presentation.paymentResult.PaymentResultViewModel
 import com.menta.android.core.viewmodel.ExternalTokenData
@@ -187,62 +189,6 @@ fun AppRouter(
 
                 }
 
-                composableHolder(MainDests.Tables) {
-                    val homeViewModel = remember {
-                        HomeViewModel(
-                            navigationDispatcher = navigationDispatcher,
-                            sessionManager = SessionManager(context)
-                        )
-                    }
-                    HomeScreen(
-                        homeViewModel = homeViewModel
-                    )
-                }
-
-                composableHolder(MainDests.TableDetail) {
-                    val tableDetailViewModel = remember {
-                        TableDetailViewModel(
-                            navigationDispatcher = navigationDispatcher,
-                            snackbarDelegate = snackbarDelegate,
-                            tableNumber = it.arguments?.getString(MainDests.TableDetail.ARG_TABLE_ID) ?: "",
-                            venueId = it.arguments?.getString(MainDests.TableDetail.ARG_VENUE_ID) ?: "",
-                            managementRepository = OperationFlowHolder.managementRepository
-                        )
-                    }
-
-                    TableDetailScreen(
-                        tableDetailViewModel = tableDetailViewModel
-                    )
-                }
-
-                composableHolder(MainDests.SplitByProduct) {
-                    val splitByProductViewModel = remember {
-                        SplitByProductViewModel(
-                            navigationDispatcher = navigationDispatcher,
-                            managementRepository = OperationFlowHolder.managementRepository
-                        )
-                    }
-
-                    SplitByProductScreen(
-                        splitByProductViewModel
-                    )
-                }
-
-                composableHolder(MainDests.InputTip) {
-                    val subtotal = it.arguments?.getString(MainDests.InputTip.ARG_SUBTOTAL) ?: "0.00"
-                    val waiterName = it.arguments?.getString(MainDests.InputTip.ARG_WAITER) ?: ""
-                    val inputTipViewModel = remember {
-                        InputTipViewModel(
-                            subtotal = subtotal,
-                            waiterName = waiterName,
-                            navigationDispatcher = navigationDispatcher,
-                            validateAmountUseCase = ValidateAmountUseCase()
-                        )
-                    }
-
-                    InputTipScreen(inputTipViewModel = inputTipViewModel)
-                }
-
                 dialogHolder(MainDests.Authorization) {
                     val viewModel = remember {
                         AuthorizationViewModel(
@@ -253,15 +199,13 @@ fun AppRouter(
                     AuthorizationDialog(viewModel = viewModel, externalTokenData = ExternalTokenData(context), masterKeyData = MasterKeyData(context))
                 }
 
-                composableHolder(MainDests.PaymentResult) {
-                    val paymentResultViewModel = remember {
-                        PaymentResultViewModel(
-                            navigationDispatcher = navigationDispatcher,
-                            paymentRepository = OperationFlowHolder.paymentRepository
-                        )
-                    }
-                    PaymentResultScreen(paymentResultViewModel)
-                }
+                managementNavigation(
+                    navigationDispatcher = navigationDispatcher,
+                    context = context,
+                    snackbarDelegate = snackbarDelegate
+                )
+
+                paymentNavigation(navigationDispatcher)
             }
         }
     )

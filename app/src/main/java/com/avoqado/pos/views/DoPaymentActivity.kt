@@ -116,8 +116,6 @@ class DoPaymentActivity : ComponentActivity() {
                     Log.i(TAG, "PaymentId: ${operationResponse.id}")
                     Log.i(TAG, "OperationNumber: ${operationResponse.ticketId}")
 
-                    // Call printPayment here
-                    printPayment(operationResponse)
                     OperationFlowHolder.paymentRepository.setCachePaymentInfo(
                         paymentInfoResult = PaymentInfoResult(
                             paymentId = operationResponse.ticketId.toString(),
@@ -127,6 +125,7 @@ class DoPaymentActivity : ComponentActivity() {
                         )
                     )
                     val intent = Intent(this, MainActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                     intent.putExtra("navigate_to", MainDests.PaymentResult.route)
                     startActivity(intent)
                 } else {
@@ -158,14 +157,6 @@ class DoPaymentActivity : ComponentActivity() {
                     TextFormat(align = Align.CENTER, bold = false),
                     "Guanajuato 115, Roma Nte., Cuauhtémoc"
                 )
-//                devicePrintImpl.addLine(
-//                    TextFormat(align = Align.CENTER, bold = false),
-//                    "DNI del comercio"
-//                )
-//                devicePrintImpl.addLine(
-//                    TextFormat(align = Align.CENTER, bold = false),
-//                    "CUIT del comercio"
-//                )
 
                 devicePrintImpl.addLinebreak(1)
                 devicePrintImpl.addLine(

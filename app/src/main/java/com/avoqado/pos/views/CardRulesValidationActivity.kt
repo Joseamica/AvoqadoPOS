@@ -75,27 +75,11 @@ class CardRulesValidationActivity : ComponentActivity() {
                 binValidationData.setCardType(cardType)
                 binValidationData.setIsInternational(it.isInternational ?: false)
 
-                when (cardType) {
-                    CardType.CREDIT.name -> {
-                        Log.i(TAG, "Mostrar pantalla de cuotas disponibles")
-                        val intent = Intent(this, InstallmentsActivity::class.java).apply {
-                            putParcelableArrayListExtra(
-                                "installment_list",
-                                ArrayList(it.installments.installments)
-                            )
-                        }
-                        startActivity(intent)
-                        finish()
-                    }
-
-                    else -> { //Debit y Prepaid
-                        operationFlow!!.installments = "01"
-                        Log.i(TAG, "Ir directo al pago")
-                        val intent = Intent(this, DoPaymentActivity::class.java)
-                        startActivity(intent)
-                        finish()
-                    }
-                }
+                operationFlow!!.installments = "01"
+                Log.i(TAG, "Ir directo al pago")
+                val intent = Intent(this, DoPaymentActivity::class.java)
+                startActivity(intent)
+                finish()
 
             } else {
                 Log.i(TAG, "Bin no encontrado")

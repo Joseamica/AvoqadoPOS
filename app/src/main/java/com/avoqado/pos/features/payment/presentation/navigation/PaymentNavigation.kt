@@ -1,0 +1,40 @@
+package com.avoqado.pos.features.payment.presentation.navigation
+
+import androidx.compose.runtime.remember
+import androidx.navigation.NavGraphBuilder
+import com.avoqado.pos.OperationFlowHolder
+import com.avoqado.pos.core.domain.usecase.ValidateAmountUseCase
+import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
+import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.features.payment.presentation.inputTipAmount.InputTipScreen
+import com.avoqado.pos.features.payment.presentation.inputTipAmount.InputTipViewModel
+import com.avoqado.pos.features.payment.presentation.paymentResult.PaymentResultScreen
+import com.avoqado.pos.features.payment.presentation.paymentResult.PaymentResultViewModel
+import com.avoqado.pos.router.composableHolder
+
+fun NavGraphBuilder.paymentNavigation(navigationDispatcher: NavigationDispatcher) {
+    composableHolder(MainDests.InputTip) {
+        val subtotal = it.arguments?.getString(MainDests.InputTip.ARG_SUBTOTAL) ?: "0.00"
+        val waiterName = it.arguments?.getString(MainDests.InputTip.ARG_WAITER) ?: ""
+        val inputTipViewModel = remember {
+            InputTipViewModel(
+                subtotal = subtotal,
+                waiterName = waiterName,
+                navigationDispatcher = navigationDispatcher,
+                validateAmountUseCase = ValidateAmountUseCase()
+            )
+        }
+
+        InputTipScreen(inputTipViewModel = inputTipViewModel)
+    }
+
+    composableHolder(MainDests.PaymentResult) {
+        val paymentResultViewModel = remember {
+            PaymentResultViewModel(
+                navigationDispatcher = navigationDispatcher,
+                paymentRepository = OperationFlowHolder.paymentRepository
+            )
+        }
+        PaymentResultScreen(paymentResultViewModel)
+    }
+}

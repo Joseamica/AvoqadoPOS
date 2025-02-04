@@ -26,6 +26,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.avoqado.pos.core.presentation.components.KeyboardSheet
 import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
 import com.avoqado.pos.core.presentation.model.IconType
@@ -45,6 +46,7 @@ fun TableDetailScreen(
 ) {
     val tableDetails by tableDetailViewModel.tableDetail.collectAsStateWithLifecycle()
     val isLoading by tableDetailViewModel.isLoading.collectAsStateWithLifecycle()
+    val showCustomAmount by tableDetailViewModel.showPaymentPicker.collectAsStateWithLifecycle()
     var showModalSheet by rememberSaveable { mutableStateOf(false) }
 
     ObserverLifecycleEvents(
@@ -67,6 +69,9 @@ fun TableDetailScreen(
         },
         onShowBillProducts = {
             showModalSheet = true
+        },
+        onPayCustomAmount = {
+            tableDetailViewModel.showPaymentPicker()
         }
     )
 
@@ -74,6 +79,19 @@ fun TableDetailScreen(
         ProductListSheet(
             onDismissRequest = { showModalSheet = false },
             products = tableDetails.products
+        )
+    }
+
+    if (showCustomAmount){
+        KeyboardSheet(
+            title = "Cantidad personalizada",
+            onDismiss = {
+                tableDetailViewModel.hidePaymentPicker()
+            },
+            onAmountEntered = { amount ->
+                tableDetailViewModel.hidePaymentPicker()
+                tableDetailViewModel.payCustomPendingAmount(amount)
+            }
         )
     }
 }
@@ -85,7 +103,8 @@ private fun TableDetailContent(
     isLoading: Boolean,
     onTogglePaymentSheet: () -> Unit,
     onShowBillProducts: () -> Unit,
-    onOpenPayByProduct: () -> Unit
+    onOpenPayByProduct: () -> Unit,
+    onPayCustomAmount: () -> Unit
 ){
     val context = LocalContext.current
     Column(
@@ -184,7 +203,9 @@ fun AmountDisplayPreview() {
             onTogglePaymentSheet = {},
             onShowBillProducts = {},
             onOpenPayByProduct = {},
+            onPayCustomAmount = {},
             tableDetails = TableDetail(
+                name = "Mesa 1",
                 totalPending = 777.0
             )
         )

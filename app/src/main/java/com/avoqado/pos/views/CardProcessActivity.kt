@@ -79,7 +79,10 @@ class CardProcessActivity : ComponentActivity() {
             val total = clearAmount.toInt() + clearTip.toInt()
             val formattedAmount = total.toString().toAmountMx()
             val currencySymbol = "$CURRENCY_LABEL"
-            CardReaderScreen(formattedAmount, currencySymbol)
+            CardReaderScreen(formattedAmount, currencySymbol, onNavigateBack = {
+                cardProcessData.stopReader()
+                finish()
+            })
             cardReader(clearAmount, clearTip)
         }
     }

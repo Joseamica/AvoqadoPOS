@@ -52,7 +52,7 @@ fun ToolbarWithIcon(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .padding(
-                            end = if (showSecondIcon) 46.dp else 0.dp
+                            end = if (showSecondIcon) 0.dp else 46.dp
                         ),
                     text = title,
                     style = MaterialTheme.typography.titleSmall
