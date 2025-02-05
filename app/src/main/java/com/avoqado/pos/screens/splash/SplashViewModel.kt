@@ -4,11 +4,10 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavOptions
-import androidx.navigation.navOptions
 import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
-import com.avoqado.pos.data.local.SessionManager
-import com.avoqado.pos.data.network.AvoqadoAPI
+import com.avoqado.pos.core.data.local.SessionManager
+import com.avoqado.pos.core.data.network.AvoqadoAPI
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.views.InitActivity.Companion.TAG
 import com.menta.android.keys.admin.core.response.keys.SecretsV2

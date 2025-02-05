@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.R
+import com.avoqado.pos.core.presentation.components.DashedDivider
 import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
 import com.avoqado.pos.core.presentation.model.IconType
@@ -83,20 +85,24 @@ fun PaymentResultContent(
                 .weight(1f)
         ) {
 
-            SimpleToolbar(
-                title = "Nuevo pago",
-                iconAction = IconAction(
-                    iconType = IconType.CANCEL,
-                    flowStep = FlowStep.NAVIGATE_BACK,
-                    context = context
-                ),
-                onAction = {
-                    onGoToHome()
-                },
-                onActionSecond = {
-                    onNewPayment()
-                }
-            )
+            Box (
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
+            ){
+                SimpleToolbar(
+                    title = "Nuevo pago",
+                    iconAction = IconAction(
+                        iconType = IconType.CANCEL,
+                        flowStep = FlowStep.NAVIGATE_BACK,
+                        context = context
+                    ),
+                    onAction = {
+                        onGoToHome()
+                    },
+                    onActionSecond = {
+                        onNewPayment()
+                    }
+                )
+            }
 
             Box(
                 modifier = Modifier.padding(
@@ -141,7 +147,11 @@ fun PaymentResultContent(
                         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
                     )
 
-                    Spacer(Modifier.height(40.dp))
+                    Spacer(Modifier.height(20.dp))
+
+                    DashedDivider()
+
+                    Spacer(Modifier.height(24.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),

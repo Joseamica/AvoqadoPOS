@@ -1,25 +1,25 @@
 package com.avoqado.pos.features.management.presentation.tableDetail
 
 import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.presentation.utils.toAmountMXDouble
-import com.avoqado.pos.core.presentation.utils.toAmountMx
-import com.avoqado.pos.data.network.AvoqadoAPI
+import com.avoqado.pos.core.data.network.AvoqadoAPI
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.domain.ManagementRepository
+import com.avoqado.pos.features.management.domain.usecases.ListenTableAction
+import com.avoqado.pos.features.management.domain.usecases.ListenTableEventsUseCase
 import com.avoqado.pos.features.management.presentation.tableDetail.model.Product
 import com.avoqado.pos.features.management.presentation.tableDetail.model.TableDetail
 import com.avoqado.pos.features.management.presentation.tableDetail.model.toDomain
-import com.menta.android.core.utils.StringUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -29,7 +29,8 @@ class TableDetailViewModel(
     private val venueId: String="",
     private val navigationDispatcher: NavigationDispatcher,
     private val snackbarDelegate: SnackbarDelegate,
-    private val managementRepository: ManagementRepository
+    private val managementRepository: ManagementRepository,
+    private val listenTableEventsUseCase: ListenTableEventsUseCase
 ) : ViewModel() {
     private val _tableDetail = MutableStateFlow<TableDetail>(TableDetail())
     val tableDetail: StateFlow<TableDetail> = _tableDetail.asStateFlow()
@@ -51,6 +52,27 @@ class TableDetailViewModel(
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    fun startListeningUpdates(){
+        viewModelScope.launch (Dispatchers.IO) {
+            listenTableEventsUseCase.invoke(
+                ListenTableAction.Connect(
+                    venueId = venueId,
+                    tableId = tableNumber
+                )
+            ).collectLatest {
+                fetchTableDetail()
+            }
+        }
+    }
+
+    fun stopListeningUpdates(){
+        viewModelScope.launch (Dispatchers.IO) {
+            listenTableEventsUseCase.invoke(
+                ListenTableAction.Disconnect
+            )
+        }
+    }
 
     fun fetchTableDetail() {
         viewModelScope.launch(Dispatchers.IO) {

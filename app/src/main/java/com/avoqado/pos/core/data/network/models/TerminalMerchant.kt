@@ -1,4 +1,4 @@
-package com.avoqado.pos.data.network.models
+package com.avoqado.pos.core.data.network.models
 
 import com.google.gson.annotations.SerializedName
 

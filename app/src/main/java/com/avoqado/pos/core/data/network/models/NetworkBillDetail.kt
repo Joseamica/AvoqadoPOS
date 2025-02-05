@@ -1,41 +1,54 @@
-package com.avoqado.pos.data.network.models
+package com.avoqado.pos.core.data.network.models
 
 
+import com.avoqado.pos.features.management.data.network.models.PaymentItemNetwork
 import com.google.gson.annotations.SerializedName
 
-data class NetworkBill(
+data class NetworkBillDetail(
+    @SerializedName("amount_left")
+    val amountLeft: Int,
     @SerializedName("billName")
     val billName: String?,
     @SerializedName("createdAt")
-    val createdAt: String?,
+    val createdAt: String,
+    @SerializedName("equalParts")
+    val equalParts: String?,
     @SerializedName("equalPartsId")
     val equalPartsId: String?,
     @SerializedName("folio")
-    val folio: String?,
+    val folio: String,
     @SerializedName("id")
-    val id: String?,
+    val id: String,
+    @SerializedName("isAdmin")
+    val isAdmin: Boolean,
     @SerializedName("key")
-    val key: String?,
+    val key: String,
+    @SerializedName("payments")
+    val payments: List<PaymentItemNetwork>?,
     @SerializedName("posOrder")
-    val posOrder: Int?,
+    val posOrder: Int,
+    @SerializedName("products")
+    val products: List<Product>,
     @SerializedName("qrCode")
     val qrCode: String?,
     @SerializedName("splitFromPos")
-    val splitFromPos: Boolean?,
+    val splitFromPos: Boolean,
     @SerializedName("splitType")
     val splitType: String?,
     @SerializedName("status")
-    val status: String?,
+    val status: String,
     @SerializedName("tableNumber")
-    val tableNumber: Int?,
+    val tableNumber: Int,
     @SerializedName("total")
-    val total: String?,
+    val total: Int,
     @SerializedName("updatedAt")
-    val updatedAt: String?,
+    val updatedAt: String,
     @SerializedName("usertableId")
     val usertableId: String?,
+    @SerializedName("venue")
+    val venue: Venue,
     @SerializedName("venueId")
-    val venueId: String?,
+    val venueId: String,
     @SerializedName("waiterId")
     val waiterId: String?,
     @SerializedName("waiterName")

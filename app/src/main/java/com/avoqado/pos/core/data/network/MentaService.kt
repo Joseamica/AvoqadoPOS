@@ -1,6 +1,6 @@
-package com.avoqado.pos.data.network
+package com.avoqado.pos.core.data.network
 
-import com.avoqado.pos.data.network.models.PagedTerminals
+import com.avoqado.pos.core.data.network.models.PagedTerminals
 import retrofit2.http.GET
 import retrofit2.http.Header
 

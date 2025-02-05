@@ -1,75 +1,77 @@
-package com.avoqado.pos.data.network.models
+package com.avoqado.pos.core.data.network.models
 
 
 import com.google.gson.annotations.SerializedName
 
-data class Venue(
+data class NetworkVenue(
     @SerializedName("address")
-    val address: String,
+    val address: String?,
     @SerializedName("askNameOrdering")
-    val askNameOrdering: Boolean,
+    val askNameOrdering: Boolean?,
     @SerializedName("chainId")
-    val chainId: String,
+    val chainId: String?,
     @SerializedName("city")
-    val city: String,
+    val city: String?,
     @SerializedName("colorsId")
     val colorsId: String?,
     @SerializedName("configurationId")
-    val configurationId: String,
+    val configurationId: String?,
     @SerializedName("country")
     val country: String?,
     @SerializedName("createdAt")
-    val createdAt: String,
+    val createdAt: String?,
     @SerializedName("cuisine")
-    val cuisine: String,
+    val cuisine: String?,
     @SerializedName("dynamicMenu")
-    val dynamicMenu: Boolean,
+    val dynamicMenu: Boolean?,
     @SerializedName("email")
-    val email: String,
+    val email: String?,
     @SerializedName("googleBusinessId")
-    val googleBusinessId: String,
+    val googleBusinessId: String?,
     @SerializedName("id")
-    val id: String,
+    val id: String?,
     @SerializedName("image")
-    val image: String,
+    val image: String?,
     @SerializedName("instagram")
-    val instagram: String,
+    val instagram: String?,
     @SerializedName("language")
-    val language: String,
+    val language: String?,
     @SerializedName("logo")
-    val logo: String,
+    val logo: String?,
     @SerializedName("name")
-    val name: String,
+    val name: String?,
     @SerializedName("paymentMethods")
-    val paymentMethods: List<String>,
+    val paymentMethods: List<String?>?,
     @SerializedName("phone")
     val phone: String?,
     @SerializedName("posName")
-    val posName: String,
+    val posName: String?,
     @SerializedName("specialPayment")
-    val specialPayment: Boolean,
+    val specialPayment: Boolean?,
     @SerializedName("specialPaymentRef")
-    val specialPaymentRef: String,
+    val specialPaymentRef: String?,
     @SerializedName("stripeAccountId")
-    val stripeAccountId: String,
+    val stripeAccountId: String?,
+    @SerializedName("tables")
+    val tables: List<NetworkTable?>?,
     @SerializedName("tipPercentage1")
-    val tipPercentage1: String,
+    val tipPercentage1: String?,
     @SerializedName("tipPercentage2")
-    val tipPercentage2: String,
+    val tipPercentage2: String?,
     @SerializedName("tipPercentage3")
-    val tipPercentage3: String,
+    val tipPercentage3: String?,
     @SerializedName("tipPercentages")
-    val tipPercentages: List<Double>,
+    val tipPercentages: List<Double?>?,
     @SerializedName("type")
     val type: String?,
     @SerializedName("updatedAt")
-    val updatedAt: String,
+    val updatedAt: String?,
     @SerializedName("utc")
-    val utc: String,
+    val utc: String?,
     @SerializedName("website")
-    val website: String,
+    val website: String?,
     @SerializedName("wifiName")
-    val wifiName: String,
+    val wifiName: String?,
     @SerializedName("wifiPassword")
-    val wifiPassword: String
+    val wifiPassword: String?
 )

@@ -1,4 +1,4 @@
-package com.avoqado.pos.data.network
+package com.avoqado.pos.core.data.network
 
 import android.util.Log
 import okhttp3.OkHttpClient
@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 
 object AvoqadoAPI {
-    private val retrofit: Retrofit = Retrofit.Builder()
+    val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl("https://api.avoqado.io/v1/")
         .client(
             OkHttpClient.Builder()

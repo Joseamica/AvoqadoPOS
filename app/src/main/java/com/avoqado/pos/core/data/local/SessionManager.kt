@@ -1,7 +1,7 @@
-package com.avoqado.pos.data.local
+package com.avoqado.pos.core.data.local
 
 import android.content.Context
-import com.avoqado.pos.data.network.models.Terminal
+import com.avoqado.pos.core.data.network.models.Terminal
 import com.google.gson.Gson
 
 class SessionManager(

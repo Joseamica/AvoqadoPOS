@@ -61,7 +61,11 @@ fun TableDetailScreen(
     ObserverLifecycleEvents(
         onCreate = {
             tableDetailViewModel.fetchTableDetail()
+            tableDetailViewModel.startListeningUpdates()
         },
+        onDestroy = {
+            tableDetailViewModel.stopListeningUpdates()
+        }
     )
 
     TableDetailContent(
@@ -224,8 +228,8 @@ private fun TableDetailContent(
                                     ) {
                                         Text(
                                             text = when(paymentEntry.key) {
-                                                "PRODUCT" -> "Por productos"
-                                                "PARTY" -> {
+                                                "PERPRODUCT" -> "Por productos"
+                                                "EQUALPARTS" -> {
                                                     val partySize = paymentEntry.value.first().equalPartsPartySize
                                                     val partySizePayed = paymentEntry.value.sumOf { it.equalPartsPayedFor?.toInt() ?: 0 }
                                                     "$partySizePayed partes de $partySize"

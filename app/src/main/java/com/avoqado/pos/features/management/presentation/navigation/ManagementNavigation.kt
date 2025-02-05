@@ -6,7 +6,8 @@ import androidx.navigation.NavGraphBuilder
 import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
-import com.avoqado.pos.data.local.SessionManager
+import com.avoqado.pos.core.data.local.SessionManager
+import com.avoqado.pos.features.management.domain.usecases.ListenTableEventsUseCase
 import com.avoqado.pos.features.management.presentation.splitProduct.SplitByProductScreen
 import com.avoqado.pos.features.management.presentation.splitProduct.SplitByProductViewModel
 import com.avoqado.pos.features.management.presentation.tableDetail.TableDetailScreen
@@ -39,7 +40,8 @@ fun NavGraphBuilder.managementNavigation(
                 snackbarDelegate = snackbarDelegate,
                 tableNumber = it.arguments?.getString(ManagementDests.TableDetail.ARG_TABLE_ID) ?: "",
                 venueId = it.arguments?.getString(ManagementDests.TableDetail.ARG_VENUE_ID) ?: "",
-                managementRepository = OperationFlowHolder.managementRepository
+                managementRepository = OperationFlowHolder.managementRepository,
+                listenTableEventsUseCase = ListenTableEventsUseCase(OperationFlowHolder.managementRepository)
             )
         }
 

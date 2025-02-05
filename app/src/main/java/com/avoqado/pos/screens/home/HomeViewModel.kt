@@ -4,10 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
-import com.avoqado.pos.data.local.SessionManager
-import com.avoqado.pos.data.network.AvoqadoAPI
-import com.avoqado.pos.data.network.models.NetworkTable
-import com.avoqado.pos.data.network.models.NetworkVenue
+import com.avoqado.pos.core.data.local.SessionManager
+import com.avoqado.pos.core.data.network.AvoqadoAPI
+import com.avoqado.pos.core.data.network.models.NetworkTable
+import com.avoqado.pos.core.data.network.models.NetworkVenue
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.screens.home.models.Table
 import kotlinx.coroutines.Dispatchers

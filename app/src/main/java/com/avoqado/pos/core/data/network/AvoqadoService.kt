@@ -1,10 +1,10 @@
-package com.avoqado.pos.data.network
+package com.avoqado.pos.core.data.network
 
-import com.avoqado.pos.data.network.models.NetworkBillDetail
-import com.avoqado.pos.data.network.models.NetworkDetailTable
-import com.avoqado.pos.data.network.models.NetworkSimpleTable
-import com.avoqado.pos.data.network.models.NetworkVenue
-import com.avoqado.pos.data.network.models.TerminalMerchant
+import com.avoqado.pos.core.data.network.models.NetworkBillDetail
+import com.avoqado.pos.core.data.network.models.NetworkDetailTable
+import com.avoqado.pos.core.data.network.models.NetworkSimpleTable
+import com.avoqado.pos.core.data.network.models.NetworkVenue
+import com.avoqado.pos.core.data.network.models.TerminalMerchant
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -32,7 +32,7 @@ interface AvoqadoService {
         @Path("billURL") billURL: String
     ): NetworkBillDetail
 
-    @GET("tpv/{terminalCode}")
+    @GET("tpv/serial-number/{terminalCode}")
     suspend fun getTPV(
         @Path("terminalCode") terminalCode: String
     ) : TerminalMerchant

@@ -1,10 +1,10 @@
 package com.avoqado.pos.features.management.data.network.api
 
-import com.avoqado.pos.data.network.models.NetworkBillDetail
-import com.avoqado.pos.data.network.models.NetworkDetailTable
-import com.avoqado.pos.data.network.models.NetworkSimpleTable
-import com.avoqado.pos.data.network.models.NetworkVenue
-import com.avoqado.pos.data.network.models.TerminalMerchant
+import com.avoqado.pos.core.data.network.models.NetworkBillDetail
+import com.avoqado.pos.core.data.network.models.NetworkDetailTable
+import com.avoqado.pos.core.data.network.models.NetworkSimpleTable
+import com.avoqado.pos.core.data.network.models.NetworkVenue
+import com.avoqado.pos.core.data.network.models.TerminalMerchant
 import retrofit2.http.GET
 import retrofit2.http.Path
 

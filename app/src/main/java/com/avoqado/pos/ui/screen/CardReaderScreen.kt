@@ -31,11 +31,15 @@ import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
 import com.avoqado.pos.core.presentation.model.IconType
+import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
+import java.text.DecimalFormat
 
 @Composable
 fun CardReaderScreen(
-    amount: String, currency: String,
-     onNavigateBack: () -> Unit = {}
+    amount: String,
+    currency: String,
+    onNavigateBack: () -> Unit = {},
+    onPayInCash: () -> Unit = {}
 ) {
     val context = LocalContext.current
     Column(
@@ -78,7 +82,7 @@ fun CardReaderScreen(
 
                 // Texto de cantidad
                 androidx.compose.material3.Text(
-                    text = "\$$amount",
+                    text = "\$${DecimalFormat("#,###.00").format(amount.toDouble())}",
                     color = Color.Black,
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Bold
@@ -117,8 +121,8 @@ fun CardReaderScreen(
     }
 }
 
-@Preview
+@Urovo9100DevicePreview
 @Composable
 fun MyComposeScreenPreview() {
-    CardReaderScreen("1.00", "$") // Reemplaza con el nombre de tu compositor
+    CardReaderScreen("10000000.00", "$") // Reemplaza con el nombre de tu compositor
 }

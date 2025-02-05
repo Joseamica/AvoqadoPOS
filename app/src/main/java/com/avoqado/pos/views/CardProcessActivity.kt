@@ -9,12 +9,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.avoqado.pos.CURRENCY_LABEL
+import com.avoqado.pos.MainActivity
 import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.core.presentation.utils.toAmountMx
+import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.doTagListMxTest
 import com.avoqado.pos.doTagListTest
 import com.avoqado.pos.enums.Acquirer
 import com.avoqado.pos.enums.Country
+import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
 import com.avoqado.pos.ui.screen.CardReaderScreen
 import com.menta.android.common_cross.data.datasource.local.model.Transaction
 import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
@@ -37,6 +40,7 @@ import com.menta.android.core.utils.StringUtils
 import com.menta.android.core.utils.TIP
 import com.menta.android.core.viewmodel.CardProcessData
 import com.menta.android.emv.i9100.reader.util.InputMode
+import java.time.LocalDateTime
 
 class CardProcessActivity : ComponentActivity() {
 
@@ -79,12 +83,48 @@ class CardProcessActivity : ComponentActivity() {
             val total = clearAmount.toInt() + clearTip.toInt()
             val formattedAmount = total.toString().toAmountMx()
             val currencySymbol = "$CURRENCY_LABEL"
-            CardReaderScreen(formattedAmount, currencySymbol, onNavigateBack = {
-                finish()
-            })
+            CardReaderScreen(
+                formattedAmount,
+                currencySymbol,
+                onNavigateBack = {
+                    finish()
+                },
+                onPayInCash = {
+                    showPayInCashValidation()
+                }
+            )
             cardReader(clearAmount, clearTip)
         }
     }
+
+    private fun showPayInCashValidation() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Pago en efectivo")
+        builder.setMessage("¿Desea realizar el pago en efectivo?")
+        builder.setPositiveButton("Aceptar", { dialog, _ ->
+            dialog.dismiss()
+
+            OperationFlowHolder.paymentRepository.setCachePaymentInfo(
+                paymentInfoResult = PaymentInfoResult(
+                    paymentId = "CASH",
+                    tipAmount = tipAmount.toDoubleOrNull() ?: 0.0,
+                    subtotal = amount.toDoubleOrNull() ?: 0.0,
+                    date = LocalDateTime.now(),
+                    rootData = ""
+                )
+            )
+
+            val intent = Intent(this, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            intent.putExtra("navigate_to", MainDests.PaymentResult.route)
+            startActivity(intent)
+        })
+        builder.setNegativeButton("Cancelar", { dialog, _ ->
+            dialog.dismiss()
+        })
+        builder.create().show()
+    }
+
 
     private fun cardReader(amount: String, tipAmount: String) {
         if (operationType.isNotNull()) {

@@ -2,6 +2,7 @@ package com.avoqado.pos.features.payment.presentation.inputTipAmount
 
 import android.content.Intent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,6 +45,8 @@ import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.features.payment.presentation.inputTipAmount.components.TipItemCard
 import com.avoqado.pos.ui.screen.ToolbarWithIcon
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
+import com.avoqado.pos.core.presentation.theme.lightGrayNumberField
+import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 import com.avoqado.pos.views.CardProcessActivity
 import com.menta.android.core.model.OperationType
 import com.menta.android.core.utils.StringUtils
@@ -105,7 +108,10 @@ fun InputTipScreen(
                             "amount",
                             StringUtils.notFormatAmount(inputTipViewModel.subtotal.toAmountMx())
                         )
-                        putExtra("tipAmount", StringUtils.notFormatAmount(amount.toString().toAmountMx()))
+                        putExtra(
+                            "tipAmount",
+                            StringUtils.notFormatAmount(amount.toString().toAmountMx())
+                        )
                         putExtra("currency", CURRENCY_LABEL)
                         putExtra("operationType", OperationType.PAYMENT.name)
                     }
@@ -148,7 +154,9 @@ fun InputTipContent(
     }
 
     Column(
-        modifier = Modifier.fillMaxSize().background(Color.White)
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
     ) {
         ToolbarWithIcon(
             title = "\$${totalAmount.toString().toAmountMx()}",
@@ -193,14 +201,22 @@ fun InputTipContent(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp),
+                        .height(48.dp)
+                        .padding(horizontal = 16.dp)
+                        .border(
+                            width = 1.dp,
+                            color = lightGrayNumberField,
+                            shape = RoundedCornerShape(12.dp),
+                        ),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White
+                    )
                 ) {
-                    Row (
+                    Row(
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
-                    ){
+                    ) {
                         Icon(
                             painter = painterResource(R.drawable.icon_edit),
                             contentDescription = "",
@@ -218,9 +234,11 @@ fun InputTipContent(
                 Spacer(Modifier.height(16.dp))
 
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(
-                        horizontal = 16.dp
-                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = 16.dp
+                        ),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
                     TipItemCard(
@@ -273,7 +291,7 @@ fun InputTipContent(
     }
 }
 
-@Preview()
+@Urovo9100DevicePreview()
 @Composable
 fun PreviewInputTipContent() {
     AvoqadoTheme {

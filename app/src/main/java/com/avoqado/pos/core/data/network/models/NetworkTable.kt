@@ -1,9 +1,11 @@
-package com.avoqado.pos.data.network.models
+package com.avoqado.pos.core.data.network.models
 
 
 import com.google.gson.annotations.SerializedName
 
-data class NetworkSimpleTable(
+data class NetworkTable(
+    @SerializedName("bill")
+    val bill: NetworkBill?,
     @SerializedName("billId")
     val billId: String?,
     @SerializedName("count")
@@ -13,11 +15,11 @@ data class NetworkSimpleTable(
     @SerializedName("demo")
     val demo: Boolean?,
     @SerializedName("floorId")
-    val floorId: Any?,
+    val floorId: String?,
     @SerializedName("locationId")
-    val locationId: Any?,
+    val locationId: String?,
     @SerializedName("seats")
-    val seats: Any?,
+    val seats: String?,
     @SerializedName("status")
     val status: String?,
     @SerializedName("tableNumber")
