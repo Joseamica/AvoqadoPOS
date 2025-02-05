@@ -54,7 +54,8 @@ fun NavGraphBuilder.managementNavigation(
         val splitByProductViewModel = remember {
             SplitByProductViewModel(
                 navigationDispatcher = navigationDispatcher,
-                managementRepository = OperationFlowHolder.managementRepository
+                managementRepository = OperationFlowHolder.managementRepository,
+                paymentRepository = OperationFlowHolder.paymentRepository
             )
         }
 

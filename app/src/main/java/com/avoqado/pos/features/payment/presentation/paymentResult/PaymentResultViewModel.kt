@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.domain.models.PaymentStatus
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
+import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
 import com.avoqado.pos.features.payment.domain.repository.PaymentRepository
@@ -34,7 +35,6 @@ class PaymentResultViewModel(
                     .copy(
                         tipAmount = it.tipAmount,
                         subtotalAmount = it.subtotal,
-                        qrCode = "https://avoqado.io/receipt?token="
                     )
             }
 
@@ -56,7 +56,8 @@ class PaymentResultViewModel(
             _paymentResult.update { state ->
                 state
                     .copy(
-                        qrCode = "https://avoqado.io/receipt?token=${adquirer?.id ?: token}"
+                        qrCode = "https://avoqado.io/receipt?token=${adquirer?.id ?: token}",
+                        adquirer = adquirer
                     )
             }
 
@@ -67,8 +68,8 @@ class PaymentResultViewModel(
                 tpvId = terminal?.id ?: "",
                 splitType = info.splitType.value,
                 status = PaymentStatus.ACCEPTED.value,
-                amount = info.subtotal.toString().replace(".", "").toInt(),
-                tip = info.tipAmount.toString().replace(".", "").toInt(),
+                amount = info.subtotal.toString().toAmountMx().replace(".", "").toInt(),
+                tip = info.tipAmount.toString().toAmountMx().replace(".", "").toInt(),
                 billId = info.billId,
                 adquirer = adquirer,
                 token = token,

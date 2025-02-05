@@ -1,5 +1,6 @@
 package com.avoqado.pos.features.payment.presentation.paymentResult
 
+import android.os.RemoteException
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -35,6 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.components.DashedDivider
 import com.avoqado.pos.core.presentation.model.FlowStep
@@ -44,18 +46,30 @@ import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.theme.backgroundPrimaryColor
 import com.avoqado.pos.core.presentation.theme.buttonGrayColor
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
+import com.avoqado.pos.core.presentation.utils.getBitmap
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.ui.screen.SimpleToolbar
 import com.avoqado.pos.ui.screen.ToolbarWithIcon
 import com.lightspark.composeqr.QrCodeColors
 import com.lightspark.composeqr.QrCodeView
+import com.menta.android.printer.i9100.core.DevicePrintImpl
+import com.menta.android.printer.i9100.model.Align
+import com.menta.android.printer.i9100.model.TextFormat
+import com.menta.android.printer.i9100.util.TIP_LABEL
+import com.menta.android.printer.i9100.util.TOTAL_LABEL
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.Locale
 
 
 @Composable
 fun PaymentResultScreen(
-    viewModel: PaymentResultViewModel
+    viewModel: PaymentResultViewModel,
+    devicePrintImpl: DevicePrintImpl
 ){
     val state by viewModel.paymentResult.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     PaymentResultContent(
         state = state,
@@ -64,6 +78,85 @@ fun PaymentResultScreen(
         },
         onNewPayment = {
             viewModel.newPayment()
+        },
+        onPrintPayment = {
+            val scope = CoroutineScope(Dispatchers.IO)
+
+            scope.launch {
+                devicePrintImpl.addLine(
+                    TextFormat(align = Align.CENTER, bold = true, font = 1),
+                    "Madre Cafecito"
+                )
+                devicePrintImpl.addLine(
+                    TextFormat(align = Align.CENTER, bold = false),
+                    "Guanajuato 115, Roma Nte., Cuauhtémoc"
+                )
+
+                devicePrintImpl.addLinebreak(1)
+                devicePrintImpl.addLine(
+                    TextFormat(align = Align.CENTER, bold = true),
+                    "Pago con Tarjeta de Crédito"
+                )
+
+                devicePrintImpl.addLinebreak(1)
+                state.adquirer?.ticketId?.let {
+                    devicePrintImpl.addDoubleColumnText(
+                        TextFormat(),
+                        "Número de Operación",
+                        it.toString()
+                    )
+                }
+
+                state.adquirer?.capture?.card?.let {
+                    devicePrintImpl.addDoubleColumnText(
+                        TextFormat(),
+                        "Tarj: ${it.maskedPan}",
+                        it.brand ?: ""
+                    )
+                    devicePrintImpl.addDoubleColumnText(
+                        TextFormat(),
+                        "CONTACTLESS",
+                        ""
+                    )
+                }
+
+                devicePrintImpl.addLinebreak(1)
+
+                try {
+                    devicePrintImpl.addImage(
+                        context.getBitmap(
+                            R.drawable.line,
+                        )
+                    )
+                } catch (e: RemoteException) {
+                    e.printStackTrace()
+                }
+
+                devicePrintImpl.addDoubleColumnText(
+                    TextFormat(bold = true, font = 1),
+                    TOTAL_LABEL.uppercase(Locale.getDefault()),
+                    "%.2f".format(state.subtotalAmount)
+                )
+
+                devicePrintImpl.addDoubleColumnText(
+                    TextFormat(bold = true, font = 1),
+                    TIP_LABEL.uppercase(Locale.getDefault()),
+                    "%.2f".format(state.tipAmount)
+                )
+
+                devicePrintImpl.addDoubleColumnText(
+                    TextFormat(),
+                    CURRENCY_LABEL,
+                    CURRENCY_LABEL
+                )
+                devicePrintImpl.addLinebreak(1)
+
+                try {
+                    devicePrintImpl.startPrint()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
         }
     )
 }
@@ -72,7 +165,8 @@ fun PaymentResultScreen(
 fun PaymentResultContent(
     state: PaymentResultViewState,
     onGoToHome: () -> Unit = {},
-    onNewPayment: () -> Unit = {}
+    onNewPayment: () -> Unit = {},
+    onPrintPayment: () -> Unit = {}
 ) {
     val context = LocalContext.current
     Column(
@@ -213,9 +307,7 @@ fun PaymentResultContent(
         }
 
         Button(
-            onClick = {
-
-            },
+            onClick = onPrintPayment,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
