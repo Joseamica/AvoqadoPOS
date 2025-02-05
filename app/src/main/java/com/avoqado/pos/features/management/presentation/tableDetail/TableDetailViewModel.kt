@@ -3,11 +3,13 @@ package com.avoqado.pos.features.management.presentation.tableDetail
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.presentation.utils.toAmountMXDouble
 import com.avoqado.pos.core.data.network.AvoqadoAPI
+import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.domain.usecases.ListenTableAction
@@ -15,6 +17,7 @@ import com.avoqado.pos.features.management.domain.usecases.ListenTableEventsUseC
 import com.avoqado.pos.features.management.presentation.tableDetail.model.Product
 import com.avoqado.pos.features.management.presentation.tableDetail.model.TableDetail
 import com.avoqado.pos.features.management.presentation.tableDetail.model.toDomain
+import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +26,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import java.time.LocalDateTime
 
 class TableDetailViewModel(
     private val tableNumber: String="",
@@ -95,9 +99,10 @@ class TableDetailViewModel(
 
                 _tableDetail.update {
                     _tableDetail.value.copy(
+                        billId = result.table?.bill?.id ?: "",
                         totalAmount = billDetail.total.toString().toAmountMXDouble(),
                         waiterName = billDetail.waiterName ?: "",
-                        products = billDetail.products.groupBy { it.name }.map { pair ->
+                        products = billDetail.products.groupBy { it.id }.map { pair ->
                             val item = pair.value.first()
                             Product(
                                 id = item.name,
@@ -141,12 +146,40 @@ class TableDetailViewModel(
     }
 
     fun goToSplitBillByProduct(){
+        OperationFlowHolder.paymentRepository.setCachePaymentInfo(
+            PaymentInfoResult(
+                paymentId = "",
+                tipAmount = 0.0,
+                subtotal = 0.0,
+                rootData = "",
+                date = LocalDateTime.now(),
+                waiterName = _tableDetail.value.waiterName,
+                tableNumber = tableNumber,
+                venueId = venueId,
+                splitType = SplitType.PERPRODUCT,
+                billId = _tableDetail.value.billId
+            )
+        )
         navigationDispatcher.navigateWithArgs(
             MainDests.SplitByProduct
         )
     }
 
     fun payTotalPendingAmount(){
+        OperationFlowHolder.paymentRepository.setCachePaymentInfo(
+            PaymentInfoResult(
+                paymentId = "",
+                tipAmount = 0.0,
+                subtotal = _tableDetail.value.totalPending,
+                rootData = "",
+                date = LocalDateTime.now(),
+                waiterName = _tableDetail.value.waiterName,
+                tableNumber = tableNumber,
+                venueId = venueId,
+                splitType = SplitType.FULLPAYMENT,
+                billId = _tableDetail.value.billId
+            )
+        )
         navigationDispatcher.navigateWithArgs(
             MainDests.InputTip,
             NavigationArg.StringArg(
@@ -157,11 +190,29 @@ class TableDetailViewModel(
                 MainDests.InputTip.ARG_WAITER,
                 _tableDetail.value.waiterName
             ),
+            NavigationArg.StringArg(
+                MainDests.InputTip.ARG_SPLIT_TYPE,
+                SplitType.FULLPAYMENT.value
+            )
         )
     }
 
     fun payCustomPendingAmount(amount: Double){
         if (amount <= _tableDetail.value.totalPending) {
+            OperationFlowHolder.paymentRepository.setCachePaymentInfo(
+                PaymentInfoResult(
+                    paymentId = "",
+                    tipAmount = 0.0,
+                    subtotal = amount,
+                    rootData = "",
+                    date = LocalDateTime.now(),
+                    waiterName = _tableDetail.value.waiterName,
+                    tableNumber = tableNumber,
+                    venueId = venueId,
+                    splitType = SplitType.CUSTOMAMOUNT,
+                    billId = _tableDetail.value.billId
+                )
+            )
             navigationDispatcher.navigateWithArgs(
                 MainDests.InputTip,
                 NavigationArg.StringArg(
@@ -172,6 +223,10 @@ class TableDetailViewModel(
                     MainDests.InputTip.ARG_WAITER,
                     _tableDetail.value.waiterName
                 ),
+                NavigationArg.StringArg(
+                    MainDests.InputTip.ARG_SPLIT_TYPE,
+                    SplitType.CUSTOMAMOUNT.value
+                )
             )
         } else {
             snackbarDelegate.showSnackbar(

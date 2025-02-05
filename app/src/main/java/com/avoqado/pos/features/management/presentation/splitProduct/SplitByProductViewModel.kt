@@ -1,6 +1,7 @@
 package com.avoqado.pos.features.management.presentation.splitProduct
 
 import androidx.lifecycle.ViewModel
+import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.destinations.MainDests
@@ -8,6 +9,7 @@ import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.presentation.splitProduct.model.SplitByProductViewState
 import com.avoqado.pos.features.management.presentation.splitProduct.model.toUI
 import com.avoqado.pos.features.management.presentation.tableDetail.model.Product
+import com.avoqado.pos.features.payment.domain.repository.PaymentRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +17,8 @@ import kotlinx.coroutines.flow.update
 
 class SplitByProductViewModel constructor(
     private val navigationDispatcher: NavigationDispatcher,
-    private val managementRepository: ManagementRepository
+    private val managementRepository: ManagementRepository,
+    private val paymentRepository: PaymentRepository
 ): ViewModel() {
     private val _tableDetail = MutableStateFlow<SplitByProductViewState>(SplitByProductViewState())
     val tableDetail: StateFlow<SplitByProductViewState> = _tableDetail.asStateFlow()
@@ -45,6 +48,14 @@ class SplitByProductViewModel constructor(
     }
 
     fun navigateToPayment(){
+        paymentRepository.getCachePaymentInfo()?.let { info ->
+            paymentRepository.setCachePaymentInfo(
+                info.copy(
+                    products = _tableDetail.value.selectedProducts
+                )
+            )
+        }
+
         navigationDispatcher.navigateWithArgs(
             MainDests.InputTip,
             NavigationArg.StringArg(
@@ -54,6 +65,10 @@ class SplitByProductViewModel constructor(
             NavigationArg.StringArg(
                 MainDests.InputTip.ARG_WAITER,
                 _tableDetail.value.waiterName
+            ),
+            NavigationArg.StringArg(
+                MainDests.InputTip.ARG_SPLIT_TYPE,
+                SplitType.PERPRODUCT.value
             ),
         )
     }

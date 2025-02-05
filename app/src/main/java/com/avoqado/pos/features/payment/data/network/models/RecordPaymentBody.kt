@@ -48,6 +48,7 @@ data class RecordPaymentBody(
     @SerializedName("splitType") val splitType: String,
     @SerializedName("tpvId") val tpvId: String,
     @SerializedName("waiterName") val waiterName: String,
+    @SerializedName("paidProductsId") val paidProductsId: List<String>,
     @SerializedName("cardBrand") val cardBrand: String? = null,
     @SerializedName("last4") val last4: String? = null,
     @SerializedName("typeOfCard") val typeOfCard: String? = null,
@@ -55,5 +56,6 @@ data class RecordPaymentBody(
     @SerializedName("bank") val bank: String? = null,
     @SerializedName("mentaAuthorizationReference") val mentaAuthorizationReference: String? = null,
     @SerializedName("mentaOperationId") val mentaOperationId: String? = null,
-    @SerializedName("mentaTicketId") val mentaTicketId: String? = null
+    @SerializedName("mentaTicketId") val mentaTicketId: String? = null,
+    @SerializedName("token") val token: String? = null
 )

@@ -10,6 +10,7 @@ data class TableDetail(
     val products: List<Product> = emptyList(),
     val paymentsDone: List<Payment> = emptyList(),
     val totalAmount: Double = 0.0,
+    val billId: String = ""
 ) {
     val totalPending: Double
         get() = totalAmount - paymentsDone.sumOf { it.amount }

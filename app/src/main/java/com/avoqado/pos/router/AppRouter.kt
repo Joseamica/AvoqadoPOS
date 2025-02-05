@@ -193,7 +193,7 @@ fun AppRouter(
                     snackbarDelegate = snackbarDelegate
                 )
 
-                paymentNavigation(navigationDispatcher)
+                paymentNavigation(navigationDispatcher, sessionManager = SessionManager(context))
             }
         }
     )

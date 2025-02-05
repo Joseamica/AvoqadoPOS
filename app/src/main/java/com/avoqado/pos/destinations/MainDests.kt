@@ -64,9 +64,10 @@ sealed class MainDests : NavigationAction {
 
         const val ARG_SUBTOTAL = "arg_subtotal"
         const val ARG_WAITER = "arg_waiter"
+        const val ARG_SPLIT_TYPE = "arg_split_type"
 
         override val route: String
-            get() = "inputTip?$ARG_SUBTOTAL={$ARG_SUBTOTAL}&$ARG_WAITER={${ARG_WAITER}}"
+            get() = "inputTip?$ARG_SUBTOTAL={$ARG_SUBTOTAL}&$ARG_WAITER={${ARG_WAITER}}&$ARG_SPLIT_TYPE={${ARG_SPLIT_TYPE}}"
 
         override val arguments: List<NamedNavArgument>
             get() = listOf(
@@ -78,6 +79,10 @@ sealed class MainDests : NavigationAction {
                     type = NavType.StringType
                     nullable = false
                 },
+                navArgument(ARG_SPLIT_TYPE) {
+                    type = NavType.StringType
+                    nullable = false
+                }
             )
     }
 

@@ -6,6 +6,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.domain.usecase.ValidateAmountUseCase
 import com.avoqado.pos.destinations.MainDests
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.update
 class InputTipViewModel(
     val subtotal: String,
     val waiterName: String,
+    val splitType: SplitType,
     private val validateAmountUseCase: ValidateAmountUseCase,
     private val navigationDispatcher: NavigationDispatcher
 ) : ViewModel() {

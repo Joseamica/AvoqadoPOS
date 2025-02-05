@@ -11,6 +11,7 @@ import androidx.activity.enableEdgeToEdge
 import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.MainActivity
 import com.avoqado.pos.OperationFlowHolder
+import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.doTagListMxTest
@@ -61,6 +62,12 @@ class CardProcessActivity : ComponentActivity() {
     private val operationType: String by lazy {
         intent.getStringExtra("operationType").toString()
     }
+    private val splitType: SplitType by lazy {
+        SplitType.valueOf(intent.getStringExtra("splitType").toString())
+    }
+    private val waiterName: String by lazy {
+        intent.getStringExtra("waiterName").toString()
+    }
 
     private lateinit var transaction: Transaction
     private lateinit var cardProcessData: CardProcessData
@@ -104,15 +111,19 @@ class CardProcessActivity : ComponentActivity() {
         builder.setPositiveButton("Aceptar", { dialog, _ ->
             dialog.dismiss()
 
-            OperationFlowHolder.paymentRepository.setCachePaymentInfo(
-                paymentInfoResult = PaymentInfoResult(
-                    paymentId = "CASH",
-                    tipAmount = tipAmount.toDoubleOrNull() ?: 0.0,
-                    subtotal = amount.toDoubleOrNull() ?: 0.0,
-                    date = LocalDateTime.now(),
-                    rootData = ""
+            OperationFlowHolder.paymentRepository.getCachePaymentInfo()?.let { info ->
+                OperationFlowHolder.paymentRepository.setCachePaymentInfo(
+                    paymentInfoResult = info.copy(
+                        paymentId = "CASH",
+                        tipAmount = tipAmount.toDoubleOrNull() ?: 0.0,
+                        subtotal = amount.toDoubleOrNull() ?: 0.0,
+                        date = LocalDateTime.now(),
+                        waiterName = waiterName,
+                        splitType = splitType,
+                    )
                 )
-            )
+            }
+
 
             val intent = Intent(this, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -259,6 +270,8 @@ class CardProcessActivity : ComponentActivity() {
                     val bundle = Bundle().apply {
                         putString("bin", it)
                         putString("currency", currency)
+                        putString("splitType", splitType.value)
+                        putString("waiterName", waiterName)
                     }
                     val intent = Intent(this, CardRulesValidationActivity::class.java).apply {
                         putExtras(bundle)

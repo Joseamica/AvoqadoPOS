@@ -128,4 +128,6 @@ dependencies {
     implementation ("androidx.compose.runtime:runtime-livedata:1.7.6")
     implementation("io.socket:socket.io-client:2.1.0") // Use latest version
 
+    implementation("com.lightspark:compose-qr-code:1.0.1")
+
 }

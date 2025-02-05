@@ -1,5 +1,6 @@
 package com.avoqado.pos
 
+import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.AvoqadoAPI
 import com.avoqado.pos.features.management.data.ManagementRepositoryImpl
 import com.avoqado.pos.features.management.data.cache.ManagementCacheStorage

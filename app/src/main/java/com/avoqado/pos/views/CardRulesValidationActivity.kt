@@ -10,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.R
+import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.customerId
 import com.avoqado.pos.merchantId
 import com.avoqado.pos.ui.screen.ProcessingOperationScreen
@@ -31,6 +32,14 @@ class CardRulesValidationActivity : ComponentActivity() {
     private val currency: String by lazy {
         intent.getStringExtra("currency").toString()
     }
+
+    private val splitType: SplitType by lazy {
+        SplitType.valueOf(intent.getStringExtra("splitType").toString())
+    }
+    private val waiterName: String by lazy {
+        intent.getStringExtra("waiterName").toString()
+    }
+
     private val operationFlow: OperationFlow?
         get() = OperationFlowHolder.operationFlow
 
@@ -51,7 +60,7 @@ class CardRulesValidationActivity : ComponentActivity() {
             operationFlow = operationFlow!!,
             merchantId = merchantId,
             customerId = customerId,
-            currency = if(Currency.MX.name == currency) CURRENCY_LABEL_MX else CURRENCY_LABEL_ARG,
+            currency = if (Currency.MX.name == currency) CURRENCY_LABEL_MX else CURRENCY_LABEL_ARG,
             interest = false
         )
         Log.i("", "bin: $bin")
@@ -77,7 +86,10 @@ class CardRulesValidationActivity : ComponentActivity() {
 
                 operationFlow!!.installments = "01"
                 Log.i(TAG, "Ir directo al pago")
-                val intent = Intent(this, DoPaymentActivity::class.java)
+                val intent = Intent(this, DoPaymentActivity::class.java).apply {
+                    putExtra("splitType", splitType.value)
+                    putExtra("waiterName", waiterName)
+                }
                 startActivity(intent)
                 finish()
 

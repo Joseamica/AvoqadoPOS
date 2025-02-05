@@ -21,6 +21,7 @@ import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.MainActivity
 import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.R
+import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.presentation.utils.toAmountMXDouble
 import com.avoqado.pos.customerId
 import com.avoqado.pos.destinations.MainDests
@@ -57,6 +58,13 @@ class DoPaymentActivity : ComponentActivity() {
 
     private val operationFlow: OperationFlow?
         get() = OperationFlowHolder.operationFlow
+
+    private val splitType: SplitType by lazy {
+        SplitType.valueOf(intent.getStringExtra("splitType").toString())
+    }
+    private val waiterName: String by lazy {
+        intent.getStringExtra("waiterName").toString()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -117,15 +125,20 @@ class DoPaymentActivity : ComponentActivity() {
                     Log.i(TAG, "PaymentId: ${operationResponse.id}")
                     Log.i(TAG, "OperationNumber: ${operationResponse.ticketId}")
 
-                    OperationFlowHolder.paymentRepository.setCachePaymentInfo(
-                        paymentInfoResult = PaymentInfoResult(
-                            paymentId = operationResponse.ticketId.toString(),
-                            tipAmount = operationResponse.amount.breakdownList?.firstOrNull { breakdown ->  breakdown.description == "TIP" }?.amount?.toAmountMXDouble() ?: 0.0,
-                            subtotal = operationResponse.amount.breakdownList?.firstOrNull { breakdown ->  breakdown.description == "OPERATION" }?.amount?.toAmountMXDouble() ?: 0.0,
-                            date = LocalDateTime.now(),
-                            rootData = operationResponseJson
+                    OperationFlowHolder.paymentRepository.getCachePaymentInfo()?.let {info ->
+                        OperationFlowHolder.paymentRepository.setCachePaymentInfo(
+                            paymentInfoResult = info.copy(
+                                paymentId = operationResponse.ticketId.toString(),
+                                tipAmount = operationResponse.amount.breakdownList?.firstOrNull { breakdown ->  breakdown.description == "TIP" }?.amount?.toAmountMXDouble() ?: 0.0,
+                                subtotal = operationResponse.amount.breakdownList?.firstOrNull { breakdown ->  breakdown.description == "OPERATION" }?.amount?.toAmountMXDouble() ?: 0.0,
+                                date = LocalDateTime.now(),
+                                rootData = operationResponseJson,
+                                splitType = splitType,
+                                waiterName = waiterName
+                            )
                         )
-                    )
+                    }
+
                     val intent = Intent(this, MainActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
                     intent.putExtra("navigate_to", MainDests.PaymentResult.route)

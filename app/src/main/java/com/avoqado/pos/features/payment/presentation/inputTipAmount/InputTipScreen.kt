@@ -72,6 +72,8 @@ fun InputTipScreen(
             intent.putExtra("tipAmount", "0.00")
             intent.putExtra("currency", CURRENCY_LABEL)
             intent.putExtra("operationType", OperationType.PAYMENT.name)
+            intent.putExtra("splitType", inputTipViewModel.splitType.value)
+            intent.putExtra("waiterName", inputTipViewModel.waiterName)
             context.startActivity(intent)
             inputTipViewModel.navigateBack()
         },
@@ -84,6 +86,8 @@ fun InputTipScreen(
                 putExtra("tipAmount", StringUtils.notFormatAmount(it.toAmountMx()))
                 putExtra("currency", CURRENCY_LABEL)
                 putExtra("operationType", OperationType.PAYMENT.name)
+                putExtra("splitType", inputTipViewModel.splitType.value)
+                putExtra("waiterName", inputTipViewModel.waiterName)
             }
             context.startActivity(intent)
             inputTipViewModel.navigateBack()
@@ -114,6 +118,8 @@ fun InputTipScreen(
                         )
                         putExtra("currency", CURRENCY_LABEL)
                         putExtra("operationType", OperationType.PAYMENT.name)
+                        putExtra("splitType", inputTipViewModel.splitType.value)
+                        putExtra("waiterName", inputTipViewModel.waiterName)
                     }
                     context.startActivity(intent)
                     inputTipViewModel.navigateBack()

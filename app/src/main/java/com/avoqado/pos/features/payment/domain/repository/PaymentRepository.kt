@@ -17,6 +17,9 @@ interface PaymentRepository {
         status: String,
         amount: Int,
         tip: Int,
+        billId: String,
+        token: String,
+        paidProductsId: List<String>,
         adquirer: Adquirer?
-    )
+    ): String
 }

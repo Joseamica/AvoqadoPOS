@@ -9,6 +9,7 @@ import com.avoqado.pos.features.payment.data.mappers.toCache
 import com.avoqado.pos.features.payment.data.network.AvoqadoService
 import com.avoqado.pos.features.payment.data.network.models.RecordPaymentBody
 import com.menta.android.core.model.Adquirer
+import java.util.Date
 
 class PaymentRepositoryImpl(
     private val paymentCacheStorage: PaymentCacheStorage,
@@ -35,8 +36,11 @@ class PaymentRepositoryImpl(
         status: String,
         amount: Int,
         tip: Int,
+        billId: String,
+        token: String,
+        paidProductsId: List<String>,
         adquirer: Adquirer?
-    ) {
+    ): String {
         try {
             var body = RecordPaymentBody(
                 method = adquirer?.let { "CARD" } ?: "CASH",
@@ -47,11 +51,12 @@ class PaymentRepositoryImpl(
                 amount = amount,
                 tip = tip,
                 venueId = venueId,
-                source = "TPV"
+                source = "TPV",
+                paidProductsId = paidProductsId
             )
 
-            adquirer?.let {
-                body = body.copy(
+            body = adquirer?.let {
+                 body.copy(
                     cardBrand = it.capture?.card?.brand,
                     last4 = it.capture?.card?.maskedPan,
                     typeOfCard = it.capture?.card?.type?.name,
@@ -61,16 +66,24 @@ class PaymentRepositoryImpl(
                     mentaOperationId = it.id,
                     mentaTicketId = it.ticketId.toString()
                 )
+            }?: run {
+                body.copy(
+                    token = token
+                )
             }
 
-            avoqadoService.recordPayment(
+            val result = avoqadoService.recordPayment(
                 venueId = venueId,
                 tableNumber = tableNumber,
                 recordPaymentBody = body
             )
+
         } catch (e: Exception) {
             Log.e("PaymentRepositoryImpl", "Error recording payment", e)
         }
+
+        return  adquirer?.let { it.id ?: "" } ?: token
+
     }
 
 }

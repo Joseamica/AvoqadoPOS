@@ -47,6 +47,8 @@ import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.ui.screen.SimpleToolbar
 import com.avoqado.pos.ui.screen.ToolbarWithIcon
+import com.lightspark.composeqr.QrCodeColors
+import com.lightspark.composeqr.QrCodeView
 
 
 @Composable
@@ -122,6 +124,10 @@ fun PaymentResultContent(
                 state.qrCode?.let {
                     Box (
                         modifier = Modifier.size(180.dp)
+                            .background(
+                                color = Color.White,
+                                shape = RoundedCornerShape(24.dp)
+                            )
                             .border(
                                 width = 10.dp,
                                 color = Color.Black,
@@ -129,7 +135,14 @@ fun PaymentResultContent(
                             )
                             .align(Alignment.TopCenter)
                     ){
-
+                        QrCodeView(
+                            data = state.qrCode,
+                            modifier = Modifier.size(140.dp).align(Alignment.Center),
+                            colors = QrCodeColors(
+                                background = Color.White,
+                                foreground = Color.Black
+                            )
+                        )
                     }
                 }
 
@@ -238,7 +251,9 @@ fun PaymentResultContent(
 fun PaymentResultContentPreview() {
     AvoqadoTheme {
         PaymentResultContent(
-            state = PaymentResultViewState()
+            state = PaymentResultViewState(
+                qrCode = "testing1234"
+            )
         )
     }
 }
