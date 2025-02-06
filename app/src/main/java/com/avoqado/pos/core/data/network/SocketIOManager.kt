@@ -11,7 +11,7 @@ import java.net.URISyntaxException
 
 object SocketIOManager {
     private var socket: Socket? = null
-    private var currentRoomId: String? = null
+    private var currentRoomId: JSONObject? = null
     private val _messageFlow = MutableSharedFlow<String>()
     val messageFlow: SharedFlow<String> = _messageFlow.asSharedFlow()
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
@@ -21,7 +21,9 @@ object SocketIOManager {
             try {
                 socket = IO.socket(serverUrl)
                 socket?.connect()
-                Log.d("SocketIO", "Connected to $serverUrl")
+                socket?.on(Socket.EVENT_CONNECT) {
+                    Log.d("SocketIO", "Connected to $serverUrl")
+                }
             } catch (e: URISyntaxException) {
                 Log.e("SocketIO", "Socket connection error: ${e.message}")
             }
@@ -29,22 +31,29 @@ object SocketIOManager {
     }
 
     fun subscribeToTable(venueId: String, tableNumber: String) {
-        val newRoomId = "venue_${venueId}_table_${tableNumber}"
+        val newRoomId =  JSONObject().apply {
+            put("venueId", venueId)
+            put("table", tableNumber)
+        }
 
         if (currentRoomId == newRoomId) return // Avoid unnecessary re-subscriptions
 
-        unsubscribe() // Ensure we leave the previous room before joining a new one
+//        unsubscribe()
 
-        socket?.emit("join", newRoomId)
+        socket?.emit("joinRoom", newRoomId)
         currentRoomId = newRoomId
         Log.d("SocketIO", "Subscribed to room: $newRoomId")
 
-        socket?.on("updateOrder", onUpdateOrder)
+        socket?.on("updatePos", onUpdateOrder)
+        //Esto es de prueba para ver si se recibe el evento updateOrder
+        socket?.on("updateOrder", {
+            Log.d("SocketIO", "Received updateOrder event: $it")
+        })
     }
 
     fun unsubscribe() {
         if (currentRoomId != null) {
-            socket?.emit("leave", currentRoomId)
+            socket?.emit("leaveRoom", currentRoomId)
             Log.d("SocketIO", "Unsubscribed from room: $currentRoomId")
             currentRoomId = null
         }
@@ -52,7 +61,7 @@ object SocketIOManager {
     }
 
     private val onUpdateOrder = Emitter.Listener { args ->
-        Log.d("ScoketIO", "Received updateOrder event : $args")
+        Log.d("ScoketIO", "Received updatePos event : $args")
         if (args.isNotEmpty()) {
             val data = args[0] as JSONObject
             coroutineScope.launch {
