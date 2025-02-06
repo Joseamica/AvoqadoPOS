@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.avoqado.pos.MainActivity
 import com.avoqado.pos.R
+import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.ui.screen.PrimaryButton
 import com.avoqado.pos.core.presentation.theme.textColor
 import com.menta.android.common_cross.util.StatusResult
@@ -45,6 +46,12 @@ class CardErrorActivity : ComponentActivity() {
     }
     private val operationType: String by lazy {
         intent.getStringExtra("operationType").toString()
+    }
+
+    private val splitType: SplitType? by lazy {
+        intent.getStringExtra("splitType")?.let { type ->
+            SplitType.valueOf(type)
+        }
     }
 
     private var statusResult: StatusResult? = null
@@ -139,6 +146,7 @@ class CardErrorActivity : ComponentActivity() {
                                 putExtra("tipAmount", tipAmount)
                                 putExtra("currency", currency)
                                 putExtra("operationType", operationType)
+                                putExtra("splitType", splitType?.value)
                             }
                             .let(::startActivity)
                         finish()

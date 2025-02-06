@@ -9,7 +9,7 @@ data class PaymentInfoResult(
     val paymentId: String,
     val date: LocalDateTime,
     val rootData: String,
-    val splitType: SplitType,
+    val splitType: SplitType?,
     val waiterName: String,
     val tableNumber: String,
     val venueId: String,

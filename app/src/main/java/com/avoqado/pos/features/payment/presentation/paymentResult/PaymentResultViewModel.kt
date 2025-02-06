@@ -66,7 +66,7 @@ class PaymentResultViewModel(
                 tableNumber = info.tableNumber,
                 waiterName = info.waiterName,
                 tpvId = terminal?.id ?: "",
-                splitType = info.splitType.value,
+                splitType = info.splitType?.value?:"",
                 status = PaymentStatus.ACCEPTED.value,
                 amount = info.subtotal.toString().toAmountMx().replace(".", "").toInt(),
                 tip = info.tipAmount.toString().toAmountMx().replace(".", "").toInt(),

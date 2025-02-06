@@ -62,8 +62,10 @@ class CardProcessActivity : ComponentActivity() {
     private val operationType: String by lazy {
         intent.getStringExtra("operationType").toString()
     }
-    private val splitType: SplitType by lazy {
-        SplitType.valueOf(intent.getStringExtra("splitType").toString())
+    private val splitType: SplitType? by lazy {
+        intent.getStringExtra("splitType")?.let { type ->
+            SplitType.valueOf(type)
+        }
     }
     private val waiterName: String by lazy {
         intent.getStringExtra("waiterName").toString()
@@ -255,6 +257,7 @@ class CardProcessActivity : ComponentActivity() {
                 intent.putExtra("tipAmount", tipAmount)
                 intent.putExtra("currency", currency)
                 intent.putExtra("operationType", operationType)
+                intent.putExtra("splitType", splitType?.value)
                 startActivity(intent)
                 Log.i(
                     "$TAG-AvoqadoTest",
@@ -270,7 +273,7 @@ class CardProcessActivity : ComponentActivity() {
                     val bundle = Bundle().apply {
                         putString("bin", it)
                         putString("currency", currency)
-                        putString("splitType", splitType.value)
+                        putString("splitType", splitType?.value)
                         putString("waiterName", waiterName)
                     }
                     val intent = Intent(this, CardRulesValidationActivity::class.java).apply {

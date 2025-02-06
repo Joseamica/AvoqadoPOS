@@ -28,7 +28,7 @@ fun PaymentInfoResult.toCache(): PaymentCacheEntity {
         paymentId = this.paymentId,
         rootData = this.rootData,
         waiterName = waiterName,
-        splitType = splitType.value,
+        splitType = splitType?.value?:"",
         venueId = venueId,
         tableNumber = tableNumber,
         billId = billId,

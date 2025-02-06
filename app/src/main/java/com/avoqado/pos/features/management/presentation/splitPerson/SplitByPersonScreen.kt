@@ -39,7 +39,7 @@ fun SplitByPersonContent(
     totalSelectedAmount: String,
     splitPartySize: Int,
     splitPartyPaidSize: Int,
-    splitPartySelected: Int
+    splitPartySelected: List<Int>
 ) {
     val context = LocalContext.current
     val amountSplit = "%.2f".format(totalPendingAmount.toDouble() / splitPartySize)
@@ -111,16 +111,19 @@ fun SplitByPersonContent(
         ) {
             items(count = splitPartySize) { index ->
 
+                val isPaid = index < splitPartyPaidSize
+                val isSelected = splitPartySelected.contains(index)
+
                 SelectableItemRow(
-                    label = "Persona $index",
+                    label = "Persona ${index + 1}",
                     data = index,
-                    isSelected = (index + splitPartyPaidSize) < splitPartySelected,
-                    trailingLabel = if ((index + splitPartyPaidSize) < splitPartySelected) {
+                    isSelected = isSelected,
+                    trailingLabel = if (isPaid) {
                         "Pagado"
                     } else {
                         "\$$amountSplit"
                     },
-                    onItemTap = if ((index + splitPartyPaidSize) < splitPartySelected) {
+                    onItemTap = if (isPaid) {
                         null
                     } else {
                         {  }
@@ -131,13 +134,13 @@ fun SplitByPersonContent(
 
         Spacer(Modifier.height(16.dp))
 
-        if (splitPartySelected > 0) {
+        if (splitPartySelected.isNotEmpty()) {
             MainButton(
                 modifier = Modifier.fillMaxWidth().padding(
                     horizontal = 16.dp
                 ).padding(bottom = 24.dp),
                 onClickR = {},
-                text = "Pagar $splitPartySelected partes • \$$totalSelectedAmount"
+                text = "Pagar ${splitPartySelected.size} partes • \$$totalSelectedAmount"
             )
         }
     }
@@ -152,7 +155,7 @@ fun SplitByPersonContentPreview() {
             totalSelectedAmount = "222.00",
             splitPartySize = 5,
             splitPartyPaidSize = 2,
-            splitPartySelected = 2,
+            splitPartySelected = listOf(2,3),
         )
     }
 }
