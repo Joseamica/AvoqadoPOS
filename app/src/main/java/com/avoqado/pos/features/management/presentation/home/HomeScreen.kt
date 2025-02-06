@@ -1,4 +1,4 @@
-package com.avoqado.pos.screens.home
+package com.avoqado.pos.features.management.presentation.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

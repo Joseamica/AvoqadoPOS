@@ -52,6 +52,7 @@ object SocketIOManager {
     }
 
     private val onUpdateOrder = Emitter.Listener { args ->
+        Log.d("ScoketIO", "Received updateOrder event : $args")
         if (args.isNotEmpty()) {
             val data = args[0] as JSONObject
             coroutineScope.launch {

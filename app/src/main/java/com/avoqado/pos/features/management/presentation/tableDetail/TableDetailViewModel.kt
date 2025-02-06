@@ -65,6 +65,7 @@ class TableDetailViewModel(
                     tableId = tableNumber
                 )
             ).collectLatest {
+                Log.d("AvoqadoSocket", it)
                 fetchTableDetail()
             }
         }

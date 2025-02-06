@@ -13,8 +13,8 @@ import com.avoqado.pos.features.management.presentation.splitProduct.SplitByProd
 import com.avoqado.pos.features.management.presentation.tableDetail.TableDetailScreen
 import com.avoqado.pos.features.management.presentation.tableDetail.TableDetailViewModel
 import com.avoqado.pos.router.composableHolder
-import com.avoqado.pos.screens.home.HomeScreen
-import com.avoqado.pos.screens.home.HomeViewModel
+import com.avoqado.pos.features.management.presentation.home.HomeScreen
+import com.avoqado.pos.features.management.presentation.home.HomeViewModel
 
 fun NavGraphBuilder.managementNavigation(
     navigationDispatcher: NavigationDispatcher,

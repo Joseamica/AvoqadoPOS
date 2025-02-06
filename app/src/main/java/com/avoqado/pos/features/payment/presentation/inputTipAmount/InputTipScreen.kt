@@ -67,7 +67,7 @@ fun InputTipScreen(
             val intent = Intent(context, CardProcessActivity::class.java)
             intent.putExtra(
                 "amount",
-                StringUtils.notFormatAmount(inputTipViewModel.subtotal.toAmountMx())
+                inputTipViewModel.subtotal.toAmountMx()
             )
             intent.putExtra("tipAmount", "0.00")
             intent.putExtra("currency", CURRENCY_LABEL)
@@ -81,7 +81,7 @@ fun InputTipScreen(
             val intent = Intent(context, CardProcessActivity::class.java).apply {
                 putExtra(
                     "amount",
-                    StringUtils.notFormatAmount(inputTipViewModel.subtotal.toAmountMx())
+                    inputTipViewModel.subtotal.toAmountMx()
                 )
                 putExtra("tipAmount", StringUtils.notFormatAmount(it.toAmountMx()))
                 putExtra("currency", CURRENCY_LABEL)
@@ -110,11 +110,11 @@ fun InputTipScreen(
                     val intent = Intent(context, CardProcessActivity::class.java).apply {
                         putExtra(
                             "amount",
-                            StringUtils.notFormatAmount(inputTipViewModel.subtotal.toAmountMx())
+                            inputTipViewModel.subtotal.toAmountMx()
                         )
                         putExtra(
                             "tipAmount",
-                            StringUtils.notFormatAmount(amount.toString().toAmountMx())
+                            amount.toString().toAmountMx()
                         )
                         putExtra("currency", CURRENCY_LABEL)
                         putExtra("operationType", OperationType.PAYMENT.name)

@@ -1,5 +1,6 @@
-package com.avoqado.pos.screens.home
+package com.avoqado.pos.features.management.presentation.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
@@ -9,7 +10,7 @@ import com.avoqado.pos.core.data.network.AvoqadoAPI
 import com.avoqado.pos.core.data.network.models.NetworkTable
 import com.avoqado.pos.core.data.network.models.NetworkVenue
 import com.avoqado.pos.destinations.MainDests
-import com.avoqado.pos.screens.home.models.Table
+import com.avoqado.pos.features.management.presentation.home.models.Table
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -37,14 +38,18 @@ class HomeViewModel (
     fun fetchTables(){
         //TODO: usar Avoqado api para cargar mesas
         viewModelScope.launch(Dispatchers.IO) {
-            val result = AvoqadoAPI.apiService.getVenues()
-            val venueId = sessionManager.getVenueId()
+            try {
+                val result = AvoqadoAPI.apiService.getVenues()
+                val venueId = sessionManager.getVenueId()
 
-            if (venueId.isNotEmpty()) {
-                _venues.value = result.filter { it.id == venueId }
-                _selectedVenue.value = result.firstOrNull { it.id == venueId }
-            } else {
-                _venues.value = result
+                if (venueId.isNotEmpty()) {
+                    _venues.value = result.filter { it.id == venueId }
+                    _selectedVenue.value = result.firstOrNull { it.id == venueId }
+                } else {
+                    _venues.value = result
+                }
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Error fetching tables", e)
             }
         }
     }
