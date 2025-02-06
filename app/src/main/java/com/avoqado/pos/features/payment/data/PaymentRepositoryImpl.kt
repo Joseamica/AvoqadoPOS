@@ -59,7 +59,7 @@ class PaymentRepositoryImpl(
             adquirer?.let {
                  body = body.copy(
                     cardBrand = it.capture?.card?.brand,
-                    last4 = it.capture?.card?.maskedPan,
+                    last4 = it.capture?.card?.maskedPan?.let {pan -> pan.substring(pan.length - 4) },
                     typeOfCard = it.capture?.card?.type?.name,
                     currency = it.amount.currency?.name,
                     bank = it.capture?.card?.bank,
