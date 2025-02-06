@@ -93,7 +93,7 @@ fun CardReaderScreen(
 
             Button(
                 onClick = {
-
+                    onPayInCash()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
