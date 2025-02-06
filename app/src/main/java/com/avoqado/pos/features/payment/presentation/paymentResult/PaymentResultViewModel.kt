@@ -56,7 +56,7 @@ class PaymentResultViewModel(
             _paymentResult.update { state ->
                 state
                     .copy(
-                        qrCode = "https://avoqado.io/receipt?token=${adquirer?.id ?: token}",
+                        qrCode = "https://avoqado.io/receipt?token=${token}",
                         adquirer = adquirer
                     )
             }

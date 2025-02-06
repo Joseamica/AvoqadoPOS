@@ -52,11 +52,12 @@ class PaymentRepositoryImpl(
                 tip = tip,
                 venueId = venueId,
                 source = "TPV",
-                paidProductsId = paidProductsId
+                paidProductsId = paidProductsId,
+                token = token
             )
 
-            body = adquirer?.let {
-                 body.copy(
+            adquirer?.let {
+                 body = body.copy(
                     cardBrand = it.capture?.card?.brand,
                     last4 = it.capture?.card?.maskedPan,
                     typeOfCard = it.capture?.card?.type?.name,
@@ -66,12 +67,7 @@ class PaymentRepositoryImpl(
                     mentaOperationId = it.id,
                     mentaTicketId = it.ticketId.toString()
                 )
-            }?: run {
-                body.copy(
-                    token = token
-                )
             }
-
             val result = avoqadoService.recordPayment(
                 venueId = venueId,
                 tableNumber = tableNumber,

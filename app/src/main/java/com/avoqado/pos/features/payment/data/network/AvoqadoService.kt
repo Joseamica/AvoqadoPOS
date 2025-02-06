@@ -7,7 +7,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface AvoqadoService {
-    @POST("tpv/venues/{venueId}/table/{tableNumber}")
+    @POST("tpv/venues/{venueId}/tables/{tableNumber}")
     suspend fun recordPayment(
         @Path("venueId") venueId: String,
         @Path("tableNumber") tableNumber: String,
