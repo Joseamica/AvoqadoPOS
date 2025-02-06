@@ -48,7 +48,7 @@ object SocketIOManager {
             Log.d("SocketIO", "Unsubscribed from room: $currentRoomId")
             currentRoomId = null
         }
-        socket?.off("updateOrder", onUpdateOrder) // Remove listener
+        socket?.off("updatePos", onUpdateOrder) // Remove listener
     }
 
     private val onUpdateOrder = Emitter.Listener { args ->
