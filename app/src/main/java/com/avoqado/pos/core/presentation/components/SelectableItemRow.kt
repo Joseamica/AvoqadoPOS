@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -32,7 +33,7 @@ fun<T> SelectableItemRow(
     isSelected: Boolean = false,
     label: String,
     data: T,
-    onItemTap: (T) -> Unit,
+    onItemTap: ((T) -> Unit)?,
     trailingLabel: String? = null
 ){
     val baseColor = if (isSelected) selectedItemColor else unselectedItemColor
@@ -41,8 +42,12 @@ fun<T> SelectableItemRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .clickable {
-                onItemTap(data)
+            .let {
+                if (onItemTap != null) {
+                    it.clickable { onItemTap(data) }
+                } else {
+                    it
+                }
             }
             .border(
                 width = 1.dp,
@@ -59,18 +64,22 @@ fun<T> SelectableItemRow(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            if (onItemTap != null) {
+                Icon(
+                    painter = painterResource(
+                        if (isSelected) {
+                            R.drawable.baseline_check_circle_24
+                        } else {
+                            R.drawable.baseline_add_circle_outline_24
+                        }
+                    ),
+                    contentDescription = "",
+                    tint = baseColor
+                )
+            } else {
+                Spacer(modifier = Modifier.size(24.dp))
+            }
 
-            Icon(
-                painter = painterResource(
-                    if (isSelected) {
-                        R.drawable.baseline_check_circle_24
-                    } else {
-                        R.drawable.baseline_add_circle_outline_24
-                    }
-                ),
-                contentDescription = "",
-                tint = baseColor
-            )
 
             Spacer(modifier = Modifier.width(8.dp))
 

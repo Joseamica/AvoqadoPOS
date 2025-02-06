@@ -15,7 +15,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -40,11 +39,15 @@ fun ToolbarWithIcon(
     onAction: () -> Unit = {},
     onActionSecond: () -> Unit = {},
     showSecondIcon: Boolean = false,
-    secondIconRes: Int = R.drawable.icon_note
+    secondIconRes: Int = R.drawable.icon_note,
+    color: Color = Color.White,
+    contentColor: Color = Color.Black
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.White
+            containerColor = color,
+            titleContentColor = contentColor,
+            actionIconContentColor = contentColor
         ),
         title = {
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -55,7 +58,7 @@ fun ToolbarWithIcon(
                             end = if (showSecondIcon) 0.dp else 46.dp
                         ),
                     text = title,
-                    style = MaterialTheme.typography.titleSmall
+                    style = MaterialTheme.typography.titleSmall.copy(color= contentColor)
                 )
             }
         },
@@ -75,11 +78,11 @@ fun ToolbarWithIcon(
                 }) {
                     when (iconAction.iconType) {
                         IconType.CANCEL -> {
-                            Icon(painterResource(R.drawable.icon_home), contentDescription = null)
+                            Icon(painterResource(R.drawable.icon_home), contentDescription = null, tint = contentColor)
                         }
 
                         IconType.BACK -> {
-                            Icon(painterResource(R.drawable.icon_back), contentDescription = null)
+                            Icon(painterResource(R.drawable.icon_back), contentDescription = null, tint = contentColor)
                         }
                     }
                 }
@@ -90,7 +93,7 @@ fun ToolbarWithIcon(
                 IconButton(onClick = {
                     onActionSecond()
                 }) {
-                    Icon(painterResource(secondIconRes), contentDescription = "Note")
+                    Icon(painterResource(secondIconRes), contentDescription = "Note", tint = contentColor)
                 }
             }
         }
