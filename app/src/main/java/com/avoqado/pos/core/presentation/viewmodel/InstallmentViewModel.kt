@@ -1,4 +1,4 @@
-package com.avoqado.pos.core.viewmodel
+package com.avoqado.pos.core.presentation.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

@@ -18,7 +18,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.unit.dp
-import com.avoqado.pos.core.viewmodel.InputAmountViewModel
+import com.avoqado.pos.core.presentation.viewmodel.InputAmountViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

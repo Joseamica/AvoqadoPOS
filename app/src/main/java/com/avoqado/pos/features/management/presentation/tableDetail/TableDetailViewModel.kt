@@ -105,7 +105,7 @@ class TableDetailViewModel(
                         products = billDetail.products.groupBy { it.id }.map { pair ->
                             val item = pair.value.first()
                             Product(
-                                id = item.name,
+                                id = item.id,
                                 name = item.name,
                                 price = pair.value.maxOf { it.price.toAmountMXDouble() },
                                 quantity = pair.value.sumOf { it.quantity },

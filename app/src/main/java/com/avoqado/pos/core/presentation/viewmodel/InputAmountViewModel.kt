@@ -1,4 +1,4 @@
-package com.avoqado.pos.core.viewmodel
+package com.avoqado.pos.core.presentation.viewmodel
 
 import android.content.Context
 import androidx.compose.runtime.MutableState
