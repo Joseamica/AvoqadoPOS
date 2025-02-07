@@ -132,6 +132,7 @@ class CardProcessActivity : ComponentActivity() {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
             intent.putExtra("navigate_to", MainDests.PaymentResult.route)
             startActivity(intent)
+            finish()
         })
         builder.setNegativeButton("Cancelar", { dialog, _ ->
             dialog.dismiss()
@@ -313,6 +314,7 @@ class CardProcessActivity : ComponentActivity() {
     }
 
     override fun onDestroy() {
+        Log.d("$TAG-AvoqadoTest", "CardProcessActivity on detroy")
         isDestroying = true
         cardProcessData.stopReader()
         super.onDestroy()
