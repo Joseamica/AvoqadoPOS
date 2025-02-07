@@ -83,7 +83,7 @@ fun InputTipScreen(
                     "amount",
                     inputTipViewModel.subtotal.toAmountMx()
                 )
-                putExtra("tipAmount", StringUtils.notFormatAmount(it.toAmountMx()))
+                putExtra("tipAmount", it.toAmountMx())
                 putExtra("currency", CURRENCY_LABEL)
                 putExtra("operationType", OperationType.PAYMENT.name)
                 putExtra("splitType", inputTipViewModel.splitType.value)

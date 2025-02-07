@@ -14,6 +14,7 @@ import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.domain.usecases.ListenTableAction
 import com.avoqado.pos.features.management.domain.usecases.ListenTableEventsUseCase
+import com.avoqado.pos.features.management.presentation.tableDetail.model.Payment
 import com.avoqado.pos.features.management.presentation.tableDetail.model.Product
 import com.avoqado.pos.features.management.presentation.tableDetail.model.TableDetail
 import com.avoqado.pos.features.management.presentation.tableDetail.model.toDomain
@@ -64,9 +65,21 @@ class TableDetailViewModel(
                     venueId = venueId,
                     tableId = tableNumber
                 )
-            ).collectLatest {
-                Log.d("AvoqadoSocket", it)
-                fetchTableDetail()
+            ).collectLatest { result ->
+                Log.d("AvoqadoSocket", result.toString())
+                _tableDetail.update { state ->
+                    state.copy(
+                        paymentsDone = state.paymentsDone.toMutableList().apply {
+                            add(Payment(
+                                amount = result.amount,
+                                products = emptyList(),
+                                splitType = result.splitType.value,
+                                equalPartsPartySize = "",
+                                equalPartsPayedFor = ""
+                            ))
+                        }
+                    )
+                }
             }
         }
     }

@@ -1,12 +1,15 @@
 package com.avoqado.pos.features.management.data
 
 import com.avoqado.pos.core.data.network.SocketIOManager
+import com.avoqado.pos.core.domain.models.PaymentUpdate
+import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.features.management.data.cache.ManagementCacheStorage
 import com.avoqado.pos.features.management.data.mapper.toCache
 import com.avoqado.pos.features.management.data.mapper.toDomain
 import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.domain.models.TableDetail
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class ManagementRepositoryImpl(
     private val managementCacheStorage: ManagementCacheStorage
@@ -28,8 +31,16 @@ class ManagementRepositoryImpl(
         SocketIOManager.subscribeToTable(venueId, tableId)
     }
 
-    override fun listenTableEvents(): Flow<String> {
-        return SocketIOManager.messageFlow
+    override fun listenTableEvents(): Flow<PaymentUpdate> {
+        return SocketIOManager.messageFlow.map {
+            PaymentUpdate(
+                amount = (it.amount?.toDoubleOrNull() ?: 0.0) / 100.0,
+                splitType = SplitType.valueOf(it.splitType ?: ""),
+                venueId = it.venueId ?: "",
+                tableNumber = it.tableNumber ?: 0,
+                method = it.method ?: ""
+            )
+        }
     }
 
     override fun stopListeningTableEvents() {

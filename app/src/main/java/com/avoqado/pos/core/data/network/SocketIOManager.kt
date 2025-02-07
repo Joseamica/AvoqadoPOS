@@ -1,6 +1,8 @@
 package com.avoqado.pos.core.data.network
 
 import android.util.Log
+import com.avoqado.pos.core.data.network.models.PaymentUpdateMessage
+import com.google.gson.Gson
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -12,9 +14,10 @@ import java.net.URISyntaxException
 object SocketIOManager {
     private var socket: Socket? = null
     private var currentRoomId: JSONObject? = null
-    private val _messageFlow = MutableSharedFlow<String>()
-    val messageFlow: SharedFlow<String> = _messageFlow.asSharedFlow()
+    private val _messageFlow = MutableSharedFlow<PaymentUpdateMessage>()
+    val messageFlow: SharedFlow<PaymentUpdateMessage> = _messageFlow.asSharedFlow()
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val gson = Gson()
 
     fun connect(serverUrl: String) {
         if (socket == null) {
@@ -45,10 +48,6 @@ object SocketIOManager {
         Log.d("SocketIO", "Subscribed to room: $newRoomId")
 
         socket?.on("updatePos", onUpdateOrder)
-        //Esto es de prueba para ver si se recibe el evento updateOrder
-        socket?.on("updateOrder", {
-            Log.d("SocketIO", "Received updateOrder event: $it")
-        })
     }
 
     fun unsubscribe() {
@@ -64,8 +63,17 @@ object SocketIOManager {
         Log.d("ScoketIO", "Received updatePos event : $args")
         if (args.isNotEmpty()) {
             val data = args[0] as JSONObject
+            val paymentJson = data.getJSONObject("data")
             coroutineScope.launch {
-                _messageFlow.emit(data.toString()) // Emit JSON response as String
+                try {
+                    val message = gson.fromJson(paymentJson.toString(), PaymentUpdateMessage::class.java)
+                    _messageFlow.emit(
+                        message
+                    )
+                } catch (e: Exception) {
+                    Log.e("SocketIO", "Error parsing socket message: ",e)
+                }
+
             }
         }
     }

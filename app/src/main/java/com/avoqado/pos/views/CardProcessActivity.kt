@@ -102,7 +102,7 @@ class CardProcessActivity : ComponentActivity() {
                     showPayInCashValidation()
                 }
             )
-//            cardReader(clearAmount, clearTip)
+            cardReader(clearAmount, clearTip)
         }
     }
 
