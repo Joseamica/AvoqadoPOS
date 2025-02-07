@@ -74,6 +74,7 @@ class CardProcessActivity : ComponentActivity() {
     private lateinit var transaction: Transaction
     private lateinit var cardProcessData: CardProcessData
     private var operationFlow: OperationFlow = OperationFlow()
+    private var isDestroying = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -247,23 +248,25 @@ class CardProcessActivity : ComponentActivity() {
     private val navigateObserver: (Any) -> Unit = {
         when (it) {
             is Bundle -> {
-                Log.i(TAG, "Bundle: $it")
-                val status = it.get("status")
-                val statusResult: StatusResult = status as StatusResult
-                Log.i(TAG, "statusResult: $statusResult")
-                val intent = Intent(this, CardErrorActivity::class.java)
-                intent.putExtra("status", statusResult)
-                intent.putExtra("amount", amount)
-                intent.putExtra("tipAmount", tipAmount)
-                intent.putExtra("currency", currency)
-                intent.putExtra("operationType", operationType)
-                intent.putExtra("splitType", splitType?.value)
-                startActivity(intent)
-                Log.i(
-                    "$TAG-AvoqadoTest",
-                    "CardProcessActivity closed by navigateObserver with StatusResult: $statusResult"
-                )
-                finish()
+                if (isDestroying.not()) {
+                    Log.i(TAG, "Bundle: $it")
+                    val status = it.get("status")
+                    val statusResult: StatusResult = status as StatusResult
+                    Log.i(TAG, "statusResult: $statusResult")
+                    val intent = Intent(this, CardErrorActivity::class.java)
+                    intent.putExtra("status", statusResult)
+                    intent.putExtra("amount", amount)
+                    intent.putExtra("tipAmount", tipAmount)
+                    intent.putExtra("currency", currency)
+                    intent.putExtra("operationType", operationType)
+                    intent.putExtra("splitType", splitType?.value)
+                    startActivity(intent)
+                    Log.i(
+                        "$TAG-AvoqadoTest",
+                        "CardProcessActivity closed by navigateObserver with StatusResult: $statusResult"
+                    )
+                    finish()
+                }
             }
 
             is String -> {
@@ -307,5 +310,11 @@ class CardProcessActivity : ComponentActivity() {
 
     companion object {
         const val TAG = "CardProcessActivity"
+    }
+
+    override fun onDestroy() {
+        isDestroying = true
+        cardProcessData.stopReader()
+        super.onDestroy()
     }
 }
