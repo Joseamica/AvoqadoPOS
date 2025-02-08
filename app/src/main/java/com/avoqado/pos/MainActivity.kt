@@ -10,17 +10,12 @@ import android.util.DisplayMetrics
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.presentation.navigation.NavigationManager
 import com.avoqado.pos.core.presentation.navigation.NavigationManagerImpl
 import com.avoqado.pos.router.AppRouter
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
-import com.avoqado.pos.core.presentation.theme.DemoandroidsdkmentaTheme
 import com.menta.android.restclient.core.RestClientConfiguration.configure
 
 class MainActivity : ComponentActivity() {
@@ -34,7 +29,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         configure(AppfinRestClientConfigure())
-
         // Obtener el serial number y mostrarlo en el log
         val serialNumber = getDeviceSerialNumber()
         Log.d("MainActivity", "Device Serial Number: $serialNumber")

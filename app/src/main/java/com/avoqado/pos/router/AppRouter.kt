@@ -19,6 +19,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.core.presentation.navigation.NavigationCommand
@@ -26,10 +27,10 @@ import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.presentation.navigation.managementNavigation
-import com.avoqado.pos.screens.authorization.AuthorizationDialog
-import com.avoqado.pos.screens.authorization.AuthorizationViewModel
-import com.avoqado.pos.screens.splash.SplashScreen
-import com.avoqado.pos.screens.splash.SplashViewModel
+import com.avoqado.pos.features.authorization.presentation.authorization.AuthorizationDialog
+import com.avoqado.pos.features.authorization.presentation.authorization.AuthorizationViewModel
+import com.avoqado.pos.features.authorization.presentation.splash.SplashScreen
+import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel
 import com.avoqado.pos.features.payment.presentation.navigation.paymentNavigation
 import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
@@ -156,13 +157,9 @@ fun AppRouter(
                     val splashViewModel = remember {
                         SplashViewModel(
                             navigationDispatcher = navigationDispatcher,
-                            storage = Storage(context),
-                            sessionManager = SessionManager(context),
-                            serialNumber =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                                Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
-                            } else {
-                                Build.SERIAL ?: "Unknown"
-                            }
+                            storage = AvoqadoApp.storage,
+                            sessionManager = AvoqadoApp.sessionManager,
+                            serialNumber =  AvoqadoApp.terminalSerialCode
                         )
                     }
 
@@ -181,7 +178,7 @@ fun AppRouter(
                     val viewModel = remember {
                         AuthorizationViewModel(
                             navigationDispatcher = navigationDispatcher,
-                            storage = Storage(context)
+                            storage = AvoqadoApp.storage
                         )
                     }
                     AuthorizationDialog(viewModel = viewModel, externalTokenData = ExternalTokenData(context), masterKeyData = MasterKeyData(context))
@@ -189,11 +186,13 @@ fun AppRouter(
 
                 managementNavigation(
                     navigationDispatcher = navigationDispatcher,
-                    context = context,
                     snackbarDelegate = snackbarDelegate
                 )
 
-                paymentNavigation(navigationDispatcher, sessionManager = SessionManager(context))
+                paymentNavigation(
+                    navigationDispatcher = navigationDispatcher,
+                    sessionManager = AvoqadoApp.sessionManager
+                )
             }
         }
     )

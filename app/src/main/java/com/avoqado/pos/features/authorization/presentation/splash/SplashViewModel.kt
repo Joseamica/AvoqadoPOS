@@ -1,4 +1,4 @@
-package com.avoqado.pos.screens.splash
+package com.avoqado.pos.features.authorization.presentation.splash
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

@@ -1,38 +1,48 @@
-package com.avoqado.pos.screens.splash
+package com.avoqado.pos.features.authorization.presentation.authorization
 
-import android.os.Build
-import android.provider.Settings
 import android.util.Log
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.ACQUIRER_NAME
 import com.avoqado.pos.COUNTRY_CODE
-import com.avoqado.pos.R
 import com.avoqado.pos.merchantApiKey
 import com.avoqado.pos.merchantId
-import com.avoqado.pos.ui.screen.ProcessingOperationScreen
+import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel
 import com.avoqado.pos.views.InitActivity.Companion.TAG
 import com.menta.android.common_cross.util.StatusType
 import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
-import com.menta.android.restclient.core.Storage
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
-fun SplashScreen(
-    viewModel: SplashViewModel,
+fun AuthorizationDialog(
+    viewModel: AuthorizationViewModel,
     externalTokenData: ExternalTokenData,
     masterKeyData: MasterKeyData
 ){
+
     val externalToken by externalTokenData.getExternalToken.observeAsState()
     val masterKey by masterKeyData.getMasterKey.observeAsState()
     val isConfiguring by viewModel.isConfiguring.collectAsStateWithLifecycle()
-    val context = LocalContext.current
 
     LaunchedEffect( key1 = Unit) {
         viewModel.events.collectLatest {
@@ -71,10 +81,21 @@ fun SplashScreen(
         }
     }
 
-    ProcessingOperationScreen(
-        showLoading = isConfiguring,
-        title = if (isConfiguring) stringResource(id = R.string.wait_payment) else "Avoqado POS",
-        message = if (isConfiguring) stringResource(id = R.string.whileInitProcessFinishes) else ""
-    )
+
+    Dialog(onDismissRequest = { /*TODO*/ }) {
+        Box(
+            modifier = Modifier
+                .size(200.dp)
+                .background(Color.White, shape = RoundedCornerShape(8.dp))
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                CircularProgressIndicator()
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = "Actualizando token", style = MaterialTheme.typography.body1)
+            }
+        }
+    }
 
 }

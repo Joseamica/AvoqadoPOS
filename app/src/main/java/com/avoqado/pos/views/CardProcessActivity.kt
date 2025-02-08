@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.MainActivity
 import com.avoqado.pos.OperationFlowHolder
@@ -114,8 +115,8 @@ class CardProcessActivity : ComponentActivity() {
         builder.setPositiveButton("Aceptar", { dialog, _ ->
             dialog.dismiss()
 
-            OperationFlowHolder.paymentRepository.getCachePaymentInfo()?.let { info ->
-                OperationFlowHolder.paymentRepository.setCachePaymentInfo(
+            AvoqadoApp.paymentRepository.getCachePaymentInfo()?.let { info ->
+                AvoqadoApp.paymentRepository.setCachePaymentInfo(
                     paymentInfoResult = info.copy(
                         paymentId = "CASH",
                         tipAmount = tipAmount.toDoubleOrNull() ?: 0.0,

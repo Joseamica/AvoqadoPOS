@@ -3,6 +3,7 @@ package com.avoqado.pos.features.payment.presentation.navigation
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
+import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.domain.models.SplitType
@@ -39,7 +40,7 @@ fun NavGraphBuilder.paymentNavigation(navigationDispatcher: NavigationDispatcher
         val paymentResultViewModel = remember {
             PaymentResultViewModel(
                 navigationDispatcher = navigationDispatcher,
-                paymentRepository = OperationFlowHolder.paymentRepository,
+                paymentRepository = AvoqadoApp.paymentRepository,
                 sessionManager = sessionManager
             )
         }

@@ -3,6 +3,7 @@ package com.avoqado.pos.features.management.presentation.tableDetail
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
@@ -160,7 +161,7 @@ class TableDetailViewModel(
     }
 
     fun goToSplitBillByProduct(){
-        OperationFlowHolder.paymentRepository.setCachePaymentInfo(
+        AvoqadoApp.paymentRepository.setCachePaymentInfo(
             PaymentInfoResult(
                 paymentId = "",
                 tipAmount = 0.0,
@@ -180,7 +181,7 @@ class TableDetailViewModel(
     }
 
     fun payTotalPendingAmount(){
-        OperationFlowHolder.paymentRepository.setCachePaymentInfo(
+        AvoqadoApp.paymentRepository.setCachePaymentInfo(
             PaymentInfoResult(
                 paymentId = "",
                 tipAmount = 0.0,
@@ -213,7 +214,7 @@ class TableDetailViewModel(
 
     fun payCustomPendingAmount(amount: Double){
         if (amount <= _tableDetail.value.totalPending) {
-            OperationFlowHolder.paymentRepository.setCachePaymentInfo(
+            AvoqadoApp.paymentRepository.setCachePaymentInfo(
                 PaymentInfoResult(
                     paymentId = "",
                     tipAmount = 0.0,

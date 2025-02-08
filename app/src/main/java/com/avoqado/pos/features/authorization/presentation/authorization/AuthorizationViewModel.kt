@@ -1,4 +1,4 @@
-package com.avoqado.pos.screens.authorization
+package com.avoqado.pos.features.authorization.presentation.authorization
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -7,8 +7,8 @@ import androidx.navigation.NavOptions
 import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.destinations.MainDests
-import com.avoqado.pos.screens.splash.SplashViewModel.Companion.GET_MASTER_KEY
-import com.avoqado.pos.screens.splash.SplashViewModel.Companion.START_CONFIG
+import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel.Companion.GET_MASTER_KEY
+import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel.Companion.START_CONFIG
 import com.avoqado.pos.views.InitActivity.Companion.TAG
 import com.menta.android.keys.admin.core.response.keys.SecretsV2
 import com.menta.android.restclient.core.RestClientConfiguration.configure

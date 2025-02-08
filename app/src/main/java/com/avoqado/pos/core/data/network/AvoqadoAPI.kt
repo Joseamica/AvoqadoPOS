@@ -16,20 +16,22 @@ object AvoqadoAPI {
                 .addInterceptor(HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.BODY
                 })
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
+                .connectTimeout(120, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
                 .build()
         )
         .addConverterFactory(GsonConverterFactory.create())
         .build()
 
-    private val retrofitMenta: Retrofit = Retrofit.Builder()
+    val retrofitMenta: Retrofit = Retrofit.Builder()
         .baseUrl("https://api.menta.global/api/")
         .client(
             OkHttpClient.Builder()
                 .addInterceptor(HttpLoggingInterceptor().apply {
                     level = HttpLoggingInterceptor.Level.BODY
                 })
+                .connectTimeout(120, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
                 .addInterceptor {
                     it.proceed(
                         it.request().also {

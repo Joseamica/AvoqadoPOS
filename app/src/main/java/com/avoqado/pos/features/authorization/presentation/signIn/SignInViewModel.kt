@@ -1,4 +1,4 @@
-package com.avoqado.pos.screens.signIn
+package com.avoqado.pos.features.authorization.presentation.signIn
 
 import androidx.lifecycle.ViewModel
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher

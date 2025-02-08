@@ -5,7 +5,7 @@ import com.avoqado.pos.core.data.network.models.Terminal
 import com.google.gson.Gson
 
 class SessionManager(
-    private val context: Context
+    context: Context
 ) {
     private val sharedPreferences = context.getSharedPreferences("session", Context.MODE_PRIVATE)
 

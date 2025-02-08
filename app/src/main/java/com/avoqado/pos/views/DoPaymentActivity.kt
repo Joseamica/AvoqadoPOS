@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Observer
 import com.avoqado.pos.enums.Acquirer
 import com.avoqado.pos.AppfinRestClientConfigure
+import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.MainActivity
 import com.avoqado.pos.OperationFlowHolder
@@ -125,8 +126,8 @@ class DoPaymentActivity : ComponentActivity() {
                     Log.i(TAG, "PaymentId: ${operationResponse.id}")
                     Log.i(TAG, "OperationNumber: ${operationResponse.ticketId}")
 
-                    OperationFlowHolder.paymentRepository.getCachePaymentInfo()?.let {info ->
-                        OperationFlowHolder.paymentRepository.setCachePaymentInfo(
+                    AvoqadoApp.paymentRepository.getCachePaymentInfo()?.let { info ->
+                        AvoqadoApp.paymentRepository.setCachePaymentInfo(
                             paymentInfoResult = info.copy(
                                 paymentId = operationResponse.ticketId.toString(),
                                 tipAmount = operationResponse.amount.breakdownList?.firstOrNull { breakdown ->  breakdown.description == "TIP" }?.amount?.toAmountMXDouble() ?: 0.0,

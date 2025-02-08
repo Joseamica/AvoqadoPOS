@@ -3,8 +3,10 @@ package com.avoqado.pos.features.payment.presentation.paymentResult
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.domain.models.PaymentStatus
+import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.destinations.MainDests
@@ -22,7 +24,7 @@ import kotlinx.coroutines.launch
 class PaymentResultViewModel(
     private val navigationDispatcher: NavigationDispatcher,
     private val paymentRepository: PaymentRepository,
-    private val sessionManager: SessionManager
+    private val terminalRepository: TerminalRepository
 ) : ViewModel() {
     private val _paymentResult = MutableStateFlow<PaymentResultViewState>(PaymentResultViewState())
     val paymentResult: StateFlow<PaymentResultViewState> = _paymentResult.asStateFlow()
@@ -49,7 +51,7 @@ class PaymentResultViewModel(
             } catch (e: Exception) {
                 null
             }
-            val terminal = sessionManager.getTerminalInfo()
+            val terminal = terminalRepository.getTerminalId(AvoqadoApp.terminalSerialCode)
             val token =
                 "${info.venueId}-${info.tableNumber}-${info.billId}-${System.currentTimeMillis()}"
 

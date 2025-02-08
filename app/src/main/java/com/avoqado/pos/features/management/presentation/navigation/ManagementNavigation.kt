@@ -3,6 +3,7 @@ package com.avoqado.pos.features.management.presentation.navigation
 import android.content.Context
 import androidx.compose.runtime.remember
 import androidx.navigation.NavGraphBuilder
+import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
@@ -18,14 +19,13 @@ import com.avoqado.pos.features.management.presentation.home.HomeViewModel
 
 fun NavGraphBuilder.managementNavigation(
     navigationDispatcher: NavigationDispatcher,
-    context: Context,
     snackbarDelegate: SnackbarDelegate
 ) {
     composableHolder(ManagementDests.Tables) {
         val homeViewModel = remember {
             HomeViewModel(
                 navigationDispatcher = navigationDispatcher,
-                sessionManager = SessionManager(context)
+                sessionManager = AvoqadoApp.sessionManager
             )
         }
         HomeScreen(
@@ -40,8 +40,8 @@ fun NavGraphBuilder.managementNavigation(
                 snackbarDelegate = snackbarDelegate,
                 tableNumber = it.arguments?.getString(ManagementDests.TableDetail.ARG_TABLE_ID) ?: "",
                 venueId = it.arguments?.getString(ManagementDests.TableDetail.ARG_VENUE_ID) ?: "",
-                managementRepository = OperationFlowHolder.managementRepository,
-                listenTableEventsUseCase = ListenTableEventsUseCase(OperationFlowHolder.managementRepository)
+                managementRepository = AvoqadoApp.managementRepository,
+                listenTableEventsUseCase = ListenTableEventsUseCase(AvoqadoApp.managementRepository)
             )
         }
 
@@ -54,8 +54,8 @@ fun NavGraphBuilder.managementNavigation(
         val splitByProductViewModel = remember {
             SplitByProductViewModel(
                 navigationDispatcher = navigationDispatcher,
-                managementRepository = OperationFlowHolder.managementRepository,
-                paymentRepository = OperationFlowHolder.paymentRepository
+                managementRepository = AvoqadoApp.managementRepository,
+                paymentRepository = AvoqadoApp.paymentRepository
             )
         }
 
