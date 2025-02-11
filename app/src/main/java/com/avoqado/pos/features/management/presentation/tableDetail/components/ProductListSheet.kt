@@ -8,8 +8,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -22,19 +27,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.features.management.presentation.tableDetail.model.Product
 import com.avoqado.pos.ui.screen.ProductRow
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
+import com.avoqado.pos.core.presentation.theme.buttonGrayColor
+import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductListSheet(
     onDismissRequest: () -> Unit,
+    onPrint: () -> Unit = {},
     products: List<Product>,
     modalSheetState: SheetState = rememberModalBottomSheetState()
 ){
@@ -50,7 +60,8 @@ fun ProductListSheet(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "Productos",
@@ -58,6 +69,31 @@ fun ProductListSheet(
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f)
                 )
+
+                Button(
+                    onClick = onPrint,
+                    modifier = Modifier
+                        .height(36.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = buttonGrayColor
+                    )
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.baseline_print_24),
+                        contentDescription = "",
+                        tint = buttonGrayColor
+                    )
+
+                    Spacer(Modifier.width(8.dp))
+
+                    Text(
+                        text = "Imprimir",
+                        color = buttonGrayColor,
+                        fontSize = 16.sp
+                    )
+                }
             }
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn(
@@ -101,7 +137,7 @@ fun ProductListSheet(
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@Urovo9100DevicePreview
 @Composable
 fun PreviewProductListSheet(){
     AvoqadoTheme {

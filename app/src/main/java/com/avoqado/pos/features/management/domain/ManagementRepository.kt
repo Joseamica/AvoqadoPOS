@@ -5,7 +5,8 @@ import com.avoqado.pos.features.management.domain.models.TableDetail
 import kotlinx.coroutines.flow.Flow
 
 interface ManagementRepository {
-    fun getTableBill()
+    suspend fun getTableDetail(tableNumber: String, venueId: String)
+    suspend fun getTableBill(tableBillId: String)
     fun getCachedTable() : TableDetail?
     fun setTableCache(table: TableDetail)
     fun connectToTableEvents(venueId: String, tableId: String)

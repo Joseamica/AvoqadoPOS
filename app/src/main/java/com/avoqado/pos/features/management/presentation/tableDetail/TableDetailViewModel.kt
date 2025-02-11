@@ -127,15 +127,17 @@ class TableDetailViewModel(
                                 totalPrice = pair.value.sumOf { it.price.toAmountMXDouble() }
                             )
                         },
-                        paymentsDone = billDetail.payments?.map { payment ->
-                            com.avoqado.pos.features.management.presentation.tableDetail.model.Payment(
+                        paymentsDone = billDetail.payments?.map { payment -> Payment(
                                 amount = payment.amount.toAmountMXDouble(),
                                 products = payment.products?.map { it.name } ?: emptyList(),
                                 splitType = payment.splitType,
                                 equalPartsPayedFor = payment.equalPartsPayedFor,
                                 equalPartsPartySize = payment.equalPartsPartySize
                             )
-                        } ?: emptyList()
+                        } ?: emptyList(),
+                        currentSplitType = billDetail.payments?.lastOrNull()?.splitType?.let {
+                            SplitType.valueOf(it)
+                        }
                     )
                 }
 

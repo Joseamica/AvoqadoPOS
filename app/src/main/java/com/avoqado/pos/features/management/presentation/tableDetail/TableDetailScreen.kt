@@ -1,5 +1,6 @@
 package com.avoqado.pos.features.management.presentation.tableDetail
 
+import android.os.RemoteException
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -32,6 +33,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.avoqado.pos.CURRENCY_LABEL
+import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.components.KeyboardSheet
 import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
@@ -47,16 +50,28 @@ import com.avoqado.pos.ui.screen.ToolbarWithIcon
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.theme.unselectedItemColor
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
+import com.avoqado.pos.core.presentation.utils.getBitmap
+import com.menta.android.printer.i9100.core.DevicePrintImpl
+import com.menta.android.printer.i9100.model.Align
+import com.menta.android.printer.i9100.model.TextFormat
+import com.menta.android.printer.i9100.util.TIP_LABEL
+import com.menta.android.printer.i9100.util.TOTAL_LABEL
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TableDetailScreen(
-    tableDetailViewModel: TableDetailViewModel
+    tableDetailViewModel: TableDetailViewModel,
+    devicePrintImpl: DevicePrintImpl
 ) {
     val tableDetails by tableDetailViewModel.tableDetail.collectAsStateWithLifecycle()
     val isLoading by tableDetailViewModel.isLoading.collectAsStateWithLifecycle()
     val showCustomAmount by tableDetailViewModel.showPaymentPicker.collectAsStateWithLifecycle()
     var showModalSheet by rememberSaveable { mutableStateOf(false) }
+    val context = LocalContext.current
 
     ObserverLifecycleEvents(
         onCreate = {
@@ -91,6 +106,86 @@ fun TableDetailScreen(
     if (showModalSheet) {
         ProductListSheet(
             onDismissRequest = { showModalSheet = false },
+            onPrint = {
+                val scope = CoroutineScope(Dispatchers.IO)
+
+                scope.launch {
+                    devicePrintImpl.addLine(
+                        TextFormat(align = Align.CENTER, bold = true, font = 1),
+                        "Madre Cafecito"
+                    )
+                    devicePrintImpl.addLine(
+                        TextFormat(align = Align.CENTER, bold = false),
+                        "Guanajuato 115, Roma Nte., Cuauhtémoc"
+                    )
+
+                    devicePrintImpl.addLinebreak(1)
+
+                    try {
+                        devicePrintImpl.addImage(
+                            context.getBitmap(
+                                R.drawable.line,
+                            )
+                        )
+                    } catch (e: RemoteException) {
+                        e.printStackTrace()
+                    }
+
+                    devicePrintImpl.addLine(
+                        TextFormat(bold = false, font = 1),
+                        "MESA: ${tableDetails.name}"
+                    )
+
+                    devicePrintImpl.addLine(
+                        TextFormat(bold = false, font = 1),
+                        "MESERO: ${tableDetails.waiterName.uppercase()}"
+                    )
+
+                    devicePrintImpl.addLinebreak(1)
+
+                    try {
+                        devicePrintImpl.addImage(
+                            context.getBitmap(
+                                R.drawable.line,
+                            )
+                        )
+                    } catch (e: RemoteException) {
+                        e.printStackTrace()
+                    }
+
+                    devicePrintImpl.addTripleColumnText(
+                        TextFormat(bold = true, font = 1),
+                        "CANT.",
+                        "DESCRIPCION",
+                        "IMPORTE"
+                    )
+
+                    tableDetails.products.forEach { product ->
+                        devicePrintImpl.addTripleColumnText(
+                            TextFormat(bold = false, font = 1),
+                            product.quantity.toString(),
+                            product.name,
+                            "\$${product.totalPrice.toString().toAmountMx()}"
+                        )
+                    }
+
+                    devicePrintImpl.addLinebreak(1)
+
+                    devicePrintImpl.addDoubleColumnText(
+                        TextFormat(bold = true, font = 1),
+                        TOTAL_LABEL.uppercase(Locale.getDefault()),
+                        tableDetails.totalAmount.toString().toAmountMx()
+                    )
+
+                    devicePrintImpl.addLinebreak(1)
+
+                    try {
+                        devicePrintImpl.startPrint()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            },
             products = tableDetails.products
         )
     }

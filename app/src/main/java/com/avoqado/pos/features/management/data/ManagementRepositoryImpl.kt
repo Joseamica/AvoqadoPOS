@@ -14,7 +14,12 @@ import kotlinx.coroutines.flow.map
 class ManagementRepositoryImpl(
     private val managementCacheStorage: ManagementCacheStorage
 ): ManagementRepository {
-    override fun getTableBill() {
+
+    override suspend fun getTableDetail(tableNumber: String, venueId: String) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getTableBill(tableBillId: String) {
         TODO("Not yet implemented")
     }
 
