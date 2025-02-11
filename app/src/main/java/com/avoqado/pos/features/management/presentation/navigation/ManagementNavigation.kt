@@ -16,10 +16,12 @@ import com.avoqado.pos.features.management.presentation.tableDetail.TableDetailV
 import com.avoqado.pos.router.composableHolder
 import com.avoqado.pos.features.management.presentation.home.HomeScreen
 import com.avoqado.pos.features.management.presentation.home.HomeViewModel
+import com.menta.android.printer.i9100.core.DevicePrintImpl
 
 fun NavGraphBuilder.managementNavigation(
     navigationDispatcher: NavigationDispatcher,
-    snackbarDelegate: SnackbarDelegate
+    snackbarDelegate: SnackbarDelegate,
+    devicePrintImpl: DevicePrintImpl
 ) {
     composableHolder(ManagementDests.Tables) {
         val homeViewModel = remember {
@@ -46,7 +48,8 @@ fun NavGraphBuilder.managementNavigation(
         }
 
         TableDetailScreen(
-            tableDetailViewModel = tableDetailViewModel
+            tableDetailViewModel = tableDetailViewModel,
+            devicePrintImpl = devicePrintImpl
         )
     }
 

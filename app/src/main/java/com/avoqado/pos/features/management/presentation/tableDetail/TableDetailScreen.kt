@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.R
+import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.presentation.components.KeyboardSheet
 import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
@@ -51,6 +52,7 @@ import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.theme.unselectedItemColor
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 import com.avoqado.pos.core.presentation.utils.getBitmap
+import com.avoqado.pos.features.management.presentation.tableDetail.model.Payment
 import com.menta.android.printer.i9100.core.DevicePrintImpl
 import com.menta.android.printer.i9100.model.Align
 import com.menta.android.printer.i9100.model.TextFormat
@@ -212,7 +214,8 @@ private fun TableDetailContent(
     onTogglePaymentSheet: () -> Unit,
     onShowBillProducts: () -> Unit,
     onOpenPayByProduct: () -> Unit,
-    onPayCustomAmount: () -> Unit
+    onPayCustomAmount: () -> Unit,
+    onOpenPayByPerson: () -> Unit = {}
 ) {
     val context = LocalContext.current
     Column(
@@ -361,10 +364,13 @@ private fun TableDetailContent(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     GenericOptionsUI(
+                        splitType = tableDetails.currentSplitType,
                         onClickProducts = {
                             onOpenPayByProduct()
                         },
-                        onClickPeople = {},
+                        onClickPeople = {
+                            onOpenPayByPerson()
+                        },
                         onClickCustom = {
                             onPayCustomAmount()
                         }
@@ -400,6 +406,67 @@ fun AmountDisplayPreview() {
             onPayCustomAmount = {},
             tableDetails = TableDetail(
                 name = "Mesa 1",
+            )
+        )
+    }
+}
+
+@Urovo9100DevicePreview
+@Composable
+fun AmountDisplayProductsPreview() {
+    AvoqadoTheme {
+        TableDetailContent(
+            isLoading = false,
+            onNavigateBack = {},
+            onTogglePaymentSheet = {},
+            onShowBillProducts = {},
+            onOpenPayByProduct = {},
+            onPayCustomAmount = {},
+            tableDetails = TableDetail(
+                name = "Mesa 1",
+                currentSplitType = SplitType.PERPRODUCT,
+                totalAmount = 100.0,
+                paymentsDone = listOf(
+                    Payment(
+                        amount = 20.0,
+                        products = listOf(
+                            "qwe123",
+                            "asd123"
+                        ),
+                        splitType = SplitType.PERPRODUCT.value,
+                        equalPartsPayedFor = null,
+                        equalPartsPartySize = null
+                    )
+                )
+            )
+        )
+    }
+}
+
+@Urovo9100DevicePreview
+@Composable
+fun AmountDisplayPartySizePreview() {
+    AvoqadoTheme {
+        TableDetailContent(
+            isLoading = false,
+            onNavigateBack = {},
+            onTogglePaymentSheet = {},
+            onShowBillProducts = {},
+            onOpenPayByProduct = {},
+            onPayCustomAmount = {},
+            tableDetails = TableDetail(
+                name = "Mesa 1",
+                currentSplitType = SplitType.EQUALPARTS,
+                totalAmount = 100.0,
+                paymentsDone = listOf(
+                    Payment(
+                        amount = 20.0,
+                        products = emptyList(),
+                        splitType = SplitType.EQUALPARTS.value,
+                        equalPartsPartySize = "5",
+                        equalPartsPayedFor = "1"
+                    )
+                )
             )
         )
     }

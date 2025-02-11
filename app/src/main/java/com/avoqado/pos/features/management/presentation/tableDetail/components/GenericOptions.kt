@@ -4,6 +4,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.FlowRowScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,9 +29,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.avoqado.pos.R
+import com.avoqado.pos.core.domain.models.SplitType
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun GenericOptionsUI(
+    splitType: SplitType?,
     onClickProducts: () -> Unit,
     onClickPeople: () -> Unit = {},
     onClickCustom: () -> Unit = {}
@@ -38,29 +44,108 @@ fun GenericOptionsUI(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            GenericOptionCard(
-                icon = painterResource(R.drawable.icon_products),
-                title = "Productos",
-                onClick = {
-                    onClickProducts()
-                },
-                modifier = Modifier.weight(1f)
 
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-            GenericOptionCard(
-                icon = painterResource(R.drawable.icon_edit),
-                title = "Monto",
-                onClick = {
-                    onClickCustom()
-                },
-                modifier = Modifier.weight(1f)
-            )
+        val items = splitType?.let {
+            when(it) {
+                SplitType.CUSTOMAMOUNT -> null
+                SplitType.FULLPAYMENT -> emptyList()
+                else -> listOf(it)
+            }
+
+        } ?: listOf(SplitType.PERPRODUCT, SplitType.EQUALPARTS, SplitType.CUSTOMAMOUNT)
+
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            maxItemsInEachRow = 2,
+        ) {
+            items.forEach {
+                GenericOptionCard(
+                    type = it,
+                    onClick = {
+                        when(it) {
+                            SplitType.PERPRODUCT -> onClickProducts()
+                            SplitType.EQUALPARTS -> onClickPeople()
+                            SplitType.CUSTOMAMOUNT -> onClickCustom()
+                            SplitType.FULLPAYMENT -> {}
+                        }
+                    }
+                )
+            }
         }
+
+//        Row(
+//            modifier = Modifier.fillMaxWidth(),
+//            horizontalArrangement = Arrangement.SpaceBetween
+//        ) {
+//            if (splitType != SplitType.EQUALPARTS) {
+//                GenericOptionCard(
+//                    icon = painterResource(R.drawable.icon_products),
+//                    title = "Productos",
+//                    onClick = {
+//                        onClickProducts()
+//                    },
+//                    modifier = Modifier.weight(1f)
+//
+//                )
+//            }
+//
+//            Spacer(modifier = Modifier.width(10.dp))
+//            GenericOptionCard(
+//                icon = painterResource(R.drawable.icon_people),
+//                title = "Personas",
+//                onClick = {
+//                    onClickPeople()
+//                },
+//                modifier = Modifier.weight(1f)
+//            )
+//        }
+//
+//        Spacer(modifier = Modifier.height(10.dp))
+//        Row {
+//            GenericOptionCard(
+//                icon = painterResource(R.drawable.icon_edit),
+//                title = "Cantidad Personalizada",
+//                iscustom = true,
+//                onClick = {
+//                    onClickCustom()
+//                },
+//                modifier = Modifier.weight(1f)
+//            )
+//        }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun FlowRowScope.GenericOptionCard(
+    type: SplitType,
+    onClick: () -> Unit
+) {
+    when (type) {
+        SplitType.PERPRODUCT -> GenericOptionCard(
+            icon = painterResource(R.drawable.icon_products),
+            title = "Productos",
+            onClick = onClick,
+            modifier = Modifier.weight(1f)
+        )
+
+        SplitType.EQUALPARTS -> GenericOptionCard(
+            icon = painterResource(R.drawable.icon_people),
+            title = "Personas",
+            onClick = onClick,
+            modifier = Modifier.weight(1f)
+        )
+
+        SplitType.CUSTOMAMOUNT -> GenericOptionCard(
+            icon = painterResource(R.drawable.icon_edit),
+            title = "Cantidad Personalizada",
+            iscustom = true,
+            onClick = onClick,
+            modifier = Modifier.weight(1f)
+        )
+
+        else -> {}
     }
 }
 
@@ -85,7 +170,7 @@ fun GenericOptionCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp)
+                .height(if (iscustom) 70.dp else 100.dp)
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -94,7 +179,7 @@ fun GenericOptionCard(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {

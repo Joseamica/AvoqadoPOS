@@ -34,6 +34,7 @@ import com.avoqado.pos.features.authorization.presentation.splash.SplashViewMode
 import com.avoqado.pos.features.payment.presentation.navigation.paymentNavigation
 import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
+import com.menta.android.printer.i9100.core.DevicePrintImpl
 import com.menta.android.restclient.core.Storage
 import kotlinx.coroutines.flow.collectLatest
 
@@ -186,7 +187,8 @@ fun AppRouter(
 
                 managementNavigation(
                     navigationDispatcher = navigationDispatcher,
-                    snackbarDelegate = snackbarDelegate
+                    snackbarDelegate = snackbarDelegate,
+                    devicePrintImpl = DevicePrintImpl(context)
                 )
 
                 paymentNavigation(
