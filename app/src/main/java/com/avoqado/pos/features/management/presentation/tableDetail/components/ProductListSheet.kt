@@ -46,7 +46,9 @@ fun ProductListSheet(
     onDismissRequest: () -> Unit,
     onPrint: () -> Unit = {},
     products: List<Product>,
-    modalSheetState: SheetState = rememberModalBottomSheetState()
+    modalSheetState: SheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = true
+    )
 ){
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,

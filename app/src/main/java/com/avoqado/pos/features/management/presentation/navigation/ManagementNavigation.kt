@@ -2,6 +2,7 @@ package com.avoqado.pos.features.management.presentation.navigation
 
 import android.content.Context
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.OperationFlowHolder
@@ -22,8 +23,7 @@ import com.menta.android.printer.i9100.core.DevicePrintImpl
 
 fun NavGraphBuilder.managementNavigation(
     navigationDispatcher: NavigationDispatcher,
-    snackbarDelegate: SnackbarDelegate,
-    devicePrintImpl: DevicePrintImpl
+    snackbarDelegate: SnackbarDelegate
 ) {
     composableHolder(ManagementDests.Tables) {
         val homeViewModel = remember {
@@ -38,6 +38,7 @@ fun NavGraphBuilder.managementNavigation(
     }
 
     composableHolder(ManagementDests.TableDetail) {
+        val context = LocalContext.current
         val tableDetailViewModel = remember {
             TableDetailViewModel(
                 navigationDispatcher = navigationDispatcher,
@@ -51,7 +52,7 @@ fun NavGraphBuilder.managementNavigation(
 
         TableDetailScreen(
             tableDetailViewModel = tableDetailViewModel,
-            devicePrintImpl = devicePrintImpl
+            devicePrintImpl = DevicePrintImpl(context)
         )
     }
 

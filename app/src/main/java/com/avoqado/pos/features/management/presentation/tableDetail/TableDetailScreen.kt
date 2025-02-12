@@ -13,7 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -264,7 +266,7 @@ private fun TableDetailContent(
                 onRefresh = onPullToRefresh
             ){
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(16.dp).verticalScroll(rememberScrollState()),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceBetween
                 ) {
@@ -373,34 +375,37 @@ private fun TableDetailContent(
                         }
                     }
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        GenericOptionsUI(
-                            splitType = tableDetails.currentSplitType,
-                            onClickProducts = {
-                                onOpenPayByProduct()
-                            },
-                            onClickPeople = {
-                                onOpenPayByPerson()
-                            },
-                            onClickCustom = {
-                                onPayCustomAmount()
-                            }
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
 
-                        MainButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "Pagar \$${tableDetails.totalPending.toString().toAmountMx()}",
-                            onClickR = {
-                                onTogglePaymentSheet()
-                            }
-                        )
+                    if (tableDetails.totalPending > 0) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            GenericOptionsUI(
+                                splitType = tableDetails.currentSplitType,
+                                onClickProducts = {
+                                    onOpenPayByProduct()
+                                },
+                                onClickPeople = {
+                                    onOpenPayByPerson()
+                                },
+                                onClickCustom = {
+                                    onPayCustomAmount()
+                                }
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
 
-                        Spacer(modifier = Modifier.height(16.dp))
+                            MainButton(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = "Pagar \$${tableDetails.totalPending.toString().toAmountMx()}",
+                                onClickR = {
+                                    onTogglePaymentSheet()
+                                }
+                            )
+
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
                     }
                 }
             }

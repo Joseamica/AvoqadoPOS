@@ -187,8 +187,7 @@ fun AppRouter(
 
                 managementNavigation(
                     navigationDispatcher = navigationDispatcher,
-                    snackbarDelegate = snackbarDelegate,
-                    devicePrintImpl = DevicePrintImpl(context)
+                    snackbarDelegate = snackbarDelegate
                 )
 
                 paymentNavigation(
