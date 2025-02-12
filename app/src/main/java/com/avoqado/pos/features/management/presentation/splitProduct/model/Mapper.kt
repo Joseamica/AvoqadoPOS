@@ -9,7 +9,8 @@ fun TableDetail.toUI(): SplitByProductViewState {
         totalPending = totalPending.toString().toAmountMx(),
         products = products.map { it.toUI() },
         selectedProducts = emptyList(),
-        waiterName = waiterName ?: ""
+        waiterName = waiterName ?: "",
+        paidProducts = this.paymentOverview?.paidProducts?: emptyList()
     )
 }
 

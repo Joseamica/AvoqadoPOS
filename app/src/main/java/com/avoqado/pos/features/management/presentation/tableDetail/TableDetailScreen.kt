@@ -42,6 +42,7 @@ import com.avoqado.pos.core.presentation.model.IconAction
 import com.avoqado.pos.core.presentation.model.IconType
 import com.avoqado.pos.core.presentation.components.MainButton
 import com.avoqado.pos.core.presentation.components.ObserverLifecycleEvents
+import com.avoqado.pos.core.presentation.components.PullToRefreshBox
 import com.avoqado.pos.core.presentation.theme.AppFont
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.features.management.presentation.tableDetail.components.GenericOptionsUI
@@ -74,6 +75,7 @@ fun TableDetailScreen(
     val showCustomAmount by tableDetailViewModel.showPaymentPicker.collectAsStateWithLifecycle()
     var showModalSheet by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
+    val isRefreshing by tableDetailViewModel.isRefreshing.collectAsStateWithLifecycle()
 
     ObserverLifecycleEvents(
         onCreate = {
@@ -102,7 +104,12 @@ fun TableDetailScreen(
         },
         onPayCustomAmount = {
             tableDetailViewModel.showPaymentPicker()
-        }
+        },
+        onOpenPayByPerson = {
+            tableDetailViewModel.goToSplitBillByPerson()
+        },
+        onPullToRefresh = tableDetailViewModel::onPullToRefreshTrigger,
+        isRefreshing = isRefreshing
     )
 
     if (showModalSheet) {
@@ -206,11 +213,14 @@ fun TableDetailScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TableDetailContent(
     tableDetails: TableDetail,
     onNavigateBack: () -> Unit,
     isLoading: Boolean,
+    isRefreshing: Boolean,
+    onPullToRefresh: () -> Unit,
     onTogglePaymentSheet: () -> Unit,
     onShowBillProducts: () -> Unit,
     onOpenPayByProduct: () -> Unit,
@@ -248,144 +258,150 @@ private fun TableDetailContent(
                 CircularProgressIndicator()
             }
         } else {
-            Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
+            PullToRefreshBox(
+                modifier = Modifier.weight(1f),
+                isRefreshing = isRefreshing,
+                onRefresh = onPullToRefresh
+            ){
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    modifier = Modifier.padding(16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(
-                        text = "Queda por pagar",
-                        modifier = Modifier.padding(vertical = 8.dp),
-                        fontSize = 24.sp,
-                        color = Color.Black
-                    )
-                    Text(
-                        text = "\$${tableDetails.totalPending.toString().toAmountMx()}",
-                        fontSize = 62.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "Queda por pagar",
+                            modifier = Modifier.padding(vertical = 8.dp),
+                            fontSize = 24.sp,
+                            color = Color.Black
+                        )
+                        Text(
+                            text = "\$${tableDetails.totalPending.toString().toAmountMx()}",
+                            fontSize = 62.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.Black
+                        )
 
-                    if (tableDetails.paymentsDone.isNotEmpty()) {
-                        Spacer(Modifier.height(16.dp))
+                        if (tableDetails.paymentsDone.isNotEmpty()) {
+                            Spacer(Modifier.height(16.dp))
 
-                        Column(
-                            modifier = Modifier
-                                .border(
-                                    width = 2.dp,
-                                    color = Color.LightGray,
-                                    shape = RoundedCornerShape(10.dp)
-                                )
-                                .padding(horizontal = 8.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 12.dp)
-                            ) {
-                                Text(
-                                    text = "${tableDetails.paymentsDone.size} Pagos",
-                                    modifier = Modifier.weight(1f),
-                                    style = MaterialTheme.typography.titleMedium.copy(
-                                        fontFamily = AppFont.EffraFamily
-                                    ),
-                                    color = Color.Black
-                                )
-
-                                Spacer(Modifier.width(8.dp))
-
-                                Text(
-                                    text = "\$${tableDetails.totalPayed.toString().toAmountMx()}",
-                                    style = MaterialTheme.typography.titleMedium.copy(
-                                        fontFamily = AppFont.EffraFamily
-                                    ),
-                                    color = unselectedItemColor
-                                )
-                            }
-                            Divider(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(2.dp)
-                                    .background(Color.LightGray)
-                            )
                             Column(
-                                modifier = Modifier.padding(16.dp)
+                                modifier = Modifier
+                                    .border(
+                                        width = 2.dp,
+                                        color = Color.LightGray,
+                                        shape = RoundedCornerShape(10.dp)
+                                    )
+                                    .padding(horizontal = 8.dp)
                             ) {
-                                tableDetails.paymentsDone.groupBy { it.splitType }.forEach { paymentEntry ->
-                                    val totalPayment = paymentEntry.value.sumOf { it.amount }
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                    ) {
-                                        Text(
-                                            text = when(paymentEntry.key) {
-                                                "PERPRODUCT" -> "Por productos"
-                                                "EQUALPARTS" -> {
-                                                    val partySize = paymentEntry.value.first().equalPartsPartySize
-                                                    val partySizePayed = paymentEntry.value.sumOf { it.equalPartsPayedFor?.toInt() ?: 0 }
-                                                    "$partySizePayed partes de $partySize"
-                                                }
-                                                else -> "Cantidad personalizada"
-                                            },
-                                            modifier = Modifier.weight(1f),
-                                            style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontFamily = AppFont.EffraFamily
-                                            ),
-                                            color = Color.Black
-                                        )
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                                ) {
+                                    Text(
+                                        text = "${tableDetails.paymentsDone.size} Pagos",
+                                        modifier = Modifier.weight(1f),
+                                        style = MaterialTheme.typography.titleMedium.copy(
+                                            fontFamily = AppFont.EffraFamily
+                                        ),
+                                        color = Color.Black
+                                    )
 
-                                        Spacer(Modifier.width(8.dp))
+                                    Spacer(Modifier.width(8.dp))
 
-                                        Text(
-                                            text = "\$${totalPayment.toString().toAmountMx()}",
-                                            style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontFamily = AppFont.EffraFamily,
-                                                fontWeight = FontWeight.Bold
-                                            ),
-                                            color = Color.Black
-                                        )
+                                    Text(
+                                        text = "\$${tableDetails.totalPayed.toString().toAmountMx()}",
+                                        style = MaterialTheme.typography.titleMedium.copy(
+                                            fontFamily = AppFont.EffraFamily
+                                        ),
+                                        color = unselectedItemColor
+                                    )
+                                }
+                                Divider(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(2.dp)
+                                        .background(Color.LightGray)
+                                )
+                                Column(
+                                    modifier = Modifier.padding(16.dp)
+                                ) {
+                                    tableDetails.paymentsDone.groupBy { it.splitType }.forEach { paymentEntry ->
+                                        val totalPayment = paymentEntry.value.sumOf { it.amount }
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                        ) {
+                                            Text(
+                                                text = when(paymentEntry.key) {
+                                                    "PERPRODUCT" -> "Por productos"
+                                                    "EQUALPARTS" -> {
+                                                        val partySize = paymentEntry.value.first().equalPartsPartySize
+                                                        val partySizePayed = paymentEntry.value.sumOf { it.equalPartsPayedFor?.toInt() ?: 0 }
+                                                        "$partySizePayed partes de $partySize"
+                                                    }
+                                                    else -> "Cantidad personalizada"
+                                                },
+                                                modifier = Modifier.weight(1f),
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    fontFamily = AppFont.EffraFamily
+                                                ),
+                                                color = Color.Black
+                                            )
+
+                                            Spacer(Modifier.width(8.dp))
+
+                                            Text(
+                                                text = "\$${totalPayment.toString().toAmountMx()}",
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    fontFamily = AppFont.EffraFamily,
+                                                    fontWeight = FontWeight.Bold
+                                                ),
+                                                color = Color.Black
+                                            )
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    GenericOptionsUI(
-                        splitType = tableDetails.currentSplitType,
-                        onClickProducts = {
-                            onOpenPayByProduct()
-                        },
-                        onClickPeople = {
-                            onOpenPayByPerson()
-                        },
-                        onClickCustom = {
-                            onPayCustomAmount()
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        GenericOptionsUI(
+                            splitType = tableDetails.currentSplitType,
+                            onClickProducts = {
+                                onOpenPayByProduct()
+                            },
+                            onClickPeople = {
+                                onOpenPayByPerson()
+                            },
+                            onClickCustom = {
+                                onPayCustomAmount()
+                            }
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    MainButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = "Pagar \$${tableDetails.totalPending.toString().toAmountMx()}",
-                        onClickR = {
-                            onTogglePaymentSheet()
-                        }
-                    )
+                        MainButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "Pagar \$${tableDetails.totalPending.toString().toAmountMx()}",
+                            onClickR = {
+                                onTogglePaymentSheet()
+                            }
+                        )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
                 }
             }
         }
@@ -404,6 +420,8 @@ fun AmountDisplayPreview() {
             onShowBillProducts = {},
             onOpenPayByProduct = {},
             onPayCustomAmount = {},
+            onPullToRefresh = {},
+            isRefreshing = false,
             tableDetails = TableDetail(
                 name = "Mesa 1",
             )
@@ -422,6 +440,8 @@ fun AmountDisplayProductsPreview() {
             onShowBillProducts = {},
             onOpenPayByProduct = {},
             onPayCustomAmount = {},
+            onPullToRefresh = {},
+            isRefreshing = false,
             tableDetails = TableDetail(
                 name = "Mesa 1",
                 currentSplitType = SplitType.PERPRODUCT,
@@ -454,6 +474,8 @@ fun AmountDisplayPartySizePreview() {
             onShowBillProducts = {},
             onOpenPayByProduct = {},
             onPayCustomAmount = {},
+            onPullToRefresh = {},
+            isRefreshing = false,
             tableDetails = TableDetail(
                 name = "Mesa 1",
                 currentSplitType = SplitType.EQUALPARTS,
@@ -465,6 +487,44 @@ fun AmountDisplayPartySizePreview() {
                         splitType = SplitType.EQUALPARTS.value,
                         equalPartsPartySize = "5",
                         equalPartsPayedFor = "1"
+                    )
+                )
+            )
+        )
+    }
+}
+
+@Urovo9100DevicePreview
+@Composable
+fun AmountDisplayCustomAmountPreview() {
+    AvoqadoTheme {
+        TableDetailContent(
+            isLoading = false,
+            onNavigateBack = {},
+            onTogglePaymentSheet = {},
+            onShowBillProducts = {},
+            onOpenPayByProduct = {},
+            onPayCustomAmount = {},
+            onPullToRefresh = {},
+            isRefreshing = false,
+            tableDetails = TableDetail(
+                name = "Mesa 1",
+                currentSplitType = SplitType.CUSTOMAMOUNT,
+                totalAmount = 100.0,
+                paymentsDone = listOf(
+                    Payment(
+                        amount = 20.0,
+                        products = emptyList(),
+                        splitType = SplitType.CUSTOMAMOUNT.value,
+                        equalPartsPartySize = "",
+                        equalPartsPayedFor = ""
+                    ),
+                    Payment(
+                        amount = 20.0,
+                        products = emptyList(),
+                        splitType = SplitType.CUSTOMAMOUNT.value,
+                        equalPartsPartySize = "",
+                        equalPartsPayedFor = ""
                     )
                 )
             )

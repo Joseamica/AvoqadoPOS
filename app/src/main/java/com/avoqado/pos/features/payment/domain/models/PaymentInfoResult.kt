@@ -14,5 +14,7 @@ data class PaymentInfoResult(
     val tableNumber: String,
     val venueId: String,
     val billId: String,
-    val products: List<String> = emptyList()
+    val products: List<String> = emptyList(),
+    val splitPartySize: Int = 0,
+    val splitSelectedPartySize: Int = 0
 )

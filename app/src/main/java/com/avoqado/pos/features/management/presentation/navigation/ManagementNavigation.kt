@@ -16,6 +16,8 @@ import com.avoqado.pos.features.management.presentation.tableDetail.TableDetailV
 import com.avoqado.pos.router.composableHolder
 import com.avoqado.pos.features.management.presentation.home.HomeScreen
 import com.avoqado.pos.features.management.presentation.home.HomeViewModel
+import com.avoqado.pos.features.management.presentation.splitPerson.SplitByPersonScreen
+import com.avoqado.pos.features.management.presentation.splitPerson.SplitByPersonViewModel
 import com.menta.android.printer.i9100.core.DevicePrintImpl
 
 fun NavGraphBuilder.managementNavigation(
@@ -63,6 +65,20 @@ fun NavGraphBuilder.managementNavigation(
         }
 
         SplitByProductScreen(
+            splitByProductViewModel
+        )
+    }
+
+    composableHolder(ManagementDests.SplitByPerson) {
+        val splitByProductViewModel = remember {
+            SplitByPersonViewModel(
+                navigationDispatcher = navigationDispatcher,
+                managementRepository = AvoqadoApp.managementRepository,
+                paymentRepository = AvoqadoApp.paymentRepository
+            )
+        }
+
+        SplitByPersonScreen(
             splitByProductViewModel
         )
     }

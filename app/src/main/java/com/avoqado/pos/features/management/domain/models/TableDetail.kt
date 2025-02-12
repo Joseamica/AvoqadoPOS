@@ -6,5 +6,6 @@ data class TableDetail(
     val totalPending: Double,
     val name: String,
     val totalAmount: Double,
-    val waiterName: String?
+    val waiterName: String?,
+    val paymentOverview: PaymentOverview?
 )

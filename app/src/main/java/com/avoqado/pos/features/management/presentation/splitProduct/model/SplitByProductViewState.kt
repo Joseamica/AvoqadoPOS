@@ -8,7 +8,8 @@ data class SplitByProductViewState(
     val totalPending: String = "0.00",
     val products: List<Product> = emptyList(),
     val selectedProducts: List<String> = emptyList(),
-    val waiterName: String = ""
+    val waiterName: String = "",
+    val paidProducts: List<String> = emptyList()
 ) {
     val totalQuantitySelected: Int
         get() = selectedProducts.size

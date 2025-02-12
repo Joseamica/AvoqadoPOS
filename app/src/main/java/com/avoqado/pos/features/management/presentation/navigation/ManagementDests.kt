@@ -35,4 +35,9 @@ sealed class ManagementDests : NavigationAction {
         override val route: String
             get() = "splitByProduct"
     }
+
+    data object SplitByPerson: ManagementDests(){
+        override val route: String
+            get() = "splitByPerson"
+    }
 }

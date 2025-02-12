@@ -38,6 +38,9 @@ class TableDetailViewModel(
     private val managementRepository: ManagementRepository,
     private val listenTableEventsUseCase: ListenTableEventsUseCase
 ) : ViewModel() {
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     private val _tableDetail = MutableStateFlow<TableDetail>(TableDetail())
     val tableDetail: StateFlow<TableDetail> = _tableDetail.asStateFlow()
 
@@ -58,6 +61,14 @@ class TableDetailViewModel(
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    fun onPullToRefreshTrigger() {
+        _isRefreshing.update { true }
+        viewModelScope.launch {
+            _isRefreshing.update { false }
+            fetchTableDetail()
+        }
+    }
 
     fun startListeningUpdates(){
         viewModelScope.launch (Dispatchers.IO) {
@@ -174,6 +185,26 @@ class TableDetailViewModel(
                 tableNumber = tableNumber,
                 venueId = venueId,
                 splitType = SplitType.PERPRODUCT,
+                billId = _tableDetail.value.billId
+            )
+        )
+        navigationDispatcher.navigateWithArgs(
+            MainDests.SplitByProduct
+        )
+    }
+
+    fun goToSplitBillByPerson(){
+        AvoqadoApp.paymentRepository.setCachePaymentInfo(
+            PaymentInfoResult(
+                paymentId = "",
+                tipAmount = 0.0,
+                subtotal = 0.0,
+                rootData = "",
+                date = LocalDateTime.now(),
+                waiterName = _tableDetail.value.waiterName,
+                tableNumber = tableNumber,
+                venueId = venueId,
+                splitType = SplitType.EQUALPARTS,
                 billId = _tableDetail.value.billId
             )
         )

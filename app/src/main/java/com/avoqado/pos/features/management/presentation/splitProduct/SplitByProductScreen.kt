@@ -24,11 +24,12 @@ import com.avoqado.pos.features.management.presentation.splitProduct.model.Split
 import com.avoqado.pos.features.management.presentation.tableDetail.model.Product
 import com.avoqado.pos.ui.screen.ToolbarWithIcon
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
+import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 
 @Composable
 fun SplitByProductScreen(
     viewmodel: SplitByProductViewModel
-){
+) {
     val state by viewmodel.tableDetail.collectAsStateWithLifecycle()
 
     SplitByProductContent(
@@ -51,7 +52,7 @@ fun SplitByProductContent(
     onNavigateBack: () -> Unit,
     onTapToPay: () -> Unit,
     onItemSelected: (Product) -> Unit
-){
+) {
     val context = LocalContext.current
 
     Column(
@@ -77,17 +78,20 @@ fun SplitByProductContent(
         ) {
             Spacer(modifier = Modifier.height(24.dp))
 
-            Column (
+            Column(
                 modifier = Modifier.weight(1f)
             ) {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
                     items(state.products.size) { index ->
                         val product = state.products[index]
+                        val isPaid = state.paidProducts.contains(product.id)
                         SelectableItemRow(
                             label = product.name,
-                            trailingLabel = "\$${product.totalPrice.toString().toAmountMx()}",
+                            trailingLabel = if (isPaid) "Pagado" else "\$${
+                                product.totalPrice.toString().toAmountMx()
+                            }",
                             isSelected = product.id in state.selectedProducts,
-                            onItemTap = onItemSelected,
+                            onItemTap = if (isPaid) null else onItemSelected,
                             data = product
                         )
                     }
@@ -111,9 +115,9 @@ fun SplitByProductContent(
     }
 }
 
-@Preview
+@Urovo9100DevicePreview
 @Composable
-fun PreivewSplitByProduct(){
+fun PreivewSplitByProduct() {
     AvoqadoTheme {
         SplitByProductContent(
             state = SplitByProductViewState(
@@ -147,7 +151,7 @@ fun PreivewSplitByProduct(){
                         totalPrice = 160.0
                     ),
                 ),
-                selectedProducts = listOf("2","3"),
+                selectedProducts = listOf("2", "3"),
                 totalPending = "777.00"
             ),
             onTapToPay = {},
