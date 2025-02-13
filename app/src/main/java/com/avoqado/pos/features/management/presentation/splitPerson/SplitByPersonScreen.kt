@@ -67,9 +67,13 @@ fun SplitByPersonContent(
     splitPartySelected: List<Int>
 ) {
     val context = LocalContext.current
-    val amountSplit by remember {
+    val amountSplit by remember (splitPartySize){
         derivedStateOf {
-            "%.2f".format(totalPendingAmount.toDouble() / splitPartySize)
+            if (splitPartySize > 0 ) {
+                "%.2f".format((totalPendingAmount.toDouble() / splitPartySize).toDouble())
+            } else {
+                "0.00"
+            }
         }
     }
     Column(
@@ -173,9 +177,12 @@ fun SplitByPersonContent(
 
         if (splitPartySelected.isNotEmpty()) {
             MainButton(
-                modifier = Modifier.fillMaxWidth().padding(
-                    horizontal = 16.dp
-                ).padding(bottom = 24.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 16.dp
+                    )
+                    .padding(bottom = 24.dp),
                 onClickR = onPayTapped,
                 text = "Pagar ${splitPartySelected.size} partes • \$$totalSelectedAmount"
             )
@@ -188,9 +195,9 @@ fun SplitByPersonContent(
 fun SplitByPersonContentPreview() {
     AvoqadoTheme {
         SplitByPersonContent(
-            totalPendingAmount = "555.00",
+            totalPendingAmount = "5.0",
             totalSelectedAmount = "222.00",
-            splitPartySize = 5,
+            splitPartySize = 4,
             splitPartyPaidSize = 2,
             splitPartySelected = listOf(2, 3),
         )

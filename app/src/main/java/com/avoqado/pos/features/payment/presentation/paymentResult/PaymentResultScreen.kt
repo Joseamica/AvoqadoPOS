@@ -1,6 +1,7 @@
 package com.avoqado.pos.features.payment.presentation.paymentResult
 
 import android.os.RemoteException
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,7 +24,9 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -70,6 +73,13 @@ fun PaymentResultScreen(
 ){
     val state by viewModel.paymentResult.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val printStatus by devicePrintImpl.result.observeAsState()
+
+    LaunchedEffect(printStatus) {
+        printStatus?.let {
+            Log.d("AvoqadoTest-Printer", "Printer status: $it")
+        }
+    }
 
     PaymentResultContent(
         state = state,
@@ -80,83 +90,88 @@ fun PaymentResultScreen(
             viewModel.newPayment()
         },
         onPrintPayment = {
-            val scope = CoroutineScope(Dispatchers.IO)
+            val status = devicePrintImpl.getStatus()
+            Log.d("AvoqadoTest-Printer", "Current Printer status: $status")
+            if (status == 0) {
+                val scope = CoroutineScope(Dispatchers.IO)
 
-            scope.launch {
-                devicePrintImpl.addLine(
-                    TextFormat(align = Align.CENTER, bold = true, font = 1),
-                    "Madre Cafecito"
-                )
-                devicePrintImpl.addLine(
-                    TextFormat(align = Align.CENTER, bold = false),
-                    "Guanajuato 115, Roma Nte., Cuauhtémoc"
-                )
-
-                devicePrintImpl.addLinebreak(1)
-                devicePrintImpl.addLine(
-                    TextFormat(align = Align.CENTER, bold = true),
-                    "Pago con Tarjeta de Crédito"
-                )
-
-                devicePrintImpl.addLinebreak(1)
-                state.adquirer?.ticketId?.let {
-                    devicePrintImpl.addDoubleColumnText(
-                        TextFormat(),
-                        "Número de Operación",
-                        it.toString()
+                scope.launch {
+                    devicePrintImpl.addLine(
+                        TextFormat(align = Align.CENTER, bold = true, font = 1),
+                        "Madre Cafecito"
                     )
-                }
-
-                state.adquirer?.capture?.card?.let {
-                    devicePrintImpl.addDoubleColumnText(
-                        TextFormat(),
-                        "Tarj: ${it.maskedPan}",
-                        it.brand ?: ""
+                    devicePrintImpl.addLine(
+                        TextFormat(align = Align.CENTER, bold = false),
+                        "Guanajuato 115, Roma Nte., Cuauhtémoc"
                     )
-                    devicePrintImpl.addDoubleColumnText(
-                        TextFormat(),
-                        "CONTACTLESS",
-                        ""
+
+                    devicePrintImpl.addLinebreak(1)
+                    devicePrintImpl.addLine(
+                        TextFormat(align = Align.CENTER, bold = true),
+                        "Pago con Tarjeta de Crédito"
                     )
-                }
 
-                devicePrintImpl.addLinebreak(1)
-
-                try {
-                    devicePrintImpl.addImage(
-                        context.getBitmap(
-                            R.drawable.line,
+                    devicePrintImpl.addLinebreak(1)
+                    state.adquirer?.ticketId?.let {
+                        devicePrintImpl.addDoubleColumnText(
+                            TextFormat(),
+                            "Número de Operación",
+                            it.toString()
                         )
+                    }
+
+                    state.adquirer?.capture?.card?.let {
+                        devicePrintImpl.addDoubleColumnText(
+                            TextFormat(),
+                            "Tarj: ${it.maskedPan}",
+                            it.brand ?: ""
+                        )
+                        devicePrintImpl.addDoubleColumnText(
+                            TextFormat(),
+                            "CONTACTLESS",
+                            ""
+                        )
+                    }
+
+                    devicePrintImpl.addLinebreak(1)
+
+                    try {
+                        devicePrintImpl.addImage(
+                            context.getBitmap(
+                                R.drawable.line,
+                            )
+                        )
+                    } catch (e: RemoteException) {
+                        e.printStackTrace()
+                    }
+
+                    devicePrintImpl.addDoubleColumnText(
+                        TextFormat(bold = true, font = 1),
+                        TOTAL_LABEL.uppercase(Locale.getDefault()),
+                        "%.2f".format(state.subtotalAmount)
                     )
-                } catch (e: RemoteException) {
-                    e.printStackTrace()
-                }
 
-                devicePrintImpl.addDoubleColumnText(
-                    TextFormat(bold = true, font = 1),
-                    TOTAL_LABEL.uppercase(Locale.getDefault()),
-                    "%.2f".format(state.subtotalAmount)
-                )
+                    devicePrintImpl.addDoubleColumnText(
+                        TextFormat(bold = true, font = 1),
+                        TIP_LABEL.uppercase(Locale.getDefault()),
+                        "%.2f".format(state.tipAmount)
+                    )
 
-                devicePrintImpl.addDoubleColumnText(
-                    TextFormat(bold = true, font = 1),
-                    TIP_LABEL.uppercase(Locale.getDefault()),
-                    "%.2f".format(state.tipAmount)
-                )
+                    devicePrintImpl.addDoubleColumnText(
+                        TextFormat(),
+                        CURRENCY_LABEL,
+                        CURRENCY_LABEL
+                    )
+                    devicePrintImpl.addLinebreak(1)
 
-                devicePrintImpl.addDoubleColumnText(
-                    TextFormat(),
-                    CURRENCY_LABEL,
-                    CURRENCY_LABEL
-                )
-                devicePrintImpl.addLinebreak(1)
-
-                try {
-                    devicePrintImpl.startPrint()
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                    try {
+                        devicePrintImpl.startPrint()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
+
         }
     )
 }

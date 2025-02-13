@@ -142,7 +142,7 @@ class TableDetailViewModel(
                         },
                         paymentsDone = billDetail.payments?.map { payment -> Payment(
                                 amount = payment.amount.toAmountMXDouble(),
-                                products = payment.products?.map { it.name } ?: emptyList(),
+                                products = payment.products?.map { it.id } ?: emptyList(),
                                 splitType = payment.splitType,
                                 equalPartsPayedFor = payment.equalPartsPayedFor,
                                 equalPartsPartySize = payment.equalPartsPartySize
