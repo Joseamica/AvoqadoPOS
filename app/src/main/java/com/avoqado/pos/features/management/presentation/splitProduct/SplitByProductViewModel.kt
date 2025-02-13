@@ -10,6 +10,7 @@ import com.avoqado.pos.features.management.presentation.splitProduct.model.Split
 import com.avoqado.pos.features.management.presentation.splitProduct.model.toUI
 import com.avoqado.pos.features.management.presentation.tableDetail.model.Product
 import com.avoqado.pos.features.payment.domain.repository.PaymentRepository
+import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -57,17 +58,17 @@ class SplitByProductViewModel constructor(
         }
 
         navigationDispatcher.navigateWithArgs(
-            MainDests.InputTip,
+            PaymentDests.InputTip,
             NavigationArg.StringArg(
-                MainDests.InputTip.ARG_SUBTOTAL,
+                PaymentDests.InputTip.ARG_SUBTOTAL,
                 _tableDetail.value.totalSelected
             ),
             NavigationArg.StringArg(
-                MainDests.InputTip.ARG_WAITER,
+                PaymentDests.InputTip.ARG_WAITER,
                 _tableDetail.value.waiterName
             ),
             NavigationArg.StringArg(
-                MainDests.InputTip.ARG_SPLIT_TYPE,
+                PaymentDests.InputTip.ARG_SPLIT_TYPE,
                 SplitType.PERPRODUCT.value
             ),
         )

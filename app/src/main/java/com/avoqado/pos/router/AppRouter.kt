@@ -191,8 +191,7 @@ fun AppRouter(
                 )
 
                 paymentNavigation(
-                    navigationDispatcher = navigationDispatcher,
-                    sessionManager = AvoqadoApp.sessionManager
+                    navigationDispatcher = navigationDispatcher
                 )
             }
         }

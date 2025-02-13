@@ -8,6 +8,7 @@ import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.payment.domain.repository.PaymentRepository
+import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -85,17 +86,17 @@ class SplitByPersonViewModel(
         }
 
         navigationDispatcher.navigateWithArgs(
-            MainDests.InputTip,
+            PaymentDests.InputTip,
             NavigationArg.StringArg(
-                MainDests.InputTip.ARG_SUBTOTAL,
+                PaymentDests.InputTip.ARG_SUBTOTAL,
                 _state.value.totalSelectedAmount
             ),
             NavigationArg.StringArg(
-                MainDests.InputTip.ARG_WAITER,
+                PaymentDests.InputTip.ARG_WAITER,
                 waiterName
             ),
             NavigationArg.StringArg(
-                MainDests.InputTip.ARG_SPLIT_TYPE,
+                PaymentDests.InputTip.ARG_SPLIT_TYPE,
                 SplitType.EQUALPARTS.value
             ),
         )

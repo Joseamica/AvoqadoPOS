@@ -17,11 +17,11 @@ import com.avoqado.pos.features.payment.presentation.paymentResult.PaymentResult
 import com.avoqado.pos.router.composableHolder
 import com.menta.android.printer.i9100.core.DevicePrintImpl
 
-fun NavGraphBuilder.paymentNavigation(navigationDispatcher: NavigationDispatcher, sessionManager: SessionManager) {
-    composableHolder(MainDests.InputTip) {
-        val subtotal = it.arguments?.getString(MainDests.InputTip.ARG_SUBTOTAL) ?: "0.00"
-        val waiterName = it.arguments?.getString(MainDests.InputTip.ARG_WAITER) ?: ""
-        val splitType = it.arguments?.getString(MainDests.InputTip.ARG_SPLIT_TYPE) ?: ""
+fun NavGraphBuilder.paymentNavigation(navigationDispatcher: NavigationDispatcher,) {
+    composableHolder(PaymentDests.InputTip) {
+        val subtotal = it.arguments?.getString(PaymentDests.InputTip.ARG_SUBTOTAL) ?: "0.00"
+        val waiterName = it.arguments?.getString(PaymentDests.InputTip.ARG_WAITER) ?: ""
+        val splitType = it.arguments?.getString(PaymentDests.InputTip.ARG_SPLIT_TYPE) ?: ""
         val inputTipViewModel = remember {
             InputTipViewModel(
                 subtotal = subtotal,
@@ -35,7 +35,7 @@ fun NavGraphBuilder.paymentNavigation(navigationDispatcher: NavigationDispatcher
         InputTipScreen(inputTipViewModel = inputTipViewModel)
     }
 
-    composableHolder(MainDests.PaymentResult) {
+    composableHolder(PaymentDests.PaymentResult) {
         val context = LocalContext.current
         val paymentResultViewModel = remember {
             PaymentResultViewModel(

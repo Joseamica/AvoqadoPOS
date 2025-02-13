@@ -11,6 +11,7 @@ import com.avoqado.pos.core.data.network.models.NetworkTable
 import com.avoqado.pos.core.data.network.models.NetworkVenue
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.presentation.home.models.Table
+import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -56,13 +57,13 @@ class HomeViewModel (
 
     fun onTableSelected(table: NetworkTable) {
         navigationDispatcher.navigateWithArgs(
-            MainDests.TableDetail,
+            ManagementDests.TableDetail,
             NavigationArg.StringArg(
-                MainDests.TableDetail.ARG_VENUE_ID,
+                ManagementDests.TableDetail.ARG_VENUE_ID,
                 selectedVenue.value?.id ?:""
             ),
             NavigationArg.StringArg(
-                MainDests.TableDetail.ARG_TABLE_ID,
+                ManagementDests.TableDetail.ARG_TABLE_ID,
                 table.tableNumber?.toString() ?: ""
             )
 

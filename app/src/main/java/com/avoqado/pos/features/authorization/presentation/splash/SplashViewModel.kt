@@ -9,6 +9,7 @@ import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.AvoqadoAPI
 import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.avoqado.pos.views.InitActivity.Companion.TAG
 import com.menta.android.keys.admin.core.response.keys.SecretsV2
 import com.menta.android.restclient.core.RestClientConfiguration.configure
@@ -82,7 +83,7 @@ class SplashViewModel constructor(
                 }
                 Log.i("SplashViewModel", "Navigating to MenuActivity")
                 navigationDispatcher.navigateTo(
-                    MainDests.Tables
+                    ManagementDests.Tables
                 )
             }
             catch (e: Exception) {
@@ -119,7 +120,7 @@ class SplashViewModel constructor(
                 getTerminalInfo(serialNumber)
             } else {
                 navigationDispatcher.navigateTo(
-                    MainDests.Tables.route,
+                    ManagementDests.Tables.route,
                     navOptions = NavOptions.Builder()
                         .setPopUpTo(MainDests.Splash.route, inclusive = true)
                         .build()

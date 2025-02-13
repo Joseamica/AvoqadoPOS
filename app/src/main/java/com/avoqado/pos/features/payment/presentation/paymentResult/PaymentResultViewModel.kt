@@ -10,6 +10,7 @@ import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
 import com.avoqado.pos.features.payment.domain.repository.PaymentRepository
 import com.google.gson.Gson
@@ -67,7 +68,7 @@ class PaymentResultViewModel(
                 venueId = info.venueId,
                 tableNumber = info.tableNumber,
                 waiterName = info.waiterName,
-                tpvId = terminal?.id ?: "",
+                tpvId = terminal.id,
                 splitType = info.splitType?.value?:"",
                 status = PaymentStatus.ACCEPTED.value,
                 amount = info.subtotal.toString().toAmountMx().replace(".", "").toInt(),
@@ -86,11 +87,11 @@ class PaymentResultViewModel(
 
     fun goToHome() {
         paymentRepository.clearCachePaymentInfo()
-        navigationDispatcher.popToDestination(MainDests.Tables.route, inclusive = false)
+        navigationDispatcher.popToDestination(ManagementDests.Tables.route, inclusive = false)
     }
 
     fun newPayment() {
         paymentRepository.clearCachePaymentInfo()
-        navigationDispatcher.popToDestination(MainDests.TableDetail.route, inclusive = false)
+        navigationDispatcher.popToDestination(ManagementDests.TableDetail.route, inclusive = false)
     }
 }

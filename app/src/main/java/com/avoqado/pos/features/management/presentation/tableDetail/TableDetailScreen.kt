@@ -71,7 +71,7 @@ import java.util.Locale
 @Composable
 fun TableDetailScreen(
     tableDetailViewModel: TableDetailViewModel,
-//    devicePrintImpl: DevicePrintImpl
+    devicePrintImpl: DevicePrintImpl
 ) {
     val tableDetails by tableDetailViewModel.tableDetail.collectAsStateWithLifecycle()
     val isLoading by tableDetailViewModel.isLoading.collectAsStateWithLifecycle()
@@ -119,84 +119,84 @@ fun TableDetailScreen(
         ProductListSheet(
             onDismissRequest = { showModalSheet = false },
             onPrint = {
-//                val scope = CoroutineScope(Dispatchers.IO)
-//
-//                scope.launch {
-//                    devicePrintImpl.addLine(
-//                        TextFormat(align = Align.CENTER, bold = true, font = 1),
-//                        "Madre Cafecito"
-//                    )
-//                    devicePrintImpl.addLine(
-//                        TextFormat(align = Align.CENTER, bold = false),
-//                        "Guanajuato 115, Roma Nte., Cuauhtémoc"
-//                    )
-//
-//                    devicePrintImpl.addLinebreak(1)
-//
-//                    try {
-//                        devicePrintImpl.addImage(
-//                            context.getBitmap(
-//                                R.drawable.line,
-//                            )
-//                        )
-//                    } catch (e: RemoteException) {
-//                        e.printStackTrace()
-//                    }
-//
-//                    devicePrintImpl.addLine(
-//                        TextFormat(bold = false, font = 1),
-//                        "MESA: ${tableDetails.name}"
-//                    )
-//
-//                    devicePrintImpl.addLine(
-//                        TextFormat(bold = false, font = 1),
-//                        "MESERO: ${tableDetails.waiterName.uppercase()}"
-//                    )
-//
-//                    devicePrintImpl.addLinebreak(1)
-//
-//                    try {
-//                        devicePrintImpl.addImage(
-//                            context.getBitmap(
-//                                R.drawable.line,
-//                            )
-//                        )
-//                    } catch (e: RemoteException) {
-//                        e.printStackTrace()
-//                    }
-//
-//                    devicePrintImpl.addTripleColumnText(
-//                        TextFormat(bold = true, font = 1),
-//                        "CANT.",
-//                        "DESCRIPCION",
-//                        "IMPORTE"
-//                    )
-//
-//                    tableDetails.products.forEach { product ->
-//                        devicePrintImpl.addTripleColumnText(
-//                            TextFormat(bold = false, font = 1),
-//                            product.quantity.toString(),
-//                            product.name,
-//                            "\$${product.totalPrice.toString().toAmountMx()}"
-//                        )
-//                    }
-//
-//                    devicePrintImpl.addLinebreak(1)
-//
-//                    devicePrintImpl.addDoubleColumnText(
-//                        TextFormat(bold = true, font = 1),
-//                        TOTAL_LABEL.uppercase(Locale.getDefault()),
-//                        tableDetails.totalAmount.toString().toAmountMx()
-//                    )
-//
-//                    devicePrintImpl.addLinebreak(1)
-//
-//                    try {
-//                        devicePrintImpl.startPrint()
-//                    } catch (e: Exception) {
-//                        e.printStackTrace()
-//                    }
-//                }
+                val scope = CoroutineScope(Dispatchers.IO)
+
+                scope.launch {
+                    devicePrintImpl.addLine(
+                        TextFormat(align = Align.CENTER, bold = true, font = 1),
+                        "Madre Cafecito"
+                    )
+                    devicePrintImpl.addLine(
+                        TextFormat(align = Align.CENTER, bold = false),
+                        "Guanajuato 115, Roma Nte., Cuauhtémoc"
+                    )
+
+                    devicePrintImpl.addLinebreak(1)
+
+                    try {
+                        devicePrintImpl.addImage(
+                            context.getBitmap(
+                                R.drawable.line,
+                            )
+                        )
+                    } catch (e: RemoteException) {
+                        e.printStackTrace()
+                    }
+
+                    devicePrintImpl.addLine(
+                        TextFormat(bold = false, font = 1),
+                        "MESA: ${tableDetails.name}"
+                    )
+
+                    devicePrintImpl.addLine(
+                        TextFormat(bold = false, font = 1),
+                        "MESERO: ${tableDetails.waiterName.uppercase()}"
+                    )
+
+                    devicePrintImpl.addLinebreak(1)
+
+                    try {
+                        devicePrintImpl.addImage(
+                            context.getBitmap(
+                                R.drawable.line,
+                            )
+                        )
+                    } catch (e: RemoteException) {
+                        e.printStackTrace()
+                    }
+
+                    devicePrintImpl.addTripleColumnText(
+                        TextFormat(bold = true, font = 1),
+                        "CANT.",
+                        "DESCRIPCION",
+                        "IMPORTE"
+                    )
+
+                    tableDetails.products.forEach { product ->
+                        devicePrintImpl.addTripleColumnText(
+                            TextFormat(bold = false, font = 1),
+                            product.quantity.toString(),
+                            product.name,
+                            "\$${product.totalPrice.toString().toAmountMx()}"
+                        )
+                    }
+
+                    devicePrintImpl.addLinebreak(1)
+
+                    devicePrintImpl.addDoubleColumnText(
+                        TextFormat(bold = true, font = 1),
+                        TOTAL_LABEL.uppercase(Locale.getDefault()),
+                        tableDetails.totalAmount.toString().toAmountMx()
+                    )
+
+                    devicePrintImpl.addLinebreak(1)
+
+                    try {
+                        devicePrintImpl.startPrint()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
             },
             products = tableDetails.products
         )

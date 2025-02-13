@@ -18,7 +18,7 @@ fun TableDetail.toDomain(): com.avoqado.pos.features.management.domain.models.Ta
                     .map { payment ->
                         payment.products
                     }.flatten(),
-                equalPartySize = byPerson.first().equalPartsPartySize?.toInt() ?: 0,
+                equalPartySize = byPerson.firstOrNull()?.equalPartsPartySize?.toInt() ?: 0,
                 equalPartyPaidSize = byPerson.sumOf { payment ->
                     payment.equalPartsPayedFor?.toInt() ?: 0
                 }

@@ -20,6 +20,7 @@ import com.avoqado.pos.doTagListTest
 import com.avoqado.pos.enums.Acquirer
 import com.avoqado.pos.enums.Country
 import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
+import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
 import com.avoqado.pos.ui.screen.CardReaderScreen
 import com.menta.android.common_cross.data.datasource.local.model.Transaction
 import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
@@ -131,7 +132,7 @@ class CardProcessActivity : ComponentActivity() {
 
             val intent = Intent(this, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-            intent.putExtra("navigate_to", MainDests.PaymentResult.route)
+            intent.putExtra("navigate_to", PaymentDests.PaymentResult.route)
             startActivity(intent)
             finish()
         })

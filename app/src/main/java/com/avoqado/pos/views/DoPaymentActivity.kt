@@ -27,6 +27,7 @@ import com.avoqado.pos.core.presentation.utils.toAmountMXDouble
 import com.avoqado.pos.customerId
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
+import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
 import com.avoqado.pos.merchantId
 import com.avoqado.pos.terminalId
 import com.avoqado.pos.ui.screen.ProcessingOperationScreen
@@ -142,7 +143,7 @@ class DoPaymentActivity : ComponentActivity() {
 
                     val intent = Intent(this, MainActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                    intent.putExtra("navigate_to", MainDests.PaymentResult.route)
+                    intent.putExtra("navigate_to", PaymentDests.PaymentResult.route)
                     startActivity(intent)
                 } else {
                     Log.i(TAG, "Pago declinado!")

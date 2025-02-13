@@ -15,11 +15,13 @@ import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.domain.usecases.ListenTableAction
 import com.avoqado.pos.features.management.domain.usecases.ListenTableEventsUseCase
+import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.avoqado.pos.features.management.presentation.tableDetail.model.Payment
 import com.avoqado.pos.features.management.presentation.tableDetail.model.Product
 import com.avoqado.pos.features.management.presentation.tableDetail.model.TableDetail
 import com.avoqado.pos.features.management.presentation.tableDetail.model.toDomain
 import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
+import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -189,7 +191,7 @@ class TableDetailViewModel(
             )
         )
         navigationDispatcher.navigateWithArgs(
-            MainDests.SplitByProduct
+            ManagementDests.SplitByProduct
         )
     }
 
@@ -209,7 +211,7 @@ class TableDetailViewModel(
             )
         )
         navigationDispatcher.navigateWithArgs(
-            MainDests.SplitByProduct
+            ManagementDests.SplitByPerson
         )
     }
 
@@ -229,17 +231,17 @@ class TableDetailViewModel(
             )
         )
         navigationDispatcher.navigateWithArgs(
-            MainDests.InputTip,
+            PaymentDests.InputTip,
             NavigationArg.StringArg(
-                MainDests.InputTip.ARG_SUBTOTAL,
+                PaymentDests.InputTip.ARG_SUBTOTAL,
                 _tableDetail.value.totalPending.toString()
             ),
             NavigationArg.StringArg(
-                MainDests.InputTip.ARG_WAITER,
+                PaymentDests.InputTip.ARG_WAITER,
                 _tableDetail.value.waiterName
             ),
             NavigationArg.StringArg(
-                MainDests.InputTip.ARG_SPLIT_TYPE,
+                PaymentDests.InputTip.ARG_SPLIT_TYPE,
                 SplitType.FULLPAYMENT.value
             )
         )
@@ -262,17 +264,17 @@ class TableDetailViewModel(
                 )
             )
             navigationDispatcher.navigateWithArgs(
-                MainDests.InputTip,
+                PaymentDests.InputTip,
                 NavigationArg.StringArg(
-                    MainDests.InputTip.ARG_SUBTOTAL,
+                    PaymentDests.InputTip.ARG_SUBTOTAL,
                     amount.toString()
                 ),
                 NavigationArg.StringArg(
-                    MainDests.InputTip.ARG_WAITER,
+                    PaymentDests.InputTip.ARG_WAITER,
                     _tableDetail.value.waiterName
                 ),
                 NavigationArg.StringArg(
-                    MainDests.InputTip.ARG_SPLIT_TYPE,
+                    PaymentDests.InputTip.ARG_SPLIT_TYPE,
                     SplitType.CUSTOMAMOUNT.value
                 )
             )
