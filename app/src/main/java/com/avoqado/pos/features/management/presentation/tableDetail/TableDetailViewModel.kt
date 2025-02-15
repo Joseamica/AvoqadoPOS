@@ -4,20 +4,18 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.AvoqadoApp
-import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.presentation.utils.toAmountMXDouble
 import com.avoqado.pos.core.data.network.AvoqadoAPI
 import com.avoqado.pos.core.domain.models.SplitType
-import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.domain.usecases.ListenTableAction
 import com.avoqado.pos.features.management.domain.usecases.ListenTableEventsUseCase
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.avoqado.pos.features.management.presentation.tableDetail.model.Payment
-import com.avoqado.pos.features.management.presentation.tableDetail.model.Product
+import com.avoqado.pos.core.presentation.model.Product
 import com.avoqado.pos.features.management.presentation.tableDetail.model.TableDetail
 import com.avoqado.pos.features.management.presentation.tableDetail.model.toDomain
 import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
@@ -40,6 +38,7 @@ class TableDetailViewModel(
     private val managementRepository: ManagementRepository,
     private val listenTableEventsUseCase: ListenTableEventsUseCase
 ) : ViewModel() {
+    val venue = AvoqadoApp.sessionManager.getVenueInfo()
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 

@@ -36,7 +36,6 @@ fun NavGraphBuilder.paymentNavigation(navigationDispatcher: NavigationDispatcher
     }
 
     composableHolder(PaymentDests.PaymentResult) {
-        val context = LocalContext.current
         val paymentResultViewModel = remember {
             PaymentResultViewModel(
                 navigationDispatcher = navigationDispatcher,
@@ -45,8 +44,7 @@ fun NavGraphBuilder.paymentNavigation(navigationDispatcher: NavigationDispatcher
             )
         }
         PaymentResultScreen(
-            paymentResultViewModel,
-            DevicePrintImpl(context)
+            paymentResultViewModel
         )
     }
 }

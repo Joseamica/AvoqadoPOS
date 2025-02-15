@@ -18,10 +18,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class HomeViewModel (
+class HomeViewModel(
     private val navigationDispatcher: NavigationDispatcher,
     private val sessionManager: SessionManager
-): ViewModel() {
+) : ViewModel() {
 
     private val _venues = MutableStateFlow(listOf<NetworkVenue>())
     val venues: StateFlow<List<NetworkVenue>> = _venues.asStateFlow()
@@ -36,7 +36,7 @@ class HomeViewModel (
         fetchTables()
     }
 
-    fun fetchTables(){
+    fun fetchTables() {
         //TODO: usar Avoqado api para cargar mesas
         viewModelScope.launch(Dispatchers.IO) {
             try {
@@ -45,7 +45,11 @@ class HomeViewModel (
 
                 if (venueId.isNotEmpty()) {
                     _venues.value = result.filter { it.id == venueId }
-                    _selectedVenue.value = result.firstOrNull { it.id == venueId }
+                    _selectedVenue.value = result.firstOrNull { it.id == venueId }.also {
+                        it?.let { venue ->
+                            sessionManager.saveVenueInfo(venue)
+                        }
+                    }
                 } else {
                     _venues.value = result
                 }
@@ -60,7 +64,7 @@ class HomeViewModel (
             ManagementDests.TableDetail,
             NavigationArg.StringArg(
                 ManagementDests.TableDetail.ARG_VENUE_ID,
-                selectedVenue.value?.id ?:""
+                selectedVenue.value?.id ?: ""
             ),
             NavigationArg.StringArg(
                 ManagementDests.TableDetail.ARG_TABLE_ID,
@@ -71,7 +75,10 @@ class HomeViewModel (
     }
 
     fun setSelectedVenue(index: Int) {
-        _selectedVenue.value = _venues.value.get(index)
+        _selectedVenue.value = _venues.value.get(index).also {
+            sessionManager.saveVenueInfo(it)
+        }
+
     }
 
 }

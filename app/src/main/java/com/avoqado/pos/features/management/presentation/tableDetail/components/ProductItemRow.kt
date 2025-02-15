@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.avoqado.pos.CURRENCY_LABEL
-import com.avoqado.pos.features.management.presentation.tableDetail.model.Product
+import com.avoqado.pos.core.presentation.model.Product
 import com.avoqado.pos.core.presentation.theme.DemoandroidsdkmentaTheme
 
 @Composable

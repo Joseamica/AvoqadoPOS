@@ -29,6 +29,7 @@ class PaymentResultViewModel(
 ) : ViewModel() {
     private val _paymentResult = MutableStateFlow<PaymentResultViewState>(PaymentResultViewState())
     val paymentResult: StateFlow<PaymentResultViewState> = _paymentResult.asStateFlow()
+    val venue = AvoqadoApp.sessionManager.getVenueInfo()
 
     init {
         paymentRepository.getCachePaymentInfo()?.let {
@@ -60,7 +61,8 @@ class PaymentResultViewModel(
                 state
                     .copy(
                         qrCode = "https://avoqado.io/receipt?token=${token}",
-                        adquirer = adquirer
+                        adquirer = adquirer,
+                        terminalSerialCode = terminal.serialCode
                     )
             }
 

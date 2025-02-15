@@ -1,6 +1,7 @@
 package com.avoqado.pos.features.management.presentation.tableDetail.model
 
 import com.avoqado.pos.core.domain.models.SplitType
+import com.avoqado.pos.core.presentation.model.Product
 import com.avoqado.pos.features.management.domain.models.PaymentOverview
 
 fun TableDetail.toDomain(): com.avoqado.pos.features.management.domain.models.TableDetail {

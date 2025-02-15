@@ -29,12 +29,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.utils.toAmountMx
-import com.avoqado.pos.features.management.presentation.tableDetail.model.Product
+import com.avoqado.pos.core.presentation.model.Product
 import com.avoqado.pos.ui.screen.ProductRow
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.theme.buttonGrayColor

@@ -1,4 +1,4 @@
-package com.avoqado.pos.features.management.presentation.tableDetail.model
+package com.avoqado.pos.core.presentation.model
 
 
 data class Product(

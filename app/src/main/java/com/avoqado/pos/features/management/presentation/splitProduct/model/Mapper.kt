@@ -14,8 +14,8 @@ fun TableDetail.toUI(): SplitByProductViewState {
     )
 }
 
-fun Product.toUI(): com.avoqado.pos.features.management.presentation.tableDetail.model.Product {
-    return com.avoqado.pos.features.management.presentation.tableDetail.model.Product(
+fun Product.toUI(): com.avoqado.pos.core.presentation.model.Product {
+    return com.avoqado.pos.core.presentation.model.Product(
         id = id,
         name = name,
         price = price,
