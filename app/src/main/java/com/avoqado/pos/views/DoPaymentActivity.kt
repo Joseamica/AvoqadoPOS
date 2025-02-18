@@ -15,7 +15,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.Observer
-import com.avoqado.pos.enums.Acquirer
+import com.avoqado.pos.core.presentation.model.enums.Acquirer
 import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.CURRENCY_LABEL
@@ -25,14 +25,11 @@ import com.avoqado.pos.R
 import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.presentation.utils.toAmountMXDouble
 import com.avoqado.pos.customerId
-import com.avoqado.pos.destinations.MainDests
-import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
 import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
 import com.avoqado.pos.merchantId
 import com.avoqado.pos.terminalId
 import com.avoqado.pos.ui.screen.ProcessingOperationScreen
-import com.avoqado.pos.util.Utils.incrementBatch
-import com.avoqado.pos.views.SuccessPaymentActivity.Companion
+import com.avoqado.pos.core.presentation.utils.Utils.incrementBatch
 import com.google.gson.Gson
 import com.menta.android.common_cross.util.CURRENCY_LABEL_ARG
 import com.menta.android.common_cross.util.CURRENCY_LABEL_MX

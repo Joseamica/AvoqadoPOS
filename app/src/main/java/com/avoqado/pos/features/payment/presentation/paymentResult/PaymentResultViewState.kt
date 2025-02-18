@@ -2,6 +2,7 @@ package com.avoqado.pos.features.payment.presentation.paymentResult
 
 import com.avoqado.pos.core.presentation.model.OperationData
 import com.avoqado.pos.core.presentation.model.OperationInfo
+import com.avoqado.pos.core.presentation.model.Product
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.menta.android.core.model.Adquirer
 import java.time.LocalDateTime
@@ -15,7 +16,8 @@ data class PaymentResultViewState(
     val subtotalAmount: Double = 0.0,
     val qrCode: String? = null,
     val adquirer: Adquirer? = null,
-    val terminalSerialCode: String = ""
+    val terminalSerialCode: String = "",
+    val paidProducts: List<Product> = emptyList()
 ) {
     val totalAmount: Double
         get() = tipAmount + subtotalAmount

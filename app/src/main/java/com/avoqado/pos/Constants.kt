@@ -1,7 +1,7 @@
 package com.avoqado.pos
 
-import com.avoqado.pos.enums.Acquirer
-import com.avoqado.pos.enums.Country
+import com.avoqado.pos.core.presentation.model.enums.Acquirer
+import com.avoqado.pos.core.presentation.model.enums.Country
 import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
 
 //    "id": "bd0fc6c6-d698-444a-b4ce-baa2af32f9c7",

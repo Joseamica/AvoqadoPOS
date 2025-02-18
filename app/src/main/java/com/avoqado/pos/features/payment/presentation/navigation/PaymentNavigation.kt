@@ -40,7 +40,8 @@ fun NavGraphBuilder.paymentNavigation(navigationDispatcher: NavigationDispatcher
             PaymentResultViewModel(
                 navigationDispatcher = navigationDispatcher,
                 paymentRepository = AvoqadoApp.paymentRepository,
-                terminalRepository = AvoqadoApp.terminalRepository
+                terminalRepository = AvoqadoApp.terminalRepository,
+                managementRepository = AvoqadoApp.managementRepository
             )
         }
         PaymentResultScreen(

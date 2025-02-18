@@ -16,7 +16,7 @@ import com.avoqado.pos.customerId
 import com.avoqado.pos.merchantId
 import com.avoqado.pos.terminalId
 import com.avoqado.pos.ui.screen.ProcessingOperationScreen
-import com.avoqado.pos.util.Utils.incrementBatch
+import com.avoqado.pos.core.presentation.utils.Utils.incrementBatch
 import com.google.gson.Gson
 import com.menta.android.core.datasource.definces.DBDefines
 import com.menta.android.core.model.Adquirer

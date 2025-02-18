@@ -29,7 +29,8 @@ object PrinterUtils {
         venue: VenueInfo,
         terminalSerialCode: String,
         operationInfo: OperationInfo,
-        qrInfo: String? = null
+        qrInfo: String? = null,
+        products: List<Product> = emptyList()
     ) {
         val devicePrintImpl = DevicePrintImpl(context)
         val status = devicePrintImpl.getStatus()
@@ -92,6 +93,25 @@ object PrinterUtils {
                     }
                 }
 
+                devicePrintImpl.addTripleColumnText(
+                    TextFormat(bold = true, font = 1),
+                    "U.",
+                    "Producto",
+                    "Monto"
+                )
+
+                products.forEach { product ->
+                    devicePrintImpl.addTripleColumnText(
+                        TextFormat(bold = false, font = 1),
+                        product.quantity.toString(),
+                        product.name,
+                        "\$${product.totalPrice.toString().toAmountMx()}"
+                    )
+                }
+
+                devicePrintImpl.addLinebreak(1)
+
+
 
                 devicePrintImpl.addDoubleColumnText(
                     TextFormat(bold = true, font = 1),
@@ -106,12 +126,6 @@ object PrinterUtils {
                 )
 
                 devicePrintImpl.addLinebreak(1)
-
-                try {
-                    devicePrintImpl.startPrint()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
 
                 devicePrintImpl.addDoubleColumnText(
                     TextFormat(bold = true, font = 1),

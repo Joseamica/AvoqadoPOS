@@ -90,7 +90,8 @@ fun PaymentResultScreen(
                     acquisition = ""
                 ),
                 terminalSerialCode = state.terminalSerialCode,
-                operationInfo = state.operationInfo
+                operationInfo = state.operationInfo,
+                products = state.paidProducts
             )
         }
     )

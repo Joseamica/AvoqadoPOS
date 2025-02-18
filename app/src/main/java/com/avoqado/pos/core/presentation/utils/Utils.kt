@@ -1,4 +1,4 @@
-package com.avoqado.pos.util
+package com.avoqado.pos.core.presentation.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -28,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.avoqado.pos.R
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.avoqado.pos.enums.MmTypeCurrencyEnum
+import com.avoqado.pos.core.presentation.model.enums.MmTypeCurrencyEnum
 import com.menta.android.common_cross.util.Utils
 import com.menta.android.keys.admin.core.repository.parametro.ParametroDB
 import java.math.BigDecimal

@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
-import com.avoqado.pos.util.Utils.EMPTY_STRING
+import com.avoqado.pos.core.presentation.utils.Utils.EMPTY_STRING
 
 @Composable
 fun MainButton(

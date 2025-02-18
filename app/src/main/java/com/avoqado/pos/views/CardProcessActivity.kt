@@ -17,8 +17,8 @@ import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.doTagListMxTest
 import com.avoqado.pos.doTagListTest
-import com.avoqado.pos.enums.Acquirer
-import com.avoqado.pos.enums.Country
+import com.avoqado.pos.core.presentation.model.enums.Acquirer
+import com.avoqado.pos.core.presentation.model.enums.Country
 import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
 import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
 import com.avoqado.pos.ui.screen.CardReaderScreen
