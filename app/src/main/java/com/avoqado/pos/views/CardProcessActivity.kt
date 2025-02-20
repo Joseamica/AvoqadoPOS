@@ -14,28 +14,25 @@ import com.avoqado.pos.MainActivity
 import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.presentation.utils.toAmountMx
-import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.doTagListMxTest
 import com.avoqado.pos.doTagListTest
 import com.avoqado.pos.core.presentation.model.enums.Acquirer
 import com.avoqado.pos.core.presentation.model.enums.Country
-import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
 import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
 import com.avoqado.pos.ui.screen.CardReaderScreen
 import com.menta.android.common_cross.data.datasource.local.model.Transaction
 import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
 import com.menta.android.common_cross.util.StatusResult
-import com.menta.android.core.consts.Amount
-import com.menta.android.core.consts.Breakdown
-import com.menta.android.core.consts.Capture
-import com.menta.android.core.consts.Card
-import com.menta.android.core.consts.Holder
-import com.menta.android.core.consts.Identification
-import com.menta.android.core.consts.Terminal
+import com.menta.android.core.model.Amount
+import com.menta.android.core.model.Breakdown
+import com.menta.android.core.model.Capture
+import com.menta.android.core.model.Card
 import com.menta.android.core.model.CardData
 import com.menta.android.core.model.Currency
+import com.menta.android.core.model.Holder
 import com.menta.android.core.model.OperationFlow
 import com.menta.android.core.model.OperationType
+import com.menta.android.core.model.Terminal
 import com.menta.android.core.utils.DateUtil.isToday
 import com.menta.android.core.utils.OPERATION
 import com.menta.android.core.utils.SelectApp
@@ -185,9 +182,9 @@ class CardProcessActivity : ComponentActivity() {
                     StringUtils.notFormatAmount(total.toString()) //TODO si hay propina,se debe enviar el valor total de monto + propina
                 it.currency = currency
                 if (tipAmount.toInt() > 0) {
-                    it.breakdown = listOf(breakdownList, tipBreakdown)
+                    it.breakdown = mutableListOf(breakdownList, tipBreakdown)
                 } else {
-                    it.breakdown = listOf(breakdownList)
+                    it.breakdown = mutableListOf(breakdownList)
                 }
             }
         }
@@ -219,8 +216,7 @@ class CardProcessActivity : ComponentActivity() {
         }
 
         //inicializar otros objetos
-        operationFlow.capture!!.card.holder = Holder()
-        operationFlow.capture!!.card.holder.identification = Identification()
+        operationFlow.capture!!.card?.holder = Holder()
         operationFlow.terminal = Terminal()
 
         OperationFlowHolder.operationFlow = operationFlow

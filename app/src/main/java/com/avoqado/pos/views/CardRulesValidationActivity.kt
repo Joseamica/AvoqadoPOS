@@ -14,13 +14,12 @@ import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.customerId
 import com.avoqado.pos.merchantId
 import com.avoqado.pos.ui.screen.ProcessingOperationScreen
-import com.avoqado.pos.views.SuccessPaymentActivity.Companion
 import com.menta.android.common_cross.util.CURRENCY_LABEL_ARG
 import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
+import com.menta.android.common_cross.util.CardType
 import com.menta.android.core.model.Currency
 import com.menta.android.core.model.OperationFlow
 import com.menta.android.core.viewmodel.bin.BinValidationData
-import com.menta.android.emv.i9100.reader.util.CardType
 import com.menta.android.restclient.core.RestClientConfiguration
 
 class CardRulesValidationActivity : ComponentActivity() {

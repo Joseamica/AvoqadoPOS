@@ -60,8 +60,8 @@ class PaymentRepositoryImpl(
                  body = body.copy(
                     cardBrand = it.capture?.card?.brand,
                     last4 = it.capture?.card?.maskedPan?.let {pan -> pan.substring(pan.length - 4) },
-                    typeOfCard = it.capture?.card?.type?.name,
-                    currency = it.amount.currency?.name,
+                    typeOfCard = it.capture?.card?.type,
+                    currency = it.amount.currency,
                     bank = it.capture?.card?.bank,
                     mentaAuthorizationReference = it.authorization?.retrievalReferenceNumber,
                     mentaOperationId = it.id,

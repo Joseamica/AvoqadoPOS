@@ -33,7 +33,6 @@ import com.avoqado.pos.core.presentation.utils.Utils.incrementBatch
 import com.google.gson.Gson
 import com.menta.android.common_cross.util.CURRENCY_LABEL_ARG
 import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
-import com.menta.android.core.datasource.definces.DBDefines
 import com.menta.android.core.model.Adquirer
 import com.menta.android.core.model.LocalData
 import com.menta.android.core.model.OperationFlow
@@ -42,6 +41,7 @@ import com.menta.android.core.utils.DateUtil
 import com.menta.android.core.viewmodel.DoProcessAdquirerOperationData
 import com.menta.android.emv.i9100.reader.emv.EMVImpl
 import com.menta.android.keys.admin.core.repository.DeviceKeyStorage
+import com.menta.android.keys.admin.core.repository.parametro.DBDefines
 import com.menta.android.keys.admin.core.repository.parametro.ParametroDB
 import com.menta.android.printer.i9100.core.DevicePrintImpl
 import com.menta.android.printer.i9100.model.Align
@@ -128,8 +128,8 @@ class DoPaymentActivity : ComponentActivity() {
                         AvoqadoApp.paymentRepository.setCachePaymentInfo(
                             paymentInfoResult = info.copy(
                                 paymentId = operationResponse.ticketId.toString(),
-                                tipAmount = operationResponse.amount.breakdownList?.firstOrNull { breakdown ->  breakdown.description == "TIP" }?.amount?.toAmountMXDouble() ?: 0.0,
-                                subtotal = operationResponse.amount.breakdownList?.firstOrNull { breakdown ->  breakdown.description == "OPERATION" }?.amount?.toAmountMXDouble() ?: 0.0,
+                                tipAmount = operationResponse.amount.breakdown.firstOrNull { breakdown ->  breakdown.description == "TIP" }?.amount?.toAmountMXDouble() ?: 0.0,
+                                subtotal = operationResponse.amount.breakdown.firstOrNull { breakdown ->  breakdown.description == "OPERATION" }?.amount?.toAmountMXDouble() ?: 0.0,
                                 date = LocalDateTime.now(),
                                 rootData = operationResponseJson,
                                 splitType = splitType,

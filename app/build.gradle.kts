@@ -88,12 +88,12 @@ dependencies {
 
     //Menta dependencies
     implementation(files("libs/urovosdkLibs_v78.aar"))
-    implementation(files("libs/com_menta_android_common_cross_common-cross_2.8.5_common-cross-2.8.5.aar"))
-    implementation(files("libs/com_menta_android_core_core_payment_3.5.5_core_payment-3.5.5.aar"))
-    implementation(files("libs/com_menta_android_emv_i9100_reader_reader_1.6.4_reader-1.6.4.aar"))
-    implementation(files("libs/com_menta_android_keys_admin_core_core_1.5.2_core-1.5.2.aar"))
-    implementation(files("libs/com_menta_android_printer_i9100_printer_2.0.0_printer-2.0.0.aar"))
-    implementation(files("libs/com_menta_android_restclient_core_2.2.8_core-2.2.8.aar"))
+    implementation(files("libs/com_menta_android_common_cross_common-cross_2.9.0_common-cross-2.9.0.aar"))
+    implementation(files("libs/com_menta_android_core_core_payment_5.0.1_core_payment-5.0.1.aar"))
+    implementation(files("libs/com_menta_android_emv_i9100_reader_reader_2.1.0_reader-2.1.0.aar"))
+    implementation(files("libs/com_menta_android_keys_admin_core_core_2.2.0_core-2.2.0.aar"))
+    implementation(files("libs/com_menta_android_printer_i9100_printer_2.0.1_printer-2.0.1.aar"))
+    implementation(files("libs/com_menta_android_restclient_core_2.5.0_core-2.5.0.aar"))
 
     // Compose and UI
     implementation("com.google.android.material:material:$googleMaterialVersion")

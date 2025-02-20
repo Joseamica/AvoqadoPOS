@@ -47,7 +47,16 @@ class SendTicketActivity : ComponentActivity() {
             "subject" to "Comprobante de compra en [Nombre de comercio]",
             "subtitle" to "Te acercamos el comprobante de tu compra en [Nombre de comercio]"
         )
-        val sendEmailRequest = SendEmailRequest(email, "PAYMENT", map)
+
+        //TODO: agegar nueva informacion para envio de email
+        val sendEmailRequest = SendEmailRequest(email,
+            "PAYMENT",
+            customer_id = "",
+            merchant_id = "",
+            operation_id = "",
+            context = "",
+            content = map
+        )
         emailData.sendEmail(sendEmailRequest = sendEmailRequest)
         emailData.sendEmailResponse.observe(this) { result ->
             Log.i(TAG, "Resultado: $result")

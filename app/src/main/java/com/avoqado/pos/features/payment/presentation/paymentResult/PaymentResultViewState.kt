@@ -31,7 +31,7 @@ data class PaymentResultViewState(
                 operationData = adquirer?.let {
                     OperationData(
                         cardBrand = it.capture?.card?.brand ?: "",
-                        cardType = it.capture?.card?.type?.name ?: "",
+                        cardType = it.capture?.card?.type ?: "",
                         pan = it.capture?.card?.maskedPan ?: ""
                     )
                 },
