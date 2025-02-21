@@ -116,13 +116,13 @@ object PrinterUtils {
                 devicePrintImpl.addDoubleColumnText(
                     TextFormat(bold = true, font = 1),
                     "SUBTOTAL",
-                    "%.2f".format(operationInfo.subtotal)
+                    operationInfo.subtotal
                 )
 
                 devicePrintImpl.addDoubleColumnText(
                     TextFormat(bold = true, font = 1),
                     TIP_LABEL.uppercase(Locale.getDefault()),
-                    "%.2f".format(operationInfo.tip)
+                   operationInfo.tip
                 )
 
                 devicePrintImpl.addLinebreak(1)
@@ -130,7 +130,7 @@ object PrinterUtils {
                 devicePrintImpl.addDoubleColumnText(
                     TextFormat(bold = true, font = 1),
                     TOTAL_LABEL.uppercase(Locale.getDefault()),
-                    "%.2f".format(operationInfo.total)
+                    operationInfo.total
                 )
 
                 devicePrintImpl.addLinebreak(1)
