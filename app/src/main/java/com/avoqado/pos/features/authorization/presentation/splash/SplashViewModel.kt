@@ -75,7 +75,7 @@ class SplashViewModel constructor(
             try {
                 Log.i("SplashViewModel", "Get Terminal Info -> token: ${storage.getTokenType()} ${storage.getIdToken()}")
                 val terminals = AvoqadoAPI.mentaService.getTerminals("${storage.getTokenType()} ${storage.getIdToken()}")
-                val currentTerminal = terminals.embedded.terminals.firstOrNull { terminal -> terminal.serialCode == serial }
+                val currentTerminal = terminals.embedded.terminals?.firstOrNull { terminal -> terminal.serialCode == serial }
                 //TODO: Guardar terminal en storage
                 Log.i("SplashViewModel", "Terminal: $currentTerminal")
                 currentTerminal?.let {

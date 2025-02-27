@@ -29,6 +29,8 @@ import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.presentation.navigation.managementNavigation
 import com.avoqado.pos.features.authorization.presentation.authorization.AuthorizationDialog
 import com.avoqado.pos.features.authorization.presentation.authorization.AuthorizationViewModel
+import com.avoqado.pos.features.authorization.presentation.signIn.SignInScreen
+import com.avoqado.pos.features.authorization.presentation.signIn.SignInViewModel
 import com.avoqado.pos.features.authorization.presentation.splash.SplashScreen
 import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel
 import com.avoqado.pos.features.payment.presentation.navigation.paymentNavigation
@@ -51,6 +53,8 @@ fun AppRouter(
         this.snackbarHostState = snackbarHostState
         coroutineScope = rememberCoroutineScope()
     }
+
+    val user = AvoqadoApp.sessionManager.getAvoqadoSession()
 
     LaunchedEffect(key1 = Unit) {
         try {
@@ -146,7 +150,7 @@ fun AppRouter(
             NavHost(
                 modifier = Modifier.padding(padding),
                 navController = navController,
-                startDestination = MainDests.Splash.route,
+                startDestination = if (user != null) MainDests.Splash.route else MainDests.SignIn.route,
                 enterTransition = {
                     EnterTransition.None
                 },
@@ -172,7 +176,14 @@ fun AppRouter(
                 }
 
                 composableHolder(MainDests.SignIn) {
+                    val signInViewModel: SignInViewModel = remember {
+                        SignInViewModel(
+                            navigationDispatcher= navigationDispatcher,
+                            authorizationRepository = AvoqadoApp.authorizationRepository
+                        )
+                    }
 
+                    SignInScreen(signInViewModel)
                 }
 
                 dialogHolder(MainDests.Authorization) {

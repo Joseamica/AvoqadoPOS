@@ -23,7 +23,7 @@ class TerminalRepositoryImpl(
         } else {
             return try {
                 val terminals = mentaService.getTerminals("${storage.getTokenType()} ${storage.getIdToken()}")
-                val currentTerminal = terminals.embedded.terminals.firstOrNull { terminal -> terminal.serialCode == serialCode }
+                val currentTerminal = terminals.embedded.terminals?.firstOrNull { terminal -> terminal.serialCode == serialCode }
                 currentTerminal?.let {
                     sessionManager.saveTerminalInfo(it)
                     TerminalInfo(

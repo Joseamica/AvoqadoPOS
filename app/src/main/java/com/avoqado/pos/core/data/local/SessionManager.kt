@@ -4,6 +4,7 @@ import android.content.Context
 import com.avoqado.pos.core.data.network.models.NetworkVenue
 import com.avoqado.pos.core.data.network.models.Terminal
 import com.avoqado.pos.core.presentation.model.VenueInfo
+import com.avoqado.pos.features.authorization.domain.models.User
 import com.google.gson.Gson
 
 class SessionManager(
@@ -15,6 +16,7 @@ class SessionManager(
         const val VENUE_ID = "venue_id"
         const val VENUE_INFO = "venue_info"
         const val TERMINAL_INFO = "terminal_info"
+        const val AVOQADO_SESSION = "avoqado_session
     }
 
     fun saveVenueId(venueId: String) {
@@ -57,6 +59,26 @@ class SessionManager(
             Gson().fromJson(venueJson, NetworkVenue::class.java)
         } else {
             null
+        }
+    }
+
+    fun saveAvoqadoSession(user: User) {
+        sharedPreferences
+            .edit()
+            .putString(AVOQADO_SESSION, Gson().toJson(user))
+            .apply()
+    }
+
+    fun getAvoqadoSession(): User? {
+        try {
+            val json = sharedPreferences.getString(AVOQADO_SESSION, "") ?: ""
+            return if (json.isNotEmpty()) {
+                Gson().fromJson(json, User::class.java)
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            return null
         }
     }
 }

@@ -111,7 +111,15 @@ object PrinterUtils {
 
                 devicePrintImpl.addLinebreak(1)
 
-
+                try {
+                    devicePrintImpl.addImage(
+                        context.getBitmap(
+                            R.drawable.line,
+                        )
+                    )
+                } catch (e: RemoteException) {
+                    e.printStackTrace()
+                }
 
                 devicePrintImpl.addDoubleColumnText(
                     TextFormat(bold = true, font = 1),
@@ -137,7 +145,10 @@ object PrinterUtils {
 
                 qrInfo?.let {
                     devicePrintImpl.mPrintManager.addQrCode(
-                        Bundle(),
+                        Bundle().apply {
+                            putInt("height", 200)
+                            putInt("align", 1)
+                        },
                         it
                     )
                 }

@@ -5,5 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class Embedded(
     @SerializedName("terminals")
-    val terminals: List<Terminal>
+    val terminals: List<Terminal>? = null,
+    @SerializedName("merchants")
+    val merchants: List<MerchantData>? = null
 )

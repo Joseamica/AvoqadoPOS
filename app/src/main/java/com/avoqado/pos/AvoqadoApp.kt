@@ -7,6 +7,8 @@ import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.AvoqadoAPI
 import com.avoqado.pos.core.data.repository.TerminalRepositoryImpl
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
+import com.avoqado.pos.features.authorization.data.AuthorizationRepositoryImpl
+import com.avoqado.pos.features.authorization.domain.AuthorizationRepository
 import com.avoqado.pos.features.management.data.ManagementRepositoryImpl
 import com.avoqado.pos.features.management.data.cache.ManagementCacheStorage
 import com.avoqado.pos.features.management.domain.ManagementRepository
@@ -35,6 +37,11 @@ class AvoqadoApp : Application() {
                 sessionManager = sessionManager,
                 mentaService = AvoqadoAPI.mentaService ,
                 storage = storage
+            )
+        }
+        val authorizationRepository: AuthorizationRepository by lazy {
+            AuthorizationRepositoryImpl(
+                sessionManager = sessionManager
             )
         }
     }
