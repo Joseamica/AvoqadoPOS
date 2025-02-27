@@ -23,17 +23,8 @@ class SignInViewModel (
         val codeLength = 4
     }
 
-    private val _otp = MutableStateFlow(List(codeLength) { "" })
-    val otp: StateFlow<List<String>> = _otp.asStateFlow()
-
     private val _email = MutableStateFlow("test@avoqado.io")
     val email: StateFlow<String> = _email.asStateFlow()
-
-    fun setOtp(value: String, pos: Int) {
-        _otp.value = _otp.value.toMutableList().apply {
-            set(pos, value)
-        }
-    }
 
     fun setEmail(email: String) {
         _email.update {
@@ -41,9 +32,9 @@ class SignInViewModel (
         }
     }
 
-    fun goToNextScreen(){
+    fun goToNextScreen(passcode: String){
         try {
-            authorizationRepository.login(user = email.value, passcode = otp.value.joinToString(""))
+            authorizationRepository.login(user = email.value, passcode = otp.value)
             navigationDispatcher.navigateTo(MainDests.Splash)
         } catch (e:Exception) {
             if (e is AvoqadoError.BasicError) {

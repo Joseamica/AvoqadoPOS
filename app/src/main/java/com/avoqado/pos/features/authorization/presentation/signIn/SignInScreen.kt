@@ -1,5 +1,6 @@
 package com.avoqado.pos.features.authorization.presentation.signIn
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -19,6 +21,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.avoqado.pos.core.presentation.components.OtpInputField
+import com.avoqado.pos.core.presentation.components.pxToDp
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 import com.avoqado.pos.features.authorization.presentation.signIn.SignInViewModel.Companion.codeLength
@@ -41,28 +47,25 @@ fun SignInScreen(
     signInViewModel: SignInViewModel
 ) {
 
-    val otp by signInViewModel.otp.collectAsStateWithLifecycle()
     val email by signInViewModel.email.collectAsStateWithLifecycle()
 
     SignInContent(
-        otp = otp,
-        updateOtp = signInViewModel::setOtp,
         email = email,
         onUpdateEmail = signInViewModel::setEmail,
         onNext = {
-            signInViewModel.goToNextScreen()
+            signInViewModel.goToNextScreen(it)
         }
     )
 }
 
 @Composable
 fun SignInContent(
-    otp: List<String>,
     email: String,
     onUpdateEmail: (String) -> Unit,
-    updateOtp: (String,Int) -> Unit,
-    onNext: ()-> Unit = {}
+    onNext: (String)-> Unit = {}
 ){
+    val otpValue = remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -93,24 +96,23 @@ fun SignInContent(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(bottom = 24.dp)
         ) {
-            for (i in 0 until SignInViewModel.codeLength) {
-                SingleOtpBox(
-                    value = otp[i],
-                    onValueChange = { newValue ->
-                        // Only accept digits
-                        if (newValue.matches(Regex("^\\d?\$"))) {
-                            // Replace the character at index i
-                            updateOtp(newValue, i)
-                        }
-                    }
-                )
-            }
+
+            OtpInputField(
+                otp = otpValue,
+                count = 4,
+                textColor = Color.White,
+                otpBoxModifier = Modifier
+                    .border(7.pxToDp(), Color(0xFF277F51), shape = RoundedCornerShape(12.pxToDp()))
+            )
+
         }
 
         // “Confirm” button
         Button(
-            onClick = onNext,
-            enabled = otp.all { it.isNotEmpty() },
+            onClick = {
+                onNext(otpValue.value)
+            },
+            enabled = otpValue.value.isNotEmpty(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Gray.copy(alpha = 0.2f)
             ),
@@ -157,10 +159,8 @@ fun SingleOtpBox(
 fun SignInContentPreview(){
     AvoqadoTheme {
         SignInContent(
-            otp = List(codeLength) { "" },
             email = "test@avoqado.io",
-            onUpdateEmail = {},
-            updateOtp = {_, _ ->}
+            onUpdateEmail = {}
         )
     }
 }

@@ -179,6 +179,7 @@ fun AppRouter(
                     val signInViewModel: SignInViewModel = remember {
                         SignInViewModel(
                             navigationDispatcher= navigationDispatcher,
+                            snackbarDelegate = snackbarDelegate,
                             authorizationRepository = AvoqadoApp.authorizationRepository
                         )
                     }

@@ -16,7 +16,7 @@ class SessionManager(
         const val VENUE_ID = "venue_id"
         const val VENUE_INFO = "venue_info"
         const val TERMINAL_INFO = "terminal_info"
-        const val AVOQADO_SESSION = "avoqado_session
+        const val AVOQADO_SESSION = "avoqado_session"
     }
 
     fun saveVenueId(venueId: String) {
