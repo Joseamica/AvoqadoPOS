@@ -8,6 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.res.stringResource
 import com.avoqado.pos.AppfinRestClientConfigure
+import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.R
 import com.avoqado.pos.core.domain.models.SplitType
@@ -39,6 +40,9 @@ class CardRulesValidationActivity : ComponentActivity() {
         intent.getStringExtra("waiterName").toString()
     }
 
+    private val currentUser = AvoqadoApp.sessionManager.getAvoqadoSession()
+    private val operationPreference  = AvoqadoApp.sessionManager.getOperationPreference()
+
     private val operationFlow: OperationFlow?
         get() = OperationFlowHolder.operationFlow
 
@@ -57,7 +61,13 @@ class CardRulesValidationActivity : ComponentActivity() {
         binValidationData = BinValidationData(this)
         binValidationData.setOperationFlow(
             operationFlow = operationFlow!!,
-            merchantId = merchantId,
+            merchantId = currentUser?.let {
+                if (operationPreference) {
+                    it.primaryMerchantId
+                } else {
+                    it.secondaryMerchantId
+                }
+            } ?: merchantId,
             customerId = customerId,
             currency = if (Currency.MX.name == currency) CURRENCY_LABEL_MX else CURRENCY_LABEL_ARG,
             interest = false

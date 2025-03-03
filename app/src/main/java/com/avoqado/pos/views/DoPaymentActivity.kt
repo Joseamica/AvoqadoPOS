@@ -65,6 +65,9 @@ class DoPaymentActivity : ComponentActivity() {
         intent.getStringExtra("waiterName").toString()
     }
 
+    private val currentUser = AvoqadoApp.sessionManager.getAvoqadoSession()
+    private val operationPreference  = AvoqadoApp.sessionManager.getOperationPreference()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i("${TAG}-AvoqadoTest", "New instance of ${TAG}")
@@ -85,7 +88,13 @@ class DoPaymentActivity : ComponentActivity() {
             trace = dbParams.getValueParam(DBDefines.trace).toLong(),
             terminalId = terminalId,
             acquirerId = if (operationFlow?.amount?.currency == CURRENCY_LABEL_MX) Acquirer.BANORTE.name else Acquirer.GPS.name,
-            merchantId = merchantId,
+            merchantId = currentUser?.let {
+                if (operationPreference) {
+                    it.primaryMerchantId
+                } else {
+                    it.secondaryMerchantId
+                }
+            } ?: merchantId,
             aesKey = deviceKeyStorage.getAesKeyExecute(),
             ivKey = deviceKeyStorage.getIvKeyExecute(),
             banorteKey = deviceKeyStorage.getKeyExecute(),
