@@ -34,7 +34,7 @@ class SignInViewModel (
 
     fun goToNextScreen(passcode: String){
         try {
-            authorizationRepository.login(user = email.value, passcode = otp.value)
+            authorizationRepository.login(user = email.value, passcode = passcode)
             navigationDispatcher.navigateTo(MainDests.Splash)
         } catch (e:Exception) {
             if (e is AvoqadoError.BasicError) {

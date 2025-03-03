@@ -17,6 +17,7 @@ class SessionManager(
         const val VENUE_INFO = "venue_info"
         const val TERMINAL_INFO = "terminal_info"
         const val AVOQADO_SESSION = "avoqado_session"
+        const val AVOQADO_LAST_OPERATION_PREFERENCE = "avoqado_last_operation_preference"
     }
 
     fun saveVenueId(venueId: String) {
@@ -80,5 +81,14 @@ class SessionManager(
         } catch (e: Exception) {
             return null
         }
+    }
+
+    fun getOperationPreference(): Boolean = sharedPreferences.getBoolean(AVOQADO_LAST_OPERATION_PREFERENCE, true)
+
+    fun setOperationPreference(needBill: Boolean) {
+        sharedPreferences
+            .edit()
+            .putBoolean(AVOQADO_LAST_OPERATION_PREFERENCE, needBill)
+            .apply()
     }
 }

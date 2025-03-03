@@ -38,13 +38,13 @@ fun SplashScreen(
         viewModel.events.collectLatest {
             when(it) {
                 SplashViewModel.START_CONFIG -> {
-                    externalTokenData.getExternalToken(merchantApiKey)
+                    externalTokenData.getExternalToken(viewModel.currentUser?.apiKey ?: merchantApiKey)
                 }
 
                 SplashViewModel.GET_MASTER_KEY -> {
                     //Inyección de llaves
                     masterKeyData.loadMasterKey(
-                        merchantId = merchantId, //TODO el cliente debe conocer su merchantId, es diferente por cada comercio que tenga
+                        merchantId = viewModel.currentUser?.primaryMerchantId ?: merchantId, //TODO el cliente debe conocer su merchantId, es diferente por cada comercio que tenga, seleccionar en caso tener varios merchantIds
                         acquirerId = ACQUIRER_NAME,
                         countryCode = COUNTRY_CODE
                     )

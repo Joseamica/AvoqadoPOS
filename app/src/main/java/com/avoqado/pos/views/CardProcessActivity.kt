@@ -8,7 +8,10 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.avoqado.pos.ACQUIRER_NAME
+import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.AvoqadoApp
+import com.avoqado.pos.COUNTRY_CODE
 import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.MainActivity
 import com.avoqado.pos.OperationFlowHolder
@@ -19,10 +22,14 @@ import com.avoqado.pos.doTagListTest
 import com.avoqado.pos.core.presentation.model.enums.Acquirer
 import com.avoqado.pos.core.presentation.model.enums.Country
 import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
+import com.avoqado.pos.merchantApiKey
+import com.avoqado.pos.merchantId
 import com.avoqado.pos.ui.screen.CardReaderScreen
+import com.avoqado.pos.views.InitActivity.Companion
 import com.menta.android.common_cross.data.datasource.local.model.Transaction
 import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
 import com.menta.android.common_cross.util.StatusResult
+import com.menta.android.common_cross.util.StatusType
 import com.menta.android.core.model.Amount
 import com.menta.android.core.model.Breakdown
 import com.menta.android.core.model.Capture
@@ -39,7 +46,11 @@ import com.menta.android.core.utils.SelectApp
 import com.menta.android.core.utils.StringUtils
 import com.menta.android.core.utils.TIP
 import com.menta.android.core.viewmodel.CardProcessData
+import com.menta.android.core.viewmodel.ExternalTokenData
+import com.menta.android.core.viewmodel.MasterKeyData
 import com.menta.android.emv.i9100.reader.util.InputMode
+import com.menta.android.restclient.core.RestClientConfiguration.configure
+import com.menta.android.restclient.core.Storage
 import java.time.LocalDateTime
 
 class CardProcessActivity : ComponentActivity() {
@@ -75,6 +86,11 @@ class CardProcessActivity : ComponentActivity() {
     private var operationFlow: OperationFlow = OperationFlow()
     private var isDestroying = false
 
+    private val currentUser = AvoqadoApp.sessionManager.getAvoqadoSession()
+    private var merchantSelected: String = currentUser?.primaryMerchantId ?: merchantId
+    private val lastOperationPreference: Boolean =
+        AvoqadoApp.sessionManager.getOperationPreference()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i("$TAG-AvoqadoTest", "New instance of $TAG")
@@ -102,8 +118,60 @@ class CardProcessActivity : ComponentActivity() {
                     showPayInCashValidation()
                 }
             )
-            cardReader(clearAmount, clearTip)
+            if (currentUser?.secondaryMerchantId == null) {
+                cardReader(clearAmount, clearTip)
+            }
         }
+
+        currentUser?.secondaryMerchantId?.let {
+            showChooserBillOption()
+        }
+    }
+
+    private fun showChooserBillOption() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("")
+        builder.setMessage("¿Desea factura?")
+        builder.setPositiveButton("Si", { dialog, _ ->
+            if (lastOperationPreference) {
+                dialog.dismiss()
+                val clearAmount = amount.replace(",", "").replace(".", "")
+                val clearTip = tipAmount.replace(",", "").replace(".", "")
+                cardReader(clearAmount, clearTip)
+            } else {
+                currentUser?.primaryMerchantId?.let {
+                    AvoqadoApp.sessionManager.setOperationPreference(needBill = true)
+                    updateMerchantConfig(it) {
+                        dialog.dismiss()
+                        val clearAmount = amount.replace(",", "").replace(".", "")
+                        val clearTip = tipAmount.replace(",", "").replace(".", "")
+                        cardReader(clearAmount, clearTip)
+                    }
+                }
+            }
+
+        })
+        builder.setNegativeButton("No", { dialog, _ ->
+            if (lastOperationPreference.not()) {
+                dialog.dismiss()
+                val clearAmount = amount.replace(",", "").replace(".", "")
+                val clearTip = tipAmount.replace(",", "").replace(".", "")
+                cardReader(clearAmount, clearTip)
+            } else {
+                currentUser?.secondaryMerchantId?.let {
+                    AvoqadoApp.sessionManager.setOperationPreference(needBill = false)
+                    updateMerchantConfig(it) {
+                        dialog.dismiss()
+                        val clearAmount = amount.replace(",", "").replace(".", "")
+                        val clearTip = tipAmount.replace(",", "").replace(".", "")
+                        cardReader(clearAmount, clearTip)
+                    }
+                }
+            }
+
+        })
+        builder.setCancelable(false)
+        builder.create().show()
     }
 
     private fun showPayInCashValidation() {
@@ -137,6 +205,39 @@ class CardProcessActivity : ComponentActivity() {
             dialog.dismiss()
         })
         builder.create().show()
+    }
+
+    private fun updateMerchantConfig(merchantId: String, onTokenUpdated: () -> Unit) {
+        configure(AppfinRestClientConfigure())
+        val externalTokenData = ExternalTokenData(this)
+        externalTokenData.getExternalToken(currentUser?.apiKey ?: merchantApiKey)
+
+        //Observer
+        externalTokenData.getExternalToken.observe(this) { token ->
+            if (token.status.statusType != StatusType.ERROR) {
+                //Guardar el token
+                val storage = Storage(this)
+                storage.putIdToken(token.idToken)
+                storage.putTokenType(token.tokenType)
+
+                //Inyección de llaves
+                val masterKeyData = MasterKeyData(this)
+                masterKeyData.loadMasterKey(
+                    merchantId = merchantId,
+                    acquirerId = ACQUIRER_NAME,
+                    countryCode = COUNTRY_CODE
+                )
+                masterKeyData.getMasterKey.observe(this) { keyResult ->
+                    keyResult?.secretsList?.let {
+                       onTokenUpdated()
+                    } ?: run {
+                        Log.e(InitActivity.TAG, "Ocurrio algun error, secrets list is null")
+                    }
+                }
+            } else {
+                Log.e(InitActivity.TAG, "Get token ERROR: ${token.status.message}")
+            }
+        }
     }
 
 

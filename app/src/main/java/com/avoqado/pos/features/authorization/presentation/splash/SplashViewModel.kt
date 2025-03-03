@@ -45,6 +45,8 @@ class SplashViewModel constructor(
     private val _events = Channel<String>(Channel.BUFFERED)
     val events = _events.receiveAsFlow()
 
+    val currentUser = sessionManager.getAvoqadoSession()
+
     init {
         Log.i("SplashViewModel", "Init with serial number -> $serialNumber")
         viewModelScope.launch (Dispatchers.IO) {
