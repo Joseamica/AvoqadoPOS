@@ -34,11 +34,19 @@ fun SplashScreen(
     val isConfiguring by viewModel.isConfiguring.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
+    val apiKey = viewModel.currentUser?.let {
+        if (viewModel.operationPreference) {
+            it.apiKey
+        } else {
+            it.secondaryApiKey
+        }
+    } ?: merchantApiKey
+
     LaunchedEffect( key1 = Unit) {
         viewModel.events.collectLatest {
             when(it) {
                 SplashViewModel.START_CONFIG -> {
-                    externalTokenData.getExternalToken(viewModel.currentUser?.apiKey ?: merchantApiKey)
+                    externalTokenData.getExternalToken(apiKey)
                 }
 
                 SplashViewModel.GET_MASTER_KEY -> {

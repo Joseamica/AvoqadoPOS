@@ -210,7 +210,14 @@ class CardProcessActivity : ComponentActivity() {
     private fun updateMerchantConfig(merchantId: String, onTokenUpdated: () -> Unit) {
         configure(AppfinRestClientConfigure())
         val externalTokenData = ExternalTokenData(this)
-        externalTokenData.getExternalToken(currentUser?.apiKey ?: merchantApiKey)
+        val apiKey = currentUser?.let {
+            if (lastOperationPreference) {
+                it.apiKey
+            } else {
+                it.secondaryApiKey
+            }
+        } ?: merchantApiKey
+        externalTokenData.getExternalToken(apiKey)
 
         //Observer
         externalTokenData.getExternalToken.observe(this) { token ->

@@ -30,6 +30,8 @@ class SplashViewModel constructor(
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
+    val operationPreference = sessionManager.getOperationPreference()
+
     companion object {
         val START_CONFIG = "START_CONFIG"
         val GET_MASTER_KEY = "GET_MASTER_KEY"
