@@ -150,7 +150,7 @@ fun AppRouter(
             NavHost(
                 modifier = Modifier.padding(padding),
                 navController = navController,
-                startDestination = if (user != null) MainDests.Splash.route else MainDests.SignIn.route,
+                startDestination = MainDests.Splash.route,
                 enterTransition = {
                     EnterTransition.None
                 },

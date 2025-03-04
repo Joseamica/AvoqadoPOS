@@ -17,9 +17,9 @@ class AuthorizationRepositoryImpl(
                     id = "test_user",
                     venueId = "madre_cafecito",
                     primaryMerchantId = "8e341c9a-0298-4aa1-ba6b-be11a526560f",
-                    secondaryMerchantId = "d6457a4d-1ee2-4596-ae76-17ca9465b20a", // <- Merchant
                     apiKey = "KnLfOhIkTql8OUQ2NCltlUb6qonNMcNpTsky3iaz4IfNn8tzN8Rl0Dzc16THsz8E",
-                    secondaryApiKey = "ACA_NUEVO_MERCHANT_API+KEY"
+                    secondaryMerchantId = null, //"d6457a4d-1ee2-4596-ae76-17ca9465b20a", // <- Merchant
+                    secondaryApiKey = null // "ACA_NUEVO_MERCHANT_API+KEY"
                 )
                 sessionManager.saveAvoqadoSession(user)
                 return user
