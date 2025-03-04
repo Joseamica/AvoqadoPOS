@@ -118,14 +118,14 @@ class CardProcessActivity : ComponentActivity() {
                     showPayInCashValidation()
                 }
             )
-            if (currentUser?.secondaryMerchantId == null) {
+//            if (currentUser?.secondaryMerchantId == null) {
                 cardReader(clearAmount, clearTip)
-            }
+//            }
         }
 
-        currentUser?.secondaryMerchantId?.let {
-            showChooserBillOption()
-        }
+//        currentUser?.secondaryMerchantId?.let {
+//            showChooserBillOption()
+//        }
     }
 
     private fun showChooserBillOption() {
@@ -246,7 +246,6 @@ class CardProcessActivity : ComponentActivity() {
             }
         }
     }
-
 
     private fun cardReader(amount: String, tipAmount: String) {
         if (operationType.isNotNull()) {
