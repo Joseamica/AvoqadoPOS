@@ -69,7 +69,7 @@ class SplashViewModel constructor(
         if (storage.getIdToken().isNotEmpty()) {
             getTerminalInfo(serialNumber)
         } else {
-            Log.i("SplashViewModel", "Navigating to InitActivity")
+            Log.i("SplashViewModel", "Start Configuring")
             startConfiguring()
         }
     }
@@ -107,16 +107,24 @@ class SplashViewModel constructor(
         _isConfiguring.value = true
         configure(AppfinRestClientConfigure())
         currentUser?.apiKey?.let {
+            Log.i("SplashViewModel", "Merchant APi Key: $it")
             storage.putMerchantApiKey(it)
         }
-        viewModelScope.launch { _events.send(START_CONFIG) }
+        viewModelScope.launch {
+            Log.i("SplashViewModel", "Start config event")
+            _events.send(START_CONFIG)
+        }
     }
 
     fun storePublicKey(token: String, tokenType: String) {
         //Guardar el token
+        Log.i("SplashViewModel", "Store public keys")
         storage.putIdToken(token)
         storage.putTokenType(tokenType)
-        viewModelScope.launch { _events.send(GET_MASTER_KEY) }
+        viewModelScope.launch {
+            Log.i("SplashViewModel", "Start master key events")
+            _events.send(GET_MASTER_KEY)
+        }
     }
 
     fun handleMasterKey(secretsList: ArrayList<SecretsV2>?) {
@@ -124,8 +132,10 @@ class SplashViewModel constructor(
             //TODO: aca se debe verificar si el usuario esta logeado en Avoqado API
 
             if (_isRefreshing.value) {
+                Log.i("SplashViewModel", "Refreshing values")
                 getTerminalInfo(serialNumber)
             } else {
+                Log.i("SplashViewModel", "Navigate to tables")
                 navigationDispatcher.navigateTo(
                     ManagementDests.Tables.route,
                     navOptions = NavOptions.Builder()
@@ -135,7 +145,7 @@ class SplashViewModel constructor(
             }
 
         } else {
-            Log.i(TAG, "Inyección de llaves ERROR")
+            Log.i("SplashViewModel", "Inyección de llaves ERROR")
         }
     }
 }
