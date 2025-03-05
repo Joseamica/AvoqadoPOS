@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavOptions
 import com.avoqado.pos.AppfinRestClientConfigure
+import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel.Companion.GET_MASTER_KEY
@@ -22,8 +23,12 @@ import kotlinx.coroutines.launch
 
 class AuthorizationViewModel (
     private val navigationDispatcher: NavigationDispatcher,
-    private val storage: Storage
+    private val storage: Storage,
+    private val sessionManager: SessionManager
 ): ViewModel() {
+
+    val currentUser = sessionManager.getAvoqadoSession()
+    val operationPreference = sessionManager.getOperationPreference()
 
     private val _isConfiguring = MutableStateFlow(false)
     val isConfiguring: StateFlow<Boolean> = _isConfiguring.asStateFlow()

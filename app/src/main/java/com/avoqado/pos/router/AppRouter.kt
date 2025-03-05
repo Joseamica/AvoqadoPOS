@@ -150,7 +150,7 @@ fun AppRouter(
             NavHost(
                 modifier = Modifier.padding(padding),
                 navController = navController,
-                startDestination = MainDests.Splash.route,
+                startDestination = if (user != null) MainDests.Splash.route else MainDests.SignIn.route,
                 enterTransition = {
                     EnterTransition.None
                 },
@@ -164,7 +164,7 @@ fun AppRouter(
                             navigationDispatcher = navigationDispatcher,
                             storage = AvoqadoApp.storage,
                             sessionManager = AvoqadoApp.sessionManager,
-                            serialNumber =  AvoqadoApp.terminalSerialCode
+                            serialNumber = AvoqadoApp.terminalSerialCode
                         )
                     }
 
@@ -178,7 +178,7 @@ fun AppRouter(
                 composableHolder(MainDests.SignIn) {
                     val signInViewModel: SignInViewModel = remember {
                         SignInViewModel(
-                            navigationDispatcher= navigationDispatcher,
+                            navigationDispatcher = navigationDispatcher,
                             snackbarDelegate = snackbarDelegate,
                             authorizationRepository = AvoqadoApp.authorizationRepository
                         )
@@ -191,10 +191,15 @@ fun AppRouter(
                     val viewModel = remember {
                         AuthorizationViewModel(
                             navigationDispatcher = navigationDispatcher,
-                            storage = AvoqadoApp.storage
+                            storage = AvoqadoApp.storage,
+                            sessionManager = AvoqadoApp.sessionManager
                         )
                     }
-                    AuthorizationDialog(viewModel = viewModel, externalTokenData = ExternalTokenData(context), masterKeyData = MasterKeyData(context))
+                    AuthorizationDialog(
+                        viewModel = viewModel,
+                        externalTokenData = ExternalTokenData(context),
+                        masterKeyData = MasterKeyData(context)
+                    )
                 }
 
                 managementNavigation(
