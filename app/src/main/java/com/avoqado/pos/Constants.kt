@@ -16,7 +16,7 @@ val merchantId = "8e341c9a-0298-4aa1-ba6b-be11a526560f"
 val customerId = "4b9d4822-9c94-4056-b58f-b84c7d214ed4"
 val merchantApiKey = "KnLfOhIkTql8OUQ2NCltlUb6qonNMcNpTsky3iaz4IfNn8tzN8Rl0Dzc16THsz8E"
 val terminalId = "7335c5cd-1d99-4eb7-abfb-9c43c5e9a122"
-val CURRENCY_LABEL = CURRENCY_LABEL_MX // Usar CURRENCY_LABEL_ARG si es Argentina. Usar CURRENCY_LABEL_MX si es Mexico
+val CURRENCY_LABEL = CURRENCY_LABEL_MX // Ugit psar CURRENCY_LABEL_ARG si es Argentina. Usar CURRENCY_LABEL_MX si es Mexico
 val ACQUIRER_NAME = Acquirer.BANORTE.name // Usar Acquirer.GPS.name para Argentina. Usar Acquirer.BANORTE.name para México
 val COUNTRY_CODE = Country.MEX.code // Usar Country.ARG.code para Argentina. Usar Country.MEX.code para México
 fun doTagListTest(): MutableList<String> { //TODO Los TAGs dependen de cada adquirencia, revise en la documentación cuál corresponse

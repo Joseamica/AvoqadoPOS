@@ -78,19 +78,19 @@ fun RowScope.GenericOptionCard(
     onClick: () -> Unit
 ) {
     when (type) {
-        SplitType.PERPRODUCT -> GenericOptionCard(
-            icon = painterResource(R.drawable.icon_products),
-            title = "Productos",
-            onClick = onClick,
-            modifier = Modifier.weight(1f)
-        )
-
-        SplitType.EQUALPARTS -> GenericOptionCard(
-            icon = painterResource(R.drawable.icon_people),
-            title = "Personas",
-            onClick = onClick,
-            modifier = Modifier.weight(1f)
-        )
+//        SplitType.PERPRODUCT -> GenericOptionCard(
+//            icon = painterResource(R.drawable.icon_products),
+//            title = "Productos",
+//            onClick = onClick,
+//            modifier = Modifier.weight(1f)
+//        )
+//
+//        SplitType.EQUALPARTS -> GenericOptionCard(
+//            icon = painterResource(R.drawable.icon_people),
+//            title = "Personas",
+//            onClick = onClick,
+//            modifier = Modifier.weight(1f)
+//        )
 
         SplitType.CUSTOMAMOUNT -> GenericOptionCard(
             icon = painterResource(R.drawable.icon_edit),

@@ -1,5 +1,6 @@
 package com.avoqado.pos.features.management.presentation.home
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -105,7 +106,13 @@ fun HomeScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(selectedVenue?.tables ?: emptyList()) { table ->
+
+            items(
+                selectedVenue?.tables
+                    ?.filterNotNull()      // Quita cualquier elemento nulo
+                    ?.filter { it.bill != null && it.bill.status == "OPEN" } // Filtra mesas con bill en estado "OPEN"
+                    ?: emptyList()
+            ) { table ->
                 Card(
                     shape = RoundedCornerShape(8.dp),
                     colors = CardDefaults.cardColors(
