@@ -106,6 +106,9 @@ class SplashViewModel constructor(
     private fun startConfiguring() {
         _isConfiguring.value = true
         configure(AppfinRestClientConfigure())
+        currentUser?.apiKey?.let {
+            storage.putMerchantApiKey(it)
+        }
         viewModelScope.launch { _events.send(START_CONFIG) }
     }
 

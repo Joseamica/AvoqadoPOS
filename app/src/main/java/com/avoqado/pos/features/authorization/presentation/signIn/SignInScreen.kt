@@ -100,7 +100,7 @@ fun SignInContent(
             OtpInputField(
                 otp = otpValue,
                 count = 4,
-                textColor = Color.White,
+                textColor = Color.Black,
                 otpBoxModifier = Modifier
                     .border(7.pxToDp(), Color(0xFF277F51), shape = RoundedCornerShape(12.pxToDp()))
             )

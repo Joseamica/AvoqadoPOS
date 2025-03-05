@@ -88,7 +88,7 @@ class CardProcessActivity : ComponentActivity() {
 
     private val currentUser = AvoqadoApp.sessionManager.getAvoqadoSession()
     private var merchantSelected: String = currentUser?.primaryMerchantId ?: merchantId
-    private val lastOperationPreference: Boolean =
+    private var lastOperationPreference: Boolean =
         AvoqadoApp.sessionManager.getOperationPreference()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -208,22 +208,24 @@ class CardProcessActivity : ComponentActivity() {
     }
 
     private fun updateMerchantConfig(merchantId: String, onTokenUpdated: () -> Unit) {
+        val storage = Storage(this)
         configure(AppfinRestClientConfigure())
         val externalTokenData = ExternalTokenData(this)
+        val operationPreference = AvoqadoApp.sessionManager.getOperationPreference()
         val apiKey = currentUser?.let {
-            if (lastOperationPreference) {
+            if (operationPreference) {
                 it.apiKey
             } else {
                 it.secondaryApiKey
             }
         } ?: merchantApiKey
+        storage.putMerchantApiKey(apiKey)
         externalTokenData.getExternalToken(apiKey)
 
         //Observer
         externalTokenData.getExternalToken.observe(this) { token ->
             if (token.status.statusType != StatusType.ERROR) {
                 //Guardar el token
-                val storage = Storage(this)
                 storage.putIdToken(token.idToken)
                 storage.putTokenType(token.tokenType)
 
