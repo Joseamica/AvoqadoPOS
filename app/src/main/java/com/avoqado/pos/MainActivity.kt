@@ -16,6 +16,8 @@ import com.avoqado.pos.core.presentation.navigation.NavigationManager
 import com.avoqado.pos.core.presentation.navigation.NavigationManagerImpl
 import com.avoqado.pos.router.AppRouter
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
+import com.menta.android.core.viewmodel.ExternalTokenData
+import com.menta.android.core.viewmodel.MasterKeyData
 import com.menta.android.restclient.core.RestClientConfiguration.configure
 
 class MainActivity : ComponentActivity() {
@@ -34,11 +36,16 @@ class MainActivity : ComponentActivity() {
         Log.d("MainActivity", "Device Serial Number: $serialNumber")
         getScreenInfo()
 
+        val externalTokenData = ExternalTokenData(this)
+        val masterKeyData = MasterKeyData(this)
+
         setContent {
             AvoqadoTheme {
                 AppRouter(
                     navigationDispatcher = navigationDispatcher,
                     snackbarDelegate = snackbarDelegate,
+                    externalTokenData = externalTokenData,
+                    masterKeyData = masterKeyData,
                     context = this
                 )
             }

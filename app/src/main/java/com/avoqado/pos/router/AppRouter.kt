@@ -44,6 +44,8 @@ import kotlinx.coroutines.flow.collectLatest
 fun AppRouter(
     navigationDispatcher: NavigationDispatcher,
     snackbarDelegate: SnackbarDelegate,
+    externalTokenData: ExternalTokenData,
+    masterKeyData: MasterKeyData,
     context: Context
 ) {
     val navController = rememberNavController()
@@ -170,8 +172,8 @@ fun AppRouter(
 
                     SplashScreen(
                         viewModel = splashViewModel,
-                        externalTokenData = ExternalTokenData(context),
-                        masterKeyData = MasterKeyData(context)
+                        externalTokenData = externalTokenData,
+                        masterKeyData = masterKeyData
                     )
                 }
 
@@ -197,8 +199,8 @@ fun AppRouter(
                     }
                     AuthorizationDialog(
                         viewModel = viewModel,
-                        externalTokenData = ExternalTokenData(context),
-                        masterKeyData = MasterKeyData(context)
+                        externalTokenData = externalTokenData,
+                        masterKeyData = masterKeyData
                     )
                 }
 

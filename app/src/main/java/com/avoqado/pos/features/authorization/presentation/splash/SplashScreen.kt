@@ -62,6 +62,7 @@ fun SplashScreen(
     }
 
     LaunchedEffect(key1 = externalToken) {
+        Log.i("SplashViewModel", "externalToken: ${externalToken?.idToken}")
         externalToken?.let { token ->
             if (token.status.statusType != StatusType.ERROR) {
                 Log.i(TAG, "Get token SUCCESS")
