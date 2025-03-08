@@ -16,7 +16,9 @@ import com.avoqado.pos.features.payment.data.PaymentRepositoryImpl
 import com.avoqado.pos.features.payment.data.cache.PaymentCacheStorage
 import com.avoqado.pos.features.payment.data.network.AvoqadoService
 import com.avoqado.pos.features.payment.domain.repository.PaymentRepository
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.menta.android.restclient.core.Storage
+import timber.log.Timber
 
 class AvoqadoApp : Application() {
     companion object {
@@ -48,12 +50,25 @@ class AvoqadoApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        Timber.plant(
+            FirebasePlant()
+        )
+
         storage = Storage(this)
         sessionManager = SessionManager(this)
         terminalSerialCode =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
         } else {
             Build.SERIAL ?: "Unknown"
+        }
+    }
+
+    class FirebasePlant() : Timber.Tree() {
+        override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+            FirebaseCrashlytics.getInstance().log("$tag: $message")
+            t?.let {
+                FirebaseCrashlytics.getInstance().recordException(it)
+            }
         }
     }
 }

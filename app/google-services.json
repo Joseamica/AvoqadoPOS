@@ -1,0 +1,103 @@
+{
+  "project_info": {
+    "project_number": "219752736783",
+    "project_id": "avoqado-d0a24",
+    "storage_bucket": "avoqado-d0a24.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219752736783:android:7a4cfe127658016a52db7a",
+        "android_client_info": {
+          "package_name": "com.avac"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvNRGBu25i9l5QnO47wi4PpO6IaEBRPwA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "219752736783-r20hp7rn5aam58o5vn5qr7ij46pqhht8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "219752736783-6pcl20s518kveplqt6mjpapmunbmpa8j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.avac.app"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219752736783:android:5638ac3c38a4403852db7a",
+        "android_client_info": {
+          "package_name": "com.avoqado.pos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvNRGBu25i9l5QnO47wi4PpO6IaEBRPwA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "219752736783-r20hp7rn5aam58o5vn5qr7ij46pqhht8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "219752736783-6pcl20s518kveplqt6mjpapmunbmpa8j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.avac.app"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:219752736783:android:d2292bb9032d6ffd52db7a",
+        "android_client_info": {
+          "package_name": "com.avoqadoapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvNRGBu25i9l5QnO47wi4PpO6IaEBRPwA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "219752736783-r20hp7rn5aam58o5vn5qr7ij46pqhht8.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "219752736783-6pcl20s518kveplqt6mjpapmunbmpa8j.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.avac.app"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
