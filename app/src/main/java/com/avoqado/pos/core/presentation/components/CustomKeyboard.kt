@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.avoqado.pos.R
@@ -105,6 +106,7 @@ fun CustomKeyboard(
                KeyboardButton(
                    modifier = Modifier.height(80.dp).width(120.dp),
                    text = "$/%",
+                   textSize = 16.sp,
                    onClick = { onNumberClick(-5) }
                )
 
@@ -128,7 +130,8 @@ fun KeyboardButton(
     text: String? = null,
     icon: Int? = null,
     isConfirm: Boolean = false,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    textSize: TextUnit = 24.sp
 ) {
     Button(
         onClick = onClick,
@@ -149,7 +152,7 @@ fun KeyboardButton(
         text?.let {
             Text(
                 text = it,
-                fontSize = 24.sp,
+                fontSize = textSize,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
