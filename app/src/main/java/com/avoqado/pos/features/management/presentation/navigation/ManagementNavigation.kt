@@ -52,7 +52,6 @@ fun NavGraphBuilder.managementNavigation(
 
         TableDetailScreen(
             tableDetailViewModel = tableDetailViewModel,
-            devicePrintImpl = DevicePrintImpl(context)
         )
     }
 

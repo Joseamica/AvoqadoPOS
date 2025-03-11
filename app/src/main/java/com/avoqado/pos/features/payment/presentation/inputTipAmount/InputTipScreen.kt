@@ -104,7 +104,8 @@ fun InputTipScreen(
             onDismiss = {
                 inputTipViewModel.hideCustomAmountKeyboard()
             },
-            onAmountEntered = { amount ->
+            enableFormatChange = true,
+            onAmountEntered = { amount, isPercentage ->
                 inputTipViewModel.hideCustomAmountKeyboard()
                 if (amount > 0) {
                     val intent = Intent(context, CardProcessActivity::class.java).apply {
@@ -112,10 +113,19 @@ fun InputTipScreen(
                             "amount",
                             inputTipViewModel.subtotal.toAmountMx()
                         )
-                        putExtra(
-                            "tipAmount",
-                            amount.toString().toAmountMx()
-                        )
+                        if (isPercentage){
+                            val subtotal = inputTipViewModel.subtotal.toAmountMx().toDouble()
+                            putExtra(
+                                "tipAmount",
+                                (subtotal * amount / 100.0).toString().toAmountMx()
+                            )
+                        } else {
+                            putExtra(
+                                "tipAmount",
+                                amount.toString().toAmountMx()
+                            )
+                        }
+
                         putExtra("currency", CURRENCY_LABEL)
                         putExtra("operationType", OperationType.PAYMENT.name)
                         putExtra("splitType", inputTipViewModel.splitType.value)

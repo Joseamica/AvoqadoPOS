@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
+    alias(libs.plugins.compose.compiler)
 }
 
 android {

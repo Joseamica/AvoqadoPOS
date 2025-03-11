@@ -47,12 +47,15 @@ fun KeyboardSheet(
         skipPartiallyExpanded = true
     ),
     onDismiss: () -> Unit,
-    onAmountEntered: (Double) -> Unit,
+    onAmountEntered: (Double, Boolean) -> Unit,
     title: String? = null,
-    maxAmount: Long = 1500000 // Max $15000.00
+    maxAmount: Long = 1500000, // Max $15000.00,
+    enableFormatChange: Boolean = false,
 ) {
     var amount by remember { mutableStateOf(0L) } // Store amount in cents
-    val formattedAmount = remember(amount) { formatAmount(amount) }
+    var isPercentage by remember { mutableStateOf(false) }
+    val formattedAmount = remember(amount, isPercentage) { formatAmount(amount, isPercentage = isPercentage) }
+
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -114,15 +117,20 @@ fun KeyboardSheet(
 
             Spacer(Modifier.height(16.dp))
 
-            Box (
+            Box(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
-            ){
+            ) {
                 CustomKeyboard(
                     modifier = Modifier.fillMaxWidth(),
+                    togglePercentage = enableFormatChange,
                     onNumberClick = { digit ->
-                        when(digit) {
+                        when (digit) {
                             -3 -> amount = 0 // Clear amount
                             -4 -> amount *= 100 // Add two zeros
+                            -5 -> {
+                                isPercentage = !isPercentage
+                                amount = 0
+                            } // Change format to percentage
                             else -> amount = (amount * 10 + digit).coerceAtMost(maxAmount)
                         }
                     },
@@ -130,7 +138,13 @@ fun KeyboardSheet(
                         amount /= 10 // Remove last digit
                     },
                     onConfirmClick = {
-                        onAmountEntered(amount / 100.0) // Convert cents to dollars
+                        onAmountEntered(
+                            if (isPercentage) {
+                                amount.toDouble()
+                            } else {
+                                amount / 100.0 // Convert cents to dollars
+                            }, isPercentage
+                        )
                         onDismiss()
                     }
                 )
@@ -142,10 +156,14 @@ fun KeyboardSheet(
 }
 
 // Formatting function for currency display
-fun formatAmount(amount: Long): String {
-    val dollars = amount / 100
-    val cents = amount % 100
-    return String.format("$%,d.%02d", dollars, cents)
+fun formatAmount(amount: Long, isPercentage: Boolean): String {
+    return if (isPercentage) {
+        "$amount%"
+    } else {
+        val dollars = amount / 100
+        val cents = amount % 100
+        String.format("$%,d.%02d", dollars, cents)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -155,11 +173,12 @@ fun PreviewKeyboardSheet() {
     AvoqadoTheme {
         KeyboardSheet(
             sheetState = rememberStandardBottomSheetState(
-                initialValue = SheetValue.Expanded
+                initialValue = SheetValue.Expanded,
+                skipHiddenState = true
             ),
             onDismiss = {},
             title = "Propina",
-            onAmountEntered = { amount ->
+            onAmountEntered = { amount, isPercentage ->
                 // Do nothing
             }
         )

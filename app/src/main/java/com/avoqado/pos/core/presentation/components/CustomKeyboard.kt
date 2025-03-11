@@ -28,6 +28,7 @@ import com.avoqado.pos.R
 @Composable
 fun CustomKeyboard(
     modifier: Modifier = Modifier,
+    togglePercentage: Boolean = false,
     onNumberClick: (Int) -> Unit,
     onBackspaceClick: () -> Unit,
     onConfirmClick: () -> Unit
@@ -72,6 +73,11 @@ fun CustomKeyboard(
                                text = "00",
                                onClick = { onNumberClick(-4) }
                            )
+                           -5 -> KeyboardButton(
+                               modifier = Modifier.size(80.dp),
+                               text = "$/%",
+                               onClick = { onNumberClick(-5) }
+                           )
                            -99 -> Spacer(modifier = Modifier.size(80.dp))
                            else -> KeyboardButton(
                                modifier = Modifier.size(80.dp),
@@ -94,6 +100,16 @@ fun CustomKeyboard(
            )
 
            Spacer(modifier = Modifier.height(8.dp))
+
+           if (togglePercentage) {
+               KeyboardButton(
+                   modifier = Modifier.height(80.dp).width(120.dp),
+                   text = "$/%",
+                   onClick = { onNumberClick(-5) }
+               )
+
+               Spacer(modifier = Modifier.height(8.dp))
+           }
 
            KeyboardButton(
                modifier = Modifier.width(120.dp).weight(1f),

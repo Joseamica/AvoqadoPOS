@@ -74,7 +74,6 @@ import java.util.Locale
 @Composable
 fun TableDetailScreen(
     tableDetailViewModel: TableDetailViewModel,
-    devicePrintImpl: DevicePrintImpl
 ) {
     val tableDetails by tableDetailViewModel.tableDetail.collectAsStateWithLifecycle()
     val isLoading by tableDetailViewModel.isLoading.collectAsStateWithLifecycle()
@@ -159,7 +158,7 @@ fun TableDetailScreen(
             onDismiss = {
                 tableDetailViewModel.hidePaymentPicker()
             },
-            onAmountEntered = { amount ->
+            onAmountEntered = { amount, isPercentage ->
                 tableDetailViewModel.hidePaymentPicker()
                 tableDetailViewModel.payCustomPendingAmount(amount)
             }
