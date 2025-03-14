@@ -25,31 +25,27 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.R
-import com.avoqado.pos.core.presentation.components.CustomKeyboard
 import com.avoqado.pos.core.presentation.components.KeyboardSheet
 import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
 import com.avoqado.pos.core.presentation.model.IconType
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.features.payment.presentation.inputTipAmount.components.TipItemCard
-import com.avoqado.pos.ui.screen.ToolbarWithIcon
+import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.theme.lightGrayNumberField
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 import com.avoqado.pos.views.CardProcessActivity
 import com.menta.android.core.model.OperationType
-import com.menta.android.core.utils.StringUtils
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

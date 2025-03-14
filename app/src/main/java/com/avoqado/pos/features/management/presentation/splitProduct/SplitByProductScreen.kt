@@ -21,7 +21,7 @@ import com.avoqado.pos.core.presentation.components.SelectableItemRow
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.features.management.presentation.splitProduct.model.SplitByProductViewState
 import com.avoqado.pos.core.presentation.model.Product
-import com.avoqado.pos.ui.screen.ToolbarWithIcon
+import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 

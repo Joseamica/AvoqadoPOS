@@ -155,6 +155,7 @@ object PrinterUtils {
 
                 try {
                     devicePrintImpl.startPrint()
+
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }

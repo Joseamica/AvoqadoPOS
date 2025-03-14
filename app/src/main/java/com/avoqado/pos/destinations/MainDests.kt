@@ -26,8 +26,19 @@ sealed class MainDests : NavigationAction {
             get() = "splash"
     }
     data object SignIn: MainDests(){
+
+        const val ARG_REDIRECT = "redirect"
+
         override val route: String
-            get() = "signIn"
+            get() = "signIn?$ARG_REDIRECT={$ARG_REDIRECT}"
+
+        override val arguments: List<NamedNavArgument>
+            get() = listOf(
+                navArgument(ARG_REDIRECT) {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
     }
 
 }

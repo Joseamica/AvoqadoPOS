@@ -1,7 +1,5 @@
 package com.avoqado.pos.features.payment.presentation.paymentResult
 
-import android.os.RemoteException
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,9 +21,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,7 +38,6 @@ import com.avoqado.pos.core.presentation.components.DashedDivider
 import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
 import com.avoqado.pos.core.presentation.model.IconType
-import com.avoqado.pos.core.presentation.model.OperationInfo
 import com.avoqado.pos.core.presentation.model.VenueInfo
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.theme.backgroundPrimaryColor
@@ -50,7 +45,7 @@ import com.avoqado.pos.core.presentation.theme.buttonGrayColor
 import com.avoqado.pos.core.presentation.utils.PrinterUtils
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 import com.avoqado.pos.core.presentation.utils.toAmountMx
-import com.avoqado.pos.ui.screen.SimpleToolbar
+import com.avoqado.pos.core.presentation.components.SimpleToolbar
 import com.lightspark.composeqr.QrCodeColors
 import com.lightspark.composeqr.QrCodeView
 

@@ -23,11 +23,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -35,6 +37,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.avoqado.pos.core.presentation.components.CustomKeyboard
+import com.avoqado.pos.core.presentation.components.CustomKeyboardType
 import com.avoqado.pos.core.presentation.components.OtpInputField
 import com.avoqado.pos.core.presentation.components.pxToDp
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
@@ -46,12 +50,7 @@ import kotlin.math.sin
 fun SignInScreen(
     signInViewModel: SignInViewModel
 ) {
-
-    val email by signInViewModel.email.collectAsStateWithLifecycle()
-
     SignInContent(
-        email = email,
-        onUpdateEmail = signInViewModel::setEmail,
         onNext = {
             signInViewModel.goToNextScreen(it)
         }
@@ -60,10 +59,8 @@ fun SignInScreen(
 
 @Composable
 fun SignInContent(
-    email: String,
-    onUpdateEmail: (String) -> Unit,
-    onNext: (String)-> Unit = {}
-){
+    onNext: (String) -> Unit = {}
+) {
     val otpValue = remember { mutableStateOf("") }
 
     Column(
@@ -74,57 +71,60 @@ fun SignInContent(
         verticalArrangement = Arrangement.Center
     ) {
 
-        TextField(
-            value = email,
-            onValueChange = onUpdateEmail,
-            label = {
-                Text("Email")
-            }
-        )
-
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Ingresa tu passcode",
-            style = MaterialTheme.typography.titleMedium,
+            text = "Ingresa tu PIN",
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Bold
+            ),
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        // Row of 6 circular “boxes” for OTP
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(bottom = 24.dp)
         ) {
 
-            OtpInputField(
-                otp = otpValue,
-                count = 4,
-                textColor = Color.Black,
-                otpBoxModifier = Modifier
-                    .border(7.pxToDp(), Color(0xFF277F51), shape = RoundedCornerShape(12.pxToDp()))
-            )
+           for (i in 1..4) {
+                Text(
+                    text = "•",
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = if (i <= otpValue.value.length) {
+                            Color.Black
+                        } else {
+                            Color.LightGray
+                        }
+                    ),
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+           }
 
         }
 
-        // “Confirm” button
-        Button(
-            onClick = {
-                onNext(otpValue.value)
+        CustomKeyboard(
+            modifier = Modifier.fillMaxWidth(),
+            type = CustomKeyboardType.simple,
+            onNumberClick = {
+                if (it == -3) {
+                    otpValue.value = ""
+                } else {
+                    otpValue.value += it
+                    if (otpValue.value.length == 4) {
+                        onNext(otpValue.value)
+                    }
+                }
+
             },
-            enabled = otpValue.value.isNotEmpty(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Gray.copy(alpha = 0.2f)
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-        ) {
-            Text(
-                text = "Confirmar",
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
+            onConfirmClick = {},
+            onBackspaceClick = {
+                if (otpValue.value.isNotEmpty()) {
+                    otpValue.value = otpValue.value.dropLast(1)
+                }
+            }
+        )
     }
 }
 
@@ -156,11 +156,8 @@ fun SingleOtpBox(
 
 @Urovo9100DevicePreview
 @Composable
-fun SignInContentPreview(){
+fun SignInContentPreview() {
     AvoqadoTheme {
-        SignInContent(
-            email = "test@avoqado.io",
-            onUpdateEmail = {}
-        )
+        SignInContent()
     }
 }

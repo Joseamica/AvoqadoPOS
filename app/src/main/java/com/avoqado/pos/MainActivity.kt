@@ -18,6 +18,7 @@ import com.avoqado.pos.router.AppRouter
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
+import com.menta.android.core.viewmodel.TrxData
 import com.menta.android.restclient.core.RestClientConfiguration.configure
 
 class MainActivity : ComponentActivity() {
@@ -38,6 +39,7 @@ class MainActivity : ComponentActivity() {
 
         val externalTokenData = ExternalTokenData(this)
         val masterKeyData = MasterKeyData(this)
+        val trxData = TrxData(this)
 
         setContent {
             AvoqadoTheme {
@@ -46,6 +48,7 @@ class MainActivity : ComponentActivity() {
                     snackbarDelegate = snackbarDelegate,
                     externalTokenData = externalTokenData,
                     masterKeyData = masterKeyData,
+                    trxData = trxData,
                     context = this
                 )
             }

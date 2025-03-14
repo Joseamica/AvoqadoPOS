@@ -1,5 +1,6 @@
 package com.avoqado.pos.features.management.presentation.home
 
+import android.content.Intent
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,6 +37,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,7 +51,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.R
+import com.avoqado.pos.core.presentation.components.DropdownMenuMoreActions
+import com.avoqado.pos.core.presentation.components.MainButton
+import com.avoqado.pos.core.presentation.model.FlowStep
+import com.avoqado.pos.core.presentation.model.IconType
+import com.avoqado.pos.views.MenuActivity
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel
@@ -62,6 +71,31 @@ fun HomeScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        TopAppBar(
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.White,
+                titleContentColor = Color.Black,
+                actionIconContentColor = Color.Black
+            ),
+            title = {
+                Text(
+                    modifier = Modifier,
+                    text = "",
+                    style = MaterialTheme.typography.titleSmall.copy(color= Color.Black)
+                )
+            },
+            actions = {
+                DropdownMenuMoreActions(
+                    onPrintHistorical = {
+                        homeViewModel.goToSummary()
+                    },
+                    onSignOut = {
+                        homeViewModel.logout()
+                    }
+                )
+            }
+        )
+
         Text(
             text = "Selecciona un venue",
             style = MaterialTheme.typography.titleLarge,

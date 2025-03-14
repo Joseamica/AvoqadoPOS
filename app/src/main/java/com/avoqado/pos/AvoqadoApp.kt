@@ -43,7 +43,8 @@ class AvoqadoApp : Application() {
         }
         val authorizationRepository: AuthorizationRepository by lazy {
             AuthorizationRepositoryImpl(
-                sessionManager = sessionManager
+                sessionManager = sessionManager,
+                avoqadoService = AvoqadoAPI.apiService
             )
         }
     }

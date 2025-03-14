@@ -26,20 +26,36 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.avoqado.pos.R
 
+enum class CustomKeyboardType {
+    default,
+    simple
+}
+
 @Composable
 fun CustomKeyboard(
     modifier: Modifier = Modifier,
     togglePercentage: Boolean = false,
     onNumberClick: (Int) -> Unit,
     onBackspaceClick: () -> Unit,
-    onConfirmClick: () -> Unit
+    onConfirmClick: () -> Unit,
+    type: CustomKeyboardType = CustomKeyboardType.default
 ) {
-    val keys = listOf(
-        listOf(1, 2, 3),
-        listOf(4, 5, 6),
-        listOf(7, 8, 9),
-        listOf(-3, 0, -4) // -1 for backspace, -2 for confirm, -3 to clear amount, -4 double zero, -99 for empty space
-    )
+
+
+    val keys = when(type) {
+        CustomKeyboardType.default -> listOf(
+            listOf(1, 2, 3),
+            listOf(4, 5, 6),
+            listOf(7, 8, 9),
+            listOf(-3, 0, -4) // -1 for backspace, -2 for confirm, -3 to clear amount, -4 double zero, -99 for empty space
+        )
+        CustomKeyboardType.simple -> listOf(
+            listOf(1, 2, 3),
+            listOf(4, 5, 6),
+            listOf(7, 8, 9),
+            listOf(-3, 0, -1) // -1 for backspace, -2 for confirm, -3 to clear amount, -4 double zero, -99 for empty space
+        )
+    }
 
    Row(
        modifier = modifier.height(intrinsicSize = IntrinsicSize.Max),
@@ -91,35 +107,37 @@ fun CustomKeyboard(
            }
        }
 
-       Spacer(modifier = Modifier.width(8.dp))
-
-       Column {
-           KeyboardButton(
-               modifier = Modifier.height(80.dp).width(120.dp),
-               icon = R.drawable.baseline_backspace_24,
-               onClick = onBackspaceClick
-           )
-
-           Spacer(modifier = Modifier.height(8.dp))
-
-           if (togglePercentage) {
+       if (type == CustomKeyboardType.default) {
+           Spacer(modifier = Modifier.width(8.dp))
+           Column {
                KeyboardButton(
                    modifier = Modifier.height(80.dp).width(120.dp),
-                   text = "$/%",
-                   textSize = 16.sp,
-                   onClick = { onNumberClick(-5) }
+                   icon = R.drawable.baseline_backspace_24,
+                   onClick = onBackspaceClick
                )
 
                Spacer(modifier = Modifier.height(8.dp))
-           }
 
-           KeyboardButton(
-               modifier = Modifier.width(120.dp).weight(1f),
-               icon = R.drawable.ic_success,
-               isConfirm = true,
-               onClick = onConfirmClick
-           )
+               if (togglePercentage) {
+                   KeyboardButton(
+                       modifier = Modifier.height(80.dp).width(120.dp),
+                       text = "$/%",
+                       textSize = 16.sp,
+                       onClick = { onNumberClick(-5) }
+                   )
+
+                   Spacer(modifier = Modifier.height(8.dp))
+               }
+
+               KeyboardButton(
+                   modifier = Modifier.width(120.dp).weight(1f),
+                   icon = R.drawable.ic_success,
+                   isConfirm = true,
+                   onClick = onConfirmClick
+               )
+           }
        }
+
    }
 }
 

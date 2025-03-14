@@ -43,7 +43,7 @@ import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
 import com.avoqado.pos.core.presentation.model.IconType
 import com.avoqado.pos.core.presentation.viewmodel.ListTransactionViewModel
-import com.avoqado.pos.ui.screen.ToolbarWithIcon
+import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 import com.avoqado.pos.core.presentation.theme.primary
 import com.avoqado.pos.core.presentation.theme.red
 import com.menta.android.common_cross.data.datasource.local.model.Transaction

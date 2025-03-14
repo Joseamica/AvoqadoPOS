@@ -31,7 +31,7 @@ import com.avoqado.pos.core.presentation.model.IconType
 import com.avoqado.pos.core.presentation.theme.AppFont
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
-import com.avoqado.pos.ui.screen.ToolbarWithIcon
+import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 
 @Composable
 fun SplitByPersonScreen(

@@ -36,6 +36,7 @@ import com.avoqado.pos.features.authorization.presentation.splash.SplashViewMode
 import com.avoqado.pos.features.payment.presentation.navigation.paymentNavigation
 import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
+import com.menta.android.core.viewmodel.TrxData
 import com.menta.android.printer.i9100.core.DevicePrintImpl
 import com.menta.android.restclient.core.Storage
 import kotlinx.coroutines.flow.collectLatest
@@ -46,6 +47,7 @@ fun AppRouter(
     snackbarDelegate: SnackbarDelegate,
     externalTokenData: ExternalTokenData,
     masterKeyData: MasterKeyData,
+    trxData: TrxData,
     context: Context
 ) {
     val navController = rememberNavController()
@@ -152,7 +154,7 @@ fun AppRouter(
             NavHost(
                 modifier = Modifier.padding(padding),
                 navController = navController,
-                startDestination = if (user != null) MainDests.Splash.route else MainDests.SignIn.route,
+                startDestination = MainDests.Splash.route,
                 enterTransition = {
                     EnterTransition.None
                 },
@@ -166,7 +168,8 @@ fun AppRouter(
                             navigationDispatcher = navigationDispatcher,
                             storage = AvoqadoApp.storage,
                             sessionManager = AvoqadoApp.sessionManager,
-                            serialNumber = AvoqadoApp.terminalSerialCode
+                            serialNumber = AvoqadoApp.terminalSerialCode,
+                            snackbarDelegate = snackbarDelegate
                         )
                     }
 
@@ -182,7 +185,9 @@ fun AppRouter(
                         SignInViewModel(
                             navigationDispatcher = navigationDispatcher,
                             snackbarDelegate = snackbarDelegate,
-                            authorizationRepository = AvoqadoApp.authorizationRepository
+                            authorizationRepository = AvoqadoApp.authorizationRepository,
+                            sessionManager = AvoqadoApp.sessionManager,
+                            redirect = it.arguments?.getString(MainDests.SignIn.ARG_REDIRECT)
                         )
                     }
 
@@ -210,7 +215,9 @@ fun AppRouter(
                 )
 
                 paymentNavigation(
-                    navigationDispatcher = navigationDispatcher
+                    navigationDispatcher = navigationDispatcher,
+                    snackbarDelegate = snackbarDelegate,
+                    trxData = trxData
                 )
             }
         }

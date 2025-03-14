@@ -1,4 +1,4 @@
-package com.avoqado.pos.ui.screen
+package com.avoqado.pos.core.presentation.components
 
 import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.avoqado.pos.R
-import com.avoqado.pos.core.presentation.components.MainButton
 import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
 import com.avoqado.pos.core.presentation.model.IconType

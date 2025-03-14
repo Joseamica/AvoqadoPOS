@@ -12,6 +12,7 @@ import com.avoqado.pos.core.data.network.models.NetworkVenue
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.presentation.home.models.Table
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
+import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -79,6 +80,22 @@ class HomeViewModel(
             sessionManager.saveVenueInfo(it)
         }
 
+    }
+
+    fun goToSummary(){
+        navigationDispatcher.navigateTo(PaymentDests.TransactionsSummary)
+    }
+
+    fun logout(){
+        sessionManager.clearAvoqadoSession()
+        navigationDispatcher.popToDestination(MainDests.Splash, inclusive = true)
+        navigationDispatcher.navigateWithArgs(
+            MainDests.SignIn,
+            NavigationArg.StringArg(
+                MainDests.SignIn.ARG_REDIRECT,
+                ManagementDests.Tables.route
+            )
+        )
     }
 
 }

@@ -4,6 +4,7 @@ data class User(
     val id: String,
     val apiKey: String,
     val venueId: String,
+    val name: String,
     val primaryMerchantId: String,
     val secondaryMerchantId: String?,
     val secondaryApiKey: String?

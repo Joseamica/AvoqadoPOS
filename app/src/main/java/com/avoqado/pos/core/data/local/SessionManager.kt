@@ -91,4 +91,8 @@ class SessionManager(
             .putBoolean(AVOQADO_LAST_OPERATION_PREFERENCE, needBill)
             .apply()
     }
+
+    fun clearAvoqadoSession(){
+        sharedPreferences.edit().remove(AVOQADO_SESSION).apply()
+    }
 }

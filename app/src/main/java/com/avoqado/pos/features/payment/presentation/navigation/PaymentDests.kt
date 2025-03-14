@@ -36,4 +36,9 @@ sealed class PaymentDests : NavigationAction {
         override val route: String
             get() = "paymentResult"
     }
+
+    data object TransactionsSummary: PaymentDests(){
+        override val route: String
+            get() = "transactions"
+    }
 }

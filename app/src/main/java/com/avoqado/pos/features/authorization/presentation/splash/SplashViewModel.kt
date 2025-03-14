@@ -8,6 +8,10 @@ import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.AvoqadoAPI
+import com.avoqado.pos.core.data.network.models.TerminalMerchant
+import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
+import com.avoqado.pos.core.presentation.delegates.SnackbarState
+import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.avoqado.pos.views.InitActivity.Companion.TAG
@@ -22,12 +26,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
+import timber.log.Timber
 
 class SplashViewModel constructor(
     private val navigationDispatcher: NavigationDispatcher,
     private val storage: Storage,
     private val serialNumber: String,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val snackbarDelegate: SnackbarDelegate
 ) : ViewModel() {
 
     val operationPreference = sessionManager.getOperationPreference()
@@ -50,26 +56,45 @@ class SplashViewModel constructor(
     val currentUser = sessionManager.getAvoqadoSession()
 
     init {
-        Log.i("SplashViewModel", "Init with serial number -> $serialNumber")
+        Timber.i( "Init with serial number -> $serialNumber")
         viewModelScope.launch (Dispatchers.IO) {
             try {
                 val result = AvoqadoAPI.apiService.getTPV(serialNumber)
+//                val result : TerminalMerchant = TerminalMerchant(
+//                    "madre_cafecito"
+//                )
                 result.venueId?.let {
                     sessionManager.saveVenueId(it)
+                    if (currentUser == null) {
+                        navigationDispatcher.navigateWithArgs(MainDests.SignIn)
+                    } else {
+                        startup()
+                    }
+                } ?: run {
+                    snackbarDelegate.showSnackbar(
+                        state = SnackbarState.Default,
+                        message = "No tienes asignado un restaurante a este terminal."
+                    )
                 }
             } catch (e: Exception) {
-                Log.e("SplashViewModel", "Error fetching TPV", e)
+                Timber.e( "Error fetching TPV", e)
+                if (sessionManager.getVenueId().isNotEmpty()) {
+                    if (currentUser == null) {
+                        navigationDispatcher.navigateTo(MainDests.SignIn)
+                    } else {
+                        startup()
+                    }
+                }
             }
         }
 
-        startup()
+
     }
 
     private fun startup() {
         if (storage.getIdToken().isNotEmpty()) {
             getTerminalInfo(serialNumber)
         } else {
-            Log.i("SplashViewModel", "Start Configuring")
             startConfiguring()
         }
     }
@@ -77,24 +102,22 @@ class SplashViewModel constructor(
     private fun getTerminalInfo(serial: String){
         viewModelScope.launch {
             try {
-                Log.i("SplashViewModel", "Get Terminal Info -> token: ${storage.getTokenType()} ${storage.getIdToken()}")
                 val terminals = AvoqadoAPI.mentaService.getTerminals("${storage.getTokenType()} ${storage.getIdToken()}")
                 val currentTerminal = terminals.embedded.terminals?.firstOrNull { terminal -> terminal.serialCode == serial }
-                //TODO: Guardar terminal en storage
-                Log.i("SplashViewModel", "Terminal: $currentTerminal")
+
                 currentTerminal?.let {
                     sessionManager.saveTerminalInfo(it)
                 }
-                Log.i("SplashViewModel", "Navigating to MenuActivity")
+
                 navigationDispatcher.navigateTo(
                     ManagementDests.Tables
                 )
             }
             catch (e: Exception) {
-                Log.e("SplashViewModel", "Error fetching terminals", e)
+                Timber.e("Error fetching terminals", e)
                 if (e is HttpException) {
                     if (e.code() == 401) {
-                        Log.i("SplashViewModel", "Unauthorized")
+                        Timber.i( "Unauthorized")
                         _isRefreshing.value = true
                         startConfiguring()
                     }
@@ -107,22 +130,17 @@ class SplashViewModel constructor(
         _isConfiguring.value = true
         configure(AppfinRestClientConfigure())
         currentUser?.apiKey?.let {
-            Log.i("SplashViewModel", "Merchant APi Key: $it")
             storage.putMerchantApiKey(it)
         }
         viewModelScope.launch {
-            Log.i("SplashViewModel", "Start config event")
             _events.send(START_CONFIG)
         }
     }
 
     fun storePublicKey(token: String, tokenType: String) {
-        //Guardar el token
-        Log.i("SplashViewModel", "Store public keys")
         storage.putIdToken(token)
         storage.putTokenType(tokenType)
         viewModelScope.launch {
-            Log.i("SplashViewModel", "Start master key events")
             _events.send(GET_MASTER_KEY)
         }
     }
@@ -132,10 +150,8 @@ class SplashViewModel constructor(
             //TODO: aca se debe verificar si el usuario esta logeado en Avoqado API
 
             if (_isRefreshing.value) {
-                Log.i("SplashViewModel", "Refreshing values")
                 getTerminalInfo(serialNumber)
             } else {
-                Log.i("SplashViewModel", "Navigate to tables")
                 navigationDispatcher.navigateTo(
                     ManagementDests.Tables.route,
                     navOptions = NavOptions.Builder()
@@ -143,9 +159,8 @@ class SplashViewModel constructor(
                         .build()
                 )
             }
-
         } else {
-            Log.i("SplashViewModel", "Inyección de llaves ERROR")
+            Timber.e("SplashViewModel ", "Inyección de llaves ERROR")
         }
     }
 }
