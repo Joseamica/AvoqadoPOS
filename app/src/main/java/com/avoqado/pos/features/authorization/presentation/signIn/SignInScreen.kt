@@ -50,16 +50,53 @@ import kotlin.math.sin
 fun SignInScreen(
     signInViewModel: SignInViewModel
 ) {
+
+    val otp by signInViewModel.otp.collectAsStateWithLifecycle()
+
     SignInContent(
         onNext = {
             signInViewModel.goToNextScreen(it)
-        }
+        },
+        onDeleteChar = {
+            signInViewModel.deleteDigit()
+        },
+        otp = otp
     )
 }
 
 @Composable
+fun PinRow(
+    otp: String
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(bottom = 24.dp)
+    ) {
+
+        for (i in 1..4) {
+            Text(
+                text = "•",
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = if (i <= otp.length) {
+                        Color.Black
+                    } else {
+                        Color.LightGray
+                    }
+                ),
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+        }
+
+    }
+}
+
+@Composable
 fun SignInContent(
-    onNext: (String) -> Unit = {}
+    onNext: (String) -> Unit = {},
+    onDeleteChar: () -> Unit = {},
+    otp: String = ""
 ) {
     val otpValue = remember { mutableStateOf("") }
 
@@ -81,77 +118,25 @@ fun SignInContent(
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(bottom = 24.dp)
-        ) {
-
-           for (i in 1..4) {
-                Text(
-                    text = "•",
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = if (i <= otpValue.value.length) {
-                            Color.Black
-                        } else {
-                            Color.LightGray
-                        }
-                    ),
-                    modifier = Modifier.padding(horizontal = 8.dp)
-                )
-           }
-
-        }
+        PinRow(otp)
 
         CustomKeyboard(
             modifier = Modifier.fillMaxWidth(),
             type = CustomKeyboardType.simple,
             onNumberClick = {
                 if (it == -3) {
-                    otpValue.value = ""
+                    onNext("")
                 } else {
-                    otpValue.value += it
-                    if (otpValue.value.length == 4) {
-                        onNext(otpValue.value)
-                    }
+                    onNext(it.toString())
                 }
 
             },
             onConfirmClick = {},
             onBackspaceClick = {
-                if (otpValue.value.isNotEmpty()) {
-                    otpValue.value = otpValue.value.dropLast(1)
-                }
+                onDeleteChar()
             }
         )
     }
-}
-
-@Composable
-fun SingleOtpBox(
-    value: String,
-    onValueChange: (String) -> Unit
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        textStyle = TextStyle(
-            fontSize = 20.sp,
-            textAlign = TextAlign.Center
-        ),
-        singleLine = true,
-        maxLines = 1,
-        modifier = Modifier
-            .size(56.dp)
-            .clip(CircleShape),
-        shape = CircleShape,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.Number
-        ),
-        // Hide typed digit if you want a “password” style
-        visualTransformation = PasswordVisualTransformation()
-    )
 }
 
 @Urovo9100DevicePreview

@@ -10,6 +10,10 @@ import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.authorization.domain.AuthorizationRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -25,6 +29,31 @@ class SignInViewModel (
         val codeLength = 4
     }
 
+    private val _otpValue = MutableStateFlow("")
+    val otp: StateFlow<String> = _otpValue.asStateFlow()
+
+    fun updateOtp(otp: String){
+        _otpValue.update {
+            if (otp.isEmpty()) {
+                ""
+            } else {
+                it + otp
+            }
+        }
+
+        if (_otpValue.value.length == 4) {
+            goToNextScreen(_otpValue.value)
+        }
+    }
+
+    fun deleteDigit(){
+        if (_otpValue.value.isNotEmpty()) {
+            _otpValue.update {
+                it.dropLast(1)
+            }
+        }
+    }
+
     fun goToNextScreen(passcode: String){
        viewModelScope.launch {
            try {
@@ -33,6 +62,7 @@ class SignInViewModel (
                    venueId = sessionManager.getVenueId()
                )
                redirect?.let {
+                   Timber.i("Sign in redirecting to : $it")
                    navigationDispatcher.navigateTo(
                        route = it,
                        navOptions = NavOptions.Builder()
@@ -48,6 +78,9 @@ class SignInViewModel (
                }
            } catch (e:Exception) {
                if (e is AvoqadoError.BasicError) {
+                   _otpValue.update {
+                       ""
+                   }
                    snackbarDelegate.showSnackbar(
                        message = e.message
                    )

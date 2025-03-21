@@ -37,6 +37,7 @@ sealed class MainDests : NavigationAction {
                 navArgument(ARG_REDIRECT) {
                     type = NavType.StringType
                     nullable = true
+                    defaultValue = ""
                 }
             )
     }

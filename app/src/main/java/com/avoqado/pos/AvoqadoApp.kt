@@ -66,6 +66,7 @@ class AvoqadoApp : Application() {
 
     class FirebasePlant() : Timber.Tree() {
         override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+            super.log(priority, tag, message, t)
             FirebaseCrashlytics.getInstance().log("$tag: $message")
             t?.let {
                 FirebaseCrashlytics.getInstance().recordException(it)

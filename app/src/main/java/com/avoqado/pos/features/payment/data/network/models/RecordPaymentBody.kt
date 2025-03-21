@@ -57,5 +57,6 @@ data class RecordPaymentBody(
     @SerializedName("mentaAuthorizationReference") val mentaAuthorizationReference: String? = null,
     @SerializedName("mentaOperationId") val mentaOperationId: String? = null,
     @SerializedName("mentaTicketId") val mentaTicketId: String? = null,
-    @SerializedName("token") val token: String? = null
+    @SerializedName("token") val token: String? = null,
+    @SerializedName("isInternational") val isInternational: Boolean
 )
