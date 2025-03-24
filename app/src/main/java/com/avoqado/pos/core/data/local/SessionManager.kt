@@ -3,6 +3,7 @@ package com.avoqado.pos.core.data.local
 import android.content.Context
 import com.avoqado.pos.core.data.network.models.NetworkVenue
 import com.avoqado.pos.core.data.network.models.Terminal
+import com.avoqado.pos.core.domain.models.Shift
 import com.avoqado.pos.core.presentation.model.VenueInfo
 import com.avoqado.pos.features.authorization.domain.models.User
 import com.google.gson.Gson
@@ -17,6 +18,7 @@ class SessionManager(
         const val VENUE_INFO = "venue_info"
         const val TERMINAL_INFO = "terminal_info"
         const val AVOQADO_SESSION = "avoqado_session"
+        const val AVOQADO_SHIFT = "avoqado_shift"
         const val AVOQADO_LAST_OPERATION_PREFERENCE = "avoqado_last_operation_preference"
     }
 
@@ -83,7 +85,8 @@ class SessionManager(
         }
     }
 
-    fun getOperationPreference(): Boolean = sharedPreferences.getBoolean(AVOQADO_LAST_OPERATION_PREFERENCE, true)
+    fun getOperationPreference(): Boolean =
+        sharedPreferences.getBoolean(AVOQADO_LAST_OPERATION_PREFERENCE, true)
 
     fun setOperationPreference(needBill: Boolean) {
         sharedPreferences
@@ -92,7 +95,31 @@ class SessionManager(
             .apply()
     }
 
-    fun clearAvoqadoSession(){
+    fun clearAvoqadoSession() {
         sharedPreferences.edit().remove(AVOQADO_SESSION).apply()
+    }
+
+    fun setShift(shift: Shift) {
+        sharedPreferences
+            .edit()
+            .putString(AVOQADO_SHIFT, Gson().toJson(shift))
+            .apply()
+    }
+
+    fun getShift(): Shift? {
+        try {
+            val json = sharedPreferences.getString(AVOQADO_SHIFT, "") ?: ""
+            return if (json.isNotEmpty()) {
+                Gson().fromJson(json, Shift::class.java)
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            return null
+        }
+    }
+
+    fun clearShift() {
+        sharedPreferences.edit().remove(AVOQADO_SHIFT).apply()
     }
 }

@@ -169,7 +169,8 @@ fun AppRouter(
                             storage = AvoqadoApp.storage,
                             sessionManager = AvoqadoApp.sessionManager,
                             serialNumber = AvoqadoApp.terminalSerialCode,
-                            snackbarDelegate = snackbarDelegate
+                            snackbarDelegate = snackbarDelegate,
+                            terminalRepository = AvoqadoApp.terminalRepository
                         )
                     }
 

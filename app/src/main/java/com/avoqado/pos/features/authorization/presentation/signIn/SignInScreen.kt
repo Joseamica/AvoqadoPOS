@@ -55,7 +55,7 @@ fun SignInScreen(
 
     SignInContent(
         onNext = {
-            signInViewModel.goToNextScreen(it)
+            signInViewModel.updateOtp(it)
         },
         onDeleteChar = {
             signInViewModel.deleteDigit()

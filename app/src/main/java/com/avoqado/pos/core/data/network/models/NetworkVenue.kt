@@ -73,5 +73,7 @@ data class NetworkVenue(
     @SerializedName("wifiName")
     val wifiName: String?,
     @SerializedName("wifiPassword")
-    val wifiPassword: String?
+    val wifiPassword: String?,
+//    @SerializedName("waiters")
+//    val waiters: List<Waiters> //id y nombre
 )

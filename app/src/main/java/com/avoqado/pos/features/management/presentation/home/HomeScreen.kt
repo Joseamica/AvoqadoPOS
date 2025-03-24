@@ -1,228 +1,273 @@
 package com.avoqado.pos.features.management.presentation.home
 
-import android.content.Intent
-import android.util.Log
-import androidx.compose.foundation.background
+
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.ui.unit.dp
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.R
-import com.avoqado.pos.core.presentation.components.DropdownMenuMoreActions
-import com.avoqado.pos.core.presentation.components.MainButton
-import com.avoqado.pos.core.presentation.model.FlowStep
-import com.avoqado.pos.core.presentation.model.IconType
-import com.avoqado.pos.views.MenuActivity
+import com.avoqado.pos.core.presentation.components.TopMenuContent
+import com.avoqado.pos.core.presentation.theme.AppFont
+import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
+import com.avoqado.pos.core.presentation.theme.textTitleColor
+import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     homeViewModel: HomeViewModel
 ) {
-    val tables by homeViewModel.tables.collectAsStateWithLifecycle()
-    val venues by homeViewModel.venues.collectAsStateWithLifecycle()
-    val selectedVenue by homeViewModel.selectedVenue.collectAsStateWithLifecycle()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+    val showSettings by homeViewModel.showSettings.collectAsStateWithLifecycle()
+
+    HomeContent(
+        waiterName = homeViewModel.currentSession?.name ?: "",
+        showSettings = showSettings,
+        onOpenSettings = {
+            homeViewModel.toggleSettingsModal(true)
+        },
+        toggleSettingsModal = {
+            homeViewModel.toggleSettingsModal(it)
+        },
+        onQuickPayment = homeViewModel::goToQuickPayment,
+        onNewPayment = homeViewModel::goToNewPayment,
+        onShowShifts = homeViewModel::goToShowShifts,
+        onShowSummary = homeViewModel::goToSummary,
+        onShowPayments = homeViewModel::goToShowPayments,
+        onLogout = homeViewModel::logout
+    )
+}
+
+@Composable
+fun HomeContent(
+    waiterName: String,
+    showSettings: Boolean,
+    toggleSettingsModal: (Boolean) -> Unit = {},
+    onOpenSettings: () -> Unit = {},
+    onNewPayment: () -> Unit = {},
+    onQuickPayment: () -> Unit = {},
+    onShowSummary: () -> Unit = {},
+    onShowShifts: () -> Unit = {},
+    onShowPayments: () -> Unit = {},
+    onLogout: ()-> Unit = {}
+) {
+    TopMenuContent(
+        onOpenSettings = onOpenSettings,
+        showSettingsModal = showSettings,
+        onDismissRequest = {
+            toggleSettingsModal(false)
+        },
+        onToggleShift = {},
+        onLogout = onLogout
     ) {
-        TopAppBar(
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White,
-                titleContentColor = Color.Black,
-                actionIconContentColor = Color.Black
-            ),
-            title = {
-                Text(
-                    modifier = Modifier,
-                    text = "",
-                    style = MaterialTheme.typography.titleSmall.copy(color= Color.Black)
-                )
-            },
-            actions = {
-                DropdownMenuMoreActions(
-                    onPrintHistorical = {
-                        homeViewModel.goToSummary()
-                    },
-                    onSignOut = {
-                        homeViewModel.logout()
-                    }
-                )
-            }
-        )
-
-        Text(
-            text = "Selecciona un venue",
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        VenuesDropdownMenu(
-            items = venues.map { venue -> venue.name ?: "" },
-            selectedItem = selectedVenue?.name ?: "",
-            onItemSelected = { index -> homeViewModel.setSelectedVenue(index) },
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp)
-        )
-
-        Button(
-            onClick = {
-                homeViewModel.fetchTables()
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            shape = RoundedCornerShape(8.dp)
+                .weight(1f)
+                .padding(16.dp)
         ) {
             Text(
-                text = "Refrescar mesas",
-                style = MaterialTheme.typography.titleMedium,
-                color = Color.White
+                text = "Hola, $waiterName",
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontFamily = AppFont.EffraFamily,
+                    fontWeight = FontWeight.W500,
+                    color = textTitleColor
+                ),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                textAlign = TextAlign.Center
             )
-        }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3), // Tres columnas
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(8.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-
-            items(
-                selectedVenue?.tables
-                    ?.filterNotNull()      // Quita cualquier elemento nulo
-                    ?.filter { it.bill != null && it.bill.status == "OPEN" } // Filtra mesas con bill en estado "OPEN"
-                    ?: emptyList()
-            ) { table ->
-                Card(
-                    shape = RoundedCornerShape(8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ),
-                    elevation = CardDefaults.cardElevation(4.dp),
-                    modifier = Modifier
-                        .size(100.dp) // Tamaño fijo para que sean recuadros uniformes
-                        .clickable {
-                            table?.let {
-                                homeViewModel.onTableSelected(it)
-                            }
-                        }
+            Card(
+                modifier = Modifier.clickable {
+                    onNewPayment()
+                },
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.Black
+                ),
+                shape = RoundedCornerShape(24.dp)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth().padding(24.dp)
                 ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
+                    Spacer(Modifier.height(48.dp))
+                    Image(
+                        modifier = Modifier.size(40.dp),
+                        painter = painterResource(R.drawable.ic_card),
+                        contentDescription = ""
+                    )
+                    Text(
+                        text = "Nuevo pago",
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            color = Color.White
+                        )
+                    )
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            Row {
+                Card(
+
+                    modifier = Modifier.weight(1f).clickable {
+                        onQuickPayment()
+                    },
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp)
                     ) {
+
+                        Image(
+                            modifier = Modifier.size(30.dp),
+                            painter = painterResource(R.drawable.ic_quick_pay),
+                            contentDescription = ""
+                        )
+
+                        Spacer(Modifier.height(24.dp))
                         Text(
-                            text = "Mesa ${table?.tableNumber}",
-                            style = MaterialTheme.typography.bodyLarge, // Parámetro nombrado 'style'
-                            color = MaterialTheme.colorScheme.onSurface
+                            text = "Pago rapido",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                color = textTitleColor,
+                                fontWeight = FontWeight.W400
+                            )
                         )
                     }
                 }
+
+                Spacer(Modifier.width(10.dp))
+
+                Card(
+                    modifier = Modifier.weight(1f).clickable {
+                        onShowSummary()
+                    },
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp)
+                    ) {
+
+                        Image(
+                            modifier = Modifier.size(30.dp),
+                            painter = painterResource(R.drawable.ic_resumen),
+                            contentDescription = ""
+                        )
+                        Spacer(Modifier.height(24.dp))
+                        Text(
+                            text = "Resumen",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                color = textTitleColor,
+                                fontWeight = FontWeight.W400
+                            )
+                        )
+                    }
+                }
+
             }
+
+            Spacer(Modifier.height(10.dp))
+
+            Row {
+                Card(
+                    modifier = Modifier.weight(1f).clickable {
+                        onShowShifts()
+                    },
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp)
+                    ) {
+
+                        Image(
+                            modifier = Modifier.size(30.dp),
+                            painter = painterResource(R.drawable.ic_shifts),
+                            contentDescription = ""
+                        )
+
+                        Spacer(Modifier.height(24.dp))
+                        Text(
+                            text = "Turnos",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                color = textTitleColor,
+                                fontWeight = FontWeight.W400
+                            )
+                        )
+                    }
+                }
+
+                Spacer(Modifier.width(10.dp))
+
+                Card(
+                    modifier = Modifier.weight(1f).clickable {
+                        onShowPayments()
+                    },
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp)
+                    ) {
+
+                        Image(
+                            modifier = Modifier.size(30.dp),
+                            painter = painterResource(R.drawable.ic_summary),
+                            contentDescription = ""
+                        )
+                        Spacer(Modifier.height(24.dp))
+                        Text(
+                            text = "Pagos",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                color = textTitleColor,
+                                fontWeight = FontWeight.W400
+                            )
+                        )
+                    }
+                }
+
+            }
+
         }
     }
 }
-@OptIn(ExperimentalMaterial3Api::class)
+
+
+@Urovo9100DevicePreview
 @Composable
-fun VenuesDropdownMenu(
-    modifier: Modifier = Modifier,
-    items: List<String>,
-    label: String = "Select an Item",
-    selectedItem: String,
-    onItemSelected: (Int) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = { expanded = !expanded },
-        modifier = modifier
-    ) {
-        TextField(
-            value = selectedItem,
-            onValueChange = { },
-            label = { Text(label) },
-            readOnly = true,
-            trailingIcon = {
-                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-            },
-            modifier = Modifier
-                .menuAnchor()
-                .clickable { expanded = !expanded }
-                .background(
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(8.dp)
-                )
-                .padding(8.dp)
+fun HomeContentPreview() {
+    AvoqadoTheme {
+        HomeContent(
+            waiterName = "Diego",
+            showSettings = false
         )
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false }
-        ) {
-            items.forEachIndexed { index, item ->
-                DropdownMenuItem(
-                    onClick = {
-                        onItemSelected(index)
-                        expanded = false
-                    },
-                    text = { Text(item) }
-                )
-            }
-        }
     }
 }

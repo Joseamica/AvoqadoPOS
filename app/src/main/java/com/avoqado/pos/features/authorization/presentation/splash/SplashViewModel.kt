@@ -1,6 +1,5 @@
 package com.avoqado.pos.features.authorization.presentation.splash
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavOptions
@@ -8,13 +7,11 @@ import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.AvoqadoAPI
-import com.avoqado.pos.core.data.network.models.TerminalMerchant
+import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.delegates.SnackbarState
-import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
-import com.avoqado.pos.views.InitActivity.Companion.TAG
 import com.menta.android.keys.admin.core.response.keys.SecretsV2
 import com.menta.android.restclient.core.RestClientConfiguration.configure
 import com.menta.android.restclient.core.Storage
@@ -33,7 +30,8 @@ class SplashViewModel constructor(
     private val storage: Storage,
     private val serialNumber: String,
     private val sessionManager: SessionManager,
-    private val snackbarDelegate: SnackbarDelegate
+    private val snackbarDelegate: SnackbarDelegate,
+    private val terminalRepository: TerminalRepository
 ) : ViewModel() {
 
     val operationPreference = sessionManager.getOperationPreference()
@@ -60,11 +58,10 @@ class SplashViewModel constructor(
         viewModelScope.launch (Dispatchers.IO) {
             try {
                 val result = AvoqadoAPI.apiService.getTPV(serialNumber)
-//                val result : TerminalMerchant = TerminalMerchant(
-//                    "madre_cafecito"
-//                )
+
                 result.venueId?.let {
                     sessionManager.saveVenueId(it)
+//                    terminalRepository.getTerminalShift(it)
                     if (currentUser == null) {
                         navigationDispatcher.navigateWithArgs(MainDests.SignIn)
                     } else {
@@ -110,7 +107,7 @@ class SplashViewModel constructor(
                 }
 
                 navigationDispatcher.navigateTo(
-                    ManagementDests.Tables
+                    ManagementDests.Home
                 )
             }
             catch (e: Exception) {
@@ -153,7 +150,7 @@ class SplashViewModel constructor(
                 getTerminalInfo(serialNumber)
             } else {
                 navigationDispatcher.navigateTo(
-                    ManagementDests.Tables.route,
+                    ManagementDests.Home.route,
                     navOptions = NavOptions.Builder()
                         .setPopUpTo(MainDests.Splash.route, inclusive = true)
                         .build()

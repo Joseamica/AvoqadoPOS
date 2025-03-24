@@ -4,14 +4,12 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.AvoqadoApp
-import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.domain.models.PaymentStatus
 import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.avoqado.pos.core.presentation.model.Product
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.presentation.utils.toAmountMx
-import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
@@ -154,7 +152,7 @@ class PaymentResultViewModel(
 
     fun goToHome() {
         paymentRepository.clearCachePaymentInfo()
-        navigationDispatcher.popToDestination(ManagementDests.Tables.route, inclusive = false)
+        navigationDispatcher.popToDestination(ManagementDests.Home.route, inclusive = false)
     }
 
     fun newPayment() {

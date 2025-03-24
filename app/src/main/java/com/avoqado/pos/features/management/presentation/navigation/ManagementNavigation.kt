@@ -1,14 +1,11 @@
 package com.avoqado.pos.features.management.presentation.navigation
 
-import android.content.Context
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavGraphBuilder
 import com.avoqado.pos.AvoqadoApp
-import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
-import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.features.management.domain.usecases.ListenTableEventsUseCase
 import com.avoqado.pos.features.management.presentation.splitProduct.SplitByProductScreen
 import com.avoqado.pos.features.management.presentation.splitProduct.SplitByProductViewModel
@@ -19,17 +16,19 @@ import com.avoqado.pos.features.management.presentation.home.HomeScreen
 import com.avoqado.pos.features.management.presentation.home.HomeViewModel
 import com.avoqado.pos.features.management.presentation.splitPerson.SplitByPersonScreen
 import com.avoqado.pos.features.management.presentation.splitPerson.SplitByPersonViewModel
-import com.menta.android.printer.i9100.core.DevicePrintImpl
+import com.avoqado.pos.features.management.presentation.tables.TablesScreen
+import com.avoqado.pos.features.management.presentation.tables.TablesViewModel
 
 fun NavGraphBuilder.managementNavigation(
     navigationDispatcher: NavigationDispatcher,
     snackbarDelegate: SnackbarDelegate
 ) {
-    composableHolder(ManagementDests.Tables) {
+    composableHolder(ManagementDests.Home) {
         val homeViewModel = remember {
             HomeViewModel(
                 navigationDispatcher = navigationDispatcher,
-                sessionManager = AvoqadoApp.sessionManager
+                sessionManager = AvoqadoApp.sessionManager,
+                terminalRepository = AvoqadoApp.terminalRepository
             )
         }
         HomeScreen(
@@ -81,5 +80,19 @@ fun NavGraphBuilder.managementNavigation(
         SplitByPersonScreen(
             splitByProductViewModel
         )
+    }
+
+    composableHolder(ManagementDests.VenueTables) {
+        val tablesViewModel = remember {
+            TablesViewModel(
+                navigationDispatcher = navigationDispatcher,
+                sessionManager = AvoqadoApp.sessionManager
+            )
+        }
+
+        TablesScreen(
+            tablesViewModel
+        )
+
     }
 }

@@ -38,6 +38,7 @@ class AvoqadoApp : Application() {
             TerminalRepositoryImpl(
                 sessionManager = sessionManager,
                 mentaService = AvoqadoAPI.mentaService ,
+                avoqadoService = AvoqadoAPI.apiService,
                 storage = storage
             )
         }

@@ -6,9 +6,9 @@ import androidx.navigation.navArgument
 import com.avoqado.pos.core.presentation.navigation.NavigationAction
 
 sealed class ManagementDests : NavigationAction {
-    data object Tables: ManagementDests(){
+    data object Home: ManagementDests(){
         override val route: String
-            get() = "tables"
+            get() = "home"
     }
 
     data object TableDetail: ManagementDests(){
@@ -39,5 +39,10 @@ sealed class ManagementDests : NavigationAction {
     data object SplitByPerson: ManagementDests(){
         override val route: String
             get() = "splitByPerson"
+    }
+
+    data object VenueTables: ManagementDests() {
+        override val route: String
+            get() = "tables"
     }
 }

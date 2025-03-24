@@ -22,7 +22,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun DropdownMenuMoreActions(
     onPrintHistorical: () -> Unit,
-    onSignOut: () -> Unit
+    onSignOut: () -> Unit,
+    onRefresh: () -> Unit
 ){
     var expanded by remember { mutableStateOf(false) }
 
@@ -38,6 +39,12 @@ fun DropdownMenuMoreActions(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
+            // First section
+            DropdownMenuItem(
+                text = { Text("Refrescar") },
+                onClick = onRefresh
+            )
+
             // First section
             DropdownMenuItem(
                 text = { Text("Resumen") },

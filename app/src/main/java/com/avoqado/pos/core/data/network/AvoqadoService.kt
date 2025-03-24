@@ -2,19 +2,29 @@ package com.avoqado.pos.core.data.network
 
 import com.avoqado.pos.core.data.network.models.NetworkBillDetail
 import com.avoqado.pos.core.data.network.models.NetworkDetailTable
+import com.avoqado.pos.core.data.network.models.NetworkShift
 import com.avoqado.pos.core.data.network.models.NetworkSimpleTable
 import com.avoqado.pos.core.data.network.models.NetworkVenue
 import com.avoqado.pos.core.data.network.models.PasscodeBody
+import com.avoqado.pos.core.data.network.models.ShiftBody
 import com.avoqado.pos.core.data.network.models.TerminalMerchant
 import com.avoqado.pos.core.data.network.models.WaiterData
+import com.google.gson.JsonObject
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface AvoqadoService {
     @GET("venues/listVenues")
     suspend fun getVenues(): List<NetworkVenue>
+
+    @GET("tpv/venues/{venueId}")
+    suspend fun getVenueDetail(
+        @Path("venueId") venueId: String
+    ): NetworkVenue
 
     @GET("venues/{venueId}/tables")
     suspend fun getVenueTables(@Path("venueId") venueId: String): List<NetworkSimpleTable>
@@ -46,4 +56,23 @@ interface AvoqadoService {
         @Path("venueId") venueId: String,
         @Body passcodeBody: PasscodeBody
     ): WaiterData
+
+    @GET("tpv/venues/{venueId}/shift")
+    suspend fun getRestaurantShift(
+        @Path("venueId") venueId: String,
+        @Query("pos_name") posName: String
+    ): NetworkShift
+
+    @POST("tpv/venues/{venueId}/shift")
+    suspend fun registerRestaurantShift(
+        @Path("venueId") venueId: String,
+        @Body body: ShiftBody
+    ) : NetworkShift
+
+    @PATCH("tpv/venues/{venueId}/shift")
+    suspend fun updateRestaurantShift(
+        @Path("venueId") venueId: String,
+        @Body body: ShiftBody
+    ) : NetworkShift
+
 }
