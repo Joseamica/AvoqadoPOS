@@ -39,6 +39,8 @@ class TableDetailViewModel(
     private val listenTableEventsUseCase: ListenTableEventsUseCase
 ) : ViewModel() {
     val venue = AvoqadoApp.sessionManager.getVenueInfo()
+    val currentShift = AvoqadoApp.sessionManager.getShift()
+
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
@@ -175,90 +177,68 @@ class TableDetailViewModel(
     }
 
     fun goToSplitBillByProduct(){
-        AvoqadoApp.paymentRepository.setCachePaymentInfo(
-            PaymentInfoResult(
-                paymentId = "",
-                tipAmount = 0.0,
-                subtotal = 0.0,
-                rootData = "",
-                date = LocalDateTime.now(),
-                waiterName = _tableDetail.value.waiterName,
-                tableNumber = tableNumber,
-                venueId = venueId,
-                splitType = SplitType.PERPRODUCT,
-                billId = _tableDetail.value.billId
-            )
-        )
-        navigationDispatcher.navigateWithArgs(
-            ManagementDests.SplitByProduct
-        )
-    }
-
-    fun goToSplitBillByPerson(){
-        AvoqadoApp.paymentRepository.setCachePaymentInfo(
-            PaymentInfoResult(
-                paymentId = "",
-                tipAmount = 0.0,
-                subtotal = 0.0,
-                rootData = "",
-                date = LocalDateTime.now(),
-                waiterName = _tableDetail.value.waiterName,
-                tableNumber = tableNumber,
-                venueId = venueId,
-                splitType = SplitType.EQUALPARTS,
-                billId = _tableDetail.value.billId
-            )
-        )
-        navigationDispatcher.navigateWithArgs(
-            ManagementDests.SplitByPerson
-        )
-    }
-
-    fun payTotalPendingAmount(){
-        AvoqadoApp.paymentRepository.setCachePaymentInfo(
-            PaymentInfoResult(
-                paymentId = "",
-                tipAmount = 0.0,
-                subtotal = _tableDetail.value.totalPending,
-                rootData = "",
-                date = LocalDateTime.now(),
-                waiterName = _tableDetail.value.waiterName,
-                tableNumber = tableNumber,
-                venueId = venueId,
-                splitType = SplitType.FULLPAYMENT,
-                billId = _tableDetail.value.billId
-            )
-        )
-        navigationDispatcher.navigateWithArgs(
-            PaymentDests.InputTip,
-            NavigationArg.StringArg(
-                PaymentDests.InputTip.ARG_SUBTOTAL,
-                _tableDetail.value.totalPending.toString()
-            ),
-            NavigationArg.StringArg(
-                PaymentDests.InputTip.ARG_WAITER,
-                _tableDetail.value.waiterName
-            ),
-            NavigationArg.StringArg(
-                PaymentDests.InputTip.ARG_SPLIT_TYPE,
-                SplitType.FULLPAYMENT.value
-            )
-        )
-    }
-
-    fun payCustomPendingAmount(amount: Double){
-        if (amount <= _tableDetail.value.totalPending) {
+        if (currentShift != null && currentShift.isFinished.not()) {
             AvoqadoApp.paymentRepository.setCachePaymentInfo(
                 PaymentInfoResult(
                     paymentId = "",
                     tipAmount = 0.0,
-                    subtotal = amount,
+                    subtotal = 0.0,
                     rootData = "",
                     date = LocalDateTime.now(),
                     waiterName = _tableDetail.value.waiterName,
                     tableNumber = tableNumber,
                     venueId = venueId,
-                    splitType = SplitType.CUSTOMAMOUNT,
+                    splitType = SplitType.PERPRODUCT,
+                    billId = _tableDetail.value.billId
+                )
+            )
+            navigationDispatcher.navigateWithArgs(
+                ManagementDests.SplitByProduct
+            )
+        } else {
+            navigationDispatcher.navigateTo(ManagementDests.OpenShift)
+        }
+
+    }
+
+    fun goToSplitBillByPerson(){
+        if (currentShift != null && currentShift.isFinished.not()) {
+            AvoqadoApp.paymentRepository.setCachePaymentInfo(
+                PaymentInfoResult(
+                    paymentId = "",
+                    tipAmount = 0.0,
+                    subtotal = 0.0,
+                    rootData = "",
+                    date = LocalDateTime.now(),
+                    waiterName = _tableDetail.value.waiterName,
+                    tableNumber = tableNumber,
+                    venueId = venueId,
+                    splitType = SplitType.EQUALPARTS,
+                    billId = _tableDetail.value.billId
+                )
+            )
+            navigationDispatcher.navigateWithArgs(
+                ManagementDests.SplitByPerson
+            )
+        } else {
+            navigationDispatcher.navigateTo(ManagementDests.OpenShift)
+        }
+
+    }
+
+    fun payTotalPendingAmount(){
+        if (currentShift != null && currentShift.isFinished.not()) {
+            AvoqadoApp.paymentRepository.setCachePaymentInfo(
+                PaymentInfoResult(
+                    paymentId = "",
+                    tipAmount = 0.0,
+                    subtotal = _tableDetail.value.totalPending,
+                    rootData = "",
+                    date = LocalDateTime.now(),
+                    waiterName = _tableDetail.value.waiterName,
+                    tableNumber = tableNumber,
+                    venueId = venueId,
+                    splitType = SplitType.FULLPAYMENT,
                     billId = _tableDetail.value.billId
                 )
             )
@@ -266,7 +246,7 @@ class TableDetailViewModel(
                 PaymentDests.InputTip,
                 NavigationArg.StringArg(
                     PaymentDests.InputTip.ARG_SUBTOTAL,
-                    amount.toString()
+                    _tableDetail.value.totalPending.toString()
                 ),
                 NavigationArg.StringArg(
                     PaymentDests.InputTip.ARG_WAITER,
@@ -274,15 +254,55 @@ class TableDetailViewModel(
                 ),
                 NavigationArg.StringArg(
                     PaymentDests.InputTip.ARG_SPLIT_TYPE,
-                    SplitType.CUSTOMAMOUNT.value
+                    SplitType.FULLPAYMENT.value
                 )
             )
         } else {
-            snackbarDelegate.showSnackbar(
-                message = "El monto ingresado es mayor al total pendiente"
-            )
+            navigationDispatcher.navigateTo(ManagementDests.OpenShift)
         }
 
+    }
+
+    fun payCustomPendingAmount(amount: Double){
+        if (currentShift != null && currentShift.isFinished.not()) {
+            if (amount <= _tableDetail.value.totalPending) {
+                AvoqadoApp.paymentRepository.setCachePaymentInfo(
+                    PaymentInfoResult(
+                        paymentId = "",
+                        tipAmount = 0.0,
+                        subtotal = amount,
+                        rootData = "",
+                        date = LocalDateTime.now(),
+                        waiterName = _tableDetail.value.waiterName,
+                        tableNumber = tableNumber,
+                        venueId = venueId,
+                        splitType = SplitType.CUSTOMAMOUNT,
+                        billId = _tableDetail.value.billId
+                    )
+                )
+                navigationDispatcher.navigateWithArgs(
+                    PaymentDests.InputTip,
+                    NavigationArg.StringArg(
+                        PaymentDests.InputTip.ARG_SUBTOTAL,
+                        amount.toString()
+                    ),
+                    NavigationArg.StringArg(
+                        PaymentDests.InputTip.ARG_WAITER,
+                        _tableDetail.value.waiterName
+                    ),
+                    NavigationArg.StringArg(
+                        PaymentDests.InputTip.ARG_SPLIT_TYPE,
+                        SplitType.CUSTOMAMOUNT.value
+                    )
+                )
+            } else {
+                snackbarDelegate.showSnackbar(
+                    message = "El monto ingresado es mayor al total pendiente"
+                )
+            }
+        } else {
+            navigationDispatcher.navigateTo(ManagementDests.OpenShift)
+        }
     }
 
 }

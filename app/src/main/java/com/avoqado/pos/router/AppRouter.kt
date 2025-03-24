@@ -9,6 +9,8 @@ import android.util.Log
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.navigation.ModalBottomSheetLayout
 import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -18,6 +20,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.avoqado.pos.AvoqadoApp
@@ -154,76 +158,83 @@ fun AppRouter(
             }
         },
         content = { padding ->
-            NavHost(
-                modifier = Modifier.padding(padding),
-                navController = navController,
-                startDestination = MainDests.Splash.route,
-                enterTransition = {
-                    EnterTransition.None
-                },
-                exitTransition = {
-                    ExitTransition.None
-                }
+            ModalBottomSheetLayout(
+                bottomSheetNavigator = bottomSheetNavigator,
+                sheetElevation = 0.dp,
+                sheetBackgroundColor = Color.Transparent,
+                sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
             ) {
-                composableHolder(MainDests.Splash) {
-                    val splashViewModel = remember {
-                        SplashViewModel(
-                            navigationDispatcher = navigationDispatcher,
-                            storage = AvoqadoApp.storage,
-                            sessionManager = AvoqadoApp.sessionManager,
-                            serialNumber = AvoqadoApp.terminalSerialCode,
-                            snackbarDelegate = snackbarDelegate,
-                            terminalRepository = AvoqadoApp.terminalRepository,
-                            managementRepository = AvoqadoApp.managementRepository
+                NavHost(
+                    modifier = Modifier.padding(padding),
+                    navController = navController,
+                    startDestination = MainDests.Splash.route,
+                    enterTransition = {
+                        EnterTransition.None
+                    },
+                    exitTransition = {
+                        ExitTransition.None
+                    }
+                ) {
+                    composableHolder(MainDests.Splash) {
+                        val splashViewModel = remember {
+                            SplashViewModel(
+                                navigationDispatcher = navigationDispatcher,
+                                storage = AvoqadoApp.storage,
+                                sessionManager = AvoqadoApp.sessionManager,
+                                serialNumber = AvoqadoApp.terminalSerialCode,
+                                snackbarDelegate = snackbarDelegate,
+                                terminalRepository = AvoqadoApp.terminalRepository,
+                                managementRepository = AvoqadoApp.managementRepository
+                            )
+                        }
+
+                        SplashScreen(
+                            viewModel = splashViewModel,
+                            externalTokenData = externalTokenData,
+                            masterKeyData = masterKeyData
                         )
                     }
 
-                    SplashScreen(
-                        viewModel = splashViewModel,
-                        externalTokenData = externalTokenData,
-                        masterKeyData = masterKeyData
+                    composableHolder(MainDests.SignIn) {
+                        val signInViewModel: SignInViewModel = remember {
+                            SignInViewModel(
+                                navigationDispatcher = navigationDispatcher,
+                                snackbarDelegate = snackbarDelegate,
+                                authorizationRepository = AvoqadoApp.authorizationRepository,
+                                sessionManager = AvoqadoApp.sessionManager,
+                                redirect = it.arguments?.getString(MainDests.SignIn.ARG_REDIRECT)
+                            )
+                        }
+
+                        SignInScreen(signInViewModel)
+                    }
+
+                    dialogHolder(MainDests.Authorization) {
+                        val viewModel = remember {
+                            AuthorizationViewModel(
+                                navigationDispatcher = navigationDispatcher,
+                                storage = AvoqadoApp.storage,
+                                sessionManager = AvoqadoApp.sessionManager
+                            )
+                        }
+                        AuthorizationDialog(
+                            viewModel = viewModel,
+                            externalTokenData = externalTokenData,
+                            masterKeyData = masterKeyData
+                        )
+                    }
+
+                    managementNavigation(
+                        navigationDispatcher = navigationDispatcher,
+                        snackbarDelegate = snackbarDelegate
+                    )
+
+                    paymentNavigation(
+                        navigationDispatcher = navigationDispatcher,
+                        snackbarDelegate = snackbarDelegate,
+                        trxData = trxData
                     )
                 }
-
-                composableHolder(MainDests.SignIn) {
-                    val signInViewModel: SignInViewModel = remember {
-                        SignInViewModel(
-                            navigationDispatcher = navigationDispatcher,
-                            snackbarDelegate = snackbarDelegate,
-                            authorizationRepository = AvoqadoApp.authorizationRepository,
-                            sessionManager = AvoqadoApp.sessionManager,
-                            redirect = it.arguments?.getString(MainDests.SignIn.ARG_REDIRECT)
-                        )
-                    }
-
-                    SignInScreen(signInViewModel)
-                }
-
-                dialogHolder(MainDests.Authorization) {
-                    val viewModel = remember {
-                        AuthorizationViewModel(
-                            navigationDispatcher = navigationDispatcher,
-                            storage = AvoqadoApp.storage,
-                            sessionManager = AvoqadoApp.sessionManager
-                        )
-                    }
-                    AuthorizationDialog(
-                        viewModel = viewModel,
-                        externalTokenData = externalTokenData,
-                        masterKeyData = masterKeyData
-                    )
-                }
-
-                managementNavigation(
-                    navigationDispatcher = navigationDispatcher,
-                    snackbarDelegate = snackbarDelegate
-                )
-
-                paymentNavigation(
-                    navigationDispatcher = navigationDispatcher,
-                    snackbarDelegate = snackbarDelegate,
-                    trxData = trxData
-                )
             }
         }
     )
