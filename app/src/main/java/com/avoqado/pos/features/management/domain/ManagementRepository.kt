@@ -1,5 +1,6 @@
 package com.avoqado.pos.features.management.domain
 
+import com.avoqado.pos.core.data.network.models.NetworkVenue
 import com.avoqado.pos.core.domain.models.PaymentUpdate
 import com.avoqado.pos.features.management.domain.models.TableDetail
 import kotlinx.coroutines.flow.Flow
@@ -12,4 +13,5 @@ interface ManagementRepository {
     fun connectToTableEvents(venueId: String, tableId: String)
     fun listenTableEvents(): Flow<PaymentUpdate>
     fun stopListeningTableEvents()
+    suspend fun getVenue(venueId: String): NetworkVenue
 }

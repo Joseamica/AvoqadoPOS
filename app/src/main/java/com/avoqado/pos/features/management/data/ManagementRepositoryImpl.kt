@@ -1,6 +1,9 @@
 package com.avoqado.pos.features.management.data
 
+import com.avoqado.pos.core.data.network.AvoqadoService
 import com.avoqado.pos.core.data.network.SocketIOManager
+import com.avoqado.pos.core.data.network.models.NetworkVenue
+import com.avoqado.pos.core.domain.models.AvoqadoError
 import com.avoqado.pos.core.domain.models.PaymentUpdate
 import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.features.management.data.cache.ManagementCacheStorage
@@ -10,9 +13,11 @@ import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.domain.models.TableDetail
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import retrofit2.HttpException
 
 class ManagementRepositoryImpl(
-    private val managementCacheStorage: ManagementCacheStorage
+    private val managementCacheStorage: ManagementCacheStorage,
+    private val avoqadoService: AvoqadoService
 ): ManagementRepository {
 
     override suspend fun getTableDetail(tableNumber: String, venueId: String) {
@@ -51,5 +56,21 @@ class ManagementRepositoryImpl(
     override fun stopListeningTableEvents() {
         SocketIOManager.unsubscribe()
         SocketIOManager.disconnect()
+    }
+
+    override suspend fun getVenue(venueId: String): NetworkVenue {
+        return try {
+            avoqadoService.getVenueDetail(venueId)
+        } catch (e: Exception) {
+            if (e is HttpException) {
+                if (e.code() == 401) {
+                    throw AvoqadoError.Unauthorized
+                } else {
+                    throw AvoqadoError.BasicError(message = e.message())
+                }
+            } else {
+                throw AvoqadoError.BasicError(message = "Algo salio mal...")
+            }
+        }
     }
 }

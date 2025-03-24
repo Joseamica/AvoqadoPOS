@@ -26,7 +26,12 @@ class AvoqadoApp : Application() {
         lateinit var sessionManager: SessionManager
         var terminalSerialCode: String = ""
         val managementCacheStorage: ManagementCacheStorage by lazy { ManagementCacheStorage() }
-        val managementRepository: ManagementRepository by lazy { ManagementRepositoryImpl(managementCacheStorage = managementCacheStorage) }
+        val managementRepository: ManagementRepository by lazy {
+            ManagementRepositoryImpl(
+                managementCacheStorage = managementCacheStorage,
+                avoqadoService = AvoqadoAPI.apiService
+            )
+        }
         val PaymentCacheStorage: PaymentCacheStorage by lazy { PaymentCacheStorage() }
         val paymentRepository: PaymentRepository by lazy {
             PaymentRepositoryImpl(
@@ -34,10 +39,10 @@ class AvoqadoApp : Application() {
                 avoqadoService = AvoqadoAPI.retrofit.create(AvoqadoService::class.java)
             )
         }
-        val terminalRepository : TerminalRepository by lazy {
+        val terminalRepository: TerminalRepository by lazy {
             TerminalRepositoryImpl(
                 sessionManager = sessionManager,
-                mentaService = AvoqadoAPI.mentaService ,
+                mentaService = AvoqadoAPI.mentaService,
                 avoqadoService = AvoqadoAPI.apiService,
                 storage = storage
             )
@@ -58,7 +63,7 @@ class AvoqadoApp : Application() {
 
         storage = Storage(this)
         sessionManager = SessionManager(this)
-        terminalSerialCode =  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        terminalSerialCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
         } else {
             Build.SERIAL ?: "Unknown"

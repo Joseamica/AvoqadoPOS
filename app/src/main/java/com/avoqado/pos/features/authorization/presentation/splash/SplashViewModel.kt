@@ -11,6 +11,7 @@ import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.delegates.SnackbarState
 import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.menta.android.keys.admin.core.response.keys.SecretsV2
 import com.menta.android.restclient.core.RestClientConfiguration.configure
@@ -31,7 +32,8 @@ class SplashViewModel constructor(
     private val serialNumber: String,
     private val sessionManager: SessionManager,
     private val snackbarDelegate: SnackbarDelegate,
-    private val terminalRepository: TerminalRepository
+    private val terminalRepository: TerminalRepository,
+    private val managementRepository: ManagementRepository
 ) : ViewModel() {
 
     val operationPreference = sessionManager.getOperationPreference()
@@ -54,14 +56,22 @@ class SplashViewModel constructor(
     val currentUser = sessionManager.getAvoqadoSession()
 
     init {
-        Timber.i( "Init with serial number -> $serialNumber")
-        viewModelScope.launch (Dispatchers.IO) {
+        Timber.i("Init with serial number -> $serialNumber")
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 val result = AvoqadoAPI.apiService.getTPV(serialNumber)
 
                 result.venueId?.let {
                     sessionManager.saveVenueId(it)
-//                    terminalRepository.getTerminalShift(it)
+                    val venue = managementRepository.getVenue(it)
+                    sessionManager.saveVenueInfo(venue)
+
+                    val shift = terminalRepository.getTerminalShift(
+                        venueId = it,
+                        posName = venue.posName?:""
+                    )
+                    sessionManager.setShift(shift)
+
                     if (currentUser == null) {
                         navigationDispatcher.navigateWithArgs(MainDests.SignIn)
                     } else {
@@ -74,7 +84,7 @@ class SplashViewModel constructor(
                     )
                 }
             } catch (e: Exception) {
-                Timber.e( "Error fetching TPV", e)
+                Timber.e("Error fetching TPV", e)
                 if (sessionManager.getVenueId().isNotEmpty()) {
                     if (currentUser == null) {
                         navigationDispatcher.navigateTo(MainDests.SignIn)
@@ -96,11 +106,13 @@ class SplashViewModel constructor(
         }
     }
 
-    private fun getTerminalInfo(serial: String){
+    private fun getTerminalInfo(serial: String) {
         viewModelScope.launch {
             try {
-                val terminals = AvoqadoAPI.mentaService.getTerminals("${storage.getTokenType()} ${storage.getIdToken()}")
-                val currentTerminal = terminals.embedded.terminals?.firstOrNull { terminal -> terminal.serialCode == serial }
+                val terminals =
+                    AvoqadoAPI.mentaService.getTerminals("${storage.getTokenType()} ${storage.getIdToken()}")
+                val currentTerminal =
+                    terminals.embedded.terminals?.firstOrNull { terminal -> terminal.serialCode == serial }
 
                 currentTerminal?.let {
                     sessionManager.saveTerminalInfo(it)
@@ -109,12 +121,11 @@ class SplashViewModel constructor(
                 navigationDispatcher.navigateTo(
                     ManagementDests.Home
                 )
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 Timber.e("Error fetching terminals", e)
                 if (e is HttpException) {
                     if (e.code() == 401) {
-                        Timber.i( "Unauthorized")
+                        Timber.i("Unauthorized")
                         _isRefreshing.value = true
                         startConfiguring()
                     }

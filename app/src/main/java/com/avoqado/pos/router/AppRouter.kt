@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -51,6 +52,8 @@ fun AppRouter(
     context: Context
 ) {
     val navController = rememberNavController()
+    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    navController.navigatorProvider.addNavigator(bottomSheetNavigator)
     val snackbarHostState = remember { SnackbarHostState() }
 
     snackbarDelegate.apply {
@@ -170,7 +173,8 @@ fun AppRouter(
                             sessionManager = AvoqadoApp.sessionManager,
                             serialNumber = AvoqadoApp.terminalSerialCode,
                             snackbarDelegate = snackbarDelegate,
-                            terminalRepository = AvoqadoApp.terminalRepository
+                            terminalRepository = AvoqadoApp.terminalRepository,
+                            managementRepository = AvoqadoApp.managementRepository
                         )
                     }
 
