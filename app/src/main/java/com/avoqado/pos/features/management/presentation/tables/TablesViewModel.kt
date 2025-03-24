@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class TablesViewModel(
@@ -32,6 +33,15 @@ class TablesViewModel(
 
     private val _tables = MutableStateFlow(listOf<Table>())
     val tables: StateFlow<List<Table>> = _tables.asStateFlow()
+
+    private val _showSettings = MutableStateFlow(false)
+    val showSettings: StateFlow<Boolean> = _showSettings.asStateFlow()
+
+    fun toggleSettingsModal(value: Boolean){
+        _showSettings.update {
+            value
+        }
+    }
 
     init {
         fetchTables()
@@ -82,11 +92,10 @@ class TablesViewModel(
 
     }
 
-    fun goToSummary(){
-        navigationDispatcher.navigateTo(PaymentDests.TransactionsSummary)
+    fun onBackAction(){
+        navigationDispatcher.navigateBack()
     }
-
-    fun logout(){
+    fun logout() {
         sessionManager.clearAvoqadoSession()
         navigationDispatcher.popToDestination(MainDests.Splash, inclusive = true)
         navigationDispatcher.navigateWithArgs(

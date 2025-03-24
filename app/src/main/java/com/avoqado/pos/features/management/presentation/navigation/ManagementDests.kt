@@ -45,4 +45,9 @@ sealed class ManagementDests : NavigationAction {
         override val route: String
             get() = "tables"
     }
+
+    data object OpenShift: ManagementDests() {
+        override val route: String
+            get() = "openShift"
+    }
 }

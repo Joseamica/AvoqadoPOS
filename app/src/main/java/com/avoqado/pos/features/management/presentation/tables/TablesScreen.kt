@@ -41,6 +41,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.core.data.network.models.NetworkTable
 import com.avoqado.pos.core.data.network.models.NetworkVenue
 import com.avoqado.pos.core.presentation.components.DropdownMenuMoreActions
+import com.avoqado.pos.core.presentation.components.TopMenuContent
 import com.avoqado.pos.core.presentation.theme.AppFont
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
@@ -54,54 +55,33 @@ fun TablesScreen(
     val selectedVenue by tablesV.selectedVenue.collectAsStateWithLifecycle()
 
     HomeContent(
-        onSummary = tablesV::goToSummary,
-        onLogout = tablesV::logout,
         onTableSelected = tablesV::onTableSelected,
         onVenueSelected = tablesV::setSelectedVenue,
+        onShowSettings = tablesV::toggleSettingsModal,
         venues = venues,
         selectedVenue = selectedVenue,
-        onRefresh = tablesV::fetchTables
+        onBackAction = tablesV::onBackAction,
+        onLogout = tablesV::logout
     )
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeContent(
-    onSummary: () -> Unit = {},
-    onLogout: () -> Unit = {},
+    onBackAction: () -> Unit = {},
     onVenueSelected: (Int) -> Unit = {},
     onTableSelected: (NetworkTable) -> Unit = {},
-    onRefresh: () -> Unit = {},
+    onShowSettings: (Boolean) -> Unit = {},
+    onLogout: () -> Unit = {},
     venues: List<NetworkVenue>,
     selectedVenue: NetworkVenue?
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
+    TopMenuContent(
+        onBackAction = onBackAction,
+        onOpenSettings = { onShowSettings(true) },
+        onDismissRequest = { onShowSettings(false) },
+        onLogout = onLogout
     ) {
-        TopAppBar(
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White,
-                titleContentColor = Color.Black,
-                actionIconContentColor = Color.Black
-            ),
-            title = {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "",
-                    style = MaterialTheme.typography.titleSmall.copy(color = Color.Black)
-                )
-            },
-            actions = {
-                DropdownMenuMoreActions(
-                    onPrintHistorical = onSummary,
-                    onSignOut = onLogout,
-                    onRefresh = onRefresh
-                )
-            }
-        )
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()

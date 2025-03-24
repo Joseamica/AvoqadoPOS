@@ -29,7 +29,7 @@ class HomeViewModel(
     init {
         viewModelScope.launch {
             currentSession?.let {
-                terminalRepository.getTerminalShift(it.venueId)
+//                terminalRepository.getTerminalShift(it.venueId)
             }
 
         }

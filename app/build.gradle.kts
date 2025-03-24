@@ -67,6 +67,8 @@ dependencies {
     val navVersion: String by project
     val lifecycleVersion: String by project
 
+    implementation(libs.androidx.material)
+    implementation(libs.androidx.material.navigation)
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

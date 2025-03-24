@@ -7,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import com.avoqado.pos.core.presentation.navigation.NavigationAction
+import androidx.compose.material.navigation.bottomSheet
 
 fun NavGraphBuilder.dialogHolder(
     action: NavigationAction,
@@ -53,5 +54,29 @@ fun NavGraphBuilder.composableHolderWithArgs(
         deepLinks = action.deepLinks
     ) { navBackStack ->
         content(navBackStack)
+    }
+}
+
+fun NavGraphBuilder.bottomSheetHolder(
+    action: NavigationAction,
+    content: @Composable () -> Unit
+){
+    bottomSheet(
+        route = action.route,
+        arguments = action.arguments
+    ) {
+        content()
+    }
+}
+
+fun NavGraphBuilder.bottomSheetHolderWithArgs(
+    action: NavigationAction,
+    content: @Composable (NavBackStackEntry) -> Unit
+){
+    bottomSheet(
+        route = action.route,
+        arguments = action.arguments
+    ) {
+        content(it)
     }
 }

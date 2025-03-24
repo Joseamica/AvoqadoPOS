@@ -14,10 +14,13 @@ import com.avoqado.pos.features.management.presentation.tableDetail.TableDetailV
 import com.avoqado.pos.router.composableHolder
 import com.avoqado.pos.features.management.presentation.home.HomeScreen
 import com.avoqado.pos.features.management.presentation.home.HomeViewModel
+import com.avoqado.pos.features.management.presentation.shiftNotStarted.ShiftNotStartedSheet
+import com.avoqado.pos.features.management.presentation.shiftNotStarted.ShiftNotStartedViewModel
 import com.avoqado.pos.features.management.presentation.splitPerson.SplitByPersonScreen
 import com.avoqado.pos.features.management.presentation.splitPerson.SplitByPersonViewModel
 import com.avoqado.pos.features.management.presentation.tables.TablesScreen
 import com.avoqado.pos.features.management.presentation.tables.TablesViewModel
+import com.avoqado.pos.router.bottomSheetHolder
 
 fun NavGraphBuilder.managementNavigation(
     navigationDispatcher: NavigationDispatcher,
@@ -94,5 +97,18 @@ fun NavGraphBuilder.managementNavigation(
             tablesViewModel
         )
 
+    }
+
+    bottomSheetHolder(ManagementDests.OpenShift) {
+        val viewModel = remember {
+            ShiftNotStartedViewModel(
+                navigationDispatcher = navigationDispatcher,
+                snackbarDelegate = snackbarDelegate,
+                terminalRepository = AvoqadoApp.terminalRepository,
+                sessionManager = AvoqadoApp.sessionManager
+            )
+        }
+
+        ShiftNotStartedSheet(viewModel)
     }
 }
