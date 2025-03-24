@@ -41,4 +41,9 @@ sealed class PaymentDests : NavigationAction {
         override val route: String
             get() = "transactions"
     }
+
+    data object QuickPayment: PaymentDests(){
+        override val route: String
+            get() = "quickPayment"
+    }
 }

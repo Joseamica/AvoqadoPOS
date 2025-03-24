@@ -15,8 +15,11 @@ import com.avoqado.pos.features.payment.presentation.inputTipAmount.InputTipScre
 import com.avoqado.pos.features.payment.presentation.inputTipAmount.InputTipViewModel
 import com.avoqado.pos.features.payment.presentation.paymentResult.PaymentResultScreen
 import com.avoqado.pos.features.payment.presentation.paymentResult.PaymentResultViewModel
+import com.avoqado.pos.features.payment.presentation.quickPayment.QuickPaymentSheet
+import com.avoqado.pos.features.payment.presentation.quickPayment.QuickPaymentViewModel
 import com.avoqado.pos.features.payment.presentation.transactions.TransactionSummaryViewModel
 import com.avoqado.pos.features.payment.presentation.transactions.TransactionsSummaryScreen
+import com.avoqado.pos.router.bottomSheetHolder
 import com.avoqado.pos.router.composableHolder
 import com.menta.android.core.viewmodel.TrxData
 import com.menta.android.printer.i9100.core.DevicePrintImpl
@@ -69,6 +72,19 @@ fun NavGraphBuilder.paymentNavigation(
         TransactionsSummaryScreen(
             viewModel = summaryViewModel,
             trxData = trxData
+        )
+    }
+
+    bottomSheetHolder(PaymentDests.QuickPayment) {
+        val viewModel = remember {
+            QuickPaymentViewModel(
+                navigationDispatcher = navigationDispatcher,
+                sessionManager = AvoqadoApp.sessionManager
+            )
+        }
+
+        QuickPaymentSheet(
+            viewModel = viewModel
         )
     }
 }

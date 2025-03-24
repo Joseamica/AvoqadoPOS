@@ -49,7 +49,9 @@ class HomeViewModel(
         navigationDispatcher.navigateTo(ManagementDests.VenueTables)
     }
 
-    fun goToQuickPayment(){}
+    fun goToQuickPayment(){
+        navigationDispatcher.navigateTo(PaymentDests.QuickPayment)
+    }
     fun goToShowPayments(){}
     fun goToShowShifts(){}
 
