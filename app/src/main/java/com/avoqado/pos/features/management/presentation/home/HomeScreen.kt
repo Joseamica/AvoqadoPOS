@@ -3,9 +3,11 @@ package com.avoqado.pos.features.management.presentation.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,12 +15,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -38,6 +43,7 @@ fun HomeScreen(
 ) {
 
     val showSettings by homeViewModel.showSettings.collectAsStateWithLifecycle()
+    val isLoading by homeViewModel.isLoading.collectAsStateWithLifecycle()
 
     HomeContent(
         waiterName = homeViewModel.currentSession?.name ?: "",
@@ -53,8 +59,24 @@ fun HomeScreen(
         onShowShifts = homeViewModel::goToShowShifts,
         onShowSummary = homeViewModel::goToSummary,
         onShowPayments = homeViewModel::goToShowPayments,
-        onLogout = homeViewModel::logout
+        onLogout = homeViewModel::logout,
+        onToggleShift = homeViewModel::toggleShift
     )
+
+    if (isLoading) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Color.Black.copy(alpha = 0.25f)
+        ) {
+            Box (
+                modifier = Modifier.fillMaxSize()
+            ){
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        }
+    }
 }
 
 @Composable
@@ -68,7 +90,8 @@ fun HomeContent(
     onShowSummary: () -> Unit = {},
     onShowShifts: () -> Unit = {},
     onShowPayments: () -> Unit = {},
-    onLogout: ()-> Unit = {}
+    onLogout: ()-> Unit = {},
+    onToggleShift: () ->Unit = {}
 ) {
     TopMenuContent(
         onOpenSettings = onOpenSettings,
@@ -76,7 +99,7 @@ fun HomeContent(
         onDismissRequest = {
             toggleSettingsModal(false)
         },
-        onToggleShift = {},
+        onToggleShift = onToggleShift,
         onLogout = onLogout
     ) {
         Column(

@@ -1,5 +1,6 @@
 package com.avoqado.pos.core.data.repository
 
+import android.util.Log
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.AvoqadoService
 import com.avoqado.pos.core.data.network.MentaService
@@ -74,8 +75,11 @@ class TerminalRepositoryImpl(
                     updatedAt = it.updatedAt,
                     createdAt = it.createdAt
                 )
+            }.also {
+                sessionManager.setShift(it)
             }
         } catch (e: Exception) {
+            Log.e("TerminalRepository", e.message ?:"", e)
             if (e is HttpException) {
                 if (e.code() == 401) {
                     throw AvoqadoError.Unauthorized
@@ -114,6 +118,8 @@ class TerminalRepositoryImpl(
                     updatedAt = it.updatedAt,
                     createdAt = it.createdAt
                 )
+            }.also {
+                sessionManager.setShift(it)
             }
         } catch (e: Exception) {
             if (e is HttpException) {
@@ -155,6 +161,8 @@ class TerminalRepositoryImpl(
                     updatedAt = it.updatedAt,
                     createdAt = it.createdAt
                 )
+            }.also {
+                sessionManager.clearShift()
             }
         } catch (e: Exception) {
             if (e is HttpException) {

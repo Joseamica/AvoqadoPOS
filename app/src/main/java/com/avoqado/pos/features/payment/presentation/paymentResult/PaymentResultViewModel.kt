@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.core.domain.models.PaymentStatus
 import com.avoqado.pos.core.domain.models.SplitType
+import com.avoqado.pos.core.domain.models.TerminalInfo
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.avoqado.pos.core.presentation.model.Product
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
@@ -22,6 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class PaymentResultViewModel(
     private val navigationDispatcher: NavigationDispatcher,
@@ -116,7 +118,15 @@ class PaymentResultViewModel(
                 null -> {}
             }
 
-            val terminal = terminalRepository.getTerminalId(AvoqadoApp.terminalSerialCode)
+            val terminal = try {
+                terminalRepository.getTerminalId(AvoqadoApp.terminalSerialCode)
+            } catch (e:Exception){
+                Timber.e(e)
+                TerminalInfo(
+                    serialCode = "",
+                    id = ""
+                )
+            }
             val token =
                 "${info.venueId}-${info.tableNumber}-${info.billId}-${System.currentTimeMillis()}"
 
@@ -157,6 +167,11 @@ class PaymentResultViewModel(
 
     fun newPayment() {
         paymentRepository.clearCachePaymentInfo()
-        navigationDispatcher.popToDestination(ManagementDests.TableDetail.route, inclusive = false)
+        if (tableInfo != null) {
+            navigationDispatcher.popToDestination(ManagementDests.TableDetail.route, inclusive = false)
+        } else {
+            navigationDispatcher.popToDestination(ManagementDests.Home.route, inclusive = false)
+        }
+
     }
 }

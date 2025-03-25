@@ -71,7 +71,6 @@ fun NavGraphBuilder.paymentNavigation(
 
         TransactionsSummaryScreen(
             viewModel = summaryViewModel,
-            trxData = trxData
         )
     }
 
@@ -79,7 +78,8 @@ fun NavGraphBuilder.paymentNavigation(
         val viewModel = remember {
             QuickPaymentViewModel(
                 navigationDispatcher = navigationDispatcher,
-                sessionManager = AvoqadoApp.sessionManager
+                sessionManager = AvoqadoApp.sessionManager,
+                paymentRepository = AvoqadoApp.paymentRepository
             )
         }
 

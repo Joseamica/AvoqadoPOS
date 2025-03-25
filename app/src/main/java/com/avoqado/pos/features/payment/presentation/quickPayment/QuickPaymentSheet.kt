@@ -46,6 +46,7 @@ fun QuickPaymentSheet(
     val formattedAmount =
         remember(amount) { formatAmount(amount, isPercentage = false) }
 
+
     Surface(
         modifier = Modifier.clip(RoundedCornerShape(10.dp, 10.dp, 0.dp, 0.dp)),
         color = MaterialTheme.colorScheme.surface,

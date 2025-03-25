@@ -3,15 +3,18 @@ package com.avoqado.pos.router
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
-import android.provider.Settings
 import android.util.Log
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.SwipeableDefaults
+import androidx.compose.material.navigation.BottomSheetNavigator
 import androidx.compose.material.navigation.ModalBottomSheetLayout
 import androidx.compose.material.navigation.rememberBottomSheetNavigator
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -19,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -29,7 +33,6 @@ import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.core.presentation.navigation.NavigationCommand
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
-import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.presentation.navigation.managementNavigation
 import com.avoqado.pos.features.authorization.presentation.authorization.AuthorizationDialog
@@ -42,8 +45,6 @@ import com.avoqado.pos.features.payment.presentation.navigation.paymentNavigatio
 import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
 import com.menta.android.core.viewmodel.TrxData
-import com.menta.android.printer.i9100.core.DevicePrintImpl
-import com.menta.android.restclient.core.Storage
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -56,7 +57,7 @@ fun AppRouter(
     context: Context
 ) {
     val navController = rememberNavController()
-    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    val bottomSheetNavigator = rememberFullScreenBottomSheetNavigator()
     navController.navigatorProvider.addNavigator(bottomSheetNavigator)
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -238,4 +239,37 @@ fun AppRouter(
             }
         }
     )
+}
+
+@Composable
+fun rememberFullScreenBottomSheetNavigator(
+    animationSpec: AnimationSpec<Float> = SwipeableDefaults.AnimationSpec,
+    skipHalfExpanded: Boolean = true
+): BottomSheetNavigator {
+    val sheetState = rememberModalBottomSheetState(
+        initialValue = ModalBottomSheetValue.Hidden,
+        animationSpec = animationSpec,
+        skipHalfExpanded = skipHalfExpanded
+    )
+
+    if (skipHalfExpanded) {
+        LaunchedEffect(sheetState) {
+            snapshotFlow { sheetState.currentValue }
+                .collectLatest { currentValue ->
+                    with(sheetState) {
+                        val isOpening =
+                            currentValue == ModalBottomSheetValue.Hidden && targetValue == ModalBottomSheetValue.HalfExpanded
+                        val isClosing =
+                            currentValue == ModalBottomSheetValue.Expanded && targetValue == ModalBottomSheetValue.HalfExpanded
+                        when {
+                            isOpening -> show()
+                            isClosing -> hide()
+                        }
+                    }
+                }
+        }
+    }
+    return remember(sheetState) {
+        BottomSheetNavigator(sheetState)
+    }
 }
