@@ -251,24 +251,24 @@ class CardProcessActivity : ComponentActivity() {
     }
 
     private fun cardReader(amount: String, tipAmount: String) {
-//        if (operationType.isNotNull()) {
-//            if (operationType != "PAYMENT" && operationType != "PREAUTHORIZATION") {
-//                transaction = intent.getParcelableExtra("transaction")!!
-//                transaction.let {
-//                    Log.i(TAG, "Transaction ID: ${it.id}")
-//                }
-//
-//            }
-//        }
-//        cardProcessData.selectApp.observe(this, selectAppObserver)
-//        cardProcessData.navigate.observe(this, navigateObserver)
-//
-//        cardProcessData.findCardProcess(
-//            operationFlow = doOperationFlow(amount, tipAmount),
-//            cardData = doCardData(),
-//            context = this,
-//            inputModeType = InputMode.ALL
-//        )
+        if (operationType.isNotNull()) {
+            if (operationType != "PAYMENT" && operationType != "PREAUTHORIZATION") {
+                transaction = intent.getParcelableExtra("transaction")!!
+                transaction.let {
+                    Log.i(TAG, "Transaction ID: ${it.id}")
+                }
+
+            }
+        }
+        cardProcessData.selectApp.observe(this, selectAppObserver)
+        cardProcessData.navigate.observe(this, navigateObserver)
+
+        cardProcessData.findCardProcess(
+            operationFlow = doOperationFlow(amount, tipAmount),
+            cardData = doCardData(),
+            context = this,
+            inputModeType = InputMode.ALL
+        )
     }
 
     private fun doOperationFlow(inputAmount: String, tipAmount: String): OperationFlow {
@@ -424,7 +424,7 @@ class CardProcessActivity : ComponentActivity() {
     override fun onDestroy() {
         Log.d("$TAG-AvoqadoTest", "CardProcessActivity on detroy")
         isDestroying = true
-//        cardProcessData.stopReader()
+        cardProcessData.stopReader()
         super.onDestroy()
     }
 }
