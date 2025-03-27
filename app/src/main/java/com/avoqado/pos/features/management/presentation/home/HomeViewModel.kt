@@ -6,6 +6,7 @@ import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
+import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.destinations.MainDests
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
@@ -19,7 +20,8 @@ import timber.log.Timber
 class HomeViewModel(
     private val navigationDispatcher: NavigationDispatcher,
     private val sessionManager: SessionManager,
-    private val terminalRepository: TerminalRepository
+    private val terminalRepository: TerminalRepository,
+    private val snackbarDelegate: SnackbarDelegate
 ) : ViewModel() {
 
     val currentSession = sessionManager.getAvoqadoSession()
@@ -97,6 +99,9 @@ class HomeViewModel(
                         )
                         sessionManager.clearShift()
                         currentShift = null
+                        snackbarDelegate.showSnackbar(
+                            message = "El turno ha sido cerrado."
+                        )
                     } else {
                         val shift = terminalRepository.startTerminalShift(
                             venueId = it.id ?: "",
@@ -104,6 +109,10 @@ class HomeViewModel(
                         )
                         sessionManager.setShift(shift)
                         currentShift = shift
+
+                        snackbarDelegate.showSnackbar(
+                            message = "Se ha iniciado un nuevo turno."
+                        )
                     }
                 }
             } catch (e: Exception) {

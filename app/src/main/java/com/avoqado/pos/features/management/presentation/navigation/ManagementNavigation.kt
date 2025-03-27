@@ -31,7 +31,8 @@ fun NavGraphBuilder.managementNavigation(
             HomeViewModel(
                 navigationDispatcher = navigationDispatcher,
                 sessionManager = AvoqadoApp.sessionManager,
-                terminalRepository = AvoqadoApp.terminalRepository
+                terminalRepository = AvoqadoApp.terminalRepository,
+                snackbarDelegate = snackbarDelegate
             )
         }
         HomeScreen(
