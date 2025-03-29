@@ -32,6 +32,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.R
+import com.avoqado.pos.core.domain.models.Shift
+import com.avoqado.pos.core.presentation.components.ObserverLifecycleEvents
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 import com.avoqado.pos.features.payment.presentation.transactions.components.CreatedFilterSheet
@@ -49,11 +51,21 @@ fun TransactionsSummaryScreen(
     viewModel: TransactionSummaryViewModel
 ) {
 
+    ObserverLifecycleEvents(
+        onCreate = {
+            viewModel.loadSummary()
+        }
+    )
+
     val currentTab by viewModel.currentTab.collectAsStateWithLifecycle()
     val showWaitersSheet by viewModel.showWaiterSheet.collectAsStateWithLifecycle()
     val showCreatedSheet by viewModel.showCreatedSheet.collectAsStateWithLifecycle()
     val filteredWaiters by viewModel.filteredWaiters.collectAsStateWithLifecycle()
     val filteredDates by viewModel.filteredDates.collectAsStateWithLifecycle()
+
+    val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val shifts by viewModel.shiftsList.collectAsStateWithLifecycle()
 
     TransactionSummaryContent(
         onNavigateBack = viewModel::navigateBack,
@@ -66,7 +78,13 @@ fun TransactionsSummaryScreen(
         onApplyWaiterFilter = viewModel::onFilterByWaiters,
         onApplyDateFilter = viewModel::onFilterByDates,
         filteredWaiters = filteredWaiters,
-        filteredDates = filteredDates
+        filteredDates = filteredDates,
+        isLoading = isLoading,
+        isLoadingMore = isLoadingMore,
+        shifts = shifts,
+        onLoadMore =  {
+            viewModel.loadSummary(nextPage = true)
+        }
     )
 }
 
@@ -84,7 +102,11 @@ fun TransactionSummaryContent(
     filteredDates: Pair<Long?,Long?> = Pair(null,null),
     filteredWaiters: List<String> = emptyList(),
     onApplyDateFilter: (Pair<Long?,Long?>) -> Unit = {},
-    onApplyWaiterFilter: (List<String>) -> Unit = {}
+    onApplyWaiterFilter: (List<String>) -> Unit = {},
+    isLoading: Boolean = false,
+    isLoadingMore: Boolean = false,
+    shifts: List<Shift> = emptyList(),
+    onLoadMore: () -> Unit = {}
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -245,7 +267,11 @@ fun TransactionSummaryContent(
         when (selectedTab) {
             SummaryTabs.RESUMEN -> SummaryPage()
             SummaryTabs.PAGOS -> PaymentsPage()
-            SummaryTabs.TURNOS -> ShiftsPage()
+            SummaryTabs.TURNOS -> ShiftsPage(
+                items = shifts,
+                isLoading = isLoadingMore,
+                onLoadMore = onLoadMore
+            )
         }
     }
 

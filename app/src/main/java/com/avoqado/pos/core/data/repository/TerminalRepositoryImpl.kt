@@ -7,6 +7,7 @@ import com.avoqado.pos.core.data.network.MentaService
 import com.avoqado.pos.core.data.network.models.ShiftBody
 import com.avoqado.pos.core.domain.models.AvoqadoError
 import com.avoqado.pos.core.domain.models.Shift
+import com.avoqado.pos.core.domain.models.ShiftParams
 import com.avoqado.pos.core.domain.models.TerminalInfo
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.menta.android.restclient.core.Storage
@@ -165,6 +166,49 @@ class TerminalRepositoryImpl(
                 sessionManager.clearShift()
             }
         } catch (e: Exception) {
+            if (e is HttpException) {
+                if (e.code() == 401) {
+                    throw AvoqadoError.Unauthorized
+                } else {
+                    throw AvoqadoError.BasicError(message = e.message())
+                }
+            } else {
+                throw AvoqadoError.BasicError(message = "Algo salio mal...")
+            }
+        }
+    }
+
+    override suspend fun getShiftSummary(params: ShiftParams): List<Shift> {
+        return try {
+            avoqadoService.getShiftSummary(
+                venueId = params.venueId,
+                pageSize = params.pageSize,
+                pageNumber = params.page,
+                startTime = params.startTime,
+                endTime = params.endTime,
+                waiterId = params.waiterIds
+            ).let { data ->
+                data.data.map {
+                    Shift(
+                        id = it.id,
+                        turnId = it.turnId,
+                        insideTurnId = it.insideTurnId,
+                        origin = it.origin,
+                        startTime = it.startTime,
+                        endTime = it.endTime,
+                        fund = it.fund,
+                        cash = it.cash,
+                        card = it.card,
+                        credit = it.credit,
+                        cashier = it.cashier,
+                        venueId = it.venueId,
+                        updatedAt = it.updatedAt,
+                        createdAt = it.createdAt
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            Timber.e(e)
             if (e is HttpException) {
                 if (e.code() == 401) {
                     throw AvoqadoError.Unauthorized

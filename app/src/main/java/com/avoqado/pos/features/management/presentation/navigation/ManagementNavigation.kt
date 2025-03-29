@@ -41,7 +41,6 @@ fun NavGraphBuilder.managementNavigation(
     }
 
     composableHolder(ManagementDests.TableDetail) {
-        val context = LocalContext.current
         val tableDetailViewModel = remember {
             TableDetailViewModel(
                 navigationDispatcher = navigationDispatcher,

@@ -9,6 +9,8 @@ import com.avoqado.pos.core.data.network.models.PasscodeBody
 import com.avoqado.pos.core.data.network.models.ShiftBody
 import com.avoqado.pos.core.data.network.models.TerminalMerchant
 import com.avoqado.pos.core.data.network.models.WaiterData
+import com.avoqado.pos.core.data.network.models.transactions.NetworkDataShift
+import com.avoqado.pos.core.data.network.models.transactions.NetworkShiftRecord
 import com.google.gson.JsonObject
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -61,18 +63,27 @@ interface AvoqadoService {
     suspend fun getRestaurantShift(
         @Path("venueId") venueId: String,
         @Query("pos_name") posName: String
-    ): NetworkShift
+    ): NetworkShiftRecord
 
     @POST("tpv/venues/{venueId}/shift")
     suspend fun registerRestaurantShift(
         @Path("venueId") venueId: String,
         @Body body: ShiftBody
-    ) : NetworkShift
+    ) : NetworkShiftRecord
 
     @PATCH("tpv/venues/{venueId}/shift")
     suspend fun updateRestaurantShift(
         @Path("venueId") venueId: String,
         @Body body: ShiftBody
-    ) : NetworkShift
+    ) : NetworkShiftRecord
 
+    @GET("tpv/venues/{venueId}/shifts")
+    suspend fun getShiftSummary(
+        @Path("venueId") venueId: String,
+        @Query("pageSize") pageSize: Int,
+        @Query("pageNumber") pageNumber: Int,
+        @Query("startTime") startTime: String?,
+        @Query("endTime") endTime: String?,
+        @Query("waiterId") waiterId: String?
+    ): NetworkDataShift
 }

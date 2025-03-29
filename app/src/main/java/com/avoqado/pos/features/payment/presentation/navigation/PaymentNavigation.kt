@@ -65,7 +65,8 @@ fun NavGraphBuilder.paymentNavigation(
             TransactionSummaryViewModel(
                 sessionManager = AvoqadoApp.sessionManager,
                 navigationDispatcher = navigationDispatcher,
-                snackbarDelegate = snackbarDelegate
+                snackbarDelegate = snackbarDelegate,
+                terminalRepository = AvoqadoApp.terminalRepository
             )
         }
 
