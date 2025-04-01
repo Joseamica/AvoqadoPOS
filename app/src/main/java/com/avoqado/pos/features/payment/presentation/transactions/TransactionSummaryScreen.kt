@@ -32,7 +32,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.R
+import com.avoqado.pos.core.domain.models.PaymentShift
 import com.avoqado.pos.core.domain.models.Shift
+import com.avoqado.pos.core.domain.models.ShiftSummary
 import com.avoqado.pos.core.presentation.components.ObserverLifecycleEvents
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
@@ -54,6 +56,8 @@ fun TransactionsSummaryScreen(
     ObserverLifecycleEvents(
         onCreate = {
             viewModel.loadSummary()
+            viewModel.loadShiftsSummary()
+            viewModel.loadPaymentsSummary()
         }
     )
 
@@ -66,6 +70,8 @@ fun TransactionsSummaryScreen(
     val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val shifts by viewModel.shiftsList.collectAsStateWithLifecycle()
+    val summary by viewModel.shiftSummary.collectAsStateWithLifecycle()
+    val payments by viewModel.paymentsShiftList.collectAsStateWithLifecycle()
 
     TransactionSummaryContent(
         onNavigateBack = viewModel::navigateBack,
@@ -82,9 +88,15 @@ fun TransactionsSummaryScreen(
         isLoading = isLoading,
         isLoadingMore = isLoadingMore,
         shifts = shifts,
-        onLoadMore =  {
-            viewModel.loadSummary(nextPage = true)
-        }
+        onLoadMore = {
+            viewModel.loadShiftsSummary(nextPage = true)
+        },
+        summary = summary,
+        payments = payments,
+        onLoadMorePayments = {
+            viewModel.loadPaymentsSummary(nextPage = true)
+        },
+        waiters = viewModel.venueInfo?.waiters?.map { Pair(it.id, it.nombre) } ?: emptyList()
     )
 }
 
@@ -99,14 +111,18 @@ fun TransactionSummaryContent(
     onToggleWaitersSheet: (Boolean) -> Unit = {},
     showCreatedSheet: Boolean = false,
     onToggleCreatedSheet: (Boolean) -> Unit = {},
-    filteredDates: Pair<Long?,Long?> = Pair(null,null),
+    filteredDates: Pair<Long?, Long?> = Pair(null, null),
+    waiters: List<Pair<String, String>> = emptyList(),
     filteredWaiters: List<String> = emptyList(),
-    onApplyDateFilter: (Pair<Long?,Long?>) -> Unit = {},
+    onApplyDateFilter: (Pair<Long?, Long?>) -> Unit = {},
     onApplyWaiterFilter: (List<String>) -> Unit = {},
     isLoading: Boolean = false,
     isLoadingMore: Boolean = false,
     shifts: List<Shift> = emptyList(),
-    onLoadMore: () -> Unit = {}
+    onLoadMore: () -> Unit = {},
+    summary: ShiftSummary? = null,
+    payments: List<PaymentShift> = emptyList(),
+    onLoadMorePayments: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -210,7 +226,7 @@ fun TransactionSummaryContent(
             Box(
                 modifier = Modifier
                     .background(
-                        color = Color.White,
+                        color = if (filteredWaiters.isNotEmpty()) Color.Black else Color.White,
                         shape = RoundedCornerShape(100.dp)
                     )
                     .border(
@@ -229,7 +245,7 @@ fun TransactionSummaryContent(
                 Text(
                     text = "Mesero",
                     style = MaterialTheme.typography.bodySmall.copy(
-                        color = Color.Black
+                        color = if (filteredWaiters.isNotEmpty()) Color.White else Color.Black
                     )
                 )
             }
@@ -239,7 +255,7 @@ fun TransactionSummaryContent(
             Box(
                 modifier = Modifier
                     .background(
-                        color = Color.White,
+                        color = if (filteredDates.let { it.first != null || it.second != null }) Color.Black else Color.White,
                         shape = RoundedCornerShape(100.dp)
                     )
                     .border(
@@ -258,15 +274,24 @@ fun TransactionSummaryContent(
                 Text(
                     text = "Creado",
                     style = MaterialTheme.typography.bodySmall.copy(
-                        color = Color.Black
+                        color = if (filteredDates.let { it.first != null || it.second != null }) Color.White else Color.Black
                     )
                 )
             }
         }
 
         when (selectedTab) {
-            SummaryTabs.RESUMEN -> SummaryPage()
-            SummaryTabs.PAGOS -> PaymentsPage()
+            SummaryTabs.RESUMEN -> SummaryPage(
+                isLoading = isLoading,
+                summary = summary
+            )
+
+            SummaryTabs.PAGOS -> PaymentsPage(
+                isLoading = isLoadingMore,
+                items = payments,
+                onLoadMore = onLoadMorePayments
+            )
+
             SummaryTabs.TURNOS -> ShiftsPage(
                 items = shifts,
                 isLoading = isLoadingMore,
@@ -280,6 +305,7 @@ fun TransactionSummaryContent(
             onDismiss = {
                 onToggleWaitersSheet(false)
             },
+            waiterList = waiters,
             onApplyFilter = onApplyWaiterFilter,
             preSelectedWaiters = filteredWaiters
         )

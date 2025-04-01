@@ -6,8 +6,10 @@ import com.avoqado.pos.core.data.network.AvoqadoService
 import com.avoqado.pos.core.data.network.MentaService
 import com.avoqado.pos.core.data.network.models.ShiftBody
 import com.avoqado.pos.core.domain.models.AvoqadoError
+import com.avoqado.pos.core.domain.models.PaymentShift
 import com.avoqado.pos.core.domain.models.Shift
 import com.avoqado.pos.core.domain.models.ShiftParams
+import com.avoqado.pos.core.domain.models.ShiftSummary
 import com.avoqado.pos.core.domain.models.TerminalInfo
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.menta.android.restclient.core.Storage
@@ -74,13 +76,17 @@ class TerminalRepositoryImpl(
                     cashier = it.cashier,
                     venueId = it.venueId,
                     updatedAt = it.updatedAt,
-                    createdAt = it.createdAt
+                    createdAt = it.createdAt,
+                    avgTipPercentage = it.avgTipPercentage ?: 0,
+                    tipsSum = it.tipsSum ?: 0,
+                    tipsCount = it.tipsCount ?: 0,
+                    paymentSum = it.paymentSum ?: 0
                 )
             }.also {
                 sessionManager.setShift(it)
             }
         } catch (e: Exception) {
-            Log.e("TerminalRepository", e.message ?:"", e)
+            Log.e("TerminalRepository", e.message ?: "", e)
             if (e is HttpException) {
                 if (e.code() == 401) {
                     throw AvoqadoError.Unauthorized
@@ -117,7 +123,11 @@ class TerminalRepositoryImpl(
                     cashier = it.cashier,
                     venueId = it.venueId,
                     updatedAt = it.updatedAt,
-                    createdAt = it.createdAt
+                    createdAt = it.createdAt,
+                    avgTipPercentage = it.avgTipPercentage ?: 0,
+                    tipsSum = it.tipsSum ?: 0,
+                    tipsCount = it.tipsCount ?: 0,
+                    paymentSum = it.paymentSum ?: 0
                 )
             }.also {
                 sessionManager.setShift(it)
@@ -160,7 +170,11 @@ class TerminalRepositoryImpl(
                     cashier = it.cashier,
                     venueId = it.venueId,
                     updatedAt = it.updatedAt,
-                    createdAt = it.createdAt
+                    createdAt = it.createdAt,
+                    avgTipPercentage = it.avgTipPercentage ?: 0,
+                    tipsSum = it.tipsSum ?: 0,
+                    tipsCount = it.tipsCount ?: 0,
+                    paymentSum = it.paymentSum ?: 0
                 )
             }.also {
                 sessionManager.clearShift()
@@ -203,7 +217,11 @@ class TerminalRepositoryImpl(
                         cashier = it.cashier,
                         venueId = it.venueId,
                         updatedAt = it.updatedAt,
-                        createdAt = it.createdAt
+                        createdAt = it.createdAt,
+                        avgTipPercentage = it.avgTipPercentage ?: 0,
+                        tipsSum = it.tipsSum ?: 0,
+                        tipsCount = it.tipsCount ?: 0,
+                        paymentSum = it.paymentSum ?: 0
                     )
                 }
             }
@@ -220,4 +238,78 @@ class TerminalRepositoryImpl(
             }
         }
     }
+
+    override suspend fun getSummary(params: ShiftParams): ShiftSummary {
+        return try {
+            avoqadoService.getSummary(
+                venueId = params.venueId,
+                startTime = params.startTime,
+                endTime = params.endTime,
+                waiterId = params.waiterIds
+            ).let {
+                ShiftSummary(
+                    tips = it.data?.waiterTips?.map { tip ->
+                        Pair(
+                            tip?.name ?: "",
+                            tip?.amount?.toString() ?: ""
+                        )
+                    } ?: emptyList(),
+                    averageTipPercentage = it.data?.summary?.averageTipPercentage ?: 0.0,
+                    ordersCount = it.data?.summary?.ordersCount ?: 0,
+                    ratingsCount = it.data?.summary?.ratingsCount ?: 0,
+                    totalSales = it.data?.summary?.totalSales ?: 0,
+                    totalTips = it.data?.summary?.totalTips ?: 0
+                )
+            }
+        } catch (e: Exception) {
+            Timber.e(e)
+            if (e is HttpException) {
+                if (e.code() == 401) {
+                    throw AvoqadoError.Unauthorized
+                } else {
+                    throw AvoqadoError.BasicError(message = e.message())
+                }
+            } else {
+                throw AvoqadoError.BasicError(message = "Algo salio mal...")
+            }
+        }
+    }
+
+    override suspend fun getShiftPaymentsSummary(params: ShiftParams): List<PaymentShift> {
+        return try {
+            avoqadoService.getPaymentsSummary(
+                venueId = params.venueId,
+                pageSize = params.pageSize,
+                pageNumber = params.page,
+                startTime = params.startTime,
+                endTime = params.endTime,
+                waiterId = params.waiterIds
+            ).let { data ->
+                data.data?.map {
+                    PaymentShift(
+                        id = it?.id ?: "",
+                        waiterName = it?.waiter?.nombre ?: "",
+                        totalSales = it?.amount?.toInt() ?: 0,
+                        totalTip = it?.tips?.firstOrNull()?.amount?.toInt() ?: 0,
+                        paymentId = it?.mentaTicketId ?: "",
+                        date = it?.createdAt?.let {
+                            Instant.parse(it)
+                        }?: Instant.now()
+                    )
+                } ?: emptyList()
+            }
+        } catch (e: Exception) {
+            Timber.e(e)
+            if (e is HttpException) {
+                if (e.code() == 401) {
+                    throw AvoqadoError.Unauthorized
+                } else {
+                    throw AvoqadoError.BasicError(message = e.message())
+                }
+            } else {
+                throw AvoqadoError.BasicError(message = "Algo salio mal...")
+            }
+        }
+    }
+
 }

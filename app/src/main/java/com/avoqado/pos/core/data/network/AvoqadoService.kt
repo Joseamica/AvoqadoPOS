@@ -11,6 +11,8 @@ import com.avoqado.pos.core.data.network.models.TerminalMerchant
 import com.avoqado.pos.core.data.network.models.WaiterData
 import com.avoqado.pos.core.data.network.models.transactions.NetworkDataShift
 import com.avoqado.pos.core.data.network.models.transactions.NetworkShiftRecord
+import com.avoqado.pos.core.data.network.models.transactions.payments.NetworkShiftPaymentsData
+import com.avoqado.pos.core.data.network.models.transactions.summary.NetworkSummaryData
 import com.google.gson.JsonObject
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -86,4 +88,22 @@ interface AvoqadoService {
         @Query("endTime") endTime: String?,
         @Query("waiterId") waiterId: String?
     ): NetworkDataShift
+
+    @GET("tpv/venues/{venueId}/shifts-summary")
+    suspend fun getSummary(
+        @Path("venueId") venueId: String,
+        @Query("startTime") startTime: String?,
+        @Query("endTime") endTime: String?,
+        @Query("waiterId") waiterId: String?
+    ): NetworkSummaryData
+
+    @GET("tpv/venues/{venueId}/payments")
+    suspend fun getPaymentsSummary(
+        @Path("venueId") venueId: String,
+        @Query("pageSize") pageSize: Int,
+        @Query("pageNumber") pageNumber: Int,
+        @Query("startTime") startTime: String?,
+        @Query("endTime") endTime: String?,
+        @Query("waiterId") waiterId: String?
+    ): NetworkShiftPaymentsData
 }

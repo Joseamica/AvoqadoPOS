@@ -71,7 +71,6 @@ class SplashViewModel constructor(
                         venueId = it,
                         posName = venue.posName?:""
                     )
-                    Log.i("Diego-Shift",shift.toString())
                     sessionManager.setShift(shift)
 
                     if (currentUser == null) {
@@ -80,14 +79,12 @@ class SplashViewModel constructor(
                         startup()
                     }
                 } ?: run {
-                    Log.i("Diego-Shift","qwer")
                     snackbarDelegate.showSnackbar(
                         state = SnackbarState.Default,
                         message = "No tienes asignado un restaurante a este terminal."
                     )
                 }
             } catch (e: Exception) {
-                Log.i("Diego-Shift","asdas")
                 Timber.e("Error fetching TPV", e)
                 if (sessionManager.getVenueId().isNotEmpty()) {
                     if (currentUser == null) {

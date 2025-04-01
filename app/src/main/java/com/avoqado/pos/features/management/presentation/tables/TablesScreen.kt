@@ -453,6 +453,7 @@ fun HomeContentPreview() {
                 website = null,
                 wifiName = null,
                 wifiPassword = null,
+                waiters = emptyList()
             ),
         )
     }

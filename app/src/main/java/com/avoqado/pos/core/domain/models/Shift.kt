@@ -14,7 +14,11 @@ data class Shift(
     val cashier: String?,
     val venueId: String?,
     val updatedAt: String?,
-    val createdAt: String?
+    val createdAt: String?,
+    val avgTipPercentage: Int,
+    val tipsSum: Int,
+    val tipsCount: Int,
+    val paymentSum: Int
 ){
     val isStarted : Boolean
         get() = startTime.isNullOrBlank().not()

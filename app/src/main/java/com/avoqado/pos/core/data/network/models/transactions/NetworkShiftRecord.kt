@@ -39,5 +39,13 @@ data class NetworkShiftRecord(
     @SerializedName("venue")
     val venue: Venue?,
     @SerializedName("venueId")
-    val venueId: String?
+    val venueId: String?,
+    @SerializedName("avgTipPercentage")
+    val avgTipPercentage: Int?,
+    @SerializedName("tipsSum")
+    val tipsSum: Int?,
+    @SerializedName("tipsCount")
+    val tipsCount: Int?,
+    @SerializedName("paymentSum")
+    val paymentSum: Int?
 )

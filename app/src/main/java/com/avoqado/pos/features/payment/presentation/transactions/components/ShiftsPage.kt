@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.avoqado.pos.core.domain.models.Shift
 import com.avoqado.pos.core.presentation.components.InfiniteScrollList
-import com.avoqado.pos.core.presentation.components.ObserverLifecycleEvents
+import com.avoqado.pos.core.presentation.utils.toAmountMx
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -47,18 +47,23 @@ fun ColumnScope.ShiftsPage(
             loading = isLoading,
             listState = listState,
             items = items,
-            itemKey = { it.id ?: ""},
+            itemKey = { it.id ?: "" },
             itemContent = { ShiftItemCard(it) },
-            loadingItem = { Row { CircularProgressIndicator() } },
+            loadingItem = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
+                ) { CircularProgressIndicator() }
+            },
             loadMore = onLoadMore,
         )
     }
 }
 
 @Composable
-fun ShiftItemCard(shift: Shift){
+fun ShiftItemCard(shift: Shift) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         )
@@ -133,7 +138,7 @@ fun ShiftItemCard(shift: Shift){
                     )
 
                     Text(
-                        "$27,072.00",
+                        "$${shift.paymentSum.toString().toAmountMx()}",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = Color.Black,
                             fontWeight = FontWeight.Bold
@@ -152,7 +157,7 @@ fun ShiftItemCard(shift: Shift){
                     )
 
                     Text(
-                        "$2,707.20",
+                        "$${shift.tipsSum.toString().toAmountMx()}",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             color = Color.Black,
                             fontWeight = FontWeight.Bold
