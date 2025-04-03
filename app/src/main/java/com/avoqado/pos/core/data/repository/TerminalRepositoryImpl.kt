@@ -153,7 +153,7 @@ class TerminalRepositoryImpl(
                     posName = posName,
                     turnId = shift?.turnId,
                     endTime = Instant.now().toString(),
-                    origin = "AVOQADO_POS",
+                    origin = "AVOQADO_TPV",
                 )
             ).let {
                 Shift(
