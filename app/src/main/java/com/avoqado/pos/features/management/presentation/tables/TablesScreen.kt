@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -51,36 +53,56 @@ fun TablesScreen(
     tablesV: TablesViewModel
 ) {
     val tables by tablesV.tables.collectAsStateWithLifecycle()
-    val venues by tablesV.venues.collectAsStateWithLifecycle()
-    val selectedVenue by tablesV.selectedVenue.collectAsStateWithLifecycle()
+    val selectedVenue = tablesV.venueInfo
+    val showSettings by tablesV.showSettings.collectAsStateWithLifecycle()
+    val isLoading by tablesV.isLoading.collectAsStateWithLifecycle()
 
     HomeContent(
         onTableSelected = tablesV::onTableSelected,
-        onVenueSelected = tablesV::setSelectedVenue,
         onShowSettings = tablesV::toggleSettingsModal,
-        venues = venues,
         selectedVenue = selectedVenue,
         onBackAction = tablesV::onBackAction,
-        onLogout = tablesV::logout
+        onLogout = tablesV::logout,
+        tables = tables,
+        showSettings = showSettings,
+        onToggleShift = tablesV::toggleShift
     )
+
+    if (isLoading) {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = Color.Black.copy(alpha = 0.25f)
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize()
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        }
+    }
 }
 
 
 @Composable
 fun HomeContent(
     onBackAction: () -> Unit = {},
-    onVenueSelected: (Int) -> Unit = {},
-    onTableSelected: (NetworkTable) -> Unit = {},
+    onTableSelected: (String) -> Unit = {},
     onShowSettings: (Boolean) -> Unit = {},
     onLogout: () -> Unit = {},
-    venues: List<NetworkVenue>,
-    selectedVenue: NetworkVenue?
+    onToggleShift: () -> Unit = {},
+    tables: List<Pair<String, String>>,
+    selectedVenue: NetworkVenue?,
+    showSettings: Boolean = false
 ) {
     TopMenuContent(
         onBackAction = onBackAction,
         onOpenSettings = { onShowSettings(true) },
         onDismissRequest = { onShowSettings(false) },
-        onLogout = onLogout
+        onToggleShift = onToggleShift,
+        onLogout = onLogout,
+        showSettingsModal = showSettings
     ) {
         Column(
             modifier = Modifier
@@ -100,19 +122,6 @@ fun HomeContent(
                 )
             }
 
-            if (venues.size > 1) {
-                VenuesDropdownMenu(
-                    items = venues.map { venue -> venue.name ?: "" },
-                    selectedItem = selectedVenue?.name ?: "",
-                    onItemSelected = { index -> onVenueSelected(index) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
             LazyVerticalGrid(
                 columns = GridCells.Fixed(5), // Tres columnas
                 modifier = Modifier.fillMaxSize(),
@@ -120,11 +129,20 @@ fun HomeContent(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+
+                if (tables.isEmpty()) {
+                    item {
+                        Text(
+                            modifier = Modifier.fillMaxWidth(),
+                            text = "No hay cuentas activas.",
+                            style = MaterialTheme.typography.titleMedium.copy(color = Color.LightGray),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+
                 items(
-                    selectedVenue?.tables
-                        ?.filterNotNull()      // Quita cualquier elemento nulo
-                        ?.filter { it.bill != null && it.bill.status == "OPEN" } // Filtra mesas con bill en estado "OPEN"
-                        ?: emptyList()
+                    tables
                 ) { table ->
                     Card(
                         shape = RoundedCornerShape(8.dp),
@@ -135,7 +153,7 @@ fun HomeContent(
                         modifier = Modifier
                             .size(50.dp) // Tamaño fijo para que sean recuadros uniformes
                             .clickable {
-                                onTableSelected(table)
+                                onTableSelected(table.first)
                             }
                     ) {
                         Box(
@@ -143,7 +161,7 @@ fun HomeContent(
                             modifier = Modifier.fillMaxSize()
                         ) {
                             Text(
-                                text = "${table.tableNumber}",
+                                text = table.second,
                                 style = MaterialTheme.typography.bodyLarge, // Parámetro nombrado 'style'
                                 color = MaterialTheme.colorScheme.onSurface
                             )
@@ -211,7 +229,7 @@ fun VenuesDropdownMenu(
 fun HomeContentPreview() {
     AvoqadoTheme {
         HomeContent(
-            venues = emptyList(),
+            tables = emptyList(),
             selectedVenue = NetworkVenue(
                 address = null,
                 askNameOrdering = null,

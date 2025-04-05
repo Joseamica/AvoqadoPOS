@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.domain.usecase.ValidateAmountUseCase
-import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.core.presentation.destinations.MainDests
 import com.avoqado.pos.ui.screen.TextFieldState
 import com.menta.android.core.utils.StringUtils
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -33,6 +33,6 @@ fun Product.toDomain(): com.avoqado.pos.features.management.domain.models.Produc
         id = this.id,
         name = this.name,
         price = this.price,
-        quantity = this.quantity
+        quantity = this.quantity.toDouble()
     )
 }

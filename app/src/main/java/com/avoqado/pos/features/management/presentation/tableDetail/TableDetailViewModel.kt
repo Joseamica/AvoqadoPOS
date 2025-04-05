@@ -111,53 +111,63 @@ class TableDetailViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             _isLoading.value = true
             try {
-                val result = AvoqadoAPI.apiService.getVenueTableDetail(
+                managementRepository.getDetailedBill(
                     venueId = venueId,
-                    tableNumber = tableNumber
-                )
+                    billId = tableNumber
+                ).let {
+                    _tableDetail.update {
+                        it
+                    }
 
-                _tableDetail.value = TableDetail(
-                    tableId = tableNumber,
-                    name = "Mesa $tableNumber",
-                )
-
-                val billDetail = AvoqadoAPI.apiService.getTableBill(
-                    venueId = venueId,
-                    billId = result.table?.bill?.id ?: ""
-                )
-
-                _tableDetail.update {
-                    _tableDetail.value.copy(
-                        billId = result.table?.bill?.id ?: "",
-                        totalAmount = billDetail.total.toString().toAmountMXDouble(),
-                        waiterName = billDetail.waiterName ?: "",
-                        products = billDetail.products.groupBy { it.id }.map { pair ->
-                            val item = pair.value.first()
-                            Product(
-                                id = item.id,
-                                name = item.name,
-                                price = pair.value.maxOf { it.price.toAmountMXDouble() },
-                                quantity = pair.value.sumOf { it.quantity },
-                                totalPrice = pair.value.sumOf { it.price.toAmountMXDouble() }
-                            )
-                        },
-                        paymentsDone = billDetail.payments?.map { payment -> Payment(
-                                amount = payment.amount.toAmountMXDouble(),
-                                products = payment.products?.map { it.id } ?: emptyList(),
-                                splitType = payment.splitType,
-                                equalPartsPayedFor = payment.equalPartsPayedFor,
-                                equalPartsPartySize = payment.equalPartsPartySize
-                            )
-                        } ?: emptyList(),
-                        currentSplitType = billDetail.payments?.lastOrNull()?.splitType?.let {
-                            SplitType.valueOf(it)
-                        }
+                    managementRepository.setTableCache(
+                        _tableDetail.value.toDomain()
                     )
                 }
+//                val result = AvoqadoAPI.apiService.getVenueTableDetail(
+//                    venueId = venueId,
+//                    tableNumber = tableNumber
+//                )
+//
+//                _tableDetail.value = TableDetail(
+//                    tableId = tableNumber,
+//                    name = "Mesa $tableNumber",
+//                )
+//
+//                val billDetail = AvoqadoAPI.apiService.getTableBill(
+//                    venueId = venueId,
+//                    billId = result.table?.bill?.id ?: ""
+//                )
+//
+//                _tableDetail.update {
+//                    _tableDetail.value.copy(
+//                        billId = result.table?.bill?.id ?: "",
+//                        totalAmount = billDetail.total.toString().toAmountMXDouble(),
+//                        waiterName = billDetail.waiterName ?: "",
+//                        products = billDetail.products.groupBy { it.id }.map { pair ->
+//                            val item = pair.value.first()
+//                            Product(
+//                                id = item.id,
+//                                name = item.name,
+//                                price = pair.value.maxOf { it.price.toAmountMXDouble() },
+//                                quantity = pair.value.sumOf { it.quantity },
+//                                totalPrice = pair.value.sumOf { it.price.toAmountMXDouble() }
+//                            )
+//                        },
+//                        paymentsDone = billDetail.payments?.map { payment -> Payment(
+//                                amount = payment.amount.toAmountMXDouble(),
+//                                products = payment.products?.map { it.id } ?: emptyList(),
+//                                splitType = payment.splitType,
+//                                equalPartsPayedFor = payment.equalPartsPayedFor,
+//                                equalPartsPartySize = payment.equalPartsPartySize
+//                            )
+//                        } ?: emptyList(),
+//                        currentSplitType = billDetail.payments?.lastOrNull()?.splitType?.let {
+//                            SplitType.valueOf(it)
+//                        }
+//                    )
+//                }
+//
 
-                managementRepository.setTableCache(
-                    _tableDetail.value.toDomain()
-                )
             } catch (e: Exception) {
                 Log.i("TableDetailViewModel", "Error fetching table detail", e)
                 if (e is HttpException) {

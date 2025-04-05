@@ -10,7 +10,7 @@ import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.domain.usecase.ValidateAmountUseCase
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
-import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.core.presentation.destinations.MainDests
 import com.avoqado.pos.features.payment.presentation.inputTipAmount.InputTipScreen
 import com.avoqado.pos.features.payment.presentation.inputTipAmount.InputTipViewModel
 import com.avoqado.pos.features.payment.presentation.paymentResult.PaymentResultScreen
@@ -19,8 +19,8 @@ import com.avoqado.pos.features.payment.presentation.quickPayment.QuickPaymentSh
 import com.avoqado.pos.features.payment.presentation.quickPayment.QuickPaymentViewModel
 import com.avoqado.pos.features.payment.presentation.transactions.TransactionSummaryViewModel
 import com.avoqado.pos.features.payment.presentation.transactions.TransactionsSummaryScreen
-import com.avoqado.pos.router.bottomSheetHolder
-import com.avoqado.pos.router.composableHolder
+import com.avoqado.pos.core.presentation.router.bottomSheetHolder
+import com.avoqado.pos.core.presentation.router.composableHolder
 import com.menta.android.core.viewmodel.TrxData
 import com.menta.android.printer.i9100.core.DevicePrintImpl
 

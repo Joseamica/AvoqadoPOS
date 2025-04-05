@@ -7,7 +7,7 @@ import androidx.navigation.NavOptions
 import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
-import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.core.presentation.destinations.MainDests
 import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel.Companion.GET_MASTER_KEY
 import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel.Companion.START_CONFIG
 import com.avoqado.pos.views.InitActivity.Companion.TAG

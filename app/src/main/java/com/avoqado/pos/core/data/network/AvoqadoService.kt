@@ -9,6 +9,8 @@ import com.avoqado.pos.core.data.network.models.PasscodeBody
 import com.avoqado.pos.core.data.network.models.ShiftBody
 import com.avoqado.pos.core.data.network.models.TerminalMerchant
 import com.avoqado.pos.core.data.network.models.WaiterData
+import com.avoqado.pos.core.data.network.models.bills.NetworkBillDetailV2
+import com.avoqado.pos.core.data.network.models.bills.NetworkBillV2
 import com.avoqado.pos.core.data.network.models.transactions.NetworkDataShift
 import com.avoqado.pos.core.data.network.models.transactions.NetworkShiftRecord
 import com.avoqado.pos.core.data.network.models.transactions.payments.NetworkShiftPaymentsData
@@ -22,33 +24,11 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface AvoqadoService {
-    @GET("venues/listVenues")
-    suspend fun getVenues(): List<NetworkVenue>
 
     @GET("tpv/venues/{venueId}")
     suspend fun getVenueDetail(
         @Path("venueId") venueId: String
     ): NetworkVenue
-
-    @GET("venues/{venueId}/tables")
-    suspend fun getVenueTables(@Path("venueId") venueId: String): List<NetworkSimpleTable>
-
-    @GET("venues/{venueId}/tables/{tableNumber}")
-    suspend fun getVenueTableDetail(
-        @Path("venueId") venueId: String,
-        @Path("tableNumber") tableNumber: String
-    ): NetworkDetailTable
-
-    @GET("venues/{venueId}/bills/{billId}")
-    suspend fun getTableBill(
-        @Path("venueId") venueId: String,
-        @Path("billId") billId: String
-    ): NetworkBillDetail
-
-    @GET("{billURL}")
-    suspend fun getTableBillByUrl(
-        @Path("billURL") billURL: String
-    ): NetworkBillDetail
 
     @GET("tpv/serial-number/{terminalCode}")
     suspend fun getTPV(
@@ -84,17 +64,17 @@ interface AvoqadoService {
         @Path("venueId") venueId: String,
         @Query("pageSize") pageSize: Int,
         @Query("pageNumber") pageNumber: Int,
-        @Query("startTime") startTime: String?,
-        @Query("endTime") endTime: String?,
-        @Query("waiterId") waiterId: String?
+        @Query("startTime", encoded = true) startTime: String?,
+        @Query("endTime", encoded = true) endTime: String?,
+        @Query("waiterId", encoded = true) waiterId: String?
     ): NetworkDataShift
 
     @GET("tpv/venues/{venueId}/shifts-summary")
     suspend fun getSummary(
         @Path("venueId") venueId: String,
-        @Query("startTime") startTime: String?,
-        @Query("endTime") endTime: String?,
-        @Query("waiterId") waiterId: String?
+        @Query("startTime", encoded = true) startTime: String?,
+        @Query("endTime", encoded = true) endTime: String?,
+        @Query("waiterId", encoded = true) waiterId: String?
     ): NetworkSummaryData
 
     @GET("tpv/venues/{venueId}/payments")
@@ -102,8 +82,20 @@ interface AvoqadoService {
         @Path("venueId") venueId: String,
         @Query("pageSize") pageSize: Int,
         @Query("pageNumber") pageNumber: Int,
-        @Query("startTime") startTime: String?,
-        @Query("endTime") endTime: String?,
-        @Query("waiterId") waiterId: String?
+        @Query("startTime", encoded = true) startTime: String?,
+        @Query("endTime", encoded = true) endTime: String?,
+        @Query("waiterId", encoded = true) waiterId: String?
     ): NetworkShiftPaymentsData
+
+    @GET("tpv/venues/{venueId}/bills")
+    suspend fun getActiveBills(
+        @Path("venueId") venueId: String
+    ) : List<NetworkBillV2>
+
+    @GET("tpv/venues/{venueId}/bills/{billId}")
+    suspend fun getBillDetail(
+        @Path("venueId") venueId: String,
+        @Path("billId") billId: String,
+    ) : NetworkBillDetailV2
+
 }

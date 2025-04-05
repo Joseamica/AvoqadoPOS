@@ -80,7 +80,7 @@ class PaymentResultViewModel(
                                 id = "",
                                 name = "${info.splitSelectedPartySize} de ${info.splitPartySize}",
                                 price = info.subtotal,
-                                quantity = 1,
+                                quantity = 1.0,
                                 totalPrice = info.subtotal
                             )
                         )
@@ -94,7 +94,7 @@ class PaymentResultViewModel(
                                 id = "",
                                 name = "Monto personalizado",
                                 price = info.subtotal,
-                                quantity = 1,
+                                quantity = 1.0,
                                 totalPrice = info.subtotal
                             )
                         )
@@ -108,7 +108,7 @@ class PaymentResultViewModel(
                                 id = "",
                                 name = "Pago completo",
                                 price = info.subtotal,
-                                quantity = 1,
+                                quantity = 1.0,
                                 totalPrice = info.subtotal
                             )
                         )

@@ -5,7 +5,7 @@ import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.presentation.utils.toAmountMx
-import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.core.presentation.destinations.MainDests
 import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.payment.domain.repository.PaymentRepository
 import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests

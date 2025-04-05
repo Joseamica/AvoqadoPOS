@@ -1,4 +1,4 @@
-package com.avoqado.pos.router
+package com.avoqado.pos.core.presentation.router
 
 import android.content.Context
 import android.content.Intent
@@ -33,7 +33,7 @@ import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.core.presentation.navigation.NavigationCommand
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
-import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.core.presentation.destinations.MainDests
 import com.avoqado.pos.features.management.presentation.navigation.managementNavigation
 import com.avoqado.pos.features.authorization.presentation.authorization.AuthorizationDialog
 import com.avoqado.pos.features.authorization.presentation.authorization.AuthorizationViewModel

@@ -1,4 +1,4 @@
-package com.avoqado.pos.router
+package com.avoqado.pos.core.presentation.router
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.DialogProperties

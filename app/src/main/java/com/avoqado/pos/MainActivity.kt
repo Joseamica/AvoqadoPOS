@@ -14,7 +14,7 @@ import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.presentation.navigation.NavigationManager
 import com.avoqado.pos.core.presentation.navigation.NavigationManagerImpl
-import com.avoqado.pos.router.AppRouter
+import com.avoqado.pos.core.presentation.router.AppRouter
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData

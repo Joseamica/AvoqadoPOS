@@ -70,7 +70,7 @@ fun PreviewProductItemRow() {
                 product = Product(
                     id = "",
                     name = "Spicy instant noodles",
-                    quantity = 3,
+                    quantity = 3.0,
                     price = 3.49,
                     totalPrice = 14.0
                 )

@@ -10,7 +10,10 @@ import com.avoqado.pos.features.management.data.cache.ManagementCacheStorage
 import com.avoqado.pos.features.management.data.mapper.toCache
 import com.avoqado.pos.features.management.data.mapper.toDomain
 import com.avoqado.pos.features.management.domain.ManagementRepository
+import com.avoqado.pos.features.management.domain.models.PaymentOverview
+import com.avoqado.pos.features.management.domain.models.Product
 import com.avoqado.pos.features.management.domain.models.TableDetail
+import com.avoqado.pos.features.management.presentation.tableDetail.model.toDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
@@ -18,7 +21,7 @@ import retrofit2.HttpException
 class ManagementRepositoryImpl(
     private val managementCacheStorage: ManagementCacheStorage,
     private val avoqadoService: AvoqadoService
-): ManagementRepository {
+) : ManagementRepository {
 
     override suspend fun getTableDetail(tableNumber: String, venueId: String) {
         TODO("Not yet implemented")
@@ -61,6 +64,79 @@ class ManagementRepositoryImpl(
     override suspend fun getVenue(venueId: String): NetworkVenue {
         return try {
             avoqadoService.getVenueDetail(venueId)
+        } catch (e: Exception) {
+            if (e is HttpException) {
+                if (e.code() == 401) {
+                    throw AvoqadoError.Unauthorized
+                } else {
+                    throw AvoqadoError.BasicError(message = e.message())
+                }
+            } else {
+                throw AvoqadoError.BasicError(message = "Algo salio mal...")
+            }
+        }
+    }
+
+    override suspend fun getActiveBills(venueId: String): List<Pair<String, String>> {
+        return try {
+            avoqadoService.getActiveBills(venueId).let {
+                it
+                    .filter { bill -> bill.status == "OPEN" }
+                    .map { bill ->
+                        Pair(bill.id ?: "", bill.billName ?: "")
+                    }
+            }
+        } catch (e: Exception) {
+            if (e is HttpException) {
+                if (e.code() == 401) {
+                    throw AvoqadoError.Unauthorized
+                } else {
+                    throw AvoqadoError.BasicError(message = e.message())
+                }
+            } else {
+                throw AvoqadoError.BasicError(message = "Algo salio mal...")
+            }
+        }
+    }
+
+    override suspend fun getDetailedBill(venueId: String, billId: String): TableDetail {
+        return try {
+            avoqadoService.getBillDetail(
+                venueId = venueId,
+                billId = billId
+            ).let { detailedBill ->
+                TableDetail(
+                    id = detailedBill.id ?: "",
+                    products = detailedBill.products?.map {
+                        Product(
+                            id = it.id ?: "",
+                            name = it.name ?: "",
+                            quantity = it.quantity?.toDoubleOrNull() ?: 0.0,
+                            price = it.price?.toDoubleOrNull() ?: 0.0
+                        )
+                    } ?: emptyList(),
+                    totalPending = 0.0,
+                    name = detailedBill.tableName ?: "",
+                    totalAmount = detailedBill.total?.let {
+                        val total = it.toIntOrNull() ?: 0
+                        total / 100.0
+                    } ?: 0.0,
+                    waiterName = detailedBill.waiterName ?: "",
+                    paymentOverview = detailedBill.payments?.takeIf { it.isNotEmpty() }?.let {
+                        val byPerson = it.filter { payment -> payment?.splitType == SplitType.EQUALPARTS.value }
+                        PaymentOverview(
+                            paidProducts = it.filter { payment -> payment?.splitType == SplitType.PERPRODUCT.value }
+                                .mapNotNull { payment ->
+                                    payment?.products?.map { product ->  product.id }
+                                }.flatten(),
+                            equalPartySize = byPerson.firstOrNull()?.equalPartsPartySize?.toInt() ?: 0,
+                            equalPartyPaidSize = byPerson.sumOf { payment ->
+                                payment?.equalPartsPayedFor?.toInt() ?: 0
+                            }
+                        )
+                    }
+                )
+            }
         } catch (e: Exception) {
             if (e is HttpException) {
                 if (e.code() == 401) {

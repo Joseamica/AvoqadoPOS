@@ -14,4 +14,6 @@ interface ManagementRepository {
     fun listenTableEvents(): Flow<PaymentUpdate>
     fun stopListeningTableEvents()
     suspend fun getVenue(venueId: String): NetworkVenue
+    suspend fun getActiveBills(venueId: String): List<Pair<String,String>>
+    suspend fun getDetailedBill(venueId: String, billId: String): TableDetail
 }

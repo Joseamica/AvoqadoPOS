@@ -11,7 +11,7 @@ import com.avoqado.pos.core.data.network.AvoqadoAPI
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.delegates.SnackbarState
-import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.core.presentation.destinations.MainDests
 import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.menta.android.keys.admin.core.response.keys.SecretsV2

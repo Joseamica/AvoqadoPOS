@@ -151,28 +151,28 @@ fun PreviewProductListSheet(){
                 Product(
                     id = "1",
                     name = "Bagel con queso crema",
-                    quantity = 1,
+                    quantity = 1.0,
                     price = 70.0,
                     totalPrice = 70.0
                 ),
                 Product(
                     id = "2",
                     name = "Pizza margherita",
-                    quantity = 1,
+                    quantity = 1.0,
                     price = 150.0,
                     totalPrice = 150.0
                 ),
                 Product(
                     id = "3",
                     name = "Pan Francés",
-                    quantity = 1,
+                    quantity = 1.0,
                     price = 2.1,
                     totalPrice = 2.1
                 ),
                 Product(
                     id = "4",
                     name = "Pizza Hawaiana",
-                    quantity = 1,
+                    quantity = 1.0,
                     price = 160.0,
                     totalPrice = 160.0
                 ),

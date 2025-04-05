@@ -11,7 +11,7 @@ import com.avoqado.pos.features.management.presentation.splitProduct.SplitByProd
 import com.avoqado.pos.features.management.presentation.splitProduct.SplitByProductViewModel
 import com.avoqado.pos.features.management.presentation.tableDetail.TableDetailScreen
 import com.avoqado.pos.features.management.presentation.tableDetail.TableDetailViewModel
-import com.avoqado.pos.router.composableHolder
+import com.avoqado.pos.core.presentation.router.composableHolder
 import com.avoqado.pos.features.management.presentation.home.HomeScreen
 import com.avoqado.pos.features.management.presentation.home.HomeViewModel
 import com.avoqado.pos.features.management.presentation.shiftNotStarted.ShiftNotStartedSheet
@@ -20,7 +20,7 @@ import com.avoqado.pos.features.management.presentation.splitPerson.SplitByPerso
 import com.avoqado.pos.features.management.presentation.splitPerson.SplitByPersonViewModel
 import com.avoqado.pos.features.management.presentation.tables.TablesScreen
 import com.avoqado.pos.features.management.presentation.tables.TablesViewModel
-import com.avoqado.pos.router.bottomSheetHolder
+import com.avoqado.pos.core.presentation.router.bottomSheetHolder
 
 fun NavGraphBuilder.managementNavigation(
     navigationDispatcher: NavigationDispatcher,
@@ -89,7 +89,10 @@ fun NavGraphBuilder.managementNavigation(
         val tablesViewModel = remember {
             TablesViewModel(
                 navigationDispatcher = navigationDispatcher,
-                sessionManager = AvoqadoApp.sessionManager
+                sessionManager = AvoqadoApp.sessionManager,
+                managementRepository = AvoqadoApp.managementRepository,
+                snackbarDelegate = snackbarDelegate,
+                terminalRepository = AvoqadoApp.terminalRepository
             )
         }
 

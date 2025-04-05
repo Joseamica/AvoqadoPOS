@@ -9,7 +9,10 @@ import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.AvoqadoAPI
 import com.avoqado.pos.core.data.network.models.NetworkTable
 import com.avoqado.pos.core.data.network.models.NetworkVenue
-import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.core.domain.repositories.TerminalRepository
+import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
+import com.avoqado.pos.core.presentation.destinations.MainDests
+import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.presentation.home.models.Table
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
@@ -19,82 +22,77 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class TablesViewModel(
     private val navigationDispatcher: NavigationDispatcher,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val managementRepository: ManagementRepository,
+    private val snackbarDelegate: SnackbarDelegate,
+    private val terminalRepository: TerminalRepository
 ) : ViewModel() {
 
-    private val _venues = MutableStateFlow(listOf<NetworkVenue>())
-    val venues: StateFlow<List<NetworkVenue>> = _venues.asStateFlow()
-
-    private val _selectedVenue = MutableStateFlow<NetworkVenue?>(null)
-    val selectedVenue: StateFlow<NetworkVenue?> = _selectedVenue.asStateFlow()
-
-    private val _tables = MutableStateFlow(listOf<Table>())
-    val tables: StateFlow<List<Table>> = _tables.asStateFlow()
+    private val _tables = MutableStateFlow(listOf<Pair<String, String>>())
+    val tables: StateFlow<List<Pair<String, String>>> = _tables.asStateFlow()
 
     private val _showSettings = MutableStateFlow(false)
     val showSettings: StateFlow<Boolean> = _showSettings.asStateFlow()
 
-    fun toggleSettingsModal(value: Boolean){
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    fun toggleSettingsModal(value: Boolean) {
         _showSettings.update {
             value
         }
     }
+
+    val venueId = sessionManager.getVenueId()
+    val venueInfo = sessionManager.getVenueInfo()
+    var currentShift = sessionManager.getShift()
 
     init {
         fetchTables()
     }
 
     fun fetchTables() {
-        //TODO: usar Avoqado api para cargar mesas
         viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.update {
+                true
+            }
             try {
-                val result = AvoqadoAPI.apiService.getVenues()
-                val venueId = sessionManager.getVenueId()
-
-                if (venueId.isNotEmpty()) {
-                    _venues.value = result.filter { it.id == venueId }
-                    _selectedVenue.value = result.firstOrNull { it.id == venueId }.also {
-                        it?.let { venue ->
-                            sessionManager.saveVenueInfo(venue)
-                        }
+                managementRepository.getActiveBills(venueId).let { result ->
+                    _tables.update {
+                        result
                     }
-                } else {
-                    _venues.value = result
                 }
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error fetching tables", e)
+            } finally {
+                _isLoading.update { false }
             }
         }
     }
 
-    fun onTableSelected(table: NetworkTable) {
+    fun onTableSelected(billId: String) {
         navigationDispatcher.navigateWithArgs(
             ManagementDests.TableDetail,
             NavigationArg.StringArg(
                 ManagementDests.TableDetail.ARG_VENUE_ID,
-                selectedVenue.value?.id ?: ""
+                venueInfo?.id ?: "undefined"
             ),
             NavigationArg.StringArg(
                 ManagementDests.TableDetail.ARG_TABLE_ID,
-                table.tableNumber?.toString() ?: ""
+                billId
             )
 
         )
     }
 
-    fun setSelectedVenue(index: Int) {
-        _selectedVenue.value = _venues.value.get(index).also {
-            sessionManager.saveVenueInfo(it)
-        }
-
-    }
-
-    fun onBackAction(){
+    fun onBackAction() {
         navigationDispatcher.navigateBack()
     }
+
     fun logout() {
         sessionManager.clearAvoqadoSession()
         navigationDispatcher.popToDestination(MainDests.Splash, inclusive = true)
@@ -105,6 +103,48 @@ class TablesViewModel(
                 ManagementDests.Home.route
             )
         )
+    }
+
+    fun toggleShift() {
+        viewModelScope.launch {
+            try {
+                toggleSettingsModal(false)
+                _isLoading.update {
+                    true
+                }
+                val venue = sessionManager.getVenueInfo()
+                venue?.let {
+                    if (currentShift != null) {
+                        terminalRepository.closeTerminalShift(
+                            venueId = it.id ?: "",
+                            posName = it.posName ?: ""
+                        )
+                        sessionManager.clearShift()
+                        currentShift = null
+                        snackbarDelegate.showSnackbar(
+                            message = "El turno ha sido cerrado."
+                        )
+                    } else {
+                        val shift = terminalRepository.startTerminalShift(
+                            venueId = it.id ?: "",
+                            posName = it.posName ?: ""
+                        )
+                        sessionManager.setShift(shift)
+                        currentShift = shift
+
+                        snackbarDelegate.showSnackbar(
+                            message = "Se ha iniciado un nuevo turno."
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                Timber.e(e)
+            } finally {
+                _isLoading.update {
+                    false
+                }
+            }
+        }
     }
 
 }

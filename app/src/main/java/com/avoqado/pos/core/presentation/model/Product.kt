@@ -5,7 +5,7 @@ data class Product(
     val id: String,
     val name: String,
     val price: Double,
-    val quantity: Int,
+    val quantity: Double,
     val totalPrice: Double
 ) {
     val formattedPrice : String

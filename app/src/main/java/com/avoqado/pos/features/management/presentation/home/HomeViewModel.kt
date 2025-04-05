@@ -7,7 +7,7 @@ import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
-import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.core.presentation.destinations.MainDests
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
 import kotlinx.coroutines.flow.MutableStateFlow

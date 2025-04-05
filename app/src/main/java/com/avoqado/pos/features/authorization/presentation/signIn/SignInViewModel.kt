@@ -8,7 +8,7 @@ import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.domain.models.AvoqadoError
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
-import com.avoqado.pos.destinations.MainDests
+import com.avoqado.pos.core.presentation.destinations.MainDests
 import com.avoqado.pos.features.authorization.domain.AuthorizationRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

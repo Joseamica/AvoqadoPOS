@@ -1,4 +1,4 @@
-package com.avoqado.pos.destinations
+package com.avoqado.pos.core.presentation.destinations
 
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavDeepLink
