@@ -44,6 +44,7 @@ fun HomeScreen(
 
     val showSettings by homeViewModel.showSettings.collectAsStateWithLifecycle()
     val isLoading by homeViewModel.isLoading.collectAsStateWithLifecycle()
+    val shiftStarted by homeViewModel.shiftStarted.collectAsStateWithLifecycle()
 
     HomeContent(
         waiterName = homeViewModel.currentSession?.name ?: "",
@@ -60,7 +61,8 @@ fun HomeScreen(
         onShowSummary = homeViewModel::goToSummary,
         onShowPayments = homeViewModel::goToShowPayments,
         onLogout = homeViewModel::logout,
-        onToggleShift = homeViewModel::toggleShift
+        onToggleShift = homeViewModel::toggleShift,
+        shiftStarted = shiftStarted
     )
 
     if (isLoading) {
@@ -83,6 +85,7 @@ fun HomeScreen(
 fun HomeContent(
     waiterName: String,
     showSettings: Boolean,
+    shiftStarted: Boolean = false,
     toggleSettingsModal: (Boolean) -> Unit = {},
     onOpenSettings: () -> Unit = {},
     onNewPayment: () -> Unit = {},
@@ -100,7 +103,8 @@ fun HomeContent(
             toggleSettingsModal(false)
         },
         onToggleShift = onToggleShift,
-        onLogout = onLogout
+        onLogout = onLogout,
+        shiftStarted = shiftStarted
     ) {
         Column(
             modifier = Modifier

@@ -56,6 +56,7 @@ fun TablesScreen(
     val selectedVenue = tablesV.venueInfo
     val showSettings by tablesV.showSettings.collectAsStateWithLifecycle()
     val isLoading by tablesV.isLoading.collectAsStateWithLifecycle()
+    val shiftStarted by tablesV.shiftStarted.collectAsStateWithLifecycle()
 
     HomeContent(
         onTableSelected = tablesV::onTableSelected,
@@ -65,7 +66,8 @@ fun TablesScreen(
         onLogout = tablesV::logout,
         tables = tables,
         showSettings = showSettings,
-        onToggleShift = tablesV::toggleShift
+        onToggleShift = tablesV::toggleShift,
+        shiftStarted = shiftStarted
     )
 
     if (isLoading) {
@@ -94,7 +96,8 @@ fun HomeContent(
     onToggleShift: () -> Unit = {},
     tables: List<Pair<String, String>>,
     selectedVenue: NetworkVenue?,
-    showSettings: Boolean = false
+    showSettings: Boolean = false,
+    shiftStarted: Boolean = false
 ) {
     TopMenuContent(
         onBackAction = onBackAction,
@@ -102,7 +105,8 @@ fun HomeContent(
         onDismissRequest = { onShowSettings(false) },
         onToggleShift = onToggleShift,
         onLogout = onLogout,
-        showSettingsModal = showSettings
+        showSettingsModal = showSettings,
+        shiftStarted = shiftStarted
     ) {
         Column(
             modifier = Modifier

@@ -31,6 +31,9 @@ class TablesViewModel(
     private val snackbarDelegate: SnackbarDelegate,
     private val terminalRepository: TerminalRepository
 ) : ViewModel() {
+    val venueId = sessionManager.getVenueId()
+    val venueInfo = sessionManager.getVenueInfo()
+    var currentShift = sessionManager.getShift()
 
     private val _tables = MutableStateFlow(listOf<Pair<String, String>>())
     val tables: StateFlow<List<Pair<String, String>>> = _tables.asStateFlow()
@@ -41,15 +44,16 @@ class TablesViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _shiftStarted = MutableStateFlow(currentShift != null)
+    val shiftStarted: StateFlow<Boolean> = _shiftStarted.asStateFlow()
+
     fun toggleSettingsModal(value: Boolean) {
         _showSettings.update {
             value
         }
     }
 
-    val venueId = sessionManager.getVenueId()
-    val venueInfo = sessionManager.getVenueInfo()
-    var currentShift = sessionManager.getShift()
+
 
     init {
         fetchTables()
@@ -121,6 +125,7 @@ class TablesViewModel(
                         )
                         sessionManager.clearShift()
                         currentShift = null
+                        _shiftStarted.update { false }
                         snackbarDelegate.showSnackbar(
                             message = "El turno ha sido cerrado."
                         )
@@ -131,7 +136,7 @@ class TablesViewModel(
                         )
                         sessionManager.setShift(shift)
                         currentShift = shift
-
+                        _shiftStarted.update { true }
                         snackbarDelegate.showSnackbar(
                             message = "Se ha iniciado un nuevo turno."
                         )

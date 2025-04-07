@@ -27,6 +27,9 @@ class HomeViewModel(
     val currentSession = sessionManager.getAvoqadoSession()
     var currentShift = sessionManager.getShift()
 
+    private val _shiftStarted = MutableStateFlow(currentShift != null)
+    val shiftStarted: StateFlow<Boolean> = _shiftStarted.asStateFlow()
+
     private val _showSettings = MutableStateFlow(false)
     val showSettings: StateFlow<Boolean> = _showSettings.asStateFlow()
 
@@ -99,6 +102,7 @@ class HomeViewModel(
                         )
                         sessionManager.clearShift()
                         currentShift = null
+                        _shiftStarted.update { false }
                         snackbarDelegate.showSnackbar(
                             message = "El turno ha sido cerrado."
                         )
@@ -109,7 +113,7 @@ class HomeViewModel(
                         )
                         sessionManager.setShift(shift)
                         currentShift = shift
-
+                        _shiftStarted.update { true }
                         snackbarDelegate.showSnackbar(
                             message = "Se ha iniciado un nuevo turno."
                         )

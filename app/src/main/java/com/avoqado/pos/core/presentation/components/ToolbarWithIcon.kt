@@ -43,6 +43,7 @@ fun ToolbarWithIcon(
     contentColor: Color = Color.Black
 ) {
     TopAppBar(
+        expandedHeight = 48.dp,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = color,
             titleContentColor = contentColor,

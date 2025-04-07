@@ -44,7 +44,8 @@ fun TopMenuContent(
     onOpenSettings: () -> Unit = {},
     onLogout: () -> Unit = {},
     onToggleShift: () -> Unit = {},
-    content: @Composable ColumnScope.() -> Unit
+    shiftStarted: Boolean = false,
+    content: @Composable ColumnScope.() -> Unit,
 ) {
 
     val modalSheetState = rememberModalBottomSheetState(
@@ -55,6 +56,7 @@ fun TopMenuContent(
         modifier = modifier
     ) {
         TopAppBar(
+            expandedHeight = 48.dp,
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = Color.White,
                 titleContentColor = Color.Black,
@@ -164,7 +166,7 @@ fun TopMenuContent(
                     )
                 ) {
                     Text(
-                        text = "Abrir/Cerrar Turno",
+                        text = if (shiftStarted) "Cerrar Turno" else "Abrir Turno",
                         color = Color.Black,
                         style = MaterialTheme.typography.titleSmall
                     )
