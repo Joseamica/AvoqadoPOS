@@ -118,7 +118,7 @@ class ManagementRepositoryImpl(
                             id = it.id ?: "",
                             name = it.name ?: "",
                             quantity = it.quantity?.toDoubleOrNull() ?: 0.0,
-                            price = it.price?.toDoubleOrNull() ?: 0.0
+                            price = (it.price?.toDoubleOrNull() ?: 0.0) / 100
                         )
                     } ?: emptyList(),
                     totalPending = (total - totalPaid) / 100.0,
