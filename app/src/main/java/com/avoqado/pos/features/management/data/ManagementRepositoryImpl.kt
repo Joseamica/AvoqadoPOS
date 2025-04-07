@@ -1,5 +1,6 @@
 package com.avoqado.pos.features.management.data
 
+import android.util.Log
 import com.avoqado.pos.core.data.network.AvoqadoService
 import com.avoqado.pos.core.data.network.SocketIOManager
 import com.avoqado.pos.core.data.network.models.NetworkVenue
@@ -10,10 +11,11 @@ import com.avoqado.pos.features.management.data.cache.ManagementCacheStorage
 import com.avoqado.pos.features.management.data.mapper.toCache
 import com.avoqado.pos.features.management.data.mapper.toDomain
 import com.avoqado.pos.features.management.domain.ManagementRepository
+import com.avoqado.pos.features.management.domain.models.BillPayment
 import com.avoqado.pos.features.management.domain.models.PaymentOverview
 import com.avoqado.pos.features.management.domain.models.Product
+import com.avoqado.pos.features.management.domain.models.TableBillDetail
 import com.avoqado.pos.features.management.domain.models.TableDetail
-import com.avoqado.pos.features.management.presentation.tableDetail.model.toDomain
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
@@ -99,13 +101,17 @@ class ManagementRepositoryImpl(
         }
     }
 
-    override suspend fun getDetailedBill(venueId: String, billId: String): TableDetail {
+    override suspend fun getDetailedBill(venueId: String, billId: String): TableBillDetail {
         return try {
             avoqadoService.getBillDetail(
                 venueId = venueId,
                 billId = billId
             ).let { detailedBill ->
-                TableDetail(
+                val totalPaid = detailedBill.payments?.sumOf { payment->
+                    payment?.amount?.toInt() ?: 0
+                } ?: 0
+                val total = detailedBill.total?.toInt() ?: 0
+                TableBillDetail(
                     id = detailedBill.id ?: "",
                     products = detailedBill.products?.map {
                         Product(
@@ -115,10 +121,9 @@ class ManagementRepositoryImpl(
                             price = it.price?.toDoubleOrNull() ?: 0.0
                         )
                     } ?: emptyList(),
-                    totalPending = 0.0,
+                    totalPending = (total - totalPaid) / 100.0,
                     name = detailedBill.tableName ?: "",
                     totalAmount = detailedBill.total?.let {
-                        val total = it.toIntOrNull() ?: 0
                         total / 100.0
                     } ?: 0.0,
                     waiterName = detailedBill.waiterName ?: "",
@@ -134,7 +139,16 @@ class ManagementRepositoryImpl(
                                 payment?.equalPartsPayedFor?.toInt() ?: 0
                             }
                         )
-                    }
+                    },
+                    paymentsDone = detailedBill.payments?.map { payment ->
+                        BillPayment(
+                            amount = (payment?.amount?.toIntOrNull() ?: 0) / 100.0,
+                            products = payment?.products?.map { product -> product.id } ?: emptyList(),
+                            splitType = payment?.splitType,
+                            equalPartsPayedFor = payment?.equalPartsPayedFor,
+                            equalPartsPartySize = payment?.equalPartsPartySize
+                        )
+                    } ?: emptyList()
                 )
             }
         } catch (e: Exception) {

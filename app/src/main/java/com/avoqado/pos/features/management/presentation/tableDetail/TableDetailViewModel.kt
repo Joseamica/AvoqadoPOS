@@ -7,16 +7,14 @@ import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
-import com.avoqado.pos.core.presentation.utils.toAmountMXDouble
-import com.avoqado.pos.core.data.network.AvoqadoAPI
 import com.avoqado.pos.core.domain.models.SplitType
+import com.avoqado.pos.core.presentation.model.Product
 import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.domain.usecases.ListenTableAction
 import com.avoqado.pos.features.management.domain.usecases.ListenTableEventsUseCase
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.avoqado.pos.features.management.presentation.tableDetail.model.Payment
-import com.avoqado.pos.core.presentation.model.Product
-import com.avoqado.pos.features.management.presentation.tableDetail.model.TableDetail
+import com.avoqado.pos.features.management.presentation.tableDetail.model.TableDetailView
 import com.avoqado.pos.features.management.presentation.tableDetail.model.toDomain
 import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
 import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
@@ -31,8 +29,8 @@ import retrofit2.HttpException
 import java.time.LocalDateTime
 
 class TableDetailViewModel(
-    private val tableNumber: String="",
-    private val venueId: String="",
+    private val tableNumber: String = "",
+    private val venueId: String = "",
     private val navigationDispatcher: NavigationDispatcher,
     private val snackbarDelegate: SnackbarDelegate,
     private val managementRepository: ManagementRepository,
@@ -44,8 +42,8 @@ class TableDetailViewModel(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
-    private val _tableDetail = MutableStateFlow<TableDetail>(TableDetail())
-    val tableDetail: StateFlow<TableDetail> = _tableDetail.asStateFlow()
+    private val _tableDetail = MutableStateFlow<TableDetailView>(TableDetailView())
+    val tableDetail: StateFlow<TableDetailView> = _tableDetail.asStateFlow()
 
     private val _showPaymentPicker = MutableStateFlow(false)
     val showPaymentPicker: StateFlow<Boolean> = _showPaymentPicker.asStateFlow()
@@ -73,8 +71,8 @@ class TableDetailViewModel(
         }
     }
 
-    fun startListeningUpdates(){
-        viewModelScope.launch (Dispatchers.IO) {
+    fun startListeningUpdates() {
+        viewModelScope.launch(Dispatchers.IO) {
             listenTableEventsUseCase.invoke(
                 ListenTableAction.Connect(
                     venueId = venueId,
@@ -85,13 +83,15 @@ class TableDetailViewModel(
                 _tableDetail.update { state ->
                     state.copy(
                         paymentsDone = state.paymentsDone.toMutableList().apply {
-                            add(Payment(
-                                amount = result.amount,
-                                products = emptyList(),
-                                splitType = result.splitType.value,
-                                equalPartsPartySize = "",
-                                equalPartsPayedFor = ""
-                            ))
+                            add(
+                                Payment(
+                                    amount = result.amount,
+                                    products = emptyList(),
+                                    splitType = result.splitType.value,
+                                    equalPartsPartySize = "",
+                                    equalPartsPayedFor = ""
+                                )
+                            )
                         }
                     )
                 }
@@ -99,8 +99,8 @@ class TableDetailViewModel(
         }
     }
 
-    fun stopListeningUpdates(){
-        viewModelScope.launch (Dispatchers.IO) {
+    fun stopListeningUpdates() {
+        viewModelScope.launch(Dispatchers.IO) {
             listenTableEventsUseCase.invoke(
                 ListenTableAction.Disconnect
             )
@@ -114,9 +114,36 @@ class TableDetailViewModel(
                 managementRepository.getDetailedBill(
                     venueId = venueId,
                     billId = tableNumber
-                ).let {
+                ).let { billDetail ->
                     _tableDetail.update {
-                        it
+                        it.copy(
+                            name = billDetail.name,
+                            tableId = billDetail.tableId,
+                            billId = billDetail.billId,
+                            totalAmount = billDetail.totalAmount,
+                            waiterName = billDetail.waiterName ?: "",
+                            products = billDetail.products.map { item ->
+                                Product(
+                                    id = item.id,
+                                    name = item.name,
+                                    price = item.price,
+                                    quantity = item.quantity,
+                                    totalPrice = item.price * item.quantity
+                                )
+                            },
+                            paymentsDone = billDetail.paymentsDone.map { payment ->
+                                Payment(
+                                    amount = payment.amount,
+                                    products = payment.products,
+                                    splitType = payment.splitType,
+                                    equalPartsPayedFor = payment.equalPartsPayedFor,
+                                    equalPartsPartySize = payment.equalPartsPartySize
+                                )
+                            },
+                            currentSplitType = billDetail.paymentsDone.lastOrNull()?.splitType?.let {
+                                SplitType.valueOf(it)
+                            }
+                        )
                     }
 
                     managementRepository.setTableCache(
@@ -174,19 +201,18 @@ class TableDetailViewModel(
                     snackbarDelegate.showSnackbar(
                         message = e.message() ?: "Ocurrio un error!"
                     )
-                } else  {
+                } else {
                     snackbarDelegate.showSnackbar(
                         message = e.message ?: "Ocurrio un error!"
                     )
                 }
-            }
-            finally {
+            } finally {
                 _isLoading.value = false
             }
         }
     }
 
-    fun goToSplitBillByProduct(){
+    fun goToSplitBillByProduct() {
         if (currentShift != null && currentShift.isFinished.not()) {
             AvoqadoApp.paymentRepository.setCachePaymentInfo(
                 PaymentInfoResult(
@@ -211,7 +237,7 @@ class TableDetailViewModel(
 
     }
 
-    fun goToSplitBillByPerson(){
+    fun goToSplitBillByPerson() {
         if (currentShift != null && currentShift.isFinished.not()) {
             AvoqadoApp.paymentRepository.setCachePaymentInfo(
                 PaymentInfoResult(
@@ -236,7 +262,7 @@ class TableDetailViewModel(
 
     }
 
-    fun payTotalPendingAmount(){
+    fun payTotalPendingAmount() {
         if (currentShift != null && currentShift.isFinished.not()) {
             AvoqadoApp.paymentRepository.setCachePaymentInfo(
                 PaymentInfoResult(
@@ -273,7 +299,7 @@ class TableDetailViewModel(
 
     }
 
-    fun payCustomPendingAmount(amount: Double){
+    fun payCustomPendingAmount(amount: Double) {
         if (currentShift != null && currentShift.isFinished.not()) {
             if (amount <= _tableDetail.value.totalPending) {
                 AvoqadoApp.paymentRepository.setCachePaymentInfo(

@@ -47,7 +47,7 @@ import com.avoqado.pos.core.presentation.theme.AppFont
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.features.management.presentation.tableDetail.components.GenericOptionsUI
 import com.avoqado.pos.features.management.presentation.tableDetail.components.ProductListSheet
-import com.avoqado.pos.features.management.presentation.tableDetail.model.TableDetail
+import com.avoqado.pos.features.management.presentation.tableDetail.model.TableDetailView
 import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.theme.unselectedItemColor
@@ -154,7 +154,7 @@ fun TableDetailScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TableDetailContent(
-    tableDetails: TableDetail,
+    tableDetails: TableDetailView,
     onNavigateBack: () -> Unit,
     isLoading: Boolean,
     isRefreshing: Boolean,
@@ -367,7 +367,7 @@ fun AmountDisplayPreview() {
             onPayCustomAmount = {},
             onPullToRefresh = {},
             isRefreshing = false,
-            tableDetails = TableDetail(
+            tableDetails = TableDetailView(
                 name = "Mesa 1",
             )
         )
@@ -387,7 +387,7 @@ fun AmountDisplayProductsPreview() {
             onPayCustomAmount = {},
             onPullToRefresh = {},
             isRefreshing = false,
-            tableDetails = TableDetail(
+            tableDetails = TableDetailView(
                 name = "Mesa 1",
                 currentSplitType = SplitType.PERPRODUCT,
                 totalAmount = 100.0,
@@ -421,7 +421,7 @@ fun AmountDisplayPartySizePreview() {
             onPayCustomAmount = {},
             onPullToRefresh = {},
             isRefreshing = false,
-            tableDetails = TableDetail(
+            tableDetails = TableDetailView(
                 name = "Mesa 1",
                 currentSplitType = SplitType.EQUALPARTS,
                 totalAmount = 100.0,
@@ -452,7 +452,7 @@ fun AmountDisplayCustomAmountPreview() {
             onPayCustomAmount = {},
             onPullToRefresh = {},
             isRefreshing = false,
-            tableDetails = TableDetail(
+            tableDetails = TableDetailView(
                 name = "Mesa 1",
                 currentSplitType = SplitType.CUSTOMAMOUNT,
                 totalAmount = 100.0,

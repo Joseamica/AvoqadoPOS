@@ -5,7 +5,7 @@ import com.avoqado.pos.core.presentation.model.Product
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.menta.android.core.utils.StringUtils
 
-data class TableDetail(
+data class TableDetailView(
     val tableId: String = "",
     val name: String = "",
     val waiterName: String = "",

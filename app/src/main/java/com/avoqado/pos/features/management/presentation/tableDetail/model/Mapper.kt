@@ -4,7 +4,7 @@ import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.presentation.model.Product
 import com.avoqado.pos.features.management.domain.models.PaymentOverview
 
-fun TableDetail.toDomain(): com.avoqado.pos.features.management.domain.models.TableDetail {
+fun TableDetailView.toDomain(): com.avoqado.pos.features.management.domain.models.TableDetail {
     return com.avoqado.pos.features.management.domain.models.TableDetail(
         id = this.tableId,
         name = this.name,
