@@ -37,7 +37,7 @@ class TableDetailViewModel(
     private val listenTableEventsUseCase: ListenTableEventsUseCase
 ) : ViewModel() {
     val venue = AvoqadoApp.sessionManager.getVenueInfo()
-    val currentShift = AvoqadoApp.sessionManager.getShift()
+    var currentShift = AvoqadoApp.sessionManager.getShift()
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
@@ -97,6 +97,10 @@ class TableDetailViewModel(
                 }
             }
         }
+    }
+
+    fun refreshShift(){
+        currentShift = AvoqadoApp.sessionManager.getShift()
     }
 
     fun stopListeningUpdates() {
@@ -213,7 +217,7 @@ class TableDetailViewModel(
     }
 
     fun goToSplitBillByProduct() {
-        if (currentShift != null && currentShift.isFinished.not()) {
+        if (currentShift != null && currentShift?.isFinished?.not() == true) {
             AvoqadoApp.paymentRepository.setCachePaymentInfo(
                 PaymentInfoResult(
                     paymentId = "",
@@ -238,7 +242,7 @@ class TableDetailViewModel(
     }
 
     fun goToSplitBillByPerson() {
-        if (currentShift != null && currentShift.isFinished.not()) {
+        if (currentShift != null && currentShift?.isFinished?.not() == true) {
             AvoqadoApp.paymentRepository.setCachePaymentInfo(
                 PaymentInfoResult(
                     paymentId = "",
@@ -263,7 +267,7 @@ class TableDetailViewModel(
     }
 
     fun payTotalPendingAmount() {
-        if (currentShift != null && currentShift.isFinished.not()) {
+        if (currentShift != null && currentShift?.isFinished?.not() == true) {
             AvoqadoApp.paymentRepository.setCachePaymentInfo(
                 PaymentInfoResult(
                     paymentId = "",
@@ -300,7 +304,7 @@ class TableDetailViewModel(
     }
 
     fun payCustomPendingAmount(amount: Double) {
-        if (currentShift != null && currentShift.isFinished.not()) {
+        if (currentShift != null && currentShift?.isFinished?.not() == true) {
             if (amount <= _tableDetail.value.totalPending) {
                 AvoqadoApp.paymentRepository.setCachePaymentInfo(
                     PaymentInfoResult(

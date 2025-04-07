@@ -68,6 +68,9 @@ fun TableDetailScreen(
     val isRefreshing by tableDetailViewModel.isRefreshing.collectAsStateWithLifecycle()
 
     ObserverLifecycleEvents(
+        onResume = {
+            tableDetailViewModel.refreshShift()
+        },
         onCreate = {
             tableDetailViewModel.fetchTableDetail()
             tableDetailViewModel.startListeningUpdates()
