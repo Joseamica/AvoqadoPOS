@@ -91,6 +91,9 @@ class TerminalRepositoryImpl(
                 if (e.code() == 401) {
                     throw AvoqadoError.Unauthorized
                 } else {
+                    if (e.code() == 404) {
+                        sessionManager.clearShift()
+                    }
                     throw AvoqadoError.BasicError(message = e.message())
                 }
             } else {
