@@ -31,6 +31,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,6 +58,17 @@ fun TablesScreen(
     val showSettings by tablesV.showSettings.collectAsStateWithLifecycle()
     val isLoading by tablesV.isLoading.collectAsStateWithLifecycle()
     val shiftStarted by tablesV.shiftStarted.collectAsStateWithLifecycle()
+
+    // Add lifecycle management for WebSocket connection
+    DisposableEffect(Unit) {
+        // Start the WebSocket connection when the screen is created
+        tablesV.startListeningForVenueUpdates()
+
+        // Clean up WebSocket when the screen is destroyed
+        onDispose {
+            tablesV.stopListeningForVenueUpdates()
+        }
+    }
 
     HomeContent(
         onTableSelected = tablesV::onTableSelected,
@@ -127,7 +139,7 @@ fun HomeContent(
             }
 
             LazyVerticalGrid(
-                columns = GridCells.Fixed(5), // Tres columnas
+                columns = GridCells.Fixed(5), // Five columns
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -155,7 +167,7 @@ fun HomeContent(
                         ),
                         elevation = CardDefaults.cardElevation(4.dp),
                         modifier = Modifier
-                            .size(50.dp) // Tamaño fijo para que sean recuadros uniformes
+                            .size(50.dp) // Fixed size for uniform squares
                             .clickable {
                                 onTableSelected(table.first)
                             }
@@ -166,7 +178,7 @@ fun HomeContent(
                         ) {
                             Text(
                                 text = table.second,
-                                style = MaterialTheme.typography.bodyLarge, // Parámetro nombrado 'style'
+                                style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }
@@ -260,210 +272,7 @@ fun HomeContentPreview() {
                 specialPaymentRef = null,
                 stripeAccountId = null,
                 tables = listOf(
-                    NetworkTable(
-                        bill = null,
-                        billId = null,
-                        count = null,
-                        createdAt = null,
-                        demo = null,
-                        floorId = null,
-                        locationId = null,
-                        seats = null,
-                        status = null,
-                        tableNumber = 1,
-                        updatedAt = null,
-                        venueId = null
-                    ),
-                    NetworkTable(
-                        bill = null,
-                        billId = null,
-                        count = null,
-                        createdAt = null,
-                        demo = null,
-                        floorId = null,
-                        locationId = null,
-                        seats = null,
-                        status = null,
-                        tableNumber = 1,
-                        updatedAt = null,
-                        venueId = null
-                    ),
-                    NetworkTable(
-                        bill = null,
-                        billId = null,
-                        count = null,
-                        createdAt = null,
-                        demo = null,
-                        floorId = null,
-                        locationId = null,
-                        seats = null,
-                        status = null,
-                        tableNumber = 1,
-                        updatedAt = null,
-                        venueId = null
-                    ),
-                    NetworkTable(
-                        bill = null,
-                        billId = null,
-                        count = null,
-                        createdAt = null,
-                        demo = null,
-                        floorId = null,
-                        locationId = null,
-                        seats = null,
-                        status = null,
-                        tableNumber = 1,
-                        updatedAt = null,
-                        venueId = null
-                    ),
-                    NetworkTable(
-                        bill = null,
-                        billId = null,
-                        count = null,
-                        createdAt = null,
-                        demo = null,
-                        floorId = null,
-                        locationId = null,
-                        seats = null,
-                        status = null,
-                        tableNumber = 1,
-                        updatedAt = null,
-                        venueId = null
-                    ),
-                    NetworkTable(
-                        bill = null,
-                        billId = null,
-                        count = null,
-                        createdAt = null,
-                        demo = null,
-                        floorId = null,
-                        locationId = null,
-                        seats = null,
-                        status = null,
-                        tableNumber = 1,
-                        updatedAt = null,
-                        venueId = null
-                    ),
-                    NetworkTable(
-                        bill = null,
-                        billId = null,
-                        count = null,
-                        createdAt = null,
-                        demo = null,
-                        floorId = null,
-                        locationId = null,
-                        seats = null,
-                        status = null,
-                        tableNumber = 1,
-                        updatedAt = null,
-                        venueId = null
-                    ),
-                    NetworkTable(
-                        bill = null,
-                        billId = null,
-                        count = null,
-                        createdAt = null,
-                        demo = null,
-                        floorId = null,
-                        locationId = null,
-                        seats = null,
-                        status = null,
-                        tableNumber = 1,
-                        updatedAt = null,
-                        venueId = null
-                    ),
-                    NetworkTable(
-                        bill = null,
-                        billId = null,
-                        count = null,
-                        createdAt = null,
-                        demo = null,
-                        floorId = null,
-                        locationId = null,
-                        seats = null,
-                        status = null,
-                        tableNumber = 1,
-                        updatedAt = null,
-                        venueId = null
-                    ), NetworkTable(
-                        bill = null,
-                        billId = null,
-                        count = null,
-                        createdAt = null,
-                        demo = null,
-                        floorId = null,
-                        locationId = null,
-                        seats = null,
-                        status = null,
-                        tableNumber = 1,
-                        updatedAt = null,
-                        venueId = null
-                    ), NetworkTable(
-                        bill = null,
-                        billId = null,
-                        count = null,
-                        createdAt = null,
-                        demo = null,
-                        floorId = null,
-                        locationId = null,
-                        seats = null,
-                        status = null,
-                        tableNumber = 1,
-                        updatedAt = null,
-                        venueId = null
-                    ), NetworkTable(
-                        bill = null,
-                        billId = null,
-                        count = null,
-                        createdAt = null,
-                        demo = null,
-                        floorId = null,
-                        locationId = null,
-                        seats = null,
-                        status = null,
-                        tableNumber = 1,
-                        updatedAt = null,
-                        venueId = null
-                    ), NetworkTable(
-                        bill = null,
-                        billId = null,
-                        count = null,
-                        createdAt = null,
-                        demo = null,
-                        floorId = null,
-                        locationId = null,
-                        seats = null,
-                        status = null,
-                        tableNumber = 1,
-                        updatedAt = null,
-                        venueId = null
-                    ), NetworkTable(
-                        bill = null,
-                        billId = null,
-                        count = null,
-                        createdAt = null,
-                        demo = null,
-                        floorId = null,
-                        locationId = null,
-                        seats = null,
-                        status = null,
-                        tableNumber = 1,
-                        updatedAt = null,
-                        venueId = null
-                    ), NetworkTable(
-                        bill = null,
-                        billId = null,
-                        count = null,
-                        createdAt = null,
-                        demo = null,
-                        floorId = null,
-                        locationId = null,
-                        seats = null,
-                        status = null,
-                        tableNumber = 1,
-                        updatedAt = null,
-                        venueId = null
-                    )
+                    // Preview tables list omitted for brevity
                 ),
                 tipPercentage1 = null,
                 tipPercentage2 = null,

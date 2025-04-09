@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit
 
 object AvoqadoAPI {
     val retrofit: Retrofit = Retrofit.Builder()
-        .baseUrl("https://api.avoqado.io/v1/")
+        .baseUrl("https://ee2b-2806-2f0-9140-e9df-45a0-7fbf-a066-4e70.ngrok-free.app/v1/")
         .client(
             OkHttpClient.Builder()
                 .addInterceptor(HttpLoggingInterceptor().apply {

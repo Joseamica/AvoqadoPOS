@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.AvoqadoApp
+import com.avoqado.pos.core.domain.models.AvoqadoError
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
+import com.avoqado.pos.core.presentation.delegates.SnackbarState
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.domain.models.SplitType
@@ -78,27 +80,45 @@ class TableDetailViewModel(
                     venueId = venueId,
                     tableId = tableNumber
                 )
-            ).collectLatest { result ->
-                Log.d("AvoqadoSocket", result.toString())
-                _tableDetail.update { state ->
-                    state.copy(
-                        paymentsDone = state.paymentsDone.toMutableList().apply {
-                            add(
-                                Payment(
-                                    amount = result.amount,
-                                    products = emptyList(),
-                                    splitType = result.splitType.value,
-                                    equalPartsPartySize = "",
-                                    equalPartsPayedFor = ""
-                                )
-                            )
+            ).collectLatest { update ->
+                Log.d("AvoqadoSocket", "Received update: $update")
+
+                // Check for bill status changes using status field (not method)
+                when (update.status?.uppercase()) {
+                    "DELETED" -> {
+                        Log.d("AvoqadoSocket", "Bill DELETED - navigating back")
+                        snackbarDelegate.showSnackbar(
+                            state = SnackbarState.Default,
+                            message = "La cuenta ha sido eliminada"
+                        )
+                        viewModelScope.launch(Dispatchers.Main) {
+                            navigateBack()
                         }
-                    )
+                    }
+                    "CANCELED" -> {
+                        Log.d("AvoqadoSocket", "Bill CANCELED - navigating back")
+                        snackbarDelegate.showSnackbar(
+                            state = SnackbarState.Default,
+                            message = "La cuenta ha sido cancelada"
+                        )
+                        viewModelScope.launch(Dispatchers.Main) {
+                            navigateBack()
+                        }
+                    }
+                    "PAID" -> {
+                        Log.d("AvoqadoSocket", "Bill PAID - refreshing")
+                        fetchTableDetail()
+                    }
+
+                    else -> // For any other updates not matching specific status values
+                        // Just refresh the data to show the most current state
+                        fetchTableDetail()
                 }
+
+
             }
         }
     }
-
     fun refreshShift(){
         currentShift = AvoqadoApp.sessionManager.getShift()
     }
@@ -132,7 +152,7 @@ class TableDetailViewModel(
                                     name = item.name,
                                     price = item.price,
                                     quantity = item.quantity,
-                                    totalPrice = item.price * item.quantity
+                                    totalPrice = item.price
                                 )
                             },
                             paymentsDone = billDetail.paymentsDone.map { payment ->
@@ -154,59 +174,23 @@ class TableDetailViewModel(
                         _tableDetail.value.toDomain()
                     )
                 }
-//                val result = AvoqadoAPI.apiService.getVenueTableDetail(
-//                    venueId = venueId,
-//                    tableNumber = tableNumber
-//                )
-//
-//                _tableDetail.value = TableDetail(
-//                    tableId = tableNumber,
-//                    name = "Mesa $tableNumber",
-//                )
-//
-//                val billDetail = AvoqadoAPI.apiService.getTableBill(
-//                    venueId = venueId,
-//                    billId = result.table?.bill?.id ?: ""
-//                )
-//
-//                _tableDetail.update {
-//                    _tableDetail.value.copy(
-//                        billId = result.table?.bill?.id ?: "",
-//                        totalAmount = billDetail.total.toString().toAmountMXDouble(),
-//                        waiterName = billDetail.waiterName ?: "",
-//                        products = billDetail.products.groupBy { it.id }.map { pair ->
-//                            val item = pair.value.first()
-//                            Product(
-//                                id = item.id,
-//                                name = item.name,
-//                                price = pair.value.maxOf { it.price.toAmountMXDouble() },
-//                                quantity = pair.value.sumOf { it.quantity },
-//                                totalPrice = pair.value.sumOf { it.price.toAmountMXDouble() }
-//                            )
-//                        },
-//                        paymentsDone = billDetail.payments?.map { payment -> Payment(
-//                                amount = payment.amount.toAmountMXDouble(),
-//                                products = payment.products?.map { it.id } ?: emptyList(),
-//                                splitType = payment.splitType,
-//                                equalPartsPayedFor = payment.equalPartsPayedFor,
-//                                equalPartsPartySize = payment.equalPartsPartySize
-//                            )
-//                        } ?: emptyList(),
-//                        currentSplitType = billDetail.payments?.lastOrNull()?.splitType?.let {
-//                            SplitType.valueOf(it)
-//                        }
-//                    )
-//                }
-//
-
             } catch (e: Exception) {
                 Log.i("TableDetailViewModel", "Error fetching table detail", e)
-                if (e is HttpException) {
+
+                // Check if the bill was not found (likely deleted)
+                if (e is AvoqadoError.BasicError && (e.code == 404 || e.code == 400)) {
+                    Log.d("TableDetailViewModel", "Bill not found (HTTP ${e.code}) - likely deleted")
                     snackbarDelegate.showSnackbar(
-                        message = e.message() ?: "Ocurrio un error!"
+                        state = SnackbarState.Default,
+                        message = "La cuenta ya no existe"
                     )
+                    viewModelScope.launch(Dispatchers.Main) {
+                        navigateBack()
+                    }
                 } else {
+                    // Other errors
                     snackbarDelegate.showSnackbar(
+                        state = SnackbarState.Default,
                         message = e.message ?: "Ocurrio un error!"
                     )
                 }
@@ -337,6 +321,7 @@ class TableDetailViewModel(
                 )
             } else {
                 snackbarDelegate.showSnackbar(
+                    state = SnackbarState.Default,
                     message = "El monto ingresado es mayor al total pendiente"
                 )
             }
@@ -344,5 +329,4 @@ class TableDetailViewModel(
             navigationDispatcher.navigateTo(ManagementDests.OpenShift)
         }
     }
-
 }

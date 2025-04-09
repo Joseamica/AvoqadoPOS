@@ -51,7 +51,7 @@ class PaymentRepositoryImpl(
                 amount = amount,
                 tip = tip,
                 venueId = venueId,
-                source = "TPV",
+                source = "AVOQADO_TPV",
                 paidProductsId = paidProductsId,
                 token = token,
                 isInternational = adquirer?.let { data -> data.capture?.card?.isInternational } ?: false

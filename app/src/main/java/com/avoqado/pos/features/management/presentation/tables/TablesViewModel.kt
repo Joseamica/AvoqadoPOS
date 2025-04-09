@@ -6,20 +6,18 @@ import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.data.local.SessionManager
-import com.avoqado.pos.core.data.network.AvoqadoAPI
-import com.avoqado.pos.core.data.network.models.NetworkTable
-import com.avoqado.pos.core.data.network.models.NetworkVenue
+import com.avoqado.pos.core.data.network.SocketIOManager
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
+import com.avoqado.pos.core.presentation.delegates.SnackbarState
 import com.avoqado.pos.core.presentation.destinations.MainDests
 import com.avoqado.pos.features.management.domain.ManagementRepository
-import com.avoqado.pos.features.management.presentation.home.models.Table
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
-import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -47,16 +45,96 @@ class TablesViewModel(
     private val _shiftStarted = MutableStateFlow(currentShift != null)
     val shiftStarted: StateFlow<Boolean> = _shiftStarted.asStateFlow()
 
+    // Track WebSocket connection status
+    private val _isWebSocketConnected = MutableStateFlow(false)
+
+    // Track if we're currently collecting WebSocket events to avoid multiple collectors
+    private var isCollectingSocketEvents = false
+
+    init {
+        fetchTables()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        // Ensure we clean up WebSocket resources when ViewModel is destroyed
+        stopListeningForVenueUpdates()
+    }
+
     fun toggleSettingsModal(value: Boolean) {
         _showSettings.update {
             value
         }
     }
 
+    fun startListeningForVenueUpdates() {
+        if (venueId.isEmpty()) {
+            Log.e("TablesViewModel", "Cannot listen for updates: venueId is empty")
+            return
+        }
 
+        // Avoid duplicate connections
+        if (_isWebSocketConnected.value) {
+            Log.d("TablesViewModel", "WebSocket already connected, skipping connection")
+            return
+        }
 
-    init {
-        fetchTables()
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                Log.d("TablesViewModel", "Starting WebSocket connection to venue: $venueId")
+
+                // Connect to venue-level socket room
+                SocketIOManager.connect(SocketIOManager.getServerUrl())
+                SocketIOManager.joinMobileRoom(venueId)
+
+                _isWebSocketConnected.update { true }
+
+                // Only set up one collector
+                if (!isCollectingSocketEvents) {
+                    isCollectingSocketEvents = true
+
+                    // Listen for venue updates
+                    managementRepository.listenVenueEvents().collectLatest { update ->
+                        Log.d("TablesViewModel", "Received venue update: $update")
+
+                        // Refresh tables when a bill status changes
+                        when (update.status?.uppercase()) {
+                            "OPEN" -> {
+                                Log.d("TablesViewModel", "New bill opened, refreshing tables")
+                                snackbarDelegate.showSnackbar(
+                                    state = SnackbarState.Default,
+                                    message = "Nueva cuenta creada: Mesa ${update.tableNumber}"
+                                )
+                                fetchTables()
+                            }
+                            "DELETED", "PAID", "CANCELED" -> {
+                                Log.d("TablesViewModel", "Bill ${update.status}, refreshing tables")
+                                fetchTables()
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("TablesViewModel", "Error setting up venue updates", e)
+                _isWebSocketConnected.update { false }
+                isCollectingSocketEvents = false
+            }
+        }
+    }
+
+    fun stopListeningForVenueUpdates() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                if (_isWebSocketConnected.value) {
+                    Log.d("TablesViewModel", "Disconnecting from venue: $venueId")
+                    SocketIOManager.leaveMobileRoom(venueId)
+                    _isWebSocketConnected.update { false }
+                }
+                isCollectingSocketEvents = false
+            } catch (e: Exception) {
+                Log.e("TablesViewModel", "Error stopping venue updates", e)
+            }
+        }
     }
 
     fun fetchTables() {
@@ -71,7 +149,7 @@ class TablesViewModel(
                     }
                 }
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "Error fetching tables", e)
+                Log.e("TablesViewModel", "Error fetching tables", e)
             } finally {
                 _isLoading.update { false }
             }
@@ -89,7 +167,6 @@ class TablesViewModel(
                 ManagementDests.TableDetail.ARG_TABLE_ID,
                 billId
             )
-
         )
     }
 
@@ -98,6 +175,9 @@ class TablesViewModel(
     }
 
     fun logout() {
+        // Clean up WebSocket before logout
+        stopListeningForVenueUpdates()
+
         sessionManager.clearAvoqadoSession()
         navigationDispatcher.popToDestination(MainDests.Splash, inclusive = true)
         navigationDispatcher.navigateWithArgs(
@@ -127,6 +207,7 @@ class TablesViewModel(
                         currentShift = null
                         _shiftStarted.update { false }
                         snackbarDelegate.showSnackbar(
+                            state = SnackbarState.Default,
                             message = "El turno ha sido cerrado."
                         )
                     } else {
@@ -138,12 +219,17 @@ class TablesViewModel(
                         currentShift = shift
                         _shiftStarted.update { true }
                         snackbarDelegate.showSnackbar(
+                            state = SnackbarState.Default,
                             message = "Se ha iniciado un nuevo turno."
                         )
                     }
                 }
             } catch (e: Exception) {
                 Timber.e(e)
+                snackbarDelegate.showSnackbar(
+                    state = SnackbarState.Default,
+                    message = "Error: ${e.message ?: "Ocurrió un error inesperado"}"
+                )
             } finally {
                 _isLoading.update {
                     false
@@ -151,5 +237,4 @@ class TablesViewModel(
             }
         }
     }
-
 }

@@ -42,25 +42,102 @@ class ManagementRepositoryImpl(
     }
 
     override fun connectToTableEvents(venueId: String, tableId: String) {
-        SocketIOManager.connect("https://api.avoqado.io")
+        SocketIOManager.connect(getSocketServerUrl())
         SocketIOManager.subscribeToTable(venueId, tableId)
     }
 
     override fun listenTableEvents(): Flow<PaymentUpdate> {
-        return SocketIOManager.messageFlow.map {
+        return SocketIOManager.messageFlow.map { message ->
+            Log.d("ManagementRepository", "Received socket message: $message")
+
+            // Safely parse amount
+            val amount = try {
+                message.amount?.toDoubleOrNull() ?: 0.0
+            } catch (e: Exception) {
+                Log.e("ManagementRepository", "Error parsing amount: ${message.amount}", e)
+                0.0
+            }
+
+            // Safely parse splitType with special handling for "NONE"
+            val splitType = try {
+                if (!message.splitType.isNullOrEmpty()) {
+                    if (message.splitType == "NONE") {
+                        // Special handling for "NONE" which isn't in our enum
+                        SplitType.EQUALPARTS // Map "NONE" to a reasonable default
+                    } else {
+                        SplitType.valueOf(message.splitType)
+                    }
+                } else {
+                    SplitType.EQUALPARTS // Default value for null
+                }
+            } catch (e: Exception) {
+                Log.e("ManagementRepository", "Error parsing splitType: ${message.splitType}", e)
+                SplitType.EQUALPARTS // Fallback value
+            }
+
             PaymentUpdate(
-                amount = (it.amount?.toDoubleOrNull() ?: 0.0) / 100.0,
-                splitType = SplitType.valueOf(it.splitType ?: ""),
-                venueId = it.venueId ?: "",
-                tableNumber = it.tableNumber ?: 0,
-                method = it.method ?: ""
+                amount = amount,
+                splitType = splitType,
+                venueId = message.venueId ?: "",
+                tableNumber = message.tableNumber ?: 0,
+                method = message.method ?: "",
+                status = message.status, // This is correct for detecting DELETED events
+                billId = message.billId
+            )
+        }
+    }
+
+    override fun listenVenueEvents(): Flow<PaymentUpdate> {
+        return SocketIOManager.venueMessageFlow.map { message ->
+            Log.d("ManagementRepository", "Received venue message: $message")
+
+            // Safely parse amount
+            val amount = try {
+                message.amount?.toDoubleOrNull() ?: 0.0
+            } catch (e: Exception) {
+                Log.e("ManagementRepository", "Error parsing venue amount: ${message.amount}", e)
+                0.0
+            }
+
+            // Safely parse splitType with special handling for "NONE"
+            val splitType = try {
+                if (!message.splitType.isNullOrEmpty()) {
+                    if (message.splitType == "NONE") {
+                        // Special handling for "NONE" which isn't in our enum
+                        SplitType.EQUALPARTS // Map "NONE" to a reasonable default
+                    } else {
+                        SplitType.valueOf(message.splitType)
+                    }
+                } else {
+                    SplitType.EQUALPARTS // Default value for null
+                }
+            } catch (e: Exception) {
+                Log.e("ManagementRepository", "Error parsing venue splitType: ${message.splitType}", e)
+                SplitType.EQUALPARTS // Fallback value
+            }
+
+            // Convert tableNumber from string to int if needed
+            val tableNumber = try {
+                message.tableNumber ?: // Remove the tableName references since they don't exist
+                0 // Default to 0 if tableNumber is null
+            } catch (e: Exception) {
+                Log.e("ManagementRepository", "Error parsing tableNumber", e)
+                0
+            }
+            PaymentUpdate(
+                amount = amount,
+                splitType = splitType,
+                venueId = message.venueId ?: "",
+                tableNumber = tableNumber,
+                method = message.method ?: "",
+                status = message.status,
+                billId = message.billId
             )
         }
     }
 
     override fun stopListeningTableEvents() {
         SocketIOManager.unsubscribe()
-        SocketIOManager.disconnect()
     }
 
     override suspend fun getVenue(venueId: String): NetworkVenue {
@@ -156,11 +233,16 @@ class ManagementRepositoryImpl(
                 if (e.code() == 401) {
                     throw AvoqadoError.Unauthorized
                 } else {
-                    throw AvoqadoError.BasicError(message = e.message())
+                    throw AvoqadoError.BasicError(message = e.message(), code = e.code())
                 }
             } else {
                 throw AvoqadoError.BasicError(message = "Algo salio mal...")
             }
         }
+    }
+
+    private fun getSocketServerUrl(): String {
+        // Replace with your actual server URL
+        return "https://ee2b-2806-2f0-9140-e9df-45a0-7fbf-a066-4e70.ngrok-free.app"
     }
 }
