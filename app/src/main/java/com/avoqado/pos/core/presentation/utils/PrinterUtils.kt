@@ -19,6 +19,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 object PrinterUtils {
@@ -130,7 +132,7 @@ object PrinterUtils {
                 devicePrintImpl.addDoubleColumnText(
                     TextFormat(bold = true, font = 1),
                     TIP_LABEL.uppercase(Locale.getDefault()),
-                   operationInfo.tip
+                    operationInfo.tip
                 )
 
                 devicePrintImpl.addLinebreak(1)
@@ -246,6 +248,144 @@ object PrinterUtils {
                     TextFormat(align = Align.CENTER, bold = false),
                     "PROPINA NO INCLUIDA"
                 )
+
+                devicePrintImpl.addLinebreak(1)
+
+                try {
+                    devicePrintImpl.startPrint()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    fun printPaymentsSummary(
+        context: Context,
+        shiftPayments: List<Map<String, Any>>,
+        venue: VenueInfo
+    ) {
+        val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
+
+        val devicePrintImpl = DevicePrintImpl(context)
+        val status = devicePrintImpl.getStatus()
+        if (status == 0) {
+            scope.launch {
+                devicePrintImpl.addHeading(context, venue = venue)
+
+                devicePrintImpl.addLine(
+                    TextFormat(),
+                    "PAGOS"
+                )
+
+                devicePrintImpl.addLinebreak(1)
+                try {
+                    devicePrintImpl.addImage(
+                        context.getBitmap(
+                            R.drawable.line,
+                        )
+                    )
+                } catch (e: RemoteException) {
+                    e.printStackTrace()
+                }
+
+                devicePrintImpl.addLinebreak(1)
+
+
+                shiftPayments.forEach { payment ->
+                    val amount = payment["amount"] as? Double ?: 0.0
+                    val tip = payment["tip"] as? Double ?: 0.0
+                    val folio = payment["folio"] as? String ?: "-"
+                    val dateTime = payment["dateTime"] as? LocalDateTime ?: LocalDateTime.now()
+
+
+                    devicePrintImpl.addLine(TextFormat(), "#$folio")
+                    devicePrintImpl.addLine(TextFormat(), dateTime.format(dateFormatter))
+
+                    devicePrintImpl.addDoubleColumnText(
+                        textFormat = TextFormat(),
+                        leftText = "Venta",
+                        rightText = "\$${"%,.2f".format(amount)}"
+                    )
+
+                    devicePrintImpl.addDoubleColumnText(
+                        textFormat = TextFormat(),
+                        leftText = "Propina",
+                        rightText = "\$${"%,.2f".format(tip)}"
+                    )
+
+                    devicePrintImpl.addLinebreak(1)
+
+                }
+
+                devicePrintImpl.addLinebreak(1)
+
+                try {
+                    devicePrintImpl.startPrint()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    fun printShiftsSummary(
+        context: Context,
+        shifts: List<Map<String, Any>>,
+        venue: VenueInfo
+    ) {
+        val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
+
+        val devicePrintImpl = DevicePrintImpl(context)
+        val status = devicePrintImpl.getStatus()
+        if (status == 0) {
+            scope.launch {
+                devicePrintImpl.addHeading(context, venue = venue)
+
+                devicePrintImpl.addLine(
+                    TextFormat(),
+                    "PAGOS"
+                )
+
+                devicePrintImpl.addLinebreak(1)
+                try {
+                    devicePrintImpl.addImage(
+                        context.getBitmap(
+                            R.drawable.line,
+                        )
+                    )
+                } catch (e: RemoteException) {
+                    e.printStackTrace()
+                }
+
+                devicePrintImpl.addLinebreak(1)
+
+
+                shifts.forEach { payment ->
+                    val amount = payment["amount"] as? Double ?: 0.0
+                    val tip = payment["tip"] as? Double ?: 0.0
+                    val folio = payment["folio"] as? String ?: "-"
+                    val dateTime = payment["dateTime"] as? LocalDateTime ?: LocalDateTime.now()
+
+
+                    devicePrintImpl.addDoubleColumnText(TextFormat(), "Turno",folio)
+                    devicePrintImpl.addLine(TextFormat(), dateTime.format(dateFormatter))
+
+                    devicePrintImpl.addDoubleColumnText(
+                        textFormat = TextFormat(),
+                        leftText = "Venta",
+                        rightText = "\$${"%,.2f".format(amount)}"
+                    )
+
+                    devicePrintImpl.addDoubleColumnText(
+                        textFormat = TextFormat(),
+                        leftText = "Propina",
+                        rightText = "\$${"%,.2f".format(tip)}"
+                    )
+
+                    devicePrintImpl.addLinebreak(1)
+
+                }
 
                 devicePrintImpl.addLinebreak(1)
 
