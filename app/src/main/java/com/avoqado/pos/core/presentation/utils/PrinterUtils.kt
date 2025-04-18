@@ -331,7 +331,7 @@ object PrinterUtils {
 
     fun printShiftsSummary(
         context: Context,
-        shifts: List<Map<String, Any>>,
+        shifts: List<Map<String, Any?>>,
         venue: VenueInfo
     ) {
         val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
@@ -344,7 +344,7 @@ object PrinterUtils {
 
                 devicePrintImpl.addLine(
                     TextFormat(),
-                    "PAGOS"
+                    "TURNOS"
                 )
 
                 devicePrintImpl.addLinebreak(1)
@@ -364,12 +364,17 @@ object PrinterUtils {
                 shifts.forEach { payment ->
                     val amount = payment["amount"] as? Double ?: 0.0
                     val tip = payment["tip"] as? Double ?: 0.0
-                    val folio = payment["folio"] as? String ?: "-"
-                    val dateTime = payment["dateTime"] as? LocalDateTime ?: LocalDateTime.now()
+                    val folio = payment["shift"] as? String ?: "-"
+                    val startTime = payment["startTime"] as? LocalDateTime
+                    val endTime = payment["endTime"] as? LocalDateTime
 
 
                     devicePrintImpl.addDoubleColumnText(TextFormat(), "Turno",folio)
-                    devicePrintImpl.addLine(TextFormat(), dateTime.format(dateFormatter))
+                    devicePrintImpl.addDoubleColumnText(
+                        TextFormat(),
+                        startTime?.format(dateFormatter) ?: "-",
+                        endTime?.format(dateFormatter) ?: "-"
+                    )
 
                     devicePrintImpl.addDoubleColumnText(
                         textFormat = TextFormat(),
@@ -398,6 +403,97 @@ object PrinterUtils {
         }
     }
 
+    fun printPeriodSummary(
+        context: Context,
+        venue: VenueInfo,
+        totalSales: Double,
+        totalTips: Double,
+        orderCount: Int,
+        ratingCount: Int,
+        avgTipPercentage: Double,
+        tipsByUser: List<Map<String, Any>>
+    ) {
+
+        val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
+
+        val devicePrintImpl = DevicePrintImpl(context)
+        val status = devicePrintImpl.getStatus()
+        if (status == 0) {
+            scope.launch {
+                devicePrintImpl.addHeading(context, venue = venue)
+
+                devicePrintImpl.addLine(
+                    TextFormat(),
+                    "Resumen del periodo"
+                )
+
+                devicePrintImpl.addLinebreak(1)
+                try {
+                    devicePrintImpl.addImage(
+                        context.getBitmap(
+                            R.drawable.line,
+                        )
+                    )
+                } catch (e: RemoteException) {
+                    e.printStackTrace()
+                }
+
+                devicePrintImpl.addLinebreak(1)
+
+                devicePrintImpl.addDoubleColumnText(
+                    textFormat = TextFormat(),
+                    leftText = "Ventas",
+                    rightText = "\$${"%,.2f".format(totalSales)}"
+                )
+
+                devicePrintImpl.addDoubleColumnText(
+                    textFormat = TextFormat(),
+                    leftText = "Propinas",
+                    rightText = "\$${"%,.2f".format(totalTips)}"
+                )
+
+                devicePrintImpl.addDoubleColumnText(
+                    textFormat = TextFormat(),
+                    leftText = "Ordenes",
+                    rightText = "$orderCount"
+                )
+
+                devicePrintImpl.addDoubleColumnText(
+                    textFormat = TextFormat(),
+                    leftText = "Calificaciones",
+                    rightText = "$ratingCount"
+                )
+
+                devicePrintImpl.addDoubleColumnText(
+                    textFormat = TextFormat(),
+                    leftText = "Prom. Propinas",
+                    rightText = "${"%.2f".format(avgTipPercentage)}%"
+                )
+
+                devicePrintImpl.addLinebreak(1)
+
+                devicePrintImpl.addLine(format = TextFormat(), "Propinas por mesero")
+
+                devicePrintImpl.addLinebreak(1)
+
+                devicePrintImpl.addDoubleColumnText(TextFormat(), "Nombre", "Propina")
+
+                tipsByUser.forEach { entry ->
+                    val name = entry["name"] as? String ?: "-"
+                    val tip = entry["tip"] as? Double ?: 0.0
+                    devicePrintImpl.addDoubleColumnText(TextFormat(),name, tip.toString())
+                }
+
+                try {
+                    devicePrintImpl.startPrint()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+        }
+
+    }
 }
 
 suspend fun DevicePrintImpl.addHeading(context: Context, venue: VenueInfo) {

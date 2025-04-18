@@ -4,6 +4,8 @@ import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.avoqado.pos.core.presentation.navigation.NavigationAction
+import com.avoqado.pos.features.payment.presentation.transactions.SummaryTabs
+import com.menta.android.common_cross.util.ARG
 
 sealed class PaymentDests : NavigationAction {
     data object InputTip: PaymentDests(){
@@ -38,8 +40,19 @@ sealed class PaymentDests : NavigationAction {
     }
 
     data object TransactionsSummary: PaymentDests(){
+        const val ARG_TAB = "arg_tab"
+
         override val route: String
-            get() = "transactions"
+            get() = "transactions?$ARG_TAB={$ARG_TAB}"
+
+        override val arguments: List<NamedNavArgument>
+            get() = listOf(
+                navArgument(ARG_TAB) {
+                    type = NavType.StringType
+                    nullable = false
+                    defaultValue = SummaryTabs.RESUMEN.name
+                }
+            )
     }
 
     data object QuickPayment: PaymentDests(){

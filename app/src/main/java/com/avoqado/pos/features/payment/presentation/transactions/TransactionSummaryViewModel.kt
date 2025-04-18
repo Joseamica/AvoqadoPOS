@@ -2,6 +2,7 @@ package com.avoqado.pos.features.payment.presentation.transactions
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.domain.models.AvoqadoError
 import com.avoqado.pos.core.domain.models.PaymentShift
@@ -23,12 +24,15 @@ class TransactionSummaryViewModel(
     private val sessionManager: SessionManager,
     private val snackbarDelegate: SnackbarDelegate,
     private val navigationDispatcher: NavigationDispatcher,
-    private val terminalRepository: TerminalRepository
+    private val terminalRepository: TerminalRepository,
+    private val initialTab: SummaryTabs
 ) : ViewModel() {
 
     companion object {
         const val PAGE_SIZE = 10
     }
+
+    val venue = sessionManager.getVenueInfo()
 
     private val _showWaiterSheet = MutableStateFlow<Boolean>(false)
     val showWaiterSheet: StateFlow<Boolean> = _showWaiterSheet.asStateFlow()

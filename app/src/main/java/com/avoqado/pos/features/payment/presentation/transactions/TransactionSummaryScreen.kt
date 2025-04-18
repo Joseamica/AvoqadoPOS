@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -36,13 +37,19 @@ import com.avoqado.pos.core.domain.models.PaymentShift
 import com.avoqado.pos.core.domain.models.Shift
 import com.avoqado.pos.core.domain.models.ShiftSummary
 import com.avoqado.pos.core.presentation.components.ObserverLifecycleEvents
+import com.avoqado.pos.core.presentation.model.VenueInfo
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
+import com.avoqado.pos.core.presentation.utils.PrinterUtils
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
+import com.avoqado.pos.core.presentation.utils.toAmountMXDouble
 import com.avoqado.pos.features.payment.presentation.transactions.components.CreatedFilterSheet
 import com.avoqado.pos.features.payment.presentation.transactions.components.PaymentsPage
 import com.avoqado.pos.features.payment.presentation.transactions.components.ShiftsPage
 import com.avoqado.pos.features.payment.presentation.transactions.components.SummaryPage
 import com.avoqado.pos.features.payment.presentation.transactions.components.WaiterFilterSheet
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 
 enum class SummaryTabs {
     RESUMEN, PAGOS, TURNOS
@@ -52,6 +59,8 @@ enum class SummaryTabs {
 fun TransactionsSummaryScreen(
     viewModel: TransactionSummaryViewModel
 ) {
+
+    val context = LocalContext.current
 
     ObserverLifecycleEvents(
         onCreate = {
@@ -96,7 +105,82 @@ fun TransactionsSummaryScreen(
         onLoadMorePayments = {
             viewModel.loadPaymentsSummary(nextPage = true)
         },
-        waiters = viewModel.venueInfo?.waiters?.map { Pair(it.id, it.nombre) } ?: emptyList()
+        waiters = viewModel.venueInfo?.waiters?.map { Pair(it.id, it.nombre) } ?: emptyList(),
+        onPrintPage = {
+            val venue = viewModel.venue?.let {
+                VenueInfo(
+                    name = it.name ?: "",
+                    id = it.id ?: "",
+                    address = it.address ?: "",
+                    phone = it.phone ?: "",
+                    acquisition = ""
+                )
+            } ?: VenueInfo(
+                name = "",
+                id = "",
+                address = "",
+                phone = "",
+                acquisition = ""
+            )
+
+            when(currentTab){
+                SummaryTabs.RESUMEN -> {
+                    PrinterUtils.printPeriodSummary(
+                        context = context,
+                        venue = venue,
+                        totalSales = summary?.totalSales?.toString()?.toAmountMXDouble() ?: 0.0,
+                        totalTips = summary?.totalTips?.toString()?.toAmountMXDouble() ?: 0.0,
+                        orderCount = summary?.ordersCount ?: 0,
+                        ratingCount = summary?.ratingsCount ?: 0,
+                        avgTipPercentage = summary?.averageTipPercentage ?: 0.0,
+                        tipsByUser = summary?.tips?.take(10)?.map {
+                            mapOf(
+                                "name" to it.first,
+                                "tip" to it.second.toAmountMXDouble()
+                            )
+                        } ?: emptyList(),
+                    )
+                }
+                SummaryTabs.PAGOS -> {
+                    PrinterUtils.printPaymentsSummary(
+                        context = context,
+                        shiftPayments =  payments.take(10).map { payment ->
+                            mapOf(
+                                "amount" to payment.totalSales.toString().toAmountMXDouble(),
+                                "tip" to payment.totalTip.toString().toAmountMXDouble(),
+                                "folio" to payment.id,
+                                "dateTime" to LocalDateTime.ofInstant(
+                                    payment.date,
+                                    ZoneId.systemDefault()
+                                ),
+                            )
+                        },
+                        venue = venue
+                    )
+                }
+                SummaryTabs.TURNOS -> {
+                    PrinterUtils.printShiftsSummary(
+                        context = context,
+                        shifts = shifts.take(10).map { shift ->
+                            mapOf(
+                                "amount" to shift.paymentSum.toString().toAmountMXDouble(),
+                                "tip" to shift.tipsSum.toString().toAmountMXDouble(),
+                                "shift" to shift.id,
+                                "startTime" to LocalDateTime.ofInstant(
+                                    Instant.parse(shift.startTime),
+                                    ZoneId.systemDefault()
+                                ),
+                                "endTime" to LocalDateTime.ofInstant(
+                                    Instant.parse(shift.endTime),
+                                    ZoneId.systemDefault()
+                                ),
+                            )
+                        },
+                        venue = venue
+                    )
+                }
+            }
+        }
     )
 }
 

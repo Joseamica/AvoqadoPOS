@@ -21,6 +21,7 @@ import com.avoqado.pos.features.payment.presentation.transactions.TransactionSum
 import com.avoqado.pos.features.payment.presentation.transactions.TransactionsSummaryScreen
 import com.avoqado.pos.core.presentation.router.bottomSheetHolder
 import com.avoqado.pos.core.presentation.router.composableHolder
+import com.avoqado.pos.features.payment.presentation.transactions.SummaryTabs
 import com.menta.android.core.viewmodel.TrxData
 import com.menta.android.printer.i9100.core.DevicePrintImpl
 
@@ -61,12 +62,14 @@ fun NavGraphBuilder.paymentNavigation(
     }
 
     composableHolder(PaymentDests.TransactionsSummary) {
+        val tab = it.arguments?.getString(PaymentDests.TransactionsSummary.ARG_TAB)
         val summaryViewModel = remember {
             TransactionSummaryViewModel(
                 sessionManager = AvoqadoApp.sessionManager,
                 navigationDispatcher = navigationDispatcher,
                 snackbarDelegate = snackbarDelegate,
-                terminalRepository = AvoqadoApp.terminalRepository
+                terminalRepository = AvoqadoApp.terminalRepository,
+                initialTab = tab?.let { name -> SummaryTabs.valueOf(name) } ?: SummaryTabs.RESUMEN
             )
         }
 

@@ -10,6 +10,7 @@ import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.destinations.MainDests
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
+import com.avoqado.pos.features.payment.presentation.transactions.SummaryTabs
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -52,7 +53,13 @@ class HomeViewModel(
     }
 
     fun goToSummary() {
-        navigationDispatcher.navigateTo(PaymentDests.TransactionsSummary)
+        navigationDispatcher.navigateWithArgs(
+            PaymentDests.TransactionsSummary,
+            NavigationArg.StringArg(
+                PaymentDests.TransactionsSummary.ARG_TAB,
+                SummaryTabs.RESUMEN.name
+            )
+        )
     }
 
     fun goToNewPayment() {
@@ -64,11 +71,23 @@ class HomeViewModel(
     }
 
     fun goToShowPayments() {
-        navigationDispatcher.navigateTo(PaymentDests.TransactionsSummary)
+        navigationDispatcher.navigateWithArgs(
+            PaymentDests.TransactionsSummary,
+            NavigationArg.StringArg(
+                PaymentDests.TransactionsSummary.ARG_TAB,
+                SummaryTabs.PAGOS.name
+            )
+        )
     }
 
     fun goToShowShifts() {
-        navigationDispatcher.navigateTo(PaymentDests.TransactionsSummary)
+        navigationDispatcher.navigateWithArgs(
+            PaymentDests.TransactionsSummary,
+            NavigationArg.StringArg(
+                PaymentDests.TransactionsSummary.ARG_TAB,
+                SummaryTabs.TURNOS.name
+            )
+        )
     }
 
     fun logout() {
