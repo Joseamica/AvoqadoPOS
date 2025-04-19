@@ -101,7 +101,10 @@ fun ProductListSheet(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(vertical = 8.dp)
             ) {
-                items(products) { product ->
+                items(
+                    items = products,
+                    key = { it.id }
+                ) { product ->
                     ProductRow(
                         name = product.name,
                         price = product.price.toString(),

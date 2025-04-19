@@ -4,6 +4,7 @@ import android.util.Log
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.AvoqadoService
 import com.avoqado.pos.core.data.network.MentaService
+import com.avoqado.pos.core.data.network.SocketIOManager
 import com.avoqado.pos.core.data.network.models.ShiftBody
 import com.avoqado.pos.core.domain.models.AvoqadoError
 import com.avoqado.pos.core.domain.models.PaymentShift
@@ -13,6 +14,8 @@ import com.avoqado.pos.core.domain.models.ShiftSummary
 import com.avoqado.pos.core.domain.models.TerminalInfo
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.menta.android.restclient.core.Storage
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import timber.log.Timber
 import java.time.Instant
@@ -297,7 +300,10 @@ class TerminalRepositoryImpl(
                         paymentId = it?.mentaTicketId ?: "",
                         date = it?.createdAt?.let {
                             Instant.parse(it)
-                        }?: Instant.now()
+                        } ?: Instant.now(),
+                        createdAt = it?.createdAt?.let {
+                            Instant.parse(it)
+                        } ?: Instant.now()
                     )
                 } ?: emptyList()
             }
@@ -315,4 +321,51 @@ class TerminalRepositoryImpl(
         }
     }
 
+    override fun connectToShiftEvents(venueId: String) {
+        // Verificamos si el socket está conectado
+        if (!SocketIOManager.isConnected()) {
+            SocketIOManager.connect(SocketIOManager.getServerUrl())
+        }
+        
+        // Nos unimos a la sala del venue para escuchar eventos
+        SocketIOManager.joinMobileRoom(venueId)
+    }
+
+    override fun disconnectFromShiftEvents() {
+        // Si tenemos un currentVenueRoomId en SocketIOManager, nos desconectamos
+        SocketIOManager.disconnect()
+    }
+
+    override fun listenForShiftEvents(): Flow<Shift> {
+        return SocketIOManager.shiftMessageFlow.map { message ->
+            Log.d("TerminalRepository", "Received shift update: $message")
+            
+            // Convertimos el mensaje a un objeto Shift
+            val shift = Shift(
+                id = message.id,
+                turnId = message.turnId,
+                insideTurnId = message.insideTurnId,
+                origin = message.origin,
+                startTime = message.startTime,
+                endTime = message.endTime,
+                fund = message.fund,
+                cash = message.cash,
+                card = message.card,
+                credit = message.credit,
+                cashier = message.cashier,
+                venueId = message.venueId,
+                updatedAt = message.updatedAt,
+                createdAt = message.createdAt,
+                avgTipPercentage = message.avgTipPercentage ?: 0,
+                tipsSum = message.tipsSum ?: 0,
+                tipsCount = message.tipsCount ?: 0,
+                paymentSum = message.paymentSum ?: 0
+            )
+            
+            // Guardamos el turno en SessionManager
+            sessionManager.setShift(shift)
+            
+            shift
+        }
+    }
 }

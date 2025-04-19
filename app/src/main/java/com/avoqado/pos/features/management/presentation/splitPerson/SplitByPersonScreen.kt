@@ -148,7 +148,10 @@ fun SplitByPersonContent(
                     horizontal = 16.dp
                 )
         ) {
-            items(count = splitPartySize) { index ->
+            items(
+                count = splitPartySize,
+                key = { index -> index }
+            ) { index ->
 
                 val isPaid = index < splitPartyPaidSize
                 val isSelected = splitPartySelected.contains(index)

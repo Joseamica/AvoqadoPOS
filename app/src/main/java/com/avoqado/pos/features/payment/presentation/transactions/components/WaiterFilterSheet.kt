@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,8 +51,8 @@ fun WaiterFilterSheet(
     waiterList: List<Pair<String, String>> = emptyList(),
     preSelectedWaiters: List<String> = emptyList()
 ) {
-
-    val selectedWaiters = remember { mutableListOf(*preSelectedWaiters.toTypedArray()) }
+    // Usar mutableStateListOf para que los cambios en la lista actualicen la UI
+    val selectedWaiters = remember { mutableStateListOf<String>().apply { addAll(preSelectedWaiters) } }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -91,9 +93,21 @@ fun WaiterFilterSheet(
             Spacer(Modifier.height(16.dp))
 
             LazyColumn {
-                items(waiterList) { item ->
+                items(
+                    items = waiterList,
+                    key = { it.first } // Usar el ID del mesero como clave única
+                ) { item ->
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                if (selectedWaiters.contains(item.first)) {
+                                    selectedWaiters.remove(item.first)
+                                } else {
+                                    selectedWaiters.add(item.first)
+                                }
+                            }
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -106,13 +120,18 @@ fun WaiterFilterSheet(
 
                         Checkbox(
                             checked = selectedWaiters.contains(item.first),
-                            onCheckedChange = {
-                                if (it) {
+                            onCheckedChange = { checked ->
+                                if (checked) {
                                     selectedWaiters.add(item.first)
                                 } else {
                                     selectedWaiters.remove(item.first)
                                 }
-                            }
+                            },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = Color.Black,
+                                uncheckedColor = Color.Gray,
+                                checkmarkColor = Color.White
+                            )
                         )
                     }
                 }
@@ -150,7 +169,7 @@ fun WaiterFilterSheet(
                     ),
                     shape = RoundedCornerShape(10.dp),
                     onClick = {
-                        onApplyFilter(selectedWaiters)
+                        onApplyFilter(selectedWaiters.toList())
                     }
                 ) {
                     Text(
@@ -179,11 +198,11 @@ fun WaiterFilterSheetPreview() {
             ),
             waiterList = listOf(
                 Pair("1","Diego"),
-                Pair("4","Diego"),
-                Pair("5","Diego"),
-                Pair("6","Diego"),
+                Pair("2","Carlos"), // Asegurar IDs únicos en el preview
+                Pair("3","Ana"),
+                Pair("4","María"),
             ),
-            preSelectedWaiters = listOf("1","5")
+            preSelectedWaiters = listOf("1","3")
         )
     }
 }

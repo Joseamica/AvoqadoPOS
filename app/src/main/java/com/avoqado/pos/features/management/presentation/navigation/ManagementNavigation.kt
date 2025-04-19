@@ -112,6 +112,9 @@ fun NavGraphBuilder.managementNavigation(
             )
         }
 
-        ShiftNotStartedSheet(viewModel)
+        ShiftNotStartedSheet(
+            viewModel = viewModel,
+            isButtonDisabled = true
+        )
     }
 }

@@ -121,7 +121,10 @@ class ListTransactionActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(transactions) { transaction ->
+                        items(
+                            items = transactions,
+                            key = { it.id ?: it.operation.datetime }
+                        ) { transaction ->
                             TransactionItem(transaction, onTransactionSelected)
                         }
                     }

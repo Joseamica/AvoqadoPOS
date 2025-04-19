@@ -50,6 +50,7 @@ class TablesViewModel(
 
     // Track if we're currently collecting WebSocket events to avoid multiple collectors
     private var isCollectingSocketEvents = false
+    private var isCollectingShiftEvents = false
 
     init {
         fetchTables()
@@ -59,6 +60,7 @@ class TablesViewModel(
         super.onCleared()
         // Ensure we clean up WebSocket resources when ViewModel is destroyed
         stopListeningForVenueUpdates()
+        stopListeningForShiftEvents()
     }
 
     fun toggleSettingsModal(value: Boolean) {
@@ -73,51 +75,106 @@ class TablesViewModel(
             return
         }
 
-        // Avoid duplicate connections
-        if (_isWebSocketConnected.value) {
-            Log.d("TablesViewModel", "WebSocket already connected, skipping connection")
-            return
-        }
-
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                Log.d("TablesViewModel", "Starting WebSocket connection to venue: $venueId")
-
-                // Connect to venue-level socket room
-                SocketIOManager.connect(SocketIOManager.getServerUrl())
+                // Si el socket no está conectado, conectarlo
+                if (!SocketIOManager.isConnected()) {
+                    SocketIOManager.connect(SocketIOManager.getServerUrl())
+                }
+                
                 SocketIOManager.joinMobileRoom(venueId)
-
                 _isWebSocketConnected.update { true }
-
-                // Only set up one collector
+                
+                // Usar flatMapLatest para evitar múltiples colectores y asegurar que
+                // solo recibimos actualizaciones del último socket conectado
                 if (!isCollectingSocketEvents) {
                     isCollectingSocketEvents = true
-
-                    // Listen for venue updates
-                    managementRepository.listenVenueEvents().collectLatest { update ->
+                    
+                    SocketIOManager.venueMessageFlow.collectLatest { update ->
                         Log.d("TablesViewModel", "Received venue update: $update")
-
-                        // Refresh tables when a bill status changes
-                        when (update.status?.uppercase()) {
-                            "OPEN" -> {
-                                Log.d("TablesViewModel", "New bill opened, refreshing tables")
+                        
+                        val shouldRefresh = when (update.status?.uppercase()) {
+                            "OPEN", "DELETED", "PAID", "CANCELED", "PAYMENT_ADDED", "UPDATED" -> true
+                            else -> false
+                        }
+                        
+                        if (shouldRefresh) {
+                            Log.d("TablesViewModel", "Refreshing tables list")
+                            fetchTables()
+                            
+                            // Notificar si es un evento significativo
+                            if (update.status?.uppercase() == "OPEN") {
                                 snackbarDelegate.showSnackbar(
                                     state = SnackbarState.Default,
-                                    message = "Nueva cuenta creada: Mesa ${update.tableNumber}"
+                                    message = "Nueva cuenta creada: Mesa ${update.tableNumber ?: "?"}"
                                 )
-                                fetchTables()
-                            }
-                            "DELETED", "PAID", "CANCELED" -> {
-                                Log.d("TablesViewModel", "Bill ${update.status}, refreshing tables")
-                                fetchTables()
                             }
                         }
                     }
                 }
+                
+                // También iniciamos la escucha de eventos de turnos
+                startListeningForShiftEvents()
+                
             } catch (e: Exception) {
                 Log.e("TablesViewModel", "Error setting up venue updates", e)
                 _isWebSocketConnected.update { false }
                 isCollectingSocketEvents = false
+            }
+        }
+    }
+    
+    private fun startListeningForShiftEvents() {
+        if (venueId.isEmpty()) {
+            Log.e("TablesViewModel", "Cannot listen for shift updates: venueId is empty")
+            return
+        }
+        
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // Conectar al repositorio para escuchar eventos de turnos
+                terminalRepository.connectToShiftEvents(venueId)
+                
+                if (!isCollectingShiftEvents) {
+                    isCollectingShiftEvents = true
+                    
+                    terminalRepository.listenForShiftEvents().collectLatest { shift ->
+                        Log.d("TablesViewModel", "Received shift update: $shift")
+                        
+                        // Actualizamos el turno actual
+                        currentShift = shift
+                        
+                        // Actualizamos el estado del turno
+                        _shiftStarted.update { shift.isStarted }
+                        
+                        // Notificamos al usuario sobre el cambio
+                        if (shift.isStarted && !shift.isFinished) {
+                            snackbarDelegate.showSnackbar(
+                                state = SnackbarState.Default,
+                                message = "Se ha iniciado un nuevo turno."
+                            )
+                        } else if (shift.isFinished) {
+                            snackbarDelegate.showSnackbar(
+                                state = SnackbarState.Default,
+                                message = "El turno ha sido cerrado."
+                            )
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("TablesViewModel", "Error setting up shift updates", e)
+                isCollectingShiftEvents = false
+            }
+        }
+    }
+    
+    private fun stopListeningForShiftEvents() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                terminalRepository.disconnectFromShiftEvents()
+                isCollectingShiftEvents = false
+            } catch (e: Exception) {
+                Log.e("TablesViewModel", "Error stopping shift updates", e)
             }
         }
     }
@@ -131,6 +188,9 @@ class TablesViewModel(
                     _isWebSocketConnected.update { false }
                 }
                 isCollectingSocketEvents = false
+                
+                // También detenemos la escucha de eventos de turnos
+                stopListeningForShiftEvents()
             } catch (e: Exception) {
                 Log.e("TablesViewModel", "Error stopping venue updates", e)
             }

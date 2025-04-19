@@ -40,7 +40,7 @@ class TransactionSummaryViewModel(
     private val _showCreatedSheet = MutableStateFlow<Boolean>(false)
     val showCreatedSheet: StateFlow<Boolean> = _showCreatedSheet.asStateFlow()
 
-    private val _currentTab = MutableStateFlow<SummaryTabs>(SummaryTabs.RESUMEN)
+    private val _currentTab = MutableStateFlow<SummaryTabs>(initialTab)
     val currentTab: StateFlow<SummaryTabs> = _currentTab.asStateFlow()
 
     private val _filteredWaiters = MutableStateFlow<List<String>>(emptyList())
@@ -92,7 +92,7 @@ class TransactionSummaryViewModel(
                         venueId = venueInfo?.id ?: "",
                         waiterIds = filteredWaiters.value.let {
                             if (it.isNotEmpty()) {
-                                it.joinToString { "," }
+                                it.joinToString(",")
                             } else {
                                 null
                             }
@@ -109,7 +109,11 @@ class TransactionSummaryViewModel(
                 )
 
                 _shiftsList.update {
-                    it + shifts
+                    if (nextPage) {
+                        it + shifts
+                    } else {
+                        shifts
+                    }
                 }
                 if (nextPage) {
                     _currentPage.update {
@@ -152,7 +156,7 @@ class TransactionSummaryViewModel(
                         venueId = venueInfo?.id ?: "",
                         waiterIds = filteredWaiters.value.let {
                             if (it.isNotEmpty()) {
-                                it.joinToString { "," }
+                                it.joinToString(",")
                             } else {
                                 null
                             }
@@ -169,7 +173,11 @@ class TransactionSummaryViewModel(
                 )
 
                 _paymentsShiftList.update {
-                    it + shifts
+                    if (nextPage) {
+                        it + shifts
+                    } else {
+                        shifts
+                    }
                 }
                 if (nextPage) {
                     _currenPaymenttPage.update {
@@ -203,7 +211,7 @@ class TransactionSummaryViewModel(
                         venueId = venueInfo?.id ?: "",
                         waiterIds = filteredWaiters.value.let {
                             if (it.isNotEmpty()) {
-                                it.joinToString { "," }
+                                it.joinToString(",")
                             } else {
                                 null
                             }

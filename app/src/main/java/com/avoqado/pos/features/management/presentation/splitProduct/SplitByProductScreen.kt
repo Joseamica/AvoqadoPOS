@@ -81,7 +81,10 @@ fun SplitByProductContent(
                 modifier = Modifier.weight(1f)
             ) {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(state.products.size) { index ->
+                    items(
+                        count = state.products.size,
+                        key = { index -> state.products[index].id }
+                    ) { index ->
                         val product = state.products[index]
                         val isPaid = state.paidProducts.contains(product.id)
                         SelectableItemRow(

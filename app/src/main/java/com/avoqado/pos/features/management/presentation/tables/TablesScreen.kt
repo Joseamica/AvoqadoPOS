@@ -14,12 +14,20 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,8 +46,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.core.data.network.models.NetworkTable
 import com.avoqado.pos.core.data.network.models.NetworkVenue
@@ -132,59 +143,112 @@ fun HomeContent(
                     style = MaterialTheme.typography.headlineLarge.copy(
                         fontFamily = AppFont.EffraFamily
                     ),
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    color = Color.Black,
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                     textAlign = TextAlign.Center
                 )
             }
+            
+            Divider(
+                color = Color.LightGray,
+                thickness = 1.dp,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(5), // Five columns
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-
-                if (tables.isEmpty()) {
-                    item {
+            if (tables.isEmpty()) {
+                // Mensaje cuando no hay mesas activas
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = null,
+                            tint = Color.LightGray,
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            modifier = Modifier.fillMaxWidth(),
-                            text = "No hay cuentas activas.",
-                            style = MaterialTheme.typography.titleMedium.copy(color = Color.LightGray),
+                            text = "No hay cuentas activas",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                color = Color.DarkGray,
+                                fontSize = 18.sp
+                            ),
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = "Las mesas con cuentas abiertas aparecerán aquí",
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                color = Color.Gray
+                            ),
                             textAlign = TextAlign.Center
                         )
                     }
                 }
-
-                items(
-                    tables
-                ) { table ->
-                    Card(
-                        shape = RoundedCornerShape(8.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color.White
-                        ),
-                        elevation = CardDefaults.cardElevation(4.dp),
-                        modifier = Modifier
-                            .size(50.dp) // Fixed size for uniform squares
-                            .clickable {
-                                onTableSelected(table.first)
-                            }
-                    ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Text(
-                                text = table.second,
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
+            } else {
+                // Grid de mesas cuando hay mesas disponibles
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = 90.dp), // Adaptativo para mejores proporciones
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(tables) { table ->
+                        TableCard(
+                            tableNumber = table.second,
+                            onClick = { onTableSelected(table.first) }
+                        )
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun TableCard(
+    tableNumber: String,
+    onClick: () -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(10.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White
+        ),
+        elevation = CardDefaults.cardElevation(4.dp),
+        modifier = Modifier
+            .shadow(
+                elevation = 4.dp,
+                shape = RoundedCornerShape(10.dp),
+                spotColor = Color.Black.copy(alpha = 0.1f)
+            )
+            .aspectRatio(1f) // Mantiene la proporción cuadrada
+            .clickable(onClick = onClick)
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
+        ) {
+            Text(
+                text = tableNumber,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = Color.Black,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                ),
+                textAlign = TextAlign.Center,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }

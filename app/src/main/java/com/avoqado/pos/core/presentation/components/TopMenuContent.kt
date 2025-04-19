@@ -45,6 +45,7 @@ fun TopMenuContent(
     onLogout: () -> Unit = {},
     onToggleShift: () -> Unit = {},
     shiftStarted: Boolean = false,
+    isShiftButtonDisabled: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
 
@@ -155,21 +156,36 @@ fun TopMenuContent(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Button(
-                    onClick = onToggleShift,
+                    onClick = { if (!isShiftButtonDisabled) onToggleShift() },
                     modifier = Modifier
                         .height(72.dp)
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.White,
-                        contentColor = buttonGrayColor
-                    )
+                        contentColor = if (isShiftButtonDisabled) Color.Gray else buttonGrayColor
+                    ),
+                    enabled = !isShiftButtonDisabled
                 ) {
-                    Text(
-                        text = if (shiftStarted) "Cerrar Turno" else "Abrir Turno",
-                        color = Color.Black,
-                        style = MaterialTheme.typography.titleSmall
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = if (shiftStarted) "Cerrar Turno" else "Abrir Turno",
+                            color = if (isShiftButtonDisabled) Color.Gray else Color.Black,
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        
+                        if (isShiftButtonDisabled) {
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "(desde POS)",
+                                color = Color.Gray,
+                                fontSize = 12.sp,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
                 }
             }
         }

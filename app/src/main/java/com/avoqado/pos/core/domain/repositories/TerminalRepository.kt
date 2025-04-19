@@ -5,6 +5,7 @@ import com.avoqado.pos.core.domain.models.Shift
 import com.avoqado.pos.core.domain.models.ShiftParams
 import com.avoqado.pos.core.domain.models.ShiftSummary
 import com.avoqado.pos.core.domain.models.TerminalInfo
+import kotlinx.coroutines.flow.Flow
 
 interface TerminalRepository {
     suspend fun getTerminalId(serialCode: String): TerminalInfo
@@ -14,4 +15,9 @@ interface TerminalRepository {
     suspend fun getShiftSummary(params: ShiftParams): List<Shift>
     suspend fun getSummary(params: ShiftParams): ShiftSummary
     suspend fun getShiftPaymentsSummary(params: ShiftParams): List<PaymentShift>
+    
+    // Nuevos métodos para WebSocket
+    fun connectToShiftEvents(venueId: String)
+    fun disconnectFromShiftEvents()
+    fun listenForShiftEvents(): Flow<Shift>
 }

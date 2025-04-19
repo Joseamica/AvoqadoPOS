@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -33,7 +34,8 @@ import com.avoqado.pos.R
 
 @Composable
 fun ShiftNotStartedSheet(
-    viewModel: ShiftNotStartedViewModel
+    viewModel: ShiftNotStartedViewModel,
+    isButtonDisabled: Boolean = true
 ) {
 
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
@@ -77,7 +79,7 @@ fun ShiftNotStartedSheet(
             Spacer(Modifier.height(24.dp))
 
             Text(
-                text = "Para continuar se requiere abrir turno.",
+                text = "Para continuar abrir turno desde el POS",
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = Color.Black
                 ),
@@ -90,20 +92,22 @@ fun ShiftNotStartedSheet(
                 CircularProgressIndicator()
             } else {
                 Button(
-                    onClick = { viewModel.onOpenShift() },
+                    onClick = { if (!isButtonDisabled) viewModel.onOpenShift() },
                     modifier = Modifier
                         .height(72.dp)
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Black,
+                        containerColor = if (isButtonDisabled) Color.Gray else Color.Black,
                         contentColor = Color.White
-                    )
+                    ),
+                    enabled = !isButtonDisabled
                 ) {
                     Text(
                         text = "Abrir turno",
                         color = Color.White,
-                        style = MaterialTheme.typography.titleSmall
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.alpha(if (isButtonDisabled) 0.6f else 1f)
                     )
                 }
             }

@@ -46,7 +46,7 @@ fun ColumnScope.PaymentsPage(
             loading = isLoading,
             listState = listState,
             items = items,
-            itemKey = { it.id ?: "" },
+            itemKey = { payment -> "${payment.id}_${payment.date ?: ""}_${payment.paymentId}_${payment.hashCode()}" },
             itemContent = { PaymentShiftItemCard(it) },
             loadingItem = {
                 Row(

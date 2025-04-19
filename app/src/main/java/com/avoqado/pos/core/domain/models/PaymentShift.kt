@@ -8,5 +8,6 @@ data class PaymentShift(
     val totalSales: Int,
     val totalTip: Int,
     val paymentId: String,
-    val date: Instant
+    val date: Instant,
+    val createdAt: Instant
 )

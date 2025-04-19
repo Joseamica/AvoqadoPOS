@@ -81,9 +81,9 @@ class TableDetailViewModel(
                     tableId = tableNumber
                 )
             ).collectLatest { update ->
-                Log.d("AvoqadoSocket", "Received update: $update")
+                Log.d(TAG, "Socket event received: ${update.status}, data: $update")
 
-                // Check for bill status changes using status field (not method)
+                // Check for bill status changes using status field
                 when (update.status?.uppercase()) {
                     "DELETED" -> {
                         Log.d("AvoqadoSocket", "Bill DELETED - navigating back")
@@ -109,13 +109,22 @@ class TableDetailViewModel(
                         Log.d("AvoqadoSocket", "Bill PAID - refreshing")
                         fetchTableDetail()
                     }
-
-                    else -> // For any other updates not matching specific status values
-                        // Just refresh the data to show the most current state
+                    "UPDATED", "PRODUCT_ADDED", "PRODUCT_UPDATED", "PRODUCT_REMOVED" -> {
+                        // Manejar explícitamente eventos de productos
+                        Log.d("AvoqadoSocket", "Products updated - refreshing table detail")
                         fetchTableDetail()
+                        // Opcional: notificar al usuario
+                        snackbarDelegate.showSnackbar(
+                            state = SnackbarState.Default,
+                            message = "La cuenta ha sido actualizada"
+                        )
+                    }
+                    else -> {
+                        // Para cualquier otro estado, refrescar los datos
+                        Log.d("AvoqadoSocket", "Unhandled status: ${update.status} - refreshing anyway")
+                        fetchTableDetail()
+                    }
                 }
-
-
             }
         }
     }
@@ -328,5 +337,9 @@ class TableDetailViewModel(
         } else {
             navigationDispatcher.navigateTo(ManagementDests.OpenShift)
         }
+    }
+
+    companion object {
+        private const val TAG = "TableSocket"
     }
 }

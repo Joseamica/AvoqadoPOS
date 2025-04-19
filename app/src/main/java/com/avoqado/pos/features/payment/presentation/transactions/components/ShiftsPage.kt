@@ -1,6 +1,8 @@
 package com.avoqado.pos.features.payment.presentation.transactions.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -11,13 +13,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -47,7 +52,7 @@ fun ColumnScope.ShiftsPage(
             loading = isLoading,
             listState = listState,
             items = items,
-            itemKey = { it.id ?: "" },
+            itemKey = { shift -> "${shift.id}_${shift.turnId}" },
             itemContent = { ShiftItemCard(it) },
             loadingItem = {
                 Row(
@@ -63,7 +68,7 @@ fun ColumnScope.ShiftsPage(
 @Composable
 fun ShiftItemCard(shift: Shift) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 16.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 16.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         )
@@ -92,19 +97,40 @@ fun ShiftItemCard(shift: Shift) {
 
                 Row(
                     modifier = Modifier.weight(1f),
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        "Fin: ",
-                        style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
-                    )
-                    Text(
-                        shift.endTime?.let { formatDateTime(it) } ?: "",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold
+                    if (shift.endTime.isNullOrBlank()) {
+                        // Turno abierto - mostrar indicador "Abierto"
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(Color(0x3300AA00)) // Fondo verde con transparencia
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                "Abierto",
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    color = Color(0xFF00AA00), // Verde más oscuro para el texto
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+                    } else {
+                        // Turno cerrado - mostrar fecha de fin
+                        Text(
+                            "Fin: ",
+                            style = MaterialTheme.typography.bodySmall.copy(color = Color.Black)
                         )
-                    )
+                        Text(
+                            shift.endTime.let { formatDateTime(it) },
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
                 }
             }
             Spacer(Modifier.height(8.dp))

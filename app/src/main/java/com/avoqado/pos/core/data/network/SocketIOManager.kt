@@ -2,6 +2,7 @@ package com.avoqado.pos.core.data.network
 
 import android.util.Log
 import com.avoqado.pos.core.data.network.models.PaymentUpdateMessage
+import com.avoqado.pos.core.data.network.models.ShiftUpdateMessage
 import com.google.gson.Gson
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -15,6 +16,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.net.URISyntaxException
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 object SocketIOManager {
     private var socket: Socket? = null
@@ -27,10 +31,17 @@ object SocketIOManager {
     // New flow for venue-level events
     private val _venueMessageFlow = MutableSharedFlow<PaymentUpdateMessage>()
     val venueMessageFlow: SharedFlow<PaymentUpdateMessage> = _venueMessageFlow.asSharedFlow()
+    
+    // New flow for shift events
+    private val _shiftMessageFlow = MutableSharedFlow<ShiftUpdateMessage>()
+    val shiftMessageFlow: SharedFlow<ShiftUpdateMessage> = _shiftMessageFlow.asSharedFlow()
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     private val gson = Gson()
     private var serverUrl: String? = null
+
+    private val _isWebSocketConnected = MutableStateFlow(false)
+    val isWebSocketConnected: StateFlow<Boolean> = _isWebSocketConnected.asStateFlow()
 
     fun getServerUrl(): String {
         // If we already have a stored URL, return it
@@ -59,6 +70,7 @@ object SocketIOManager {
                 // Listen for connection events
                 socket?.on(Socket.EVENT_CONNECT) {
                     Log.d("SocketIO", "Connected to $url")
+                    _isWebSocketConnected.value = true
 
                     // Resubscribe to room if there was one
                     if (currentRoomId != null) {
@@ -77,14 +89,17 @@ object SocketIOManager {
 
                 socket?.on(Socket.EVENT_DISCONNECT) {
                     Log.d("SocketIO", "Disconnected from server")
+                    _isWebSocketConnected.value = false
                 }
 
                 socket?.on(Socket.EVENT_CONNECT_ERROR) { args ->
                     Log.e("SocketIO", "Connection error: ${args.firstOrNull()}")
+                    _isWebSocketConnected.value = false
                 }
 
             } catch (e: URISyntaxException) {
                 Log.e("SocketIO", "Socket connection error: ${e.message}")
+                _isWebSocketConnected.value = false
             }
         } else {
             Log.d("SocketIO", "Socket already initialized")
@@ -149,6 +164,9 @@ object SocketIOManager {
 
         // Register for venue-level updatePos events
         socket?.on("updatePos", onVenueUpdate)
+        
+        // Register for shift update events
+        socket?.on("shiftUpdate", onShiftUpdate)
     }
 
     fun leaveMobileRoom(venueId: String) {
@@ -163,6 +181,7 @@ object SocketIOManager {
 
         socket?.emit("leaveMobileRoom", roomData)
         socket?.off("updatePos", onVenueUpdate)
+        socket?.off("shiftUpdate", onShiftUpdate)
         currentVenueRoomId = null
         Log.d("SocketIO", "Left venue room: $venueId")
     }
@@ -240,6 +259,40 @@ object SocketIOManager {
             }
         } catch (e: Exception) {
             Log.e("SocketIO", "Error handling venue socket event", e)
+        }
+    }
+
+    // New listener for shift update events
+    private val onShiftUpdate = Emitter.Listener { args ->
+        Log.d("SocketIO", "Received shift update event: $args")
+        if (args.isEmpty()) {
+            Log.e("SocketIO", "Empty args in shift update event")
+            return@Listener
+        }
+
+        try {
+            val data = args[0] as JSONObject
+            Log.d("SocketIO", "Parsed shift data: $data")
+
+            // Check if data contains the expected structure
+            if (data.has("data")) {
+                val shiftJson = data.getJSONObject("data")
+                Log.d("SocketIO", "Shift JSON: $shiftJson")
+
+                coroutineScope.launch {
+                    try {
+                        val message = gson.fromJson(shiftJson.toString(), ShiftUpdateMessage::class.java)
+                        Log.d("SocketIO", "Successfully parsed shift message: $message")
+                        _shiftMessageFlow.emit(message)
+                    } catch (e: Exception) {
+                        Log.e("SocketIO", "Error parsing shift socket message: ", e)
+                    }
+                }
+            } else {
+                Log.e("SocketIO", "Missing 'data' field in shift response: $data")
+            }
+        } catch (e: Exception) {
+            Log.e("SocketIO", "Error handling shift socket event", e)
         }
     }
 

@@ -35,7 +35,7 @@ fun ColumnScope.SummaryPage(
         Spacer(Modifier.height(16.dp))
 
         Card(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             colors = CardDefaults.cardColors(
                 containerColor = Color.White
             )
@@ -143,28 +143,42 @@ fun ColumnScope.SummaryPage(
                     )
                 )
 
-                Row {
+                if (summary?.tips.isNullOrEmpty()) {
+                    // Mostrar mensaje cuando no hay propinas
+                    Spacer(Modifier.height(16.dp))
                     Text(
-                        text = "Nombre",
-                        modifier = Modifier.weight(0.75f),
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold
+                        text = "Aún no existen propinas para mostrar",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            color = Color.Gray,
+                            fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                         )
                     )
-
-                    Text(
-                        text = "Propina",
-                        modifier = Modifier.weight(0.25f),
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = Color.Black,
-                            fontWeight = FontWeight.Bold
+                    Spacer(Modifier.height(8.dp))
+                } else {
+                    // Mostrar la lista de propinas cuando hay datos
+                    Row {
+                        Text(
+                            text = "Nombre",
+                            modifier = Modifier.weight(0.75f),
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold
+                            )
                         )
-                    )
-                }
 
-                summary?.tips?.let {
-                    it.forEach { tip ->
+                        Text(
+                            text = "Propina",
+                            modifier = Modifier.weight(0.25f),
+                            style = MaterialTheme.typography.bodySmall.copy(
+                                color = Color.Black,
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+
+                    summary?.tips?.forEach { tip ->
                         Row(
                             modifier = Modifier.padding(
                                 bottom = 4.dp
