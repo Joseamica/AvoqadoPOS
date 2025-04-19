@@ -3,6 +3,7 @@ package com.avoqado.pos.features.payment.presentation.navigation
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.avoqado.pos.core.presentation.navigation.NavAnimation
 import com.avoqado.pos.core.presentation.navigation.NavigationAction
 import com.avoqado.pos.features.payment.presentation.transactions.SummaryTabs
 import com.menta.android.common_cross.util.ARG
@@ -32,11 +33,17 @@ sealed class PaymentDests : NavigationAction {
                     nullable = false
                 }
             )
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.fade()
     }
 
     data object PaymentResult: PaymentDests(){
         override val route: String
             get() = "paymentResult"
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.fade()
     }
 
     data object TransactionsSummary: PaymentDests(){
@@ -53,10 +60,16 @@ sealed class PaymentDests : NavigationAction {
                     defaultValue = SummaryTabs.RESUMEN.name
                 }
             )
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.fade()
     }
 
     data object QuickPayment: PaymentDests(){
         override val route: String
             get() = "quickPayment"
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.fade()
     }
 }

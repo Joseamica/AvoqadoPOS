@@ -40,6 +40,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,12 +71,11 @@ fun TablesScreen(
     val isLoading by tablesV.isLoading.collectAsStateWithLifecycle()
     val shiftStarted by tablesV.shiftStarted.collectAsStateWithLifecycle()
 
-    // Add lifecycle management for WebSocket connection
-    DisposableEffect(Unit) {
-        // Start the WebSocket connection when the screen is created
+    LaunchedEffect(Unit) {
         tablesV.startListeningForVenueUpdates()
+    }
 
-        // Clean up WebSocket when the screen is destroyed
+    DisposableEffect(Unit) {
         onDispose {
             tablesV.stopListeningForVenueUpdates()
         }
@@ -90,23 +90,9 @@ fun TablesScreen(
         tables = tables,
         showSettings = showSettings,
         onToggleShift = tablesV::toggleShift,
-        shiftStarted = shiftStarted
+        shiftStarted = shiftStarted,
+        isLoading = isLoading
     )
-
-    if (isLoading) {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = Color.Black.copy(alpha = 0.25f)
-        ) {
-            Box(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-        }
-    }
 }
 
 
@@ -120,7 +106,8 @@ fun HomeContent(
     tables: List<Pair<String, String>>,
     selectedVenue: NetworkVenue?,
     showSettings: Boolean = false,
-    shiftStarted: Boolean = false
+    shiftStarted: Boolean = false,
+    isLoading: Boolean = false
 ) {
     TopMenuContent(
         onBackAction = onBackAction,
@@ -155,56 +142,74 @@ fun HomeContent(
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
-            if (tables.isEmpty()) {
-                // Mensaje cuando no hay mesas activas
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+            Box(modifier = Modifier.weight(1f)) {
+                if (tables.isEmpty() && !isLoading) {
+                    // Mensaje cuando no hay mesas activas
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxSize(),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = null,
-                            tint = Color.LightGray,
-                            modifier = Modifier.size(48.dp)
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            text = "No hay cuentas activas",
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                color = Color.DarkGray,
-                                fontSize = 18.sp
-                            ),
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = "Las mesas con cuentas abiertas aparecerán aquí",
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                color = Color.Gray
-                            ),
-                            textAlign = TextAlign.Center
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = null,
+                                tint = Color.LightGray,
+                                modifier = Modifier.size(48.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                text = "No hay cuentas activas",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    color = Color.DarkGray,
+                                    fontSize = 18.sp
+                                ),
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Las mesas con cuentas abiertas aparecerán aquí",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = Color.Gray
+                                ),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                } else if (!isLoading) {
+                    // Grid de mesas cuando hay mesas disponibles
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(4),
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(8.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(
+                            items = tables,
+                            key = { it.first }
+                        ) { table ->
+                            TableCard(
+                                tableNumber = table.second,
+                                onClick = { onTableSelected(table.first) }
+                            )
+                        }
                     }
                 }
-            } else {
-                // Grid de mesas cuando hay mesas disponibles
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 90.dp), // Adaptativo para mejores proporciones
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(tables) { table ->
-                        TableCard(
-                            tableNumber = table.second,
-                            onClick = { onTableSelected(table.first) }
+                
+                if (isLoading) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.15f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = Color.White
                         )
                     }
                 }
@@ -223,14 +228,14 @@ fun TableCard(
         colors = CardDefaults.cardColors(
             containerColor = Color.White
         ),
-        elevation = CardDefaults.cardElevation(4.dp),
+        elevation = CardDefaults.cardElevation(2.dp),
         modifier = Modifier
             .shadow(
-                elevation = 4.dp,
+                elevation = 2.dp,
                 shape = RoundedCornerShape(10.dp),
                 spotColor = Color.Black.copy(alpha = 0.1f)
             )
-            .aspectRatio(1f) // Mantiene la proporción cuadrada
+            .aspectRatio(1f)
             .clickable(onClick = onClick)
     ) {
         Box(
@@ -241,12 +246,13 @@ fun TableCard(
         ) {
             Text(
                 text = tableNumber,
-                style = MaterialTheme.typography.titleMedium.copy(
+                style = MaterialTheme.typography.bodySmall.copy(
                     color = Color.Black,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                    fontSize = 12.sp
                 ),
                 textAlign = TextAlign.Center,
-                maxLines = 2,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }

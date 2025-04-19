@@ -3,12 +3,16 @@ package com.avoqado.pos.features.management.presentation.navigation
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.avoqado.pos.core.presentation.navigation.NavAnimation
 import com.avoqado.pos.core.presentation.navigation.NavigationAction
 
 sealed class ManagementDests : NavigationAction {
     data object Home: ManagementDests(){
         override val route: String
             get() = "home"
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.fade()
     }
 
     data object TableDetail: ManagementDests(){
@@ -29,25 +33,40 @@ sealed class ManagementDests : NavigationAction {
                     nullable = false
                 }
             )
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.fade()
     }
 
     data object SplitByProduct: ManagementDests(){
         override val route: String
             get() = "splitByProduct"
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.fade()
     }
 
     data object SplitByPerson: ManagementDests(){
         override val route: String
             get() = "splitByPerson"
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.fade()
     }
 
     data object VenueTables: ManagementDests() {
         override val route: String
             get() = "tables"
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.fade()
     }
 
     data object OpenShift: ManagementDests() {
         override val route: String
             get() = "openShift"
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.none()
     }
 }

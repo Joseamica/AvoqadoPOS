@@ -5,6 +5,7 @@ import androidx.navigation.NavDeepLink
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import com.avoqado.pos.core.presentation.navigation.NavAnimation
 import com.avoqado.pos.core.presentation.navigation.NavigationAction
 
 sealed class MainDests : NavigationAction {
@@ -19,11 +20,17 @@ sealed class MainDests : NavigationAction {
                     uriPattern = "menta://login.ui/unauthorized"
                 }
             )
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.none()
     }
 
     data object Splash: MainDests(){
         override val route: String
             get() = "splash"
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.none()
     }
     data object SignIn: MainDests(){
 
@@ -40,6 +47,9 @@ sealed class MainDests : NavigationAction {
                     defaultValue = ""
                 }
             )
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.fade()
     }
 
 }

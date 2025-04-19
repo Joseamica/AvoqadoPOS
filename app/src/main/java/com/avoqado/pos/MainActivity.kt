@@ -1,15 +1,18 @@
 package com.avoqado.pos
 
 
+import android.content.ComponentCallbacks2
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
 import android.util.Log
 import android.os.Bundle
 import android.util.DisplayMetrics
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.core.view.WindowCompat
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.presentation.navigation.NavigationManager
@@ -24,15 +27,29 @@ import com.menta.android.restclient.core.RestClientConfiguration.configure
 class MainActivity : ComponentActivity() {
     private val snackbarDelegate: SnackbarDelegate = SnackbarDelegate()
     private val navigationManager: NavigationManager = NavigationManagerImpl()
-    private val  navigationDispatcher: NavigationDispatcher by lazy {
+    private val navigationDispatcher: NavigationDispatcher by lazy {
         NavigationDispatcher(navigationManager)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Reducir el tiempo de renderizado al inicio
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+            WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED
+        )
+        
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        
+        // Optimizar para dispositivos de baja RAM
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        }
+        
+        // Habilitar decoración de sistema por debajo de la UI
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        
         configure(AppfinRestClientConfigure())
-        // Obtener el serial number y mostrarlo en el log
         val serialNumber = getDeviceSerialNumber()
         Log.d("MainActivity", "Device Serial Number: $serialNumber")
         getScreenInfo()
@@ -62,8 +79,16 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-
     override fun onBackPressed() {
+        // No permitir navegación hacia atrás con botón físico
+    }
+
+    override fun onTrimMemory(level: Int) {
+        super.onTrimMemory(level)
+        // Liberar recursos cuando el sistema reporta baja memoria
+        if (level >= ComponentCallbacks2.TRIM_MEMORY_RUNNING_LOW) {
+            System.gc()
+        }
     }
 
     private fun getDeviceSerialNumber(): String {
@@ -74,7 +99,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun getScreenInfo() {
+    private fun getScreenInfo() {
         val displayMetrics = DisplayMetrics()
 
         @Suppress("DEPRECATION") // For older APIs

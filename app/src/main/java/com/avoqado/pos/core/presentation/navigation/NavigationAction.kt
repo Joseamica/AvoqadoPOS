@@ -3,6 +3,8 @@ package com.avoqado.pos.core.presentation.navigation
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.navigation.NamedNavArgument
@@ -35,11 +37,28 @@ data class NavAnimation(
     val popExitTransition: exitAnim
 ) {
     companion object {
+        // Animación horizontal estándar
         fun horizontalSlide() = NavAnimation(
             enterTransition = { slideInHorizontally(initialOffsetX = { 1000 }) },
             exitTransition = { slideOutHorizontally(targetOffsetX = { -1000 }) },
             popEnterTransition = { slideInHorizontally(initialOffsetX = { -1000 }) },
             popExitTransition = { slideOutHorizontally(targetOffsetX = { 1000 }) }
+        )
+        
+        // Animación de fade simple - más eficiente para dispositivos con poca RAM
+        fun fade() = NavAnimation(
+            enterTransition = { fadeIn(initialAlpha = 0.3f) },
+            exitTransition = { fadeOut(targetAlpha = 0.3f) },
+            popEnterTransition = { fadeIn(initialAlpha = 0.3f) },
+            popExitTransition = { fadeOut(targetAlpha = 0.3f) }
+        )
+        
+        // Sin animación - opción más eficiente para dispositivos muy limitados
+        fun none() = NavAnimation(
+            enterTransition = { EnterTransition.None },
+            exitTransition = { ExitTransition.None },
+            popEnterTransition = { EnterTransition.None },
+            popExitTransition = { ExitTransition.None }
         )
     }
 }
