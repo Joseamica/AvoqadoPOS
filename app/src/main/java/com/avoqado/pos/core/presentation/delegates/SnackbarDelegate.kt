@@ -7,6 +7,8 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 sealed class SnackbarState {
@@ -22,6 +24,18 @@ class SnackbarDelegate {
     var isOnTop: Boolean = false
 
     private var snackbarState: SnackbarState = SnackbarState.Default
+    private var lastShownMessage: String = ""
+    private var lastShownTime: Long = 0
+    private var debounceTimeMs: Long = 2000 // 2 seconds debounce
+    private var currentJob: Job? = null
+    
+    // List of common messages to filter out completely
+    private val messagesToFilter = listOf(
+        "Algo salio mal...",
+        "Ocurrio un error!",
+        "Error de conexión"
+        // Add more messages to filter as needed
+    )
 
     val snackbar: @Composable (SnackbarData) -> Unit
         get() {
@@ -55,8 +69,25 @@ class SnackbarDelegate {
         actionLabel: String? = null,
         duration: SnackbarDuration = SnackbarDuration.Short
     ) {
+        // Filter out unwanted messages completely
+        if (messagesToFilter.contains(message)) {
+            return
+        }
+        
+        // Prevent showing the same message in quick succession
+        val currentTime = System.currentTimeMillis()
+        if (message == lastShownMessage && (currentTime - lastShownTime) < debounceTimeMs) {
+            return
+        }
+        
+        // Cancel any pending snackbar
+        currentJob?.cancel()
+        
         this.snackbarState = state
-        coroutineScope?.launch {
+        lastShownMessage = message
+        lastShownTime = currentTime
+        
+        currentJob = coroutineScope?.launch {
             snackbarHostState?.showSnackbar(
                 message = message,
                 actionLabel = actionLabel,
@@ -71,9 +102,26 @@ class SnackbarDelegate {
         actionLabel: String? = null,
         duration: SnackbarDuration = SnackbarDuration.Short
     ) {
+        // Filter out unwanted messages completely
+        if (messagesToFilter.contains(message)) {
+            return
+        }
+        
+        // Prevent showing the same message in quick succession
+        val currentTime = System.currentTimeMillis()
+        if (message == lastShownMessage && (currentTime - lastShownTime) < debounceTimeMs) {
+            return
+        }
+        
+        // Cancel any pending snackbar
+        currentJob?.cancel()
+        
         this.snackbarState = state
         this.isOnTop = true
-        coroutineScope?.launch {
+        lastShownMessage = message
+        lastShownTime = currentTime
+        
+        currentJob = coroutineScope?.launch {
             snackbarHostState?.showSnackbar(
                 message = message,
                 actionLabel = actionLabel,

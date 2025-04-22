@@ -86,6 +86,26 @@ fun ShiftNotStartedSheet(
                 textAlign = TextAlign.Center
             )
 
+            Spacer(Modifier.height(16.dp))
+            
+            Button(
+                onClick = { viewModel.checkShiftStatus() },
+                modifier = Modifier
+                    .height(72.dp)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Black,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = "Verificar si turno esta abierto",
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
+
             Spacer(Modifier.height(24.dp))
 
             if (isLoading) {

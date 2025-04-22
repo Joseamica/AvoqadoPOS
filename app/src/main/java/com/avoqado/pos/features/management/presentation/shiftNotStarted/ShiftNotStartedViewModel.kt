@@ -54,4 +54,44 @@ class ShiftNotStartedViewModel constructor(
             }
         }
     }
+
+    fun checkShiftStatus() {
+        viewModelScope.launch {
+            _isLoading.update { true }
+            sessionManager.getVenueInfo()?.let {
+                try {
+                    val currentShift = terminalRepository.getTerminalShift(
+                        venueId = it.id ?: "",
+                        posName = it.posName ?: ""
+                    )
+                    sessionManager.setShift(currentShift)
+                    
+                    if (currentShift.endTime == null) {
+                        // Shift is active, show success message and navigate back
+                        snackbarDelegate.showSnackbar(
+                            message = "Turno abierto, puede continuar"
+                        )
+                        navigationDispatcher.navigateBack()
+                    } else {
+                        // Shift not active, show message
+                        snackbarDelegate.showSnackbar(
+                            message = "Turno cerrado, abre el turno desde tu sistema POS"
+                        )
+                    }
+                } catch (e: Exception) {
+                    // For any exception, show a consistent message about closed shift
+                    snackbarDelegate.showSnackbar(
+                        message = "Turno cerrado, abre el turno desde tu sistema POS"
+                    )
+                } finally {
+                    _isLoading.update { false }
+                }
+            } ?: run {
+                snackbarDelegate.showSnackbar(
+                    message = "No hay información del establecimiento"
+                )
+                _isLoading.update { false }
+            }
+        }
+    }
 }
