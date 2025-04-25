@@ -1,17 +1,16 @@
 package com.avoqado.pos.features.authorization.presentation.splash
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavOptions
 import com.avoqado.pos.AppfinRestClientConfigure
-import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.AvoqadoAPI
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.delegates.SnackbarState
 import com.avoqado.pos.core.presentation.destinations.MainDests
+import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.menta.android.keys.admin.core.response.keys.SecretsV2
@@ -34,9 +33,8 @@ class SplashViewModel constructor(
     private val sessionManager: SessionManager,
     private val snackbarDelegate: SnackbarDelegate,
     private val terminalRepository: TerminalRepository,
-    private val managementRepository: ManagementRepository
+    private val managementRepository: ManagementRepository,
 ) : ViewModel() {
-
     val operationPreference = sessionManager.getOperationPreference()
 
     companion object {
@@ -67,10 +65,11 @@ class SplashViewModel constructor(
                     val venue = managementRepository.getVenue(it)
                     sessionManager.saveVenueInfo(venue)
 
-                    val shift = terminalRepository.getTerminalShift(
-                        venueId = it,
-                        posName = venue.posName?:""
-                    )
+                    val shift =
+                        terminalRepository.getTerminalShift(
+                            venueId = it,
+                            posName = venue.posName ?: "",
+                        )
                     sessionManager.setShift(shift)
 
                     if (currentUser == null) {
@@ -81,7 +80,7 @@ class SplashViewModel constructor(
                 } ?: run {
                     snackbarDelegate.showSnackbar(
                         state = SnackbarState.Default,
-                        message = "No tienes asignado un restaurante a este terminal."
+                        message = "No tienes asignado un restaurante a este terminal.",
                     )
                 }
             } catch (e: Exception) {
@@ -95,8 +94,6 @@ class SplashViewModel constructor(
                 }
             }
         }
-
-
     }
 
     private fun startup() {
@@ -120,7 +117,7 @@ class SplashViewModel constructor(
                 }
 
                 navigationDispatcher.navigateTo(
-                    ManagementDests.Home
+                    ManagementDests.Home,
                 )
             } catch (e: Exception) {
                 Timber.e("Error fetching terminals", e)
@@ -146,7 +143,10 @@ class SplashViewModel constructor(
         }
     }
 
-    fun storePublicKey(token: String, tokenType: String) {
+    fun storePublicKey(
+        token: String,
+        tokenType: String,
+    ) {
         storage.putIdToken(token)
         storage.putTokenType(tokenType)
         viewModelScope.launch {
@@ -156,16 +156,18 @@ class SplashViewModel constructor(
 
     fun handleMasterKey(secretsList: ArrayList<SecretsV2>?) {
         if (secretsList != null) {
-            //TODO: aca se debe verificar si el usuario esta logeado en Avoqado API
+            // TODO: aca se debe verificar si el usuario esta logeado en Avoqado API
 
             if (_isRefreshing.value) {
                 getTerminalInfo(serialNumber)
             } else {
                 navigationDispatcher.navigateTo(
                     ManagementDests.Home.route,
-                    navOptions = NavOptions.Builder()
-                        .setPopUpTo(MainDests.Splash.route, inclusive = true)
-                        .build()
+                    navOptions =
+                        NavOptions
+                            .Builder()
+                            .setPopUpTo(MainDests.Splash.route, inclusive = true)
+                            .build(),
                 )
             }
         } else {

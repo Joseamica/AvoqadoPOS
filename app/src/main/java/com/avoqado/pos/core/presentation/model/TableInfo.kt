@@ -5,5 +5,5 @@ data class TableInfo(
     val waiterName: String,
     val orderNumber: String,
     val folio: String,
-    val timestamp: String
+    val timestamp: String,
 )

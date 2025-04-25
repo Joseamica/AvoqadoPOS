@@ -21,8 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,30 +35,29 @@ import com.avoqado.pos.R
 @Composable
 fun ShiftNotStartedSheet(
     viewModel: ShiftNotStartedViewModel,
-    isButtonDisabled: Boolean = true
+    isButtonDisabled: Boolean = true,
 ) {
-
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
 
     Surface(
         modifier = Modifier.clip(RoundedCornerShape(10.dp, 10.dp, 0.dp, 0.dp)),
         color = MaterialTheme.colorScheme.surface,
-        shadowElevation = ModalBottomSheetDefaults.Elevation
+        shadowElevation = ModalBottomSheetDefaults.Elevation,
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "Abrir turno",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 )
 
                 IconButton(
@@ -70,9 +69,9 @@ fun ShiftNotStartedSheet(
                     content = {
                         Icon(
                             painter = painterResource(R.drawable.baseline_close_24),
-                            contentDescription = null
+                            contentDescription = null,
                         )
-                    }
+                    },
                 )
             }
 
@@ -80,29 +79,32 @@ fun ShiftNotStartedSheet(
 
             Text(
                 text = "Para continuar abrir turno desde el POS",
-                style = MaterialTheme.typography.titleMedium.copy(
-                    color = Color.Black
-                ),
-                textAlign = TextAlign.Center
+                style =
+                    MaterialTheme.typography.titleMedium.copy(
+                        color = Color.Black,
+                    ),
+                textAlign = TextAlign.Center,
             )
 
             Spacer(Modifier.height(16.dp))
-            
+
             Button(
                 onClick = { viewModel.checkShiftStatus() },
-                modifier = Modifier
-                    .height(72.dp)
-                    .fillMaxWidth(),
+                modifier =
+                    Modifier
+                        .height(72.dp)
+                        .fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Black,
-                    contentColor = Color.White
-                )
+                colors =
+                    ButtonDefaults.buttonColors(
+                        containerColor = Color.Black,
+                        contentColor = Color.White,
+                    ),
             ) {
                 Text(
                     text = "Verificar si turno esta abierto",
                     color = Color.White,
-                    style = MaterialTheme.typography.titleSmall
+                    style = MaterialTheme.typography.titleSmall,
                 )
             }
 
@@ -113,21 +115,23 @@ fun ShiftNotStartedSheet(
             } else {
                 Button(
                     onClick = { if (!isButtonDisabled) viewModel.onOpenShift() },
-                    modifier = Modifier
-                        .height(72.dp)
-                        .fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .height(72.dp)
+                            .fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isButtonDisabled) Color.Gray else Color.Black,
-                        contentColor = Color.White
-                    ),
-                    enabled = !isButtonDisabled
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = if (isButtonDisabled) Color.Gray else Color.Black,
+                            contentColor = Color.White,
+                        ),
+                    enabled = !isButtonDisabled,
                 ) {
                     Text(
                         text = "Abrir turno",
                         color = Color.White,
                         style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.alpha(if (isButtonDisabled) 0.6f else 1f)
+                        modifier = Modifier.alpha(if (isButtonDisabled) 0.6f else 1f),
                     )
                 }
             }

@@ -5,6 +5,4 @@ fun String.toAmountMx(): String {
     return "%.2f".format(amount)
 }
 
-fun String.toAmountMXDouble(): Double {
-    return this.toDouble() / 100
-}
+fun String.toAmountMXDouble(): Double = this.toDouble() / 100

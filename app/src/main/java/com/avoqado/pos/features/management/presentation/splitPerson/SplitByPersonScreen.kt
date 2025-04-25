@@ -25,19 +25,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.core.presentation.components.MainButton
 import com.avoqado.pos.core.presentation.components.SelectableItemRow
+import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
 import com.avoqado.pos.core.presentation.model.IconType
 import com.avoqado.pos.core.presentation.theme.AppFont
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
-import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 
 @Composable
-fun SplitByPersonScreen(
-    splitByPersonViewModel: SplitByPersonViewModel
-) {
-
+fun SplitByPersonScreen(splitByPersonViewModel: SplitByPersonViewModel) {
     val state by splitByPersonViewModel.state.collectAsStateWithLifecycle()
 
     SplitByPersonContent(
@@ -49,10 +46,9 @@ fun SplitByPersonScreen(
         totalPendingAmount = state.totalPendingAmount,
         splitPartySelected = state.splitPartySelected,
         splitPartySize = state.splitPartySize,
-        splitPartyPaidSize = state.splitPartyPaidSize
+        splitPartyPaidSize = state.splitPartyPaidSize,
     )
 }
-
 
 @Composable
 fun SplitByPersonContent(
@@ -64,12 +60,12 @@ fun SplitByPersonContent(
     totalSelectedAmount: String,
     splitPartySize: Int,
     splitPartyPaidSize: Int,
-    splitPartySelected: List<Int>
+    splitPartySelected: List<Int>,
 ) {
     val context = LocalContext.current
-    val amountSplit by remember (splitPartySize){
+    val amountSplit by remember(splitPartySize) {
         derivedStateOf {
-            if (splitPartySize > 0 ) {
+            if (splitPartySize > 0) {
                 "%.2f".format((totalPendingAmount.toDouble() / splitPartySize).toDouble())
             } else {
                 "0.00"
@@ -77,37 +73,40 @@ fun SplitByPersonContent(
         }
     }
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.Black)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .background(Color.Black),
         ) {
             ToolbarWithIcon(
                 color = Color.Black,
                 contentColor = Color.White,
                 title = "Queda por pagar: \$$totalPendingAmount",
-                iconAction = IconAction(
-                    iconType = IconType.BACK,
-                    flowStep = FlowStep.NAVIGATE_BACK,
-                    context = context
-                ),
+                iconAction =
+                    IconAction(
+                        iconType = IconType.BACK,
+                        flowStep = FlowStep.NAVIGATE_BACK,
+                        context = context,
+                    ),
                 onAction = {
                     onNavigateBack()
-                }
+                },
             )
 
             if (splitPartyPaidSize == 0) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            horizontal = 24.dp,
-                            vertical = 28.dp
-                        ),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = 24.dp,
+                                vertical = 28.dp,
+                            ),
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
                     MainButton(
                         modifier = Modifier.size(60.dp),
@@ -116,15 +115,16 @@ fun SplitByPersonContent(
                             onChangeSplitSize(false)
                         },
                         color = Color.White,
-                        textColor = Color.Black
+                        textColor = Color.Black,
                     )
 
                     Text(
                         text = "$splitPartySize partes",
-                        style = MaterialTheme.typography.headlineSmall.copy(
-                            color = Color.White,
-                            fontFamily = AppFont.EffraFamily
-                        )
+                        style =
+                            MaterialTheme.typography.headlineSmall.copy(
+                                color = Color.White,
+                                fontFamily = AppFont.EffraFamily,
+                            ),
                     )
 
                     MainButton(
@@ -134,23 +134,24 @@ fun SplitByPersonContent(
                             onChangeSplitSize(true)
                         },
                         color = Color.White,
-                        textColor = Color.Black
+                        textColor = Color.Black,
                     )
                 }
             }
         }
 
         LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .padding(
-                    horizontal = 16.dp
-                )
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(
+                        horizontal = 16.dp,
+                    ),
         ) {
             items(
                 count = splitPartySize,
-                key = { index -> index }
+                key = { index -> index },
             ) { index ->
 
                 val isPaid = index < splitPartyPaidSize
@@ -160,18 +161,20 @@ fun SplitByPersonContent(
                     label = "Persona ${index + 1}",
                     data = index,
                     isSelected = isSelected,
-                    trailingLabel = if (isPaid) {
-                        "Pagado"
-                    } else {
-                        "\$$amountSplit"
-                    },
-                    onItemTap = if (isPaid) {
-                        null
-                    } else {
-                        {
-                            onPersonSelected(it)
-                        }
-                    }
+                    trailingLabel =
+                        if (isPaid) {
+                            "Pagado"
+                        } else {
+                            "\$$amountSplit"
+                        },
+                    onItemTap =
+                        if (isPaid) {
+                            null
+                        } else {
+                            {
+                                onPersonSelected(it)
+                            }
+                        },
                 )
             }
         }
@@ -180,14 +183,14 @@ fun SplitByPersonContent(
 
         if (splitPartySelected.isNotEmpty()) {
             MainButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = 16.dp
-                    )
-                    .padding(bottom = 24.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = 16.dp,
+                        ).padding(bottom = 24.dp),
                 onClickR = onPayTapped,
-                text = "Pagar ${splitPartySelected.size} partes • \$$totalSelectedAmount"
+                text = "Pagar ${splitPartySelected.size} partes • \$$totalSelectedAmount",
             )
         }
     }

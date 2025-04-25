@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.data.network.models.transactions.payments
 
-
 import com.google.gson.annotations.SerializedName
 
 data class Bill(
@@ -11,5 +10,5 @@ data class Bill(
     @SerializedName("status")
     val status: String?,
     @SerializedName("total")
-    val total: String?
+    val total: String?,
 )

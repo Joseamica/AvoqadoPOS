@@ -11,14 +11,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.net.URISyntaxException
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 
 object SocketIOManager {
     private var socket: Socket? = null
@@ -31,7 +31,7 @@ object SocketIOManager {
     // New flow for venue-level events
     private val _venueMessageFlow = MutableSharedFlow<PaymentUpdateMessage>()
     val venueMessageFlow: SharedFlow<PaymentUpdateMessage> = _venueMessageFlow.asSharedFlow()
-    
+
     // New flow for shift events
     private val _shiftMessageFlow = MutableSharedFlow<ShiftUpdateMessage>()
     val shiftMessageFlow: SharedFlow<ShiftUpdateMessage> = _shiftMessageFlow.asSharedFlow()
@@ -50,7 +50,7 @@ object SocketIOManager {
         }
 
         // Otherwise return the default URL (replace with your actual server URL)
-        return "https://ee2b-2806-2f0-9140-e9df-45a0-7fbf-a066-4e70.ngrok-free.app"
+        return "https://3cee-189-203-45-177.ngrok-free.app"
     }
 
     fun connect(url: String) {
@@ -58,11 +58,13 @@ object SocketIOManager {
         if (socket == null) {
             try {
                 // Configure socket options with reconnection settings
-                val options = IO.Options.builder()
-                    .setReconnection(true)
-                    .setReconnectionAttempts(10)
-                    .setReconnectionDelay(1000)
-                    .build()
+                val options =
+                    IO.Options
+                        .builder()
+                        .setReconnection(true)
+                        .setReconnectionAttempts(10)
+                        .setReconnectionDelay(1000)
+                        .build()
 
                 socket = IO.socket(url, options)
                 socket?.connect()
@@ -80,9 +82,12 @@ object SocketIOManager {
 
                     // Resubscribe to venue room if there was one
                     if (currentVenueRoomId != null) {
-                        socket?.emit("joinMobileRoom", JSONObject().apply {
-                            put("venueId", currentVenueRoomId)
-                        })
+                        socket?.emit(
+                            "joinMobileRoom",
+                            JSONObject().apply {
+                                put("venueId", currentVenueRoomId)
+                            },
+                        )
                         Log.d("SocketIO", "Resubscribed to venue room after reconnect: $currentVenueRoomId")
                     }
                 }
@@ -96,7 +101,6 @@ object SocketIOManager {
                     Log.e("SocketIO", "Connection error: ${args.firstOrNull()}")
                     _isWebSocketConnected.value = false
                 }
-
             } catch (e: URISyntaxException) {
                 Log.e("SocketIO", "Socket connection error: ${e.message}")
                 _isWebSocketConnected.value = false
@@ -106,22 +110,27 @@ object SocketIOManager {
         }
     }
 
-    fun subscribeToTable(venueId: String, billName: String) {
+    fun subscribeToTable(
+        venueId: String,
+        billName: String,
+    ) {
         if (socket == null) {
             Log.e("SocketIO", "Cannot subscribe - socket not initialized")
             serverUrl?.let { connect(it) } // Try to reconnect if we have a URL
             return
         }
 
-        val newRoomId = JSONObject().apply {
-            put("venueId", venueId)
-            put("table", billName)
-        }
+        val newRoomId =
+            JSONObject().apply {
+                put("venueId", venueId)
+                put("table", billName)
+            }
 
         // Check if we're already subscribed to this room (proper JSONObject comparison)
         if (currentRoomId != null &&
             currentRoomId!!.optString("venueId") == venueId &&
-            currentRoomId!!.optString("table") == billName) {
+            currentRoomId!!.optString("table") == billName
+        ) {
             Log.d("SocketIO", "Already subscribed to room: $newRoomId")
             return // Already subscribed to this room
         }
@@ -154,9 +163,10 @@ object SocketIOManager {
             leaveMobileRoom(currentVenueRoomId!!)
         }
 
-        val roomData = JSONObject().apply {
-            put("venueId", venueId)
-        }
+        val roomData =
+            JSONObject().apply {
+                put("venueId", venueId)
+            }
 
         socket?.emit("joinMobileRoom", roomData)
         currentVenueRoomId = venueId
@@ -164,7 +174,7 @@ object SocketIOManager {
 
         // Register for venue-level updatePos events
         socket?.on("updatePos", onVenueUpdate)
-        
+
         // Register for shift update events
         socket?.on("shiftUpdate", onShiftUpdate)
     }
@@ -175,9 +185,10 @@ object SocketIOManager {
             return
         }
 
-        val roomData = JSONObject().apply {
-            put("venueId", venueId)
-        }
+        val roomData =
+            JSONObject().apply {
+                put("venueId", venueId)
+            }
 
         socket?.emit("leaveMobileRoom", roomData)
         socket?.off("updatePos", onVenueUpdate)
@@ -195,106 +206,109 @@ object SocketIOManager {
         }
     }
 
-    private val onUpdateOrder = Emitter.Listener { args ->
-        Log.d("SocketIO", "Received updatePos event: $args")
-        if (args.isEmpty()) {
-            Log.e("SocketIO", "Empty args in updatePos event")
-            return@Listener
-        }
-
-        try {
-            val data = args[0] as JSONObject
-            Log.d("SocketIO", "Parsed data: $data")
-
-            // Check if data contains the expected structure
-            if (data.has("data")) {
-                val paymentJson = data.getJSONObject("data")
-                Log.d("SocketIO", "Payment JSON: $paymentJson")
-
-                coroutineScope.launch {
-                    try {
-                        val message = gson.fromJson(paymentJson.toString(), PaymentUpdateMessage::class.java)
-                        Log.d("SocketIO", "Successfully parsed message: $message")
-                        _messageFlow.emit(message)
-                    } catch (e: Exception) {
-                        Log.e("SocketIO", "Error parsing socket message: ", e)
-                    }
-                }
-            } else {
-                Log.e("SocketIO", "Missing 'data' field in response: $data")
+    private val onUpdateOrder =
+        Emitter.Listener { args ->
+            Log.d("SocketIO", "Received updatePos event: $args")
+            if (args.isEmpty()) {
+                Log.e("SocketIO", "Empty args in updatePos event")
+                return@Listener
             }
-        } catch (e: Exception) {
-            Log.e("SocketIO", "Error handling socket event", e)
+
+            try {
+                val data = args[0] as JSONObject
+                Log.d("SocketIO", "Parsed data: $data")
+
+                // Check if data contains the expected structure
+                if (data.has("data")) {
+                    val paymentJson = data.getJSONObject("data")
+                    Log.d("SocketIO", "Payment JSON: $paymentJson")
+
+                    coroutineScope.launch {
+                        try {
+                            val message = gson.fromJson(paymentJson.toString(), PaymentUpdateMessage::class.java)
+                            Log.d("SocketIO", "Successfully parsed message: $message")
+                            _messageFlow.emit(message)
+                        } catch (e: Exception) {
+                            Log.e("SocketIO", "Error parsing socket message: ", e)
+                        }
+                    }
+                } else {
+                    Log.e("SocketIO", "Missing 'data' field in response: $data")
+                }
+            } catch (e: Exception) {
+                Log.e("SocketIO", "Error handling socket event", e)
+            }
         }
-    }
 
     // New listener for venue-level events
-    private val onVenueUpdate = Emitter.Listener { args ->
-        Log.d("SocketIO", "Received venue updatePos event: $args")
-        if (args.isEmpty()) {
-            Log.e("SocketIO", "Empty args in venue updatePos event")
-            return@Listener
-        }
-
-        try {
-            val data = args[0] as JSONObject
-            Log.d("SocketIO", "Parsed venue data: $data")
-
-            // Check if data contains the expected structure
-            if (data.has("data")) {
-                val paymentJson = data.getJSONObject("data")
-                Log.d("SocketIO", "Venue payment JSON: $paymentJson")
-
-                coroutineScope.launch {
-                    try {
-                        val message = gson.fromJson(paymentJson.toString(), PaymentUpdateMessage::class.java)
-                        Log.d("SocketIO", "Successfully parsed venue message: $message")
-                        _venueMessageFlow.emit(message)
-                    } catch (e: Exception) {
-                        Log.e("SocketIO", "Error parsing venue socket message: ", e)
-                    }
-                }
-            } else {
-                Log.e("SocketIO", "Missing 'data' field in venue response: $data")
+    private val onVenueUpdate =
+        Emitter.Listener { args ->
+            Log.d("SocketIO", "Received venue updatePos event: $args")
+            if (args.isEmpty()) {
+                Log.e("SocketIO", "Empty args in venue updatePos event")
+                return@Listener
             }
-        } catch (e: Exception) {
-            Log.e("SocketIO", "Error handling venue socket event", e)
+
+            try {
+                val data = args[0] as JSONObject
+                Log.d("SocketIO", "Parsed venue data: $data")
+
+                // Check if data contains the expected structure
+                if (data.has("data")) {
+                    val paymentJson = data.getJSONObject("data")
+                    Log.d("SocketIO", "Venue payment JSON: $paymentJson")
+
+                    coroutineScope.launch {
+                        try {
+                            val message = gson.fromJson(paymentJson.toString(), PaymentUpdateMessage::class.java)
+                            Log.d("SocketIO", "Successfully parsed venue message: $message")
+                            _venueMessageFlow.emit(message)
+                        } catch (e: Exception) {
+                            Log.e("SocketIO", "Error parsing venue socket message: ", e)
+                        }
+                    }
+                } else {
+                    Log.e("SocketIO", "Missing 'data' field in venue response: $data")
+                }
+            } catch (e: Exception) {
+                Log.e("SocketIO", "Error handling venue socket event", e)
+            }
         }
-    }
 
     // New listener for shift update events
-    private val onShiftUpdate = Emitter.Listener { args ->
-        Log.d("SocketIO", "Received shift update event: $args")
-        if (args.isEmpty()) {
-            Log.e("SocketIO", "Empty args in shift update event")
-            return@Listener
-        }
-
-        try {
-            val data = args[0] as JSONObject
-            Log.d("SocketIO", "Parsed shift data: $data")
-
-            // Check if data contains the expected structure
-            if (data.has("data")) {
-                val shiftJson = data.getJSONObject("data")
-                Log.d("SocketIO", "Shift JSON: $shiftJson")
-
-                coroutineScope.launch {
-                    try {
-                        val message = gson.fromJson(shiftJson.toString(), ShiftUpdateMessage::class.java)
-                        Log.d("SocketIO", "Successfully parsed shift message: $message")
-                        _shiftMessageFlow.emit(message)
-                    } catch (e: Exception) {
-                        Log.e("SocketIO", "Error parsing shift socket message: ", e)
-                    }
-                }
-            } else {
-                Log.e("SocketIO", "Missing 'data' field in shift response: $data")
+    private val onShiftUpdate =
+        Emitter.Listener { args ->
+            Log.d("SocketIO", "Received shift update event: $args")
+            if (args.isEmpty()) {
+                Log.e("SocketIO", "Empty args in shift update event")
+                return@Listener
             }
-        } catch (e: Exception) {
-            Log.e("SocketIO", "Error handling shift socket event", e)
+
+            try {
+                val data = args[0] as JSONObject
+                Log.d("SocketIO", "Parsed shift data: $data")
+
+                // Check if data contains the expected structure
+                if (data.has("data")) {
+                    val shiftJson = data.getJSONObject("data")
+                    Log.d("SocketIO", "Shift JSON: $shiftJson")
+
+                    coroutineScope.launch {
+                        try {
+                            val message = gson.fromJson(shiftJson.toString(), ShiftUpdateMessage::class.java)
+                            Log.d("SocketIO", "Successfully parsed shift message: $message")
+                            _shiftMessageFlow.emit(message)
+                        } catch (e: Exception) {
+                            Log.e("SocketIO", "Error parsing shift socket message: ", e)
+                        }
+                    }
+                } else {
+                    Log.e("SocketIO", "Missing 'data' field in shift response: $data")
+                }
+            } catch (e: Exception) {
+                Log.e("SocketIO", "Error handling shift socket event", e)
+            }
         }
-    }
 
     fun disconnect() {
         unsubscribe()
@@ -310,7 +324,5 @@ object SocketIOManager {
     }
 
     // Helper method to check connection status
-    fun isConnected(): Boolean {
-        return socket?.connected() == true
-    }
+    fun isConnected(): Boolean = socket?.connected() == true
 }

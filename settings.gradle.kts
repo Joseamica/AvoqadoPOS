@@ -24,4 +24,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "avoqado-pos"
 include(":app")
- 

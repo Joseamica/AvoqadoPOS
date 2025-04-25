@@ -2,7 +2,7 @@ package com.avoqado.pos.features.payment.data.cache.models
 
 import java.time.LocalDateTime
 
-data class PaymentCacheEntity (
+data class PaymentCacheEntity(
     val tipAmount: Double,
     val subtotal: Double,
     val paymentId: String,
@@ -13,5 +13,5 @@ data class PaymentCacheEntity (
     val venueId: String,
     val tableNumber: String,
     val billId: String,
-    val products: List<String>
+    val products: List<String>,
 )

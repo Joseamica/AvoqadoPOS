@@ -7,5 +7,5 @@ data class User(
     val name: String,
     val primaryMerchantId: String,
     val secondaryMerchantId: String?,
-    val secondaryApiKey: String?
+    val secondaryApiKey: String?,
 )

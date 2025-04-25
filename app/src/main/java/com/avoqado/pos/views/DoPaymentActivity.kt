@@ -7,7 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.ui.res.stringResource
-import com.avoqado.pos.core.presentation.model.enums.Acquirer
 import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.MainActivity
@@ -15,13 +14,14 @@ import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.R
 import com.avoqado.pos.core.domain.models.AvoqadoError
 import com.avoqado.pos.core.domain.models.SplitType
+import com.avoqado.pos.core.presentation.model.enums.Acquirer
+import com.avoqado.pos.core.presentation.utils.Utils.incrementBatch
 import com.avoqado.pos.core.presentation.utils.toAmountMXDouble
 import com.avoqado.pos.customerId
 import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
 import com.avoqado.pos.merchantId
 import com.avoqado.pos.terminalId
 import com.avoqado.pos.ui.screen.ProcessingOperationScreen
-import com.avoqado.pos.core.presentation.utils.Utils.incrementBatch
 import com.google.gson.Gson
 import com.menta.android.common_cross.util.CURRENCY_LABEL_ARG
 import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
@@ -39,9 +39,7 @@ import com.menta.android.restclient.core.RestClientConfiguration
 import timber.log.Timber
 import java.time.LocalDateTime
 
-
 class DoPaymentActivity : ComponentActivity() {
-
     private val operationFlow: OperationFlow?
         get() = OperationFlowHolder.operationFlow
 
@@ -53,7 +51,7 @@ class DoPaymentActivity : ComponentActivity() {
     }
 
     private val currentUser = AvoqadoApp.sessionManager.getAvoqadoSession()
-    private val operationPreference  = AvoqadoApp.sessionManager.getOperationPreference()
+    private val operationPreference = AvoqadoApp.sessionManager.getOperationPreference()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,44 +59,47 @@ class DoPaymentActivity : ComponentActivity() {
         setContent {
             ProcessingOperationScreen(
                 title = stringResource(id = R.string.wait_payment),
-                message = stringResource(id = R.string.whileServicePaymentProcess)
+                message = stringResource(id = R.string.whileServicePaymentProcess),
             )
         }
         RestClientConfiguration.configure(AppfinRestClientConfigure())
         val deviceKeyStorage = DeviceKeyStorage(context = this)
         val dbParams = ParametroDB(this)
         incrementBatch(this)
-        val localData = LocalData(
-            batch = dbParams.getValueParam(DBDefines.batch).toLong(),
-            ticket = dbParams.getValueParam(DBDefines.ticket).toLong(),
-            trace = dbParams.getValueParam(DBDefines.trace).toLong(),
-            terminalId = terminalId,
-            acquirerId = if (operationFlow?.amount?.currency == CURRENCY_LABEL_MX) Acquirer.BANORTE.name else Acquirer.GPS.name,
-            merchantId = currentUser?.let {
-                if (operationPreference) {
-                    it.primaryMerchantId
-                } else {
-                    it.secondaryMerchantId
-                }
-            } ?: merchantId,
-            aesKey = deviceKeyStorage.getAesKeyExecute(),
-            ivKey = deviceKeyStorage.getIvKeyExecute(),
-            banorteKey = deviceKeyStorage.getKeyExecute(),
-            customerId = customerId,
-            currencyLabel = if (operationFlow?.amount?.currency == CURRENCY_LABEL_MX) CURRENCY_LABEL_MX else CURRENCY_LABEL_ARG
-        )
+        val localData =
+            LocalData(
+                batch = dbParams.getValueParam(DBDefines.batch).toLong(),
+                ticket = dbParams.getValueParam(DBDefines.ticket).toLong(),
+                trace = dbParams.getValueParam(DBDefines.trace).toLong(),
+                terminalId = terminalId,
+                acquirerId = if (operationFlow?.amount?.currency == CURRENCY_LABEL_MX) Acquirer.BANORTE.name else Acquirer.GPS.name,
+                merchantId =
+                    currentUser?.let {
+                        if (operationPreference) {
+                            it.primaryMerchantId
+                        } else {
+                            it.secondaryMerchantId
+                        }
+                    } ?: merchantId,
+                aesKey = deviceKeyStorage.getAesKeyExecute(),
+                ivKey = deviceKeyStorage.getIvKeyExecute(),
+                banorteKey = deviceKeyStorage.getKeyExecute(),
+                customerId = customerId,
+                currencyLabel = if (operationFlow?.amount?.currency == CURRENCY_LABEL_MX) CURRENCY_LABEL_MX else CURRENCY_LABEL_ARG,
+            )
         operationFlow?.additional_info = "TEST"
         val emvImpl = EMVImpl()
         val storage = AvoqadoApp.storage
-        val doPayment = DoProcessAdquirerOperationData(
-            context = this,
-            localData = localData,
-            version = "",
-            device = emvImpl,
-            storage = storage,
-            transactionDate = DateUtil.getLocalDateTimeWithOffset(),
-            dataFlow = operationFlow!!
-        )
+        val doPayment =
+            DoProcessAdquirerOperationData(
+                context = this,
+                localData = localData,
+                version = "",
+                device = emvImpl,
+                storage = storage,
+                transactionDate = DateUtil.getLocalDateTimeWithOffset(),
+                dataFlow = operationFlow!!,
+            )
 
         doPayment.doOperation(operationType = operationFlow?.transactionType!!)
         doPayment.operationResponse.observe(this) {
@@ -119,15 +120,28 @@ class DoPaymentActivity : ComponentActivity() {
 
                     AvoqadoApp.paymentRepository.getCachePaymentInfo()?.let { info ->
                         AvoqadoApp.paymentRepository.setCachePaymentInfo(
-                            paymentInfoResult = info.copy(
-                                paymentId = operationResponse.ticketId.toString(),
-                                tipAmount = operationResponse.amount.breakdown.firstOrNull { breakdown ->  breakdown.description == "TIP" }?.amount?.toAmountMXDouble() ?: 0.0,
-                                subtotal = operationResponse.amount.breakdown.firstOrNull { breakdown ->  breakdown.description == "OPERATION" }?.amount?.toAmountMXDouble() ?: 0.0,
-                                date = LocalDateTime.now(),
-                                rootData = operationResponseJson,
-                                splitType = splitType,
-                                waiterName = waiterName
-                            )
+                            paymentInfoResult =
+                                info.copy(
+                                    paymentId = operationResponse.ticketId.toString(),
+                                    tipAmount =
+                                        operationResponse.amount.breakdown
+                                            .firstOrNull { breakdown ->
+                                                breakdown.description == "TIP"
+                                            }?.amount
+                                            ?.toAmountMXDouble()
+                                            ?: 0.0,
+                                    subtotal =
+                                        operationResponse.amount.breakdown
+                                            .firstOrNull { breakdown ->
+                                                breakdown.description == "OPERATION"
+                                            }?.amount
+                                            ?.toAmountMXDouble()
+                                            ?: 0.0,
+                                    date = LocalDateTime.now(),
+                                    rootData = operationResponseJson,
+                                    splitType = splitType,
+                                    waiterName = waiterName,
+                                ),
                         )
                     }
 

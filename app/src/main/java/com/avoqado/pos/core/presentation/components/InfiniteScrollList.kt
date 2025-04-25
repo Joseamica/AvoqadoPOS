@@ -11,7 +11,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 
-
 @Composable
 fun <T> InfiniteScrollList(
     modifier: Modifier = Modifier,
@@ -21,13 +20,14 @@ fun <T> InfiniteScrollList(
     itemKey: (T) -> Any,
     itemContent: @Composable (T) -> Unit,
     loadingItem: @Composable () -> Unit,
-    loadMore: () -> Unit
-){
+    loadMore: () -> Unit,
+    hasMorePages: Boolean = true, // Add this parameter
+) {
     val reachedBottom: Boolean by remember { derivedStateOf { listState.reachedBottom() } }
 
-    // load more if scrolled to bottom
+    // Only load more if scrolled to bottom AND more pages are available
     LaunchedEffect(reachedBottom) {
-        if (reachedBottom) loadMore()
+        if (reachedBottom && hasMorePages && !loading) loadMore()
     }
 
     LazyColumn(modifier = modifier, state = listState) {

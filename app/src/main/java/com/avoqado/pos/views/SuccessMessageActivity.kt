@@ -15,7 +15,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SuccessMessageActivity : ComponentActivity() {
-
     private val message: String by lazy {
         intent.getStringExtra("message").toString()
     }
@@ -41,10 +40,10 @@ class SuccessMessageActivity : ComponentActivity() {
                         .let(::startActivity)
                     finish()
                 }
-            }, 3000
+            },
+            3000,
         )
     }
-
 
     companion object {
         const val TAG = "SuccessMessageActivity"

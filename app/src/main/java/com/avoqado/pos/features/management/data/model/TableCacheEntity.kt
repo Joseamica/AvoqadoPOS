@@ -7,5 +7,5 @@ data class TableCacheEntity(
     val totalPending: Double,
     val totalAmount: Double,
     val waiterName: String?,
-    val paymentOverviewEntity: PaymentOverviewEntity?
+    val paymentOverviewEntity: PaymentOverviewEntity?,
 )

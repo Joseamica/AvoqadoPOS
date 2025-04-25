@@ -24,7 +24,6 @@ import com.menta.android.core.viewmodel.bin.BinValidationData
 import com.menta.android.restclient.core.RestClientConfiguration
 
 class CardRulesValidationActivity : ComponentActivity() {
-
     private lateinit var binValidationData: BinValidationData
     private val bin: String by lazy {
         intent.getStringExtra("bin").toString()
@@ -41,73 +40,74 @@ class CardRulesValidationActivity : ComponentActivity() {
     }
 
     private val currentUser = AvoqadoApp.sessionManager.getAvoqadoSession()
-    private val operationPreference  = AvoqadoApp.sessionManager.getOperationPreference()
+    private val operationPreference = AvoqadoApp.sessionManager.getOperationPreference()
 
     private val operationFlow: OperationFlow?
         get() = OperationFlowHolder.operationFlow
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i("${TAG}-AvoqadoTest", "New instance of ${TAG}")
+        Log.i("$TAG-AvoqadoTest", "New instance of $TAG")
         enableEdgeToEdge()
         setContent {
             ProcessingOperationScreen(
                 title = stringResource(id = R.string.wait_payment),
-                message = stringResource(id = R.string.whileServiceBinPaymentProcess)
+                message = stringResource(id = R.string.whileServiceBinPaymentProcess),
             )
-
         }
         RestClientConfiguration.configure(AppfinRestClientConfigure())
         binValidationData = BinValidationData(this)
         binValidationData.setOperationFlow(
             operationFlow = operationFlow!!,
-            merchantId = currentUser?.let {
-                if (operationPreference) {
-                    it.primaryMerchantId
-                } else {
-                    it.secondaryMerchantId
-                }
-            } ?: merchantId,
+            merchantId =
+                currentUser?.let {
+                    if (operationPreference) {
+                        it.primaryMerchantId
+                    } else {
+                        it.secondaryMerchantId
+                    }
+                } ?: merchantId,
             customerId = customerId,
             currency = if (Currency.MX.name == currency) CURRENCY_LABEL_MX else CURRENCY_LABEL_ARG,
-            interest = false
+            interest = false,
         )
         Log.i("", "bin: $bin")
         binValidationData.doBinValidation(bin)
         binValidationData.binValidationResponse.observe(this) {
             if (it.status == "FOUND") {
                 binValidationData.setCardBrand(it.brand)
-                val cardType: String = when (it.type) {
-                    "C" -> {
-                        CardType.CREDIT.name
-                    }
+                val cardType: String =
+                    when (it.type) {
+                        "C" -> {
+                            CardType.CREDIT.name
+                        }
 
-                    "D" -> {
-                        CardType.DEBIT.name
-                    }
+                        "D" -> {
+                            CardType.DEBIT.name
+                        }
 
-                    else -> {
-                        CardType.PREPAID.name
+                        else -> {
+                            CardType.PREPAID.name
+                        }
                     }
-                }
                 binValidationData.setCardType(cardType)
                 binValidationData.setIsInternational(it.isInternational ?: false)
 
                 operationFlow!!.installments = "01"
                 Log.i(TAG, "Ir directo al pago")
-                val intent = Intent(this, DoPaymentActivity::class.java).apply {
-                    putExtra("splitType", splitType.value)
-                    putExtra("waiterName", waiterName)
-                }
+                val intent =
+                    Intent(this, DoPaymentActivity::class.java).apply {
+                        putExtra("splitType", splitType.value)
+                        putExtra("waiterName", waiterName)
+                    }
                 startActivity(intent)
                 finish()
-
             } else {
                 Log.i(TAG, "Bin no encontrado")
                 val brandsAvailable = it.brandsAvailable
                 Log.i(TAG, "Marcas y tipos disponibles: $brandsAvailable")
 
-                //TODO el cliente puede construir pantallas para selección manual, tomando como input brandsAvailable. Además, debe construir el consumo de installments, ejemplo:
+                // TODO el cliente puede construir pantallas para selección manual, tomando como input brandsAvailable. Además, debe construir el consumo de installments, ejemplo:
                 getInstallments(binValidationData)
             }
         }
@@ -123,14 +123,12 @@ class CardRulesValidationActivity : ComponentActivity() {
         binValidationViewModel.getInstallments(
             brand,
             paymentMethod = cardType,
-            isInternational = isInternational
+            isInternational = isInternational,
         )
         binValidationViewModel.getInstallmentsResponse.observe(this) {
             Log.i(TAG, "installments: ${it.installments}")
-
         }
     }
-
 
     companion object {
         const val TAG = "BinValidationActivity"

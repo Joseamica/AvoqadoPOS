@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.data.network.models
 
-
 import com.google.gson.annotations.SerializedName
 
 data class NetworkSimpleTable(
@@ -25,5 +24,5 @@ data class NetworkSimpleTable(
     @SerializedName("updatedAt")
     val updatedAt: String?,
     @SerializedName("venueId")
-    val venueId: String?
+    val venueId: String?,
 )

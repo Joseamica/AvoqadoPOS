@@ -1,6 +1,5 @@
 package com.avoqado.pos.features.management.data.network.models
 
-
 import com.google.gson.annotations.SerializedName
 
 data class ProductItemNetwork(
@@ -19,5 +18,5 @@ data class ProductItemNetwork(
     @SerializedName("price")
     val price: String,
     @SerializedName("quantity")
-    val quantity: Int
+    val quantity: Int,
 )

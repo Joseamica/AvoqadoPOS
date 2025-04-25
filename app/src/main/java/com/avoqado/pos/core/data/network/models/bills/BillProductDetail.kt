@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.data.network.models.bills
 
-
 import com.google.gson.annotations.SerializedName
 
 data class BillProductDetail(
@@ -59,5 +58,5 @@ data class BillProductDetail(
     @SerializedName("waiterId")
     val waiterId: String?,
     @SerializedName("waiterName")
-    val waiterName: String?
+    val waiterName: String?,
 )

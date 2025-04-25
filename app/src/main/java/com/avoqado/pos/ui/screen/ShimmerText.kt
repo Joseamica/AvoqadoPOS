@@ -11,24 +11,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ShimmerText(
-    modifier: Modifier = Modifier
-) {
+fun ShimmerText(modifier: Modifier = Modifier) {
     Column(
-        modifier = modifier
-            .wrapContentHeight()
+        modifier =
+            modifier
+                .wrapContentHeight(),
     ) {
         Shimmer(
-            modifier = Modifier
-                .padding(bottom = 10.dp)
-                .fillMaxWidth()
-                .height(22.dp)
+            modifier =
+                Modifier
+                    .padding(bottom = 10.dp)
+                    .fillMaxWidth()
+                    .height(22.dp),
         )
 
         Shimmer(
-            modifier = Modifier
-                .width(200.dp)
-                .height(22.dp)
+            modifier =
+                Modifier
+                    .width(200.dp)
+                    .height(22.dp),
         )
     }
 }

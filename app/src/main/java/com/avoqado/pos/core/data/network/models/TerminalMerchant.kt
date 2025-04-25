@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 data class TerminalMerchant(
     @SerializedName("venueId")
-    val venueId: String?
+    val venueId: String?,
 )

@@ -24,39 +24,38 @@ import com.avoqado.pos.core.presentation.theme.DemoandroidsdkmentaTheme
 fun ProductItemRow(product: Product) {
     Row(
         modifier = Modifier.padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         ) {
             Text(
                 text = product.name,
-                maxLines = 1
+                maxLines = 1,
             )
             Text(
-                text = "$CURRENCY_LABEL ${product.formattedPrice}"
+                text = "$CURRENCY_LABEL ${product.formattedPrice}",
             )
         }
 
         Box(
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .size(48.dp)
-                .background(
-                    color = Color.LightGray,
-                    shape = RoundedCornerShape(8.dp),
-                )
-                .border(width = 1.dp, shape = RoundedCornerShape(8.dp), color = Color.DarkGray)
-
+            modifier =
+                Modifier
+                    .padding(horizontal = 16.dp)
+                    .size(48.dp)
+                    .background(
+                        color = Color.LightGray,
+                        shape = RoundedCornerShape(8.dp),
+                    ).border(width = 1.dp, shape = RoundedCornerShape(8.dp), color = Color.DarkGray),
         ) {
             Text(
                 modifier = Modifier.align(Alignment.Center),
-                text = product.quantity.toString()
+                text = product.quantity.toString(),
             )
         }
 
         Text(
-            text = "$CURRENCY_LABEL ${product.formattedTotalPrice}"
+            text = "$CURRENCY_LABEL ${product.formattedTotalPrice}",
         )
     }
 }
@@ -67,13 +66,14 @@ fun PreviewProductItemRow() {
     DemoandroidsdkmentaTheme {
         Surface {
             ProductItemRow(
-                product = Product(
-                    id = "",
-                    name = "Spicy instant noodles",
-                    quantity = 3.0,
-                    price = 3.49,
-                    totalPrice = 14.0
-                )
+                product =
+                    Product(
+                        id = "",
+                        name = "Spicy instant noodles",
+                        quantity = 3.0,
+                        price = 3.49,
+                        totalPrice = 14.0,
+                    ),
             )
         }
     }

@@ -5,7 +5,9 @@ import com.menta.android.core.model.Adquirer
 
 interface PaymentRepository {
     fun getCachePaymentInfo(): PaymentInfoResult?
+
     fun setCachePaymentInfo(paymentInfoResult: PaymentInfoResult)
+
     fun clearCachePaymentInfo()
 
     suspend fun recordPayment(
@@ -20,6 +22,6 @@ interface PaymentRepository {
         billId: String,
         token: String,
         paidProductsId: List<String>,
-        adquirer: Adquirer?
+        adquirer: Adquirer?,
     ): String
 }

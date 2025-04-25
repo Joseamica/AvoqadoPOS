@@ -1,6 +1,5 @@
 package com.avoqado.pos.features.payment.data.network.models
 
-
 import com.google.gson.annotations.SerializedName
 
 data class TpvData(
@@ -29,5 +28,5 @@ data class TpvData(
     @SerializedName("venueId")
     val venueId: String,
     @SerializedName("version")
-    val version: String?
+    val version: String?,
 )

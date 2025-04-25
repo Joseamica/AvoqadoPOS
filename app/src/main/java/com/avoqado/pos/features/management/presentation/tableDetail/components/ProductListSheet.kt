@@ -32,12 +32,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.avoqado.pos.R
-import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.core.presentation.model.Product
-import com.avoqado.pos.ui.screen.ProductRow
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.theme.buttonGrayColor
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
+import com.avoqado.pos.core.presentation.utils.toAmountMx
+import com.avoqado.pos.ui.screen.ProductRow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,46 +45,50 @@ fun ProductListSheet(
     onDismissRequest: () -> Unit,
     onPrint: () -> Unit = {},
     products: List<Product>,
-    modalSheetState: SheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
-    )
-){
+    modalSheetState: SheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+        ),
+) {
     ModalBottomSheet(
         onDismissRequest = onDismissRequest,
         modifier = Modifier.fillMaxWidth(),
-        sheetState = modalSheetState
+        sheetState = modalSheetState,
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "Productos",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 )
 
                 Button(
                     onClick = onPrint,
-                    modifier = Modifier
-                        .height(36.dp),
+                    modifier =
+                        Modifier
+                            .height(36.dp),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = buttonGrayColor
-                    )
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = buttonGrayColor,
+                        ),
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.baseline_print_24),
                         contentDescription = "",
-                        tint = buttonGrayColor
+                        tint = buttonGrayColor,
                     )
 
                     Spacer(Modifier.width(8.dp))
@@ -92,18 +96,18 @@ fun ProductListSheet(
                     Text(
                         text = "Imprimir",
                         color = buttonGrayColor,
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
                     )
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn(
                 modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(vertical = 8.dp)
+                contentPadding = PaddingValues(vertical = 8.dp),
             ) {
                 items(
                     items = products,
-                    key = { it.id }
+                    key = { it.id },
                 ) { product ->
                     ProductRow(
                         name = product.name,
@@ -119,21 +123,22 @@ fun ProductListSheet(
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "Total",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
                 )
                 Text(
                     text = "\$${products.sumOf { it.totalPrice }.toString().toAmountMx()}",
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(
-                        vertical = 16.dp
-                    )
+                    modifier =
+                        Modifier.padding(
+                            vertical = 16.dp,
+                        ),
                 )
             }
         }
@@ -143,43 +148,45 @@ fun ProductListSheet(
 @OptIn(ExperimentalMaterial3Api::class)
 @Urovo9100DevicePreview
 @Composable
-fun PreviewProductListSheet(){
+fun PreviewProductListSheet() {
     AvoqadoTheme {
         ProductListSheet(
-            modalSheetState = rememberStandardBottomSheetState(
-                initialValue = SheetValue.Expanded
-            ),
+            modalSheetState =
+                rememberStandardBottomSheetState(
+                    initialValue = SheetValue.Expanded,
+                ),
             onDismissRequest = {},
-            products = listOf(
-                Product(
-                    id = "1",
-                    name = "Bagel con queso crema",
-                    quantity = 1.0,
-                    price = 70.0,
-                    totalPrice = 70.0
+            products =
+                listOf(
+                    Product(
+                        id = "1",
+                        name = "Bagel con queso crema",
+                        quantity = 1.0,
+                        price = 70.0,
+                        totalPrice = 70.0,
+                    ),
+                    Product(
+                        id = "2",
+                        name = "Pizza margherita",
+                        quantity = 1.0,
+                        price = 150.0,
+                        totalPrice = 150.0,
+                    ),
+                    Product(
+                        id = "3",
+                        name = "Pan Francés",
+                        quantity = 1.0,
+                        price = 2.1,
+                        totalPrice = 2.1,
+                    ),
+                    Product(
+                        id = "4",
+                        name = "Pizza Hawaiana",
+                        quantity = 1.0,
+                        price = 160.0,
+                        totalPrice = 160.0,
+                    ),
                 ),
-                Product(
-                    id = "2",
-                    name = "Pizza margherita",
-                    quantity = 1.0,
-                    price = 150.0,
-                    totalPrice = 150.0
-                ),
-                Product(
-                    id = "3",
-                    name = "Pan Francés",
-                    quantity = 1.0,
-                    price = 2.1,
-                    totalPrice = 2.1
-                ),
-                Product(
-                    id = "4",
-                    name = "Pizza Hawaiana",
-                    quantity = 1.0,
-                    price = 160.0,
-                    totalPrice = 160.0
-                ),
-            )
         )
     }
 }

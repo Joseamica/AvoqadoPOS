@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.data.network.models.transactions.payments
 
-
 import com.google.gson.annotations.SerializedName
 
 data class Meta(
@@ -15,5 +14,5 @@ data class Meta(
     @SerializedName("totalCount")
     val totalCount: Int?,
     @SerializedName("totalPages")
-    val totalPages: Int?
+    val totalPages: Int?,
 )

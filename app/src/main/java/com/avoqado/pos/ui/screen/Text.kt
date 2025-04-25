@@ -13,11 +13,11 @@ fun Text(
     textStyle: com.avoqado.pos.ui.screen.TextStyle = TextType.textNormalBlack.textStyle,
     fontSize: TextUnit = 16.sp,
     textAlign: TextAlign = TextAlign.Start,
-    shimmer: Boolean = false
+    shimmer: Boolean = false,
 ) {
-    if (shimmer){
+    if (shimmer) {
         ShimmerText(
-            modifier = modifier
+            modifier = modifier,
         )
         return
     }
@@ -29,6 +29,6 @@ fun Text(
         fontSize = fontSize,
         fontWeight = textStyle.fontWeight,
         color = textStyle.fontColor,
-        textAlign = textAlign
+        textAlign = textAlign,
     )
 }

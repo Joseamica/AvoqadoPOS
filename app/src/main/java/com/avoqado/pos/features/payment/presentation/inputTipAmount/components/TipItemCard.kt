@@ -28,40 +28,40 @@ fun TipItemCard(
     percentage: String,
     amount: String,
     isPopular: Boolean,
-    onClickTip: () -> Unit = {}
+    onClickTip: () -> Unit = {},
 ) {
     Box {
         Box(
-            modifier = Modifier
-                .width(100.dp)
-                .height(120.dp)
-                .padding(top = 8.dp)
-                .clickable { onClickTip() }
-                .background(
-                    color = if (isPopular) Color.Black else Color.White,
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .border(
-                    border = BorderStroke(1.dp, if (isPopular) Color.Transparent else Color.LightGray),
-                    shape = RoundedCornerShape(12.dp)
-                ),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .width(100.dp)
+                    .height(120.dp)
+                    .padding(top = 8.dp)
+                    .clickable { onClickTip() }
+                    .background(
+                        color = if (isPopular) Color.Black else Color.White,
+                        shape = RoundedCornerShape(12.dp),
+                    ).border(
+                        border = BorderStroke(1.dp, if (isPopular) Color.Transparent else Color.LightGray),
+                        shape = RoundedCornerShape(12.dp),
+                    ),
+            contentAlignment = Alignment.Center,
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 Text(
                     text = percentage,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    color = if (!isPopular) Color.Black else Color.White
+                    color = if (!isPopular) Color.Black else Color.White,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = amount,
                     fontSize = 14.sp,
-                    color = if (!isPopular) Color.Black else Color.White
+                    color = if (!isPopular) Color.Black else Color.White,
                 )
             }
         }
@@ -72,12 +72,12 @@ fun TipItemCard(
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Bold,
                 color = chipContentColor,
-                modifier = Modifier
-                    .background(chipContainerColor, shape = RoundedCornerShape(8.dp))
-                    .padding(horizontal = 8.dp, vertical = 2.dp)
-                    .align(Alignment.TopCenter)
+                modifier =
+                    Modifier
+                        .background(chipContainerColor, shape = RoundedCornerShape(8.dp))
+                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                        .align(Alignment.TopCenter),
             )
         }
     }
-
 }

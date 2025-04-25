@@ -19,7 +19,8 @@ val terminalId = "7335c5cd-1d99-4eb7-abfb-9c43c5e9a122"
 val CURRENCY_LABEL = CURRENCY_LABEL_MX // Ugit psar CURRENCY_LABEL_ARG si es Argentina. Usar CURRENCY_LABEL_MX si es Mexico
 val ACQUIRER_NAME = Acquirer.BANORTE.name // Usar Acquirer.GPS.name para Argentina. Usar Acquirer.BANORTE.name para México
 val COUNTRY_CODE = Country.MEX.code // Usar Country.ARG.code para Argentina. Usar Country.MEX.code para México
-fun doTagListTest(): MutableList<String> { //TODO Los TAGs dependen de cada adquirencia, revise en la documentación cuál corresponse
+
+fun doTagListTest(): MutableList<String> { // TODO Los TAGs dependen de cada adquirencia, revise en la documentación cuál corresponse
     val tagList: MutableList<String> = ArrayList()
     tagList.add("9F26")
     tagList.add("82")
@@ -42,10 +43,9 @@ fun doTagListTest(): MutableList<String> { //TODO Los TAGs dependen de cada adqu
     tagList.add("9F6E")
 
     return tagList
-
 }
 
-fun doTagListMxTest(): MutableList<String> { //TODO Los TAGs dependen de cada adquirencia, revise en la documentación cuál corresponse
+fun doTagListMxTest(): MutableList<String> { // TODO Los TAGs dependen de cada adquirencia, revise en la documentación cuál corresponse
     val tagList: MutableList<String> = ArrayList()
     tagList.add("4f")
     tagList.add("50")
@@ -92,5 +92,4 @@ fun doTagListMxTest(): MutableList<String> { //TODO Los TAGs dependen de cada ad
     tagList.add("9F6E")
 
     return tagList
-
 }

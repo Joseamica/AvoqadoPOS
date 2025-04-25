@@ -3,9 +3,8 @@ package com.avoqado.pos.core.presentation.navigation
 import androidx.navigation.NavOptions
 import kotlinx.coroutines.flow.Flow
 
-
-class NavigationDispatcher (
-    private val navigationManager: NavigationManager
+class NavigationDispatcher(
+    private val navigationManager: NavigationManager,
 ) {
     val navigationCommands: Flow<NavigationCommand> = navigationManager.navActions
 
@@ -19,7 +18,7 @@ class NavigationDispatcher (
 
     fun navigateTo(
         route: String,
-        navOptions: NavOptions = NavOptions.Builder().build()
+        navOptions: NavOptions = NavOptions.Builder().build(),
     ) {
         navigationManager.navigate(NavigationCommand.NavigateWithRoute(route, navOptions))
     }
@@ -32,15 +31,24 @@ class NavigationDispatcher (
         navigationManager.navigate(NavigationCommand.BackWithArguments(arg.toList()))
     }
 
-    fun popToDestination(navAction: NavigationAction, inclusive: Boolean) {
+    fun popToDestination(
+        navAction: NavigationAction,
+        inclusive: Boolean,
+    ) {
         navigationManager.navigate(NavigationCommand.PopToDestination(navAction.route, inclusive))
     }
 
-    fun popToDestination(route: String, inclusive: Boolean) {
+    fun popToDestination(
+        route: String,
+        inclusive: Boolean,
+    ) {
         navigationManager.navigate(NavigationCommand.PopToDestination(route, inclusive))
     }
 
-    fun navigateWithArgs(navAction: NavigationAction, vararg arg: NavigationArg) {
+    fun navigateWithArgs(
+        navAction: NavigationAction,
+        vararg arg: NavigationArg,
+    ) {
         navigationManager.navigate(NavigationCommand.NavigateWithArguments(navAction, arg.toList()))
     }
 

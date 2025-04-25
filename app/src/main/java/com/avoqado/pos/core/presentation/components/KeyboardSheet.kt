@@ -31,7 +31,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.theme.AppFont
@@ -43,9 +42,10 @@ import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KeyboardSheet(
-    sheetState: SheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
-    ),
+    sheetState: SheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+        ),
     onDismiss: () -> Unit,
     onAmountEntered: (Double, Boolean) -> Unit,
     title: String? = null,
@@ -56,69 +56,74 @@ fun KeyboardSheet(
     var isPercentage by remember { mutableStateOf(false) }
     val formattedAmount = remember(amount, isPercentage) { formatAmount(amount, isPercentage = isPercentage) }
 
-
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         modifier = Modifier.fillMaxWidth(),
         containerColor = Color.White,
-        sheetState = sheetState
+        sheetState = sheetState,
     ) {
         Column {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = title ?: "",
-                    style = MaterialTheme.typography.titleSmall.copy(
-                        color = Color.Black
-                    ),
-                    modifier = Modifier.weight(1f)
+                    style =
+                        MaterialTheme.typography.titleSmall.copy(
+                            color = Color.Black,
+                        ),
+                    modifier = Modifier.weight(1f),
                 )
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Icon(
                     painter = painterResource(R.drawable.baseline_close_24),
                     contentDescription = "Close",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .padding(8.dp)
-                        .clickable {
-                            onDismiss()
-                        }
+                    modifier =
+                        Modifier
+                            .size(40.dp)
+                            .padding(8.dp)
+                            .clickable {
+                                onDismiss()
+                            },
                 )
             }
 
             Spacer(Modifier.height(16.dp))
 
             Box(
-                modifier = Modifier
-                    .background(color = lightGrayNumberField)
-                    .fillMaxWidth()
+                modifier =
+                    Modifier
+                        .background(color = lightGrayNumberField)
+                        .fillMaxWidth(),
             ) {
                 Text(
                     text = formattedAmount,
                     textAlign = TextAlign.End,
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        color = hintTextColor,
-                        fontFamily = AppFont.EffraFamily
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            vertical = 24.dp,
-                            horizontal = 32.dp
+                    style =
+                        MaterialTheme.typography.headlineLarge.copy(
+                            color = hintTextColor,
+                            fontFamily = AppFont.EffraFamily,
                         ),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                vertical = 24.dp,
+                                horizontal = 32.dp,
+                            ),
                 )
             }
 
             Spacer(Modifier.height(16.dp))
 
             Box(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             ) {
                 CustomKeyboard(
                     modifier = Modifier.fillMaxWidth(),
@@ -143,10 +148,11 @@ fun KeyboardSheet(
                                 amount.toDouble()
                             } else {
                                 amount / 100.0 // Convert cents to dollars
-                            }, isPercentage
+                            },
+                            isPercentage,
                         )
                         onDismiss()
-                    }
+                    },
                 )
             }
 
@@ -156,15 +162,17 @@ fun KeyboardSheet(
 }
 
 // Formatting function for currency display
-fun formatAmount(amount: Long, isPercentage: Boolean): String {
-    return if (isPercentage) {
+fun formatAmount(
+    amount: Long,
+    isPercentage: Boolean,
+): String =
+    if (isPercentage) {
         "$amount%"
     } else {
         val dollars = amount / 100
         val cents = amount % 100
         String.format("$%,d.%02d", dollars, cents)
     }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Urovo9100DevicePreview
@@ -172,15 +180,16 @@ fun formatAmount(amount: Long, isPercentage: Boolean): String {
 fun PreviewKeyboardSheet() {
     AvoqadoTheme {
         KeyboardSheet(
-            sheetState = rememberStandardBottomSheetState(
-                initialValue = SheetValue.Expanded,
-                skipHiddenState = true
-            ),
+            sheetState =
+                rememberStandardBottomSheetState(
+                    initialValue = SheetValue.Expanded,
+                    skipHiddenState = true,
+                ),
             onDismiss = {},
             title = "Propina",
             onAmountEntered = { amount, isPercentage ->
                 // Do nothing
-            }
+            },
         )
     }
 }

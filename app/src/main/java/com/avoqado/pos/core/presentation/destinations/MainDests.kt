@@ -9,47 +9,47 @@ import com.avoqado.pos.core.presentation.navigation.NavAnimation
 import com.avoqado.pos.core.presentation.navigation.NavigationAction
 
 sealed class MainDests : NavigationAction {
-
-    data object Authorization: MainDests(){
+    data object Authorization : MainDests() {
         override val route: String
             get() = "authorization"
 
         override val deepLinks: List<NavDeepLink>
-            get() = listOf(
-                navDeepLink {
-                    uriPattern = "menta://login.ui/unauthorized"
-                }
-            )
-            
+            get() =
+                listOf(
+                    navDeepLink {
+                        uriPattern = "menta://login.ui/unauthorized"
+                    },
+                )
+
         override val navAnimation: NavAnimation?
             get() = NavAnimation.none()
     }
 
-    data object Splash: MainDests(){
+    data object Splash : MainDests() {
         override val route: String
             get() = "splash"
-            
+
         override val navAnimation: NavAnimation?
             get() = NavAnimation.none()
     }
-    data object SignIn: MainDests(){
 
+    data object SignIn : MainDests() {
         const val ARG_REDIRECT = "redirect"
 
         override val route: String
             get() = "signIn?$ARG_REDIRECT={$ARG_REDIRECT}"
 
         override val arguments: List<NamedNavArgument>
-            get() = listOf(
-                navArgument(ARG_REDIRECT) {
-                    type = NavType.StringType
-                    nullable = true
-                    defaultValue = ""
-                }
-            )
-            
+            get() =
+                listOf(
+                    navArgument(ARG_REDIRECT) {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = ""
+                    },
+                )
+
         override val navAnimation: NavAnimation?
             get() = NavAnimation.fade()
     }
-
 }

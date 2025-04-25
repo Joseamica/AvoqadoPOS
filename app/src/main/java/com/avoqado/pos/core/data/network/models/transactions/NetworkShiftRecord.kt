@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.data.network.models.transactions
 
-
 import com.google.gson.annotations.SerializedName
 
 data class NetworkShiftRecord(
@@ -47,5 +46,5 @@ data class NetworkShiftRecord(
     @SerializedName("tipsCount")
     val tipsCount: Int?,
     @SerializedName("paymentSum")
-    val paymentSum: Int?
+    val paymentSum: Int?,
 )

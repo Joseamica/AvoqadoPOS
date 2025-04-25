@@ -22,42 +22,44 @@ import com.avoqado.pos.core.presentation.theme.textColor
 
 @Composable
 fun SuccessScreen(message: String) {
-
     Box(
-        modifier = Modifier
-
-            .fillMaxSize()
-            .background(primary),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(primary),
         contentAlignment = Alignment.Center,
         content = {
             Column(
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_success),
                     contentDescription = null,
                 )
             }
-        }
+        },
     )
 
     Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
+        modifier =
+            Modifier
+                .fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter,
     ) {
         Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(14.dp),
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(14.dp),
             verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                modifier = Modifier
-                    .width(309.dp)
-                    .align(Alignment.Start),
+                modifier =
+                    Modifier
+                        .width(309.dp)
+                        .align(Alignment.Start),
                 text = "Listo!",
                 color = textColor,
                 fontSize = 35.sp,
@@ -65,12 +67,13 @@ fun SuccessScreen(message: String) {
             )
 
             Text(
-                modifier = Modifier
-                    .width(309.dp)
-                    .align(Alignment.Start),
+                modifier =
+                    Modifier
+                        .width(309.dp)
+                        .align(Alignment.Start),
                 text = message,
                 color = textColor,
-                fontSize = 25.sp
+                fontSize = 25.sp,
             )
         }
     }

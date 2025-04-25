@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.data.network.models
 
-
 import com.google.gson.annotations.SerializedName
 
 data class Venue(
@@ -71,5 +70,5 @@ data class Venue(
     @SerializedName("wifiName")
     val wifiName: String,
     @SerializedName("wifiPassword")
-    val wifiPassword: String
+    val wifiPassword: String,
 )

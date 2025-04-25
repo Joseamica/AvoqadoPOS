@@ -9,15 +9,32 @@ import kotlinx.coroutines.flow.Flow
 
 interface TerminalRepository {
     suspend fun getTerminalId(serialCode: String): TerminalInfo
-    suspend fun getTerminalShift(venueId: String, posName: String): Shift
-    suspend fun startTerminalShift(venueId: String, posName: String): Shift
-    suspend fun closeTerminalShift(venueId: String, posName: String): Shift
+
+    suspend fun getTerminalShift(
+        venueId: String,
+        posName: String,
+    ): Shift
+
+    suspend fun startTerminalShift(
+        venueId: String,
+        posName: String,
+    ): Shift
+
+    suspend fun closeTerminalShift(
+        venueId: String,
+        posName: String,
+    ): Shift
+
     suspend fun getShiftSummary(params: ShiftParams): List<Shift>
+
     suspend fun getSummary(params: ShiftParams): ShiftSummary
+
     suspend fun getShiftPaymentsSummary(params: ShiftParams): List<PaymentShift>
-    
+
     // Nuevos métodos para WebSocket
     fun connectToShiftEvents(venueId: String)
+
     fun disconnectFromShiftEvents()
+
     fun listenForShiftEvents(): Flow<Shift>
 }

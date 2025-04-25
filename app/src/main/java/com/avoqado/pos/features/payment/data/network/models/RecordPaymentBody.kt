@@ -2,7 +2,6 @@ package com.avoqado.pos.features.payment.data.network.models
 
 import com.google.gson.annotations.SerializedName
 
-
 //            {
 //                //MENTA
 //                "venueId": "madre_cafecito",
@@ -58,5 +57,5 @@ data class RecordPaymentBody(
     @SerializedName("mentaOperationId") val mentaOperationId: String? = null,
     @SerializedName("mentaTicketId") val mentaTicketId: String? = null,
     @SerializedName("token") val token: String? = null,
-    @SerializedName("isInternational") val isInternational: Boolean
+    @SerializedName("isInternational") val isInternational: Boolean,
 )

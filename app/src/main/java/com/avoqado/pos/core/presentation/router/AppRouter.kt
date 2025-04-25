@@ -13,7 +13,6 @@ import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.SwipeableDefaults
 import androidx.compose.material.navigation.BottomSheetNavigator
 import androidx.compose.material.navigation.ModalBottomSheetLayout
-import androidx.compose.material.navigation.rememberBottomSheetNavigator
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -30,17 +29,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
+import com.avoqado.pos.core.presentation.destinations.MainDests
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.core.presentation.navigation.NavigationCommand
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
-import com.avoqado.pos.core.presentation.destinations.MainDests
-import com.avoqado.pos.features.management.presentation.navigation.managementNavigation
 import com.avoqado.pos.features.authorization.presentation.authorization.AuthorizationDialog
 import com.avoqado.pos.features.authorization.presentation.authorization.AuthorizationViewModel
 import com.avoqado.pos.features.authorization.presentation.signIn.SignInScreen
 import com.avoqado.pos.features.authorization.presentation.signIn.SignInViewModel
 import com.avoqado.pos.features.authorization.presentation.splash.SplashScreen
 import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel
+import com.avoqado.pos.features.management.presentation.navigation.managementNavigation
 import com.avoqado.pos.features.payment.presentation.navigation.paymentNavigation
 import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
@@ -54,7 +53,7 @@ fun AppRouter(
     externalTokenData: ExternalTokenData,
     masterKeyData: MasterKeyData,
     trxData: TrxData,
-    context: Context
+    context: Context,
 ) {
     val navController = rememberNavController()
     val bottomSheetNavigator = rememberFullScreenBottomSheetNavigator()
@@ -74,63 +73,72 @@ fun AppRouter(
                 .collectLatest { navigationCommand ->
                     when (navigationCommand) {
                         NavigationCommand.Back -> navController.popBackStack()
-                        is NavigationCommand.NavigateWithAction -> navController.navigate(
-                            route = navigationCommand.navAction.route,
-                            navOptions = navigationCommand.navAction.navOptions
-                        )
+                        is NavigationCommand.NavigateWithAction ->
+                            navController.navigate(
+                                route = navigationCommand.navAction.route,
+                                navOptions = navigationCommand.navAction.navOptions,
+                            )
 
-                        is NavigationCommand.PopToDestination -> navController.popBackStack(
-                            route = navigationCommand.route,
-                            inclusive = navigationCommand.inclusive
-                        )
+                        is NavigationCommand.PopToDestination ->
+                            navController.popBackStack(
+                                route = navigationCommand.route,
+                                inclusive = navigationCommand.inclusive,
+                            )
 
                         is NavigationCommand.NavigateWithArguments -> {
                             var route = navigationCommand.navAction.route
                             for (arg in navigationCommand.args) {
-                                val value = when (arg) {
-                                    is NavigationArg.IntArg -> arg.value.toString()
-                                    is NavigationArg.StringArg -> arg.value
-                                    is NavigationArg.BooleanArg -> arg.value.toString()
-                                    is NavigationArg.StringArrayArg -> {
-                                        arg.value.joinToString("&") { "${arg.key}=$it" }
-                                            .removePrefix("${arg.key}=")
+                                val value =
+                                    when (arg) {
+                                        is NavigationArg.IntArg -> arg.value.toString()
+                                        is NavigationArg.StringArg -> arg.value
+                                        is NavigationArg.BooleanArg -> arg.value.toString()
+                                        is NavigationArg.StringArrayArg -> {
+                                            arg.value
+                                                .joinToString("&") { "${arg.key}=$it" }
+                                                .removePrefix("${arg.key}=")
+                                        }
                                     }
-                                }
                                 route = route.replace("{${arg.key}}", value)
                             }
                             navController.navigate(
                                 route = route,
-                                navOptions = navigationCommand.navAction.navOptions
+                                navOptions = navigationCommand.navAction.navOptions,
                             )
                         }
 
-                        is NavigationCommand.NavigateWithRoute -> navController.navigate(
-                            route = navigationCommand.route,
-                            navOptions = navigationCommand.navOptions
-                        )
+                        is NavigationCommand.NavigateWithRoute ->
+                            navController.navigate(
+                                route = navigationCommand.route,
+                                navOptions = navigationCommand.navOptions,
+                            )
 
                         is NavigationCommand.BackWithArguments -> {
                             for (arg in navigationCommand.args) {
                                 when (arg) {
-                                    is NavigationArg.IntArg -> navController.previousBackStackEntry?.savedStateHandle?.set(
-                                        arg.key,
-                                        arg.value
-                                    )
+                                    is NavigationArg.IntArg ->
+                                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                                            arg.key,
+                                            arg.value,
+                                        )
 
-                                    is NavigationArg.StringArg -> navController.previousBackStackEntry?.savedStateHandle?.set(
-                                        arg.key,
-                                        arg.value
-                                    )
+                                    is NavigationArg.StringArg ->
+                                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                                            arg.key,
+                                            arg.value,
+                                        )
 
-                                    is NavigationArg.BooleanArg -> navController.previousBackStackEntry?.savedStateHandle?.set(
-                                        arg.key,
-                                        arg.value
-                                    )
+                                    is NavigationArg.BooleanArg ->
+                                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                                            arg.key,
+                                            arg.value,
+                                        )
 
-                                    is NavigationArg.StringArrayArg -> navController.previousBackStackEntry?.savedStateHandle?.set(
-                                        arg.key,
-                                        arg.value
-                                    )
+                                    is NavigationArg.StringArrayArg ->
+                                        navController.previousBackStackEntry?.savedStateHandle?.set(
+                                            arg.key,
+                                            arg.value,
+                                        )
                                 }
                             }
                             navController.popBackStack()
@@ -140,13 +148,12 @@ fun AppRouter(
                             context.startActivity(
                                 Intent(
                                     Intent.ACTION_VIEW,
-                                    Uri.parse(navigationCommand.httpLink)
-                                ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    Uri.parse(navigationCommand.httpLink),
+                                ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
                             )
                         }
                     }
                 }
-
         } catch (e: Exception) {
             Log.e("AppRouter", "Error collecting navigation commands", e)
         }
@@ -163,7 +170,7 @@ fun AppRouter(
                 bottomSheetNavigator = bottomSheetNavigator,
                 sheetElevation = 0.dp,
                 sheetBackgroundColor = Color.Transparent,
-                sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+                sheetShape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp),
             ) {
                 NavHost(
                     modifier = Modifier.padding(padding),
@@ -174,83 +181,87 @@ fun AppRouter(
                     },
                     exitTransition = {
                         ExitTransition.None
-                    }
+                    },
                 ) {
                     composableHolder(MainDests.Splash) {
-                        val splashViewModel = remember {
-                            SplashViewModel(
-                                navigationDispatcher = navigationDispatcher,
-                                storage = AvoqadoApp.storage,
-                                sessionManager = AvoqadoApp.sessionManager,
-                                serialNumber = AvoqadoApp.terminalSerialCode,
-                                snackbarDelegate = snackbarDelegate,
-                                terminalRepository = AvoqadoApp.terminalRepository,
-                                managementRepository = AvoqadoApp.managementRepository
-                            )
-                        }
+                        val splashViewModel =
+                            remember {
+                                SplashViewModel(
+                                    navigationDispatcher = navigationDispatcher,
+                                    storage = AvoqadoApp.storage,
+                                    sessionManager = AvoqadoApp.sessionManager,
+                                    serialNumber = AvoqadoApp.terminalSerialCode,
+                                    snackbarDelegate = snackbarDelegate,
+                                    terminalRepository = AvoqadoApp.terminalRepository,
+                                    managementRepository = AvoqadoApp.managementRepository,
+                                )
+                            }
 
                         SplashScreen(
                             viewModel = splashViewModel,
                             externalTokenData = externalTokenData,
-                            masterKeyData = masterKeyData
+                            masterKeyData = masterKeyData,
                         )
                     }
 
                     composableHolder(MainDests.SignIn) {
-                        val signInViewModel: SignInViewModel = remember {
-                            SignInViewModel(
-                                navigationDispatcher = navigationDispatcher,
-                                snackbarDelegate = snackbarDelegate,
-                                authorizationRepository = AvoqadoApp.authorizationRepository,
-                                sessionManager = AvoqadoApp.sessionManager,
-                                redirect = it.arguments?.getString(MainDests.SignIn.ARG_REDIRECT)
-                            )
-                        }
+                        val signInViewModel: SignInViewModel =
+                            remember {
+                                SignInViewModel(
+                                    navigationDispatcher = navigationDispatcher,
+                                    snackbarDelegate = snackbarDelegate,
+                                    authorizationRepository = AvoqadoApp.authorizationRepository,
+                                    sessionManager = AvoqadoApp.sessionManager,
+                                    redirect = it.arguments?.getString(MainDests.SignIn.ARG_REDIRECT),
+                                )
+                            }
 
                         SignInScreen(signInViewModel)
                     }
 
                     dialogHolder(MainDests.Authorization) {
-                        val viewModel = remember {
-                            AuthorizationViewModel(
-                                navigationDispatcher = navigationDispatcher,
-                                storage = AvoqadoApp.storage,
-                                sessionManager = AvoqadoApp.sessionManager
-                            )
-                        }
+                        val viewModel =
+                            remember {
+                                AuthorizationViewModel(
+                                    navigationDispatcher = navigationDispatcher,
+                                    storage = AvoqadoApp.storage,
+                                    sessionManager = AvoqadoApp.sessionManager,
+                                )
+                            }
                         AuthorizationDialog(
                             viewModel = viewModel,
                             externalTokenData = externalTokenData,
-                            masterKeyData = masterKeyData
+                            masterKeyData = masterKeyData,
                         )
                     }
 
                     managementNavigation(
                         navigationDispatcher = navigationDispatcher,
-                        snackbarDelegate = snackbarDelegate
+                        snackbarDelegate = snackbarDelegate,
                     )
 
                     paymentNavigation(
                         navigationDispatcher = navigationDispatcher,
                         snackbarDelegate = snackbarDelegate,
-                        trxData = trxData
+                        trxData = trxData,
                     )
                 }
             }
-        }
+        },
     )
 }
 
 @Composable
 fun rememberFullScreenBottomSheetNavigator(
     animationSpec: AnimationSpec<Float> = SwipeableDefaults.AnimationSpec,
-    skipHalfExpanded: Boolean = true
+    skipHalfExpanded: Boolean = true,
 ): BottomSheetNavigator {
-    val sheetState = rememberModalBottomSheetState(
-        initialValue = ModalBottomSheetValue.Hidden,
-        animationSpec = animationSpec,
-        skipHalfExpanded = skipHalfExpanded
-    )
+    val sheetState =
+        rememberModalBottomSheetState(
+            initialValue = ModalBottomSheetValue.Hidden,
+            animationSpec = animationSpec,
+            skipHalfExpanded = skipHalfExpanded,
+        )
 
     if (skipHalfExpanded) {
         LaunchedEffect(sheetState) {

@@ -4,12 +4,11 @@ import android.content.Context
 import com.avoqado.pos.core.data.network.models.NetworkVenue
 import com.avoqado.pos.core.data.network.models.Terminal
 import com.avoqado.pos.core.domain.models.Shift
-import com.avoqado.pos.core.presentation.model.VenueInfo
 import com.avoqado.pos.features.authorization.domain.models.User
 import com.google.gson.Gson
 
 class SessionManager(
-    context: Context
+    context: Context,
 ) {
     private val sharedPreferences = context.getSharedPreferences("session", Context.MODE_PRIVATE)
 
@@ -29,10 +28,9 @@ class SessionManager(
             .apply()
     }
 
-    fun getVenueId(): String {
-        return sharedPreferences
+    fun getVenueId(): String =
+        sharedPreferences
             .getString(VENUE_ID, "") ?: ""
-    }
 
     fun saveTerminalInfo(terminal: Terminal) {
         sharedPreferences
@@ -51,7 +49,8 @@ class SessionManager(
     }
 
     fun saveVenueInfo(venue: NetworkVenue) {
-        sharedPreferences.edit()
+        sharedPreferences
+            .edit()
             .putString(VENUE_INFO, Gson().toJson(venue))
             .apply()
     }
@@ -85,8 +84,7 @@ class SessionManager(
         }
     }
 
-    fun getOperationPreference(): Boolean =
-        sharedPreferences.getBoolean(AVOQADO_LAST_OPERATION_PREFERENCE, true)
+    fun getOperationPreference(): Boolean = sharedPreferences.getBoolean(AVOQADO_LAST_OPERATION_PREFERENCE, true)
 
     fun setOperationPreference(needBill: Boolean) {
         sharedPreferences

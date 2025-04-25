@@ -8,5 +8,5 @@ data class WaiterData(
     val pin: String,
     val venueId: String,
     val updatedAt: String,
-    val createdAt: String
+    val createdAt: String,
 )

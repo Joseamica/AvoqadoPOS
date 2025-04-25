@@ -9,14 +9,13 @@ data class OperationInfo(
     val operationData: OperationData?,
     val authOperationCode: String,
     val subtotal: String,
-    val tip: String
+    val tip: String,
 ) {
     val total: String
         get() {
             return (subtotal.toDouble() + tip.toDouble()).toString().toAmountMx()
         }
 }
-
 
 data class OperationData(
     val cardBrand: String,

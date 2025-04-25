@@ -34,28 +34,29 @@ fun MainButton(
     shape: Shape = RoundedCornerShape(10.dp),
     onClickR: () -> Unit,
     drawableId: Int? = null,
-    contentPadding: PaddingValues = PaddingValues(vertical = 12.dp)
-){
+    contentPadding: PaddingValues = PaddingValues(vertical = 12.dp),
+) {
     Button(
         onClick = onClickR,
         shape = shape,
         enabled = enableButton,
-        colors = ButtonDefaults.buttonColors(
-            disabledContainerColor = colorDisable,
-            containerColor = color,
-            contentColor = textColor
-        ),
-        modifier = modifier
+        colors =
+            ButtonDefaults.buttonColors(
+                disabledContainerColor = colorDisable,
+                containerColor = color,
+                contentColor = textColor,
+            ),
+        modifier = modifier,
     ) {
-        Row (
-            modifier = Modifier.padding(contentPadding)
+        Row(
+            modifier = Modifier.padding(contentPadding),
         ) {
             Text(
                 text = text,
 //            fontFamily = FontFamily(Font(R.font.source_sans_pro)),
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 18.sp,
-                lineHeight = 23.sp
+                lineHeight = 23.sp,
             )
 
             if (drawableId != null) {
@@ -63,7 +64,7 @@ fun MainButton(
                 Image(
                     painterResource(id = drawableId),
                     contentDescription = EMPTY_STRING,
-                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                    modifier = Modifier.size(ButtonDefaults.IconSize),
                 )
             }
         }
@@ -72,11 +73,11 @@ fun MainButton(
 
 @Preview
 @Composable
-fun PreviewMainButton(){
+fun PreviewMainButton() {
     AvoqadoTheme {
         MainButton(
             text = "Pagar $777.00",
-            onClickR = {}
+            onClickR = {},
         )
     }
 }

@@ -39,18 +39,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.R
+import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
 import com.avoqado.pos.core.presentation.model.IconType
-import com.avoqado.pos.core.presentation.viewmodel.ListTransactionViewModel
-import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 import com.avoqado.pos.core.presentation.theme.primary
 import com.avoqado.pos.core.presentation.theme.red
+import com.avoqado.pos.core.presentation.viewmodel.ListTransactionViewModel
 import com.menta.android.common_cross.data.datasource.local.model.Transaction
 import com.menta.android.core.utils.StringUtils.formatAmount
 
 class ListTransactionActivity : ComponentActivity() {
-
     lateinit var viewModel: ListTransactionViewModel
 
     private val transactions: ArrayList<Transaction> by lazy {
@@ -82,15 +81,15 @@ class ListTransactionActivity : ComponentActivity() {
                     IconAction(
                         flowStep = FlowStep.GO_TO_MENU,
                         context = this,
-                        iconType = IconType.BACK
-                    )
+                        iconType = IconType.BACK,
+                    ),
                 )
             },
             content = {
                 TransactionList(transactions) { transaction ->
                     selectedTransaction.value = transaction
                 }
-            }
+            },
         )
         selectedTransaction.value?.let { transaction ->
             Log.i(TAG, "transaction selected: $transaction")
@@ -101,29 +100,31 @@ class ListTransactionActivity : ComponentActivity() {
     @Composable
     private fun TransactionList(
         transactions: ArrayList<Transaction>,
-        onTransactionSelected: (Transaction) -> Unit
+        onTransactionSelected: (Transaction) -> Unit,
     ) {
         MaterialTheme {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        color = Color(0xFFF6F7F9)
-                    )
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(
+                            color = Color(0xFFF6F7F9),
+                        ),
             ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(vertical = 8.dp, horizontal = 16.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .padding(vertical = 8.dp, horizontal = 16.dp),
                 ) {
                     Spacer(modifier = Modifier.height(56.dp))
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
                     ) {
                         items(
                             items = transactions,
-                            key = { it.id ?: it.operation.datetime }
+                            key = { it.id ?: it.operation.datetime },
                         ) { transaction ->
                             TransactionItem(transaction, onTransactionSelected)
                         }
@@ -136,53 +137,53 @@ class ListTransactionActivity : ComponentActivity() {
     @Composable
     fun TransactionItem(
         transaction: Transaction,
-        onTransactionSelected: (Transaction) -> Unit
+        onTransactionSelected: (Transaction) -> Unit,
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    color = Color.White,
-                    shape = RoundedCornerShape(size = 20.dp)
-                )
-                .padding(14.dp)
-                .clickable { onTransactionSelected(transaction) }
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = Color.White,
+                        shape = RoundedCornerShape(size = 20.dp),
+                    ).padding(14.dp)
+                    .clickable { onTransactionSelected(transaction) },
         ) {
-
             Icon(
                 painter = painterResource(id = R.drawable.ic_bag),
                 contentDescription = null,
-                modifier = Modifier
-                    .padding(end = 4.dp)
-                    .size(18.dp),
-                tint = primary
+                modifier =
+                    Modifier
+                        .padding(end = 4.dp)
+                        .size(18.dp),
+                tint = primary,
             )
 
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 Text(
                     text = viewModel.getTransactionType(transaction.operation.type),
                     style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier.padding(bottom = 4.dp),
                 )
                 Text(
                     text = viewModel.getDateTime(transaction.operation.datetime),
                     style = TextStyle(fontSize = 14.sp),
-                    modifier = Modifier.padding(bottom = 4.dp)
+                    modifier = Modifier.padding(bottom = 4.dp),
                 )
             }
             Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
             ) {
                 when (transaction.operation.type) {
                     "PAYMENT" -> {
                         Text(
                             text = "$${formatAmount(transaction.amount)}",
                             style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold),
-                            modifier = Modifier.padding(bottom = 4.dp)
+                            modifier = Modifier.padding(bottom = 4.dp),
                         )
                     }
 
@@ -190,7 +191,7 @@ class ListTransactionActivity : ComponentActivity() {
                         Text(
                             text = "$${formatAmount(transaction.amount)}",
                             style = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold),
-                            modifier = Modifier.padding(bottom = 4.dp)
+                            modifier = Modifier.padding(bottom = 4.dp),
                         )
                     }
                 }
@@ -200,7 +201,7 @@ class ListTransactionActivity : ComponentActivity() {
                         Text(
                             text = viewModel.getStatus(transaction.operation.status),
                             style = TextStyle(fontSize = 14.sp, color = primary),
-                            modifier = Modifier.padding(bottom = 4.dp)
+                            modifier = Modifier.padding(bottom = 4.dp),
                         )
                     }
 
@@ -208,11 +209,10 @@ class ListTransactionActivity : ComponentActivity() {
                         Text(
                             text = viewModel.getStatus(transaction.operation.status),
                             style = TextStyle(fontSize = 14.sp, color = red),
-                            modifier = Modifier.padding(bottom = 4.dp)
+                            modifier = Modifier.padding(bottom = 4.dp),
                         )
                     }
                 }
-
             }
         }
     }

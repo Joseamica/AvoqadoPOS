@@ -17,18 +17,18 @@ import kotlinx.coroutines.launch
 class InputAmountViewModel(
     private val context: Context,
     private val validateAmountUseCase: ValidateAmountUseCase,
-
-    ) : ViewModel() {
-
-    private val _textFieldAmount = mutableStateOf(
-        TextFieldState(
-            textFieldValue = TextFieldValue(
-                text = "0,00",
-                selection = TextRange("0.00".length)
+) : ViewModel() {
+    private val _textFieldAmount =
+        mutableStateOf(
+            TextFieldState(
+                textFieldValue =
+                    TextFieldValue(
+                        text = "0,00",
+                        selection = TextRange("0.00".length),
+                    ),
+                notifyErrorState = {},
             ),
-            notifyErrorState = {}
         )
-    )
     val textFieldAmount: MutableState<TextFieldState> = _textFieldAmount
 
     private val _isValidAmount: MutableLiveData<String?> = MutableLiveData()
@@ -41,12 +41,14 @@ class InputAmountViewModel(
     fun formatAmount(value: String) {
         val currentTextFieldAmount = _textFieldAmount.value
         val amount = StringUtils.toStringThousandAmount(StringUtils.notFormatAmount(value))
-        _textFieldAmount.value = currentTextFieldAmount.copy(
-            textFieldValue = TextFieldValue(
-                text = amount,
-                selection = TextRange(amount.length)
+        _textFieldAmount.value =
+            currentTextFieldAmount.copy(
+                textFieldValue =
+                    TextFieldValue(
+                        text = amount,
+                        selection = TextRange(amount.length),
+                    ),
             )
-        )
     }
 
     fun isValidAmount(amount: String) {
@@ -62,5 +64,4 @@ class InputAmountViewModel(
     fun goToListTransaction() {
         _goToListTransaction.value = true
     }
-
 }

@@ -1,13 +1,12 @@
 package com.avoqado.pos
 
-
 import android.content.ComponentCallbacks2
 import android.content.Intent
 import android.os.Build
-import android.provider.Settings
-import android.util.Log
 import android.os.Bundle
+import android.provider.Settings
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -35,20 +34,20 @@ class MainActivity : ComponentActivity() {
         // Reducir el tiempo de renderizado al inicio
         window.setFlags(
             WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
-            WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED
+            WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
         )
-        
+
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        
+
         // Optimizar para dispositivos de baja RAM
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         }
-        
+
         // Habilitar decoración de sistema por debajo de la UI
         WindowCompat.setDecorFitsSystemWindows(window, false)
-        
+
         configure(AppfinRestClientConfigure())
         val serialNumber = getDeviceSerialNumber()
         Log.d("MainActivity", "Device Serial Number: $serialNumber")
@@ -66,7 +65,7 @@ class MainActivity : ComponentActivity() {
                     externalTokenData = externalTokenData,
                     masterKeyData = masterKeyData,
                     trxData = trxData,
-                    context = this
+                    context = this,
                 )
             }
         }
@@ -91,30 +90,42 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun getDeviceSerialNumber(): String {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    private fun getDeviceSerialNumber(): String =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
         } else {
             Build.SERIAL ?: "Unknown"
         }
-    }
 
     private fun getScreenInfo() {
-        val displayMetrics = DisplayMetrics()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val metrics = windowManager.currentWindowMetrics
+            // Use metrics.bounds to get size information
+            val widthPx = metrics.bounds.width()
+            val heightPx = metrics.bounds.height()
+            // Get density from resources
+            val density = resources.displayMetrics.density
+            val densityDpi = resources.displayMetrics.densityDpi
 
-        @Suppress("DEPRECATION") // For older APIs
-        this.windowManager.defaultDisplay.getMetrics(displayMetrics)
+            Log.d("AvoqadoSettings", "Screen Width: ${widthPx}px")
+            Log.d("AvoqadoSettings", "Screen Height: ${heightPx}px")
+        } else {
+            val displayMetrics = DisplayMetrics()
 
-        val densityDpi = displayMetrics.densityDpi
-        val widthPx = displayMetrics.widthPixels
-        val heightPx = displayMetrics.heightPixels
-        val density = displayMetrics.density
-        val scaledDensity = displayMetrics.scaledDensity
+            @Suppress("DEPRECATION") // For older APIs
+            this.windowManager.defaultDisplay.getMetrics(displayMetrics)
 
-        Log.d("AvoqadoSettings","Screen Width: ${widthPx}px")
-        Log.d("AvoqadoSettings","Screen Height: ${heightPx}px")
-        Log.d("AvoqadoSettings","Density: $density")
-        Log.d("AvoqadoSettings","Density DPI: $densityDpi dpi")
-        Log.d("AvoqadoSettings","Scaled Density: $scaledDensity")
+            val densityDpi = displayMetrics.densityDpi
+            val widthPx = displayMetrics.widthPixels
+            val heightPx = displayMetrics.heightPixels
+            val density = displayMetrics.density
+            val scaledDensity = displayMetrics.scaledDensity
+
+            Log.d("AvoqadoSettings", "Screen Width: ${widthPx}px")
+            Log.d("AvoqadoSettings", "Screen Height: ${heightPx}px")
+            Log.d("AvoqadoSettings", "Density: $density")
+            Log.d("AvoqadoSettings", "Density DPI: $densityDpi dpi")
+            Log.d("AvoqadoSettings", "Scaled Density: $scaledDensity")
+        }
     }
 }

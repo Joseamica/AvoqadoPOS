@@ -3,12 +3,13 @@ package com.avoqado.pos.ui.screen
 import androidx.compose.ui.text.input.TextFieldValue
 
 data class TextFieldState(
-    var textFieldValue: TextFieldValue = TextFieldValue(
-        text = ""
-    ),
+    var textFieldValue: TextFieldValue =
+        TextFieldValue(
+            text = "",
+        ),
     val hint: String = "",
     val error: String = "",
     val enable: Boolean = true,
     val isFocus: Boolean = false,
-    val notifyErrorState: () -> Unit
+    val notifyErrorState: () -> Unit,
 )

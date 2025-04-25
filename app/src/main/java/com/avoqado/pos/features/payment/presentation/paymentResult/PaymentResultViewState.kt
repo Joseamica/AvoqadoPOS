@@ -7,7 +7,6 @@ import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.menta.android.core.model.Adquirer
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 data class PaymentResultViewState(
     val isLoading: Boolean = false,
@@ -17,7 +16,7 @@ data class PaymentResultViewState(
     val qrCode: String? = null,
     val adquirer: Adquirer? = null,
     val terminalSerialCode: String = "",
-    val paidProducts: List<Product> = emptyList()
+    val paidProducts: List<Product> = emptyList(),
 ) {
     val totalAmount: Double
         get() = tipAmount + subtotalAmount
@@ -28,21 +27,22 @@ data class PaymentResultViewState(
                 dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMM dd, yyyy hh:mm A")),
                 acquirerName = "",
                 transactionId = "",
-                operationData = adquirer?.let {
-                    OperationData(
-                        cardBrand = it.capture?.card?.brand ?: "",
-                        cardType = it.capture?.card?.type ?: "",
-                        pan = it.capture?.card?.maskedPan ?: ""
-                    )
-                },
+                operationData =
+                    adquirer?.let {
+                        OperationData(
+                            cardBrand = it.capture?.card?.brand ?: "",
+                            cardType = it.capture?.card?.type ?: "",
+                            pan = it.capture?.card?.maskedPan ?: "",
+                        )
+                    },
                 authOperationCode = adquirer?.authorization?.code ?: "",
                 subtotal = subtotalAmount.toString().toAmountMx(),
-                tip = tipAmount.toString().toAmountMx()
+                tip = tipAmount.toString().toAmountMx(),
             )
         }
 }
 
 enum class PaymentResult {
     SUCCESS,
-    DECLINED
+    DECLINED,
 }

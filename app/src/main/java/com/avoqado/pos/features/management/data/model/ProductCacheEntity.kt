@@ -5,5 +5,5 @@ data class ProductCacheEntity(
     val name: String,
     val price: Double,
     val quantity: Double,
-    val totalPrice: Double
+    val totalPrice: Double,
 )

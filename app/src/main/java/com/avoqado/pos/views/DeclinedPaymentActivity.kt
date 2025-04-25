@@ -36,10 +36,10 @@ class DeclinedPaymentActivity : ComponentActivity() {
                         .let(::startActivity)
                     finish()
                 }
-            }, 3000
+            },
+            3000,
         )
     }
-
 
     companion object {
         const val TAG = "SuccessMessageActivity"

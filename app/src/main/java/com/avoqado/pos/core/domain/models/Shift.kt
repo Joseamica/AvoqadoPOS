@@ -18,9 +18,9 @@ data class Shift(
     val avgTipPercentage: Int,
     val tipsSum: Int,
     val tipsCount: Int,
-    val paymentSum: Int
-){
-    val isStarted : Boolean
+    val paymentSum: Int,
+) {
+    val isStarted: Boolean
         get() = startTime.isNullOrBlank().not()
 
     val isFinished: Boolean

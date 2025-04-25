@@ -9,7 +9,7 @@ import com.avoqado.pos.core.presentation.theme.dp_25
 import com.avoqado.pos.core.presentation.theme.dp_95
 import com.avoqado.pos.core.presentation.theme.primary
 
-data class ProgressCircleStyleSmart (
+data class ProgressCircleStyleSmart(
     val color: Color = primary,
     val backgroundColor: Color = Transparent,
     val strokeWidth: Dp = dp_10,
@@ -17,22 +17,24 @@ data class ProgressCircleStyleSmart (
     val direction: ProgressDirectionSmart = ProgressDirectionSmart.RIGHT,
     val rounderBorder: Boolean = true,
     val durationInMilliSecond: Int = 800,
-    val size: Dp = dp_95
+    val size: Dp = dp_95,
 ) {
     companion object {
-        val search = ProgressCircleStyleSmart(
-            color = primary,
-            backgroundColor = Transparent,
-            strokeWidth = dp_2,
-            strokeBackgroundWidth = dp_2,
-            direction = ProgressDirectionSmart.RIGHT,
-            rounderBorder = true,
-            durationInMilliSecond = 800,
-            size = dp_25
-        )
+        val search =
+            ProgressCircleStyleSmart(
+                color = primary,
+                backgroundColor = Transparent,
+                strokeWidth = dp_2,
+                strokeBackgroundWidth = dp_2,
+                direction = ProgressDirectionSmart.RIGHT,
+                rounderBorder = true,
+                durationInMilliSecond = 800,
+                size = dp_25,
+            )
     }
 }
 
-enum class ProgressDirectionSmart{
-    RIGHT, LEFT
+enum class ProgressDirectionSmart {
+    RIGHT,
+    LEFT,
 }

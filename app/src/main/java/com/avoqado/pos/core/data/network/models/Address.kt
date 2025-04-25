@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.data.network.models
 
-
 import com.google.gson.annotations.SerializedName
 
 data class Address(
@@ -17,5 +16,5 @@ data class Address(
     @SerializedName("street")
     val street: String?,
     @SerializedName("zip")
-    val zip: String?
+    val zip: String?,
 )

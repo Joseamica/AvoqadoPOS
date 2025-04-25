@@ -54,7 +54,7 @@ import kotlinx.coroutines.launch
 private data class OtpField(
     val text: String,
     val index: Int,
-    val focusRequester: FocusRequester? = null
+    val focusRequester: FocusRequester? = null,
 )
 
 /**
@@ -100,27 +100,28 @@ private data class OtpField(
 fun OtpInputField(
     otp: MutableState<String>, // The current OTP value.
     count: Int = 5, // Number of OTP boxes.
-    otpBoxModifier: Modifier = Modifier
-        .border(1.pxToDp(), Color.Gray)
-        .background(Color.White),
+    otpBoxModifier: Modifier =
+        Modifier
+            .border(1.pxToDp(), Color.Gray)
+            .background(Color.White),
     otpTextType: KeyboardType = KeyboardType.Number,
     textColor: Color = Color.Black,
 ) {
-
     val scope = rememberCoroutineScope()
 
     // Initialize state for each OTP box with its character and optional focus requester.
-    val otpFieldsValues = remember {
-        (0 until count).mapIndexed { index, i ->
-            mutableStateOf(
-                OtpField(
-                    text = otp.value.getOrNull(i)?.toString() ?: "",
-                    index = index,
-                    focusRequester = FocusRequester()
+    val otpFieldsValues =
+        remember {
+            (0 until count).mapIndexed { index, i ->
+                mutableStateOf(
+                    OtpField(
+                        text = otp.value.getOrNull(i)?.toString() ?: "",
+                        index = index,
+                        focusRequester = FocusRequester(),
+                    ),
                 )
-            )
+            }
         }
-    }
 
     // Update each OTP box's value when the overall OTP value changes, and manage focus.
     LaunchedEffect(key1 = otp.value) {
@@ -141,7 +142,7 @@ fun OtpInputField(
     // Create a row of OTP boxes.
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.SpaceEvenly,
     ) {
         repeat(count) { index ->
             // For each OTP box, manage its value, focus, and what happens on value change.
@@ -200,7 +201,7 @@ private fun handleOtpInputChange(
     count: Int,
     newValue: String,
     otpFieldsValues: List<MutableState<OtpField>>,
-    otp: MutableState<String>
+    otp: MutableState<String>,
 ) {
     // Handle input for the current box.
     if (newValue.length <= 1) {
@@ -231,10 +232,18 @@ private fun handleOtpInputChange(
         // Logic to manage focus.
         if (newValue.isEmpty() && index > 0) {
             // If clearing a box and it's not the first box, move focus to the previous box.
-            otpFieldsValues.getOrNull(index - 1)?.value?.focusRequester?.requestFocus()
+            otpFieldsValues
+                .getOrNull(index - 1)
+                ?.value
+                ?.focusRequester
+                ?.requestFocus()
         } else if (index < count - 1 && newValue.isNotEmpty()) {
             // If adding a character and not on the last box, move focus to the next box.
-            otpFieldsValues.getOrNull(index + 1)?.value?.focusRequester?.requestFocus()
+            otpFieldsValues
+                .getOrNull(index + 1)
+                ?.value
+                ?.focusRequester
+                ?.requestFocus()
         }
     } catch (e: Exception) {
         e.printStackTrace()
@@ -245,7 +254,7 @@ private fun handleOtpInputChange(
 private fun focusNextBox(
     index: Int,
     count: Int,
-    otpFieldsValues: List<MutableState<OtpField>>
+    otpFieldsValues: List<MutableState<OtpField>>,
 ) {
     if (index + 1 < count) {
         // Move focus to the next box if the current one is filled and it's not the last box.
@@ -256,7 +265,6 @@ private fun focusNextBox(
         }
     }
 }
-
 
 @Composable
 private fun OtpBox(
@@ -278,13 +286,17 @@ private fun OtpBox(
     // If you're using this in Kotlin multiplatform mobile
     // val screenWidth = LocalWindowInfo.current.containerSize.width
     // If you're using this in Android
-    val screenWidth = LocalConfiguration.current.screenWidthDp.dp.dpToPx().toInt()
+    val screenWidth =
+        LocalConfiguration.current.screenWidthDp.dp
+            .dpToPx()
+            .toInt()
     val paddingValue = 5
     val totalBoxSize = (screenWidth / totalBoxCount) - paddingValue * totalBoxCount
 
     Box(
-        modifier = modifier
-            .size(totalBoxSize.pxToDp()),
+        modifier =
+            modifier
+                .size(totalBoxSize.pxToDp()),
         contentAlignment = Alignment.Center,
     ) {
         BasicTextField(
@@ -296,30 +308,34 @@ private fun OtpBox(
                 }
             },
             // Setup for focus and keyboard behavior.
-            modifier = Modifier
-                .testTag("otpBox${otpValue.index}")
-                .focusRequester(focusRequest)
-                .onGloballyPositioned {
-                    onFocusSet(focusRequest)
-                },
-            textStyle = MaterialTheme.typography.titleLarge.copy(
-                textAlign = TextAlign.Center,
-                color = textColor
-            ),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = textType,
-                imeAction = if (isLastItem) ImeAction.Done else ImeAction.Next
-            ),
-            keyboardActions = KeyboardActions(
-                onNext = {
-                    onNext()
-                },
-                onDone = {
-                    // Hide keyboard and clear focus when done.
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                }
-            ),
+            modifier =
+                Modifier
+                    .testTag("otpBox${otpValue.index}")
+                    .focusRequester(focusRequest)
+                    .onGloballyPositioned {
+                        onFocusSet(focusRequest)
+                    },
+            textStyle =
+                MaterialTheme.typography.titleLarge.copy(
+                    textAlign = TextAlign.Center,
+                    color = textColor,
+                ),
+            keyboardOptions =
+                KeyboardOptions(
+                    keyboardType = textType,
+                    imeAction = if (isLastItem) ImeAction.Done else ImeAction.Next,
+                ),
+            keyboardActions =
+                KeyboardActions(
+                    onNext = {
+                        onNext()
+                    },
+                    onDone = {
+                        // Hide keyboard and clear focus when done.
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                    },
+                ),
             singleLine = true,
             visualTransformation = getVisualTransformation(textType),
         )
@@ -337,11 +353,16 @@ private fun OtpBox(
  */
 @Composable
 private fun getVisualTransformation(textType: KeyboardType) =
-    if (textType == KeyboardType.NumberPassword || textType == KeyboardType.Password) PasswordVisualTransformation() else VisualTransformation.None
+    if (textType == KeyboardType.NumberPassword ||
+        textType == KeyboardType.Password
+    ) {
+        PasswordVisualTransformation()
+    } else {
+        VisualTransformation.None
+    }
 
 @Composable
 fun Dp.dpToPx() = with(LocalDensity.current) { this@dpToPx.toPx() }
-
 
 @Composable
 fun Int.pxToDp() = with(LocalDensity.current) { this@pxToDp.toDp() }
@@ -350,44 +371,49 @@ fun Int.pxToDp() = with(LocalDensity.current) { this@pxToDp.toDp() }
 @Composable
 fun OtpView_Preivew() {
     MaterialTheme {
-        val otpValue = remember {
-            mutableStateOf("124")
-        }
+        val otpValue =
+            remember {
+                mutableStateOf("124")
+            }
         Column(
             modifier = Modifier.padding(40.pxToDp()),
-            verticalArrangement = Arrangement.spacedBy(20.pxToDp())
+            verticalArrangement = Arrangement.spacedBy(20.pxToDp()),
         ) {
             OtpInputField(
                 otp = otpValue,
                 count = 4,
-                otpBoxModifier = Modifier
-                    .border(1.pxToDp(), Color.Black)
-                    .background(Color.White),
-                otpTextType = KeyboardType.Number
+                otpBoxModifier =
+                    Modifier
+                        .border(1.pxToDp(), Color.Black)
+                        .background(Color.White),
+                otpTextType = KeyboardType.Number,
             )
 
             OtpInputField(
                 otp = otpValue,
                 count = 4,
                 otpTextType = KeyboardType.NumberPassword,
-                otpBoxModifier = Modifier
-                    .border(3.pxToDp(), Color.Gray)
-                    .background(Color.White)
+                otpBoxModifier =
+                    Modifier
+                        .border(3.pxToDp(), Color.Gray)
+                        .background(Color.White),
             )
 
             OtpInputField(
                 otp = otpValue,
                 count = 5,
                 textColor = MaterialTheme.colorScheme.onBackground,
-                otpBoxModifier = Modifier
-                    .border(7.pxToDp(), Color(0xFF277F51), shape = RoundedCornerShape(12.pxToDp()))
+                otpBoxModifier =
+                    Modifier
+                        .border(7.pxToDp(), Color(0xFF277F51), shape = RoundedCornerShape(12.pxToDp())),
             )
 
             OtpInputField(
                 otp = otpValue,
                 count = 5,
-                otpBoxModifier = Modifier
-                    .bottomStroke(color = Color.DarkGray, strokeWidth = 6.pxToDp())
+                otpBoxModifier =
+                    Modifier
+                        .bottomStroke(color = Color.DarkGray, strokeWidth = 6.pxToDp()),
             )
         }
     }
@@ -400,15 +426,19 @@ fun OtpView_Preivew() {
  * @param strokeWidth The thickness of the stroke.
  * @return A Modifier that draws a bottom stroke.
  */
-fun Modifier.bottomStroke(color: Color, strokeWidth: Dp = 2.dp): Modifier = this.then(
-    Modifier.drawBehind {
-        val strokePx = strokeWidth.toPx()
-        // Draw a line at the bottom
-        drawLine(
-            color = color,
-            start = Offset(x = 0f, y = size.height - strokePx / 2),
-            end = Offset(x = size.width, y = size.height - strokePx / 2),
-            strokeWidth = strokePx
-        )
-    }
-)
+fun Modifier.bottomStroke(
+    color: Color,
+    strokeWidth: Dp = 2.dp,
+): Modifier =
+    this.then(
+        Modifier.drawBehind {
+            val strokePx = strokeWidth.toPx()
+            // Draw a line at the bottom
+            drawLine(
+                color = color,
+                start = Offset(x = 0f, y = size.height - strokePx / 2),
+                end = Offset(x = size.width, y = size.height - strokePx / 2),
+                strokeWidth = strokePx,
+            )
+        },
+    )

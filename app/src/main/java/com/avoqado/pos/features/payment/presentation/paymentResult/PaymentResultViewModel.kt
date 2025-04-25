@@ -29,7 +29,7 @@ class PaymentResultViewModel(
     private val navigationDispatcher: NavigationDispatcher,
     private val paymentRepository: PaymentRepository,
     private val terminalRepository: TerminalRepository,
-    private val managementRepository: ManagementRepository
+    private val managementRepository: ManagementRepository,
 ) : ViewModel() {
     private val _paymentResult = MutableStateFlow<PaymentResultViewState>(PaymentResultViewState())
     val paymentResult: StateFlow<PaymentResultViewState> = _paymentResult.asStateFlow()
@@ -53,89 +53,103 @@ class PaymentResultViewModel(
 
     private fun recordPayment(info: PaymentInfoResult) {
         viewModelScope.launch(Dispatchers.IO) {
-            val adquirer = try {
-                Gson().fromJson(info.rootData, Adquirer::class.java)
-            } catch (e: Exception) {
-                null
-            }
+            val adquirer =
+                try {
+                    Gson().fromJson(info.rootData, Adquirer::class.java)
+                } catch (e: Exception) {
+                    null
+                }
 
             when (info.splitType) {
-                SplitType.PERPRODUCT -> _paymentResult.update { state ->
-                    state.copy(
-                        paidProducts = tableInfo?.products?.filter { product -> product.id in info.products }
-                            ?.map { product -> Product(
-                                id = product.id,
-                                name = product.name,
-                                price = product.price,
-                                quantity = product.quantity,
-                                totalPrice = product.price * product.quantity
-                            ) } ?: emptyList()
-                    )
-                }
-
-                SplitType.EQUALPARTS -> _paymentResult.update { state ->
-                    state.copy(
-                        paidProducts = listOf(
-                            Product(
-                                id = "",
-                                name = "${info.splitSelectedPartySize} de ${info.splitPartySize}",
-                                price = info.subtotal,
-                                quantity = 1.0,
-                                totalPrice = info.subtotal
-                            )
+                SplitType.PERPRODUCT ->
+                    _paymentResult.update { state ->
+                        state.copy(
+                            paidProducts =
+                                tableInfo
+                                    ?.products
+                                    ?.filter { product -> product.id in info.products }
+                                    ?.map { product ->
+                                        Product(
+                                            id = product.id,
+                                            name = product.name,
+                                            price = product.price,
+                                            quantity = product.quantity,
+                                            totalPrice = product.price * product.quantity,
+                                        )
+                                    } ?: emptyList(),
                         )
-                    )
-                }
+                    }
 
-                SplitType.CUSTOMAMOUNT -> _paymentResult.update { state ->
-                    state.copy(
-                        paidProducts = listOf(
-                            Product(
-                                id = "",
-                                name = "Monto personalizado",
-                                price = info.subtotal,
-                                quantity = 1.0,
-                                totalPrice = info.subtotal
-                            )
+                SplitType.EQUALPARTS ->
+                    _paymentResult.update { state ->
+                        state.copy(
+                            paidProducts =
+                                listOf(
+                                    Product(
+                                        id = "",
+                                        name = "${info.splitSelectedPartySize} de ${info.splitPartySize}",
+                                        price = info.subtotal,
+                                        quantity = 1.0,
+                                        totalPrice = info.subtotal,
+                                    ),
+                                ),
                         )
-                    )
-                }
+                    }
 
-                SplitType.FULLPAYMENT -> _paymentResult.update { state ->
-                    state.copy(
-                        paidProducts = listOf(
-                            Product(
-                                id = "",
-                                name = "Pago completo",
-                                price = info.subtotal,
-                                quantity = 1.0,
-                                totalPrice = info.subtotal
-                            )
+                SplitType.CUSTOMAMOUNT ->
+                    _paymentResult.update { state ->
+                        state.copy(
+                            paidProducts =
+                                listOf(
+                                    Product(
+                                        id = "",
+                                        name = "Monto personalizado",
+                                        price = info.subtotal,
+                                        quantity = 1.0,
+                                        totalPrice = info.subtotal,
+                                    ),
+                                ),
                         )
-                    )
-                }
+                    }
+
+                SplitType.FULLPAYMENT ->
+                    _paymentResult.update { state ->
+                        state.copy(
+                            paidProducts =
+                                listOf(
+                                    Product(
+                                        id = "",
+                                        name = "Pago completo",
+                                        price = info.subtotal,
+                                        quantity = 1.0,
+                                        totalPrice = info.subtotal,
+                                    ),
+                                ),
+                        )
+                    }
 
                 null -> {}
             }
 
-            val terminal = try {
-                terminalRepository.getTerminalId(AvoqadoApp.terminalSerialCode)
-            } catch (e:Exception){
-                Timber.e(e)
-                TerminalInfo(
-                    serialCode = "",
-                    id = ""
-                )
-            }
+            val terminal =
+                try {
+                    terminalRepository.getTerminalId(AvoqadoApp.terminalSerialCode)
+                } catch (e: Exception) {
+                    Timber.e(e)
+                    TerminalInfo(
+                        serialCode = "",
+                        id = "",
+                    )
+                }
             val token =
                 "${info.venueId}-${info.tableNumber}-${info.billId}-${System.currentTimeMillis()}"
 
             _paymentResult.update { state ->
                 state
                     .copy(
-                        qrCode = "https://avoqado.io/receipt?token=${token}",
+                        qrCode = "https://avoqado.io/receipt?token=$token",
                         adquirer = adquirer,
-                        terminalSerialCode = terminal.serialCode
+                        terminalSerialCode = terminal.serialCode,
                     )
             }
 
@@ -146,12 +160,22 @@ class PaymentResultViewModel(
                 tpvId = terminal.id,
                 splitType = info.splitType?.value ?: "",
                 status = PaymentStatus.ACCEPTED.value,
-                amount = info.subtotal.toString().toAmountMx().replace(".", "").toInt(),
-                tip = info.tipAmount.toString().toAmountMx().replace(".", "").toInt(),
+                amount =
+                    info.subtotal
+                        .toString()
+                        .toAmountMx()
+                        .replace(".", "")
+                        .toInt(),
+                tip =
+                    info.tipAmount
+                        .toString()
+                        .toAmountMx()
+                        .replace(".", "")
+                        .toInt(),
                 billId = info.billId,
                 adquirer = adquirer,
                 token = token,
-                paidProductsId = info.products
+                paidProductsId = info.products,
             )
         }
     }
@@ -172,6 +196,5 @@ class PaymentResultViewModel(
         } else {
             navigationDispatcher.popToDestination(ManagementDests.Home.route, inclusive = false)
         }
-
     }
 }

@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.data.network.models
 
-
 import com.google.gson.annotations.SerializedName
 
 data class Page(
@@ -11,5 +10,5 @@ data class Page(
     @SerializedName("total_elements")
     val totalElements: Int,
     @SerializedName("total_pages")
-    val totalPages: Int
+    val totalPages: Int,
 )

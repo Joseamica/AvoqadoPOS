@@ -1,17 +1,9 @@
 package com.avoqado.pos.features.payment.presentation.inputTipAmount
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.text.TextRange
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.avoqado.pos.core.domain.models.SplitType
-import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.domain.usecase.ValidateAmountUseCase
-import com.avoqado.pos.core.presentation.destinations.MainDests
-import com.avoqado.pos.ui.screen.TextFieldState
-import com.menta.android.core.utils.StringUtils
+import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -21,19 +13,18 @@ class InputTipViewModel(
     val waiterName: String,
     val splitType: SplitType,
     private val validateAmountUseCase: ValidateAmountUseCase,
-    private val navigationDispatcher: NavigationDispatcher
+    private val navigationDispatcher: NavigationDispatcher,
 ) : ViewModel() {
-
     private val _showCustomAmount = MutableStateFlow(false)
     val showCustomAmount: StateFlow<Boolean> = _showCustomAmount
 
-    fun showCustomAmountKeyboard(){
+    fun showCustomAmountKeyboard() {
         _showCustomAmount.update {
             true
         }
     }
 
-    fun hideCustomAmountKeyboard(){
+    fun hideCustomAmountKeyboard() {
         _showCustomAmount.update {
             false
         }
@@ -42,5 +33,4 @@ class InputTipViewModel(
     fun navigateBack() {
         navigationDispatcher.navigateBack()
     }
-
 }

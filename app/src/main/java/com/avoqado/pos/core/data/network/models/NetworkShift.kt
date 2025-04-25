@@ -14,5 +14,5 @@ data class NetworkShift(
     val cashier: String?,
     val venueId: String?,
     val updatedAt: String?,
-    val createdAt: String?
+    val createdAt: String?,
 )

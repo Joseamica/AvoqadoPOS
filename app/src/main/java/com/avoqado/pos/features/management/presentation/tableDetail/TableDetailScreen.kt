@@ -35,31 +35,29 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.presentation.components.KeyboardSheet
-import com.avoqado.pos.core.presentation.model.FlowStep
-import com.avoqado.pos.core.presentation.model.IconAction
-import com.avoqado.pos.core.presentation.model.IconType
 import com.avoqado.pos.core.presentation.components.MainButton
 import com.avoqado.pos.core.presentation.components.ObserverLifecycleEvents
 import com.avoqado.pos.core.presentation.components.PullToRefreshBox
+import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
+import com.avoqado.pos.core.presentation.model.FlowStep
+import com.avoqado.pos.core.presentation.model.IconAction
+import com.avoqado.pos.core.presentation.model.IconType
 import com.avoqado.pos.core.presentation.model.TableInfo
 import com.avoqado.pos.core.presentation.model.VenueInfo
 import com.avoqado.pos.core.presentation.theme.AppFont
-import com.avoqado.pos.core.presentation.utils.toAmountMx
-import com.avoqado.pos.features.management.presentation.tableDetail.components.GenericOptionsUI
-import com.avoqado.pos.features.management.presentation.tableDetail.components.ProductListSheet
-import com.avoqado.pos.features.management.presentation.tableDetail.model.TableDetailView
-import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.theme.unselectedItemColor
 import com.avoqado.pos.core.presentation.utils.PrinterUtils
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
+import com.avoqado.pos.core.presentation.utils.toAmountMx
+import com.avoqado.pos.features.management.presentation.tableDetail.components.GenericOptionsUI
+import com.avoqado.pos.features.management.presentation.tableDetail.components.ProductListSheet
 import com.avoqado.pos.features.management.presentation.tableDetail.model.Payment
+import com.avoqado.pos.features.management.presentation.tableDetail.model.TableDetailView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TableDetailScreen(
-    tableDetailViewModel: TableDetailViewModel,
-) {
+fun TableDetailScreen(tableDetailViewModel: TableDetailViewModel) {
     val tableDetails by tableDetailViewModel.tableDetail.collectAsStateWithLifecycle()
     val isLoading by tableDetailViewModel.isLoading.collectAsStateWithLifecycle()
     val showCustomAmount by tableDetailViewModel.showPaymentPicker.collectAsStateWithLifecycle()
@@ -77,7 +75,7 @@ fun TableDetailScreen(
         },
         onDestroy = {
             tableDetailViewModel.stopListeningUpdates()
-        }
+        },
     )
 
     TableDetailContent(
@@ -102,7 +100,7 @@ fun TableDetailScreen(
             tableDetailViewModel.goToSplitBillByPerson()
         },
         onPullToRefresh = tableDetailViewModel::onPullToRefreshTrigger,
-        isRefreshing = isRefreshing
+        isRefreshing = isRefreshing,
     )
 
     if (showModalSheet) {
@@ -111,32 +109,34 @@ fun TableDetailScreen(
             onPrint = {
                 PrinterUtils.printComanda(
                     context = context,
-                    venue = tableDetailViewModel.venue?.let {
-                        VenueInfo(
-                            name = it.name ?: "",
-                            id = it.id ?: "",
-                            address = it.address ?: "",
-                            phone = it.phone ?: "",
-                            acquisition = ""
-                        )
-                    } ?: VenueInfo(
-                        name = "",
-                        id = "",
-                        address = "",
-                        phone = "",
-                        acquisition = ""
-                    ),
+                    venue =
+                        tableDetailViewModel.venue?.let {
+                            VenueInfo(
+                                name = it.name ?: "",
+                                id = it.id ?: "",
+                                address = it.address ?: "",
+                                phone = it.phone ?: "",
+                                acquisition = "",
+                            )
+                        } ?: VenueInfo(
+                            name = "",
+                            id = "",
+                            address = "",
+                            phone = "",
+                            acquisition = "",
+                        ),
                     products = tableDetails.products,
-                    tableInfo = TableInfo(
-                        name = tableDetails.name,
-                        waiterName = tableDetails.waiterName,
-                        orderNumber = "",
-                        folio = "",
-                        timestamp = ""
-                    )
+                    tableInfo =
+                        TableInfo(
+                            name = tableDetails.name,
+                            waiterName = tableDetails.waiterName,
+                            orderNumber = "",
+                            folio = "",
+                            timestamp = "",
+                        ),
                 )
             },
-            products = tableDetails.products
+            products = tableDetails.products,
         )
     }
 
@@ -149,7 +149,7 @@ fun TableDetailScreen(
             onAmountEntered = { amount, isPercentage ->
                 tableDetailViewModel.hidePaymentPicker()
                 tableDetailViewModel.payCustomPendingAmount(amount)
-            }
+            },
         )
     }
 }
@@ -166,35 +166,37 @@ private fun TableDetailContent(
     onShowBillProducts: () -> Unit,
     onOpenPayByProduct: () -> Unit,
     onPayCustomAmount: () -> Unit,
-    onOpenPayByPerson: () -> Unit = {}
+    onOpenPayByPerson: () -> Unit = {},
 ) {
     val context = LocalContext.current
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(Color.White),
     ) {
         ToolbarWithIcon(
             title = tableDetails.name,
-            iconAction = IconAction(
-                flowStep = FlowStep.NAVIGATE_BACK,
-                context = context,
-                iconType = IconType.CANCEL
-            ),
+            iconAction =
+                IconAction(
+                    flowStep = FlowStep.NAVIGATE_BACK,
+                    context = context,
+                    iconType = IconType.CANCEL,
+                ),
             showSecondIcon = true,
             onAction = {
                 onNavigateBack()
             },
             onActionSecond = {
                 onShowBillProducts()
-            }
+            },
         )
 
         if (isLoading) {
             // Mostrar loader mientras se carga la información
             Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
+                contentAlignment = Alignment.Center,
             ) {
                 CircularProgressIndicator()
             }
@@ -202,113 +204,126 @@ private fun TableDetailContent(
             PullToRefreshBox(
                 modifier = Modifier.weight(1f),
                 isRefreshing = isRefreshing,
-                onRefresh = onPullToRefresh
-            ){
+                onRefresh = onPullToRefresh,
+            ) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
-                        .padding(16.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                            .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceBetween
+                    verticalArrangement = Arrangement.SpaceBetween,
                 ) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .weight(1f),
                         verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(
                             text = "Queda por pagar",
                             modifier = Modifier.padding(vertical = 8.dp),
                             fontSize = 24.sp,
-                            color = Color.Black
+                            color = Color.Black,
                         )
                         Text(
                             text = "\$${tableDetails.totalPending.toString().toAmountMx()}",
                             fontSize = 62.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = Color.Black,
                         )
 
                         if (tableDetails.paymentsDone.isNotEmpty()) {
                             Spacer(Modifier.height(16.dp))
 
                             Column(
-                                modifier = Modifier
-                                    .border(
-                                        width = 2.dp,
-                                        color = Color.LightGray,
-                                        shape = RoundedCornerShape(10.dp)
-                                    )
-                                    .padding(horizontal = 8.dp)
+                                modifier =
+                                    Modifier
+                                        .border(
+                                            width = 2.dp,
+                                            color = Color.LightGray,
+                                            shape = RoundedCornerShape(10.dp),
+                                        ).padding(horizontal = 8.dp),
                             ) {
                                 Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 16.dp, vertical = 12.dp),
                                 ) {
                                     Text(
                                         text = "${tableDetails.paymentsDone.size} Pagos",
                                         modifier = Modifier.weight(1f),
-                                        style = MaterialTheme.typography.titleMedium.copy(
-                                            fontFamily = AppFont.EffraFamily
-                                        ),
-                                        color = Color.Black
+                                        style =
+                                            MaterialTheme.typography.titleMedium.copy(
+                                                fontFamily = AppFont.EffraFamily,
+                                            ),
+                                        color = Color.Black,
                                     )
 
                                     Spacer(Modifier.width(8.dp))
 
                                     Text(
                                         text = "\$${tableDetails.totalPayed.toString().toAmountMx()}",
-                                        style = MaterialTheme.typography.titleMedium.copy(
-                                            fontFamily = AppFont.EffraFamily
-                                        ),
-                                        color = unselectedItemColor
+                                        style =
+                                            MaterialTheme.typography.titleMedium.copy(
+                                                fontFamily = AppFont.EffraFamily,
+                                            ),
+                                        color = unselectedItemColor,
                                     )
                                 }
                                 HorizontalDivider(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(2.dp)
-                                        .background(Color.LightGray)
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .height(2.dp)
+                                            .background(Color.LightGray),
                                 )
                                 Column(
-                                    modifier = Modifier.padding(16.dp)
+                                    modifier = Modifier.padding(16.dp),
                                 ) {
                                     tableDetails.paymentsDone.groupBy { it.splitType }.forEach { paymentEntry ->
                                         val totalPayment = paymentEntry.value.sumOf { it.amount }
                                         Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
+                                            modifier =
+                                                Modifier
+                                                    .fillMaxWidth(),
                                         ) {
                                             Text(
-                                                text = when(paymentEntry.key) {
-                                                    "PERPRODUCT" -> "Por productos"
-                                                    "EQUALPARTS" -> {
-                                                        val partySize = paymentEntry.value.first().equalPartsPartySize
-                                                        val partySizePayed = paymentEntry.value.sumOf { it.equalPartsPayedFor?.toInt() ?: 0 }
-                                                        "$partySizePayed partes de $partySize"
-                                                    }
-                                                    else -> "Cantidad personalizada"
-                                                },
+                                                text =
+                                                    when (paymentEntry.key) {
+                                                        "PERPRODUCT" -> "Por productos"
+                                                        "EQUALPARTS" -> {
+                                                            val partySize = paymentEntry.value.first().equalPartsPartySize
+                                                            val partySizePayed =
+                                                                paymentEntry.value.sumOf {
+                                                                    it.equalPartsPayedFor?.toInt() ?: 0
+                                                                }
+                                                            "$partySizePayed partes de $partySize"
+                                                        }
+                                                        else -> "Cantidad personalizada"
+                                                    },
                                                 modifier = Modifier.weight(1f),
-                                                style = MaterialTheme.typography.bodyMedium.copy(
-                                                    fontFamily = AppFont.EffraFamily
-                                                ),
-                                                color = Color.Black
+                                                style =
+                                                    MaterialTheme.typography.bodyMedium.copy(
+                                                        fontFamily = AppFont.EffraFamily,
+                                                    ),
+                                                color = Color.Black,
                                             )
 
                                             Spacer(Modifier.width(8.dp))
 
                                             Text(
                                                 text = "\$${totalPayment.toString().toAmountMx()}",
-                                                style = MaterialTheme.typography.bodyMedium.copy(
-                                                    fontFamily = AppFont.EffraFamily,
-                                                    fontWeight = FontWeight.Bold
-                                                ),
-                                                color = Color.Black
+                                                style =
+                                                    MaterialTheme.typography.bodyMedium.copy(
+                                                        fontFamily = AppFont.EffraFamily,
+                                                        fontWeight = FontWeight.Bold,
+                                                    ),
+                                                color = Color.Black,
                                             )
                                         }
                                     }
@@ -317,12 +332,12 @@ private fun TableDetailContent(
                         }
                     }
 
-
                     if (tableDetails.totalPending > 0) {
                         Column(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             GenericOptionsUI(
                                 splitType = tableDetails.currentSplitType,
@@ -334,7 +349,7 @@ private fun TableDetailContent(
                                 },
                                 onClickCustom = {
                                     onPayCustomAmount()
-                                }
+                                },
                             )
 
                             Spacer(modifier = Modifier.height(16.dp))
@@ -344,7 +359,7 @@ private fun TableDetailContent(
                                 text = "Pagar \$${tableDetails.totalPending.toString().toAmountMx()}",
                                 onClickR = {
                                     onTogglePaymentSheet()
-                                }
+                                },
                             )
 
                             Spacer(modifier = Modifier.height(16.dp))
@@ -355,7 +370,6 @@ private fun TableDetailContent(
         }
     }
 }
-
 
 @Urovo9100DevicePreview
 @Composable
@@ -370,9 +384,10 @@ fun AmountDisplayPreview() {
             onPayCustomAmount = {},
             onPullToRefresh = {},
             isRefreshing = false,
-            tableDetails = TableDetailView(
-                name = "Mesa 1",
-            )
+            tableDetails =
+                TableDetailView(
+                    name = "Mesa 1",
+                ),
         )
     }
 }
@@ -390,23 +405,26 @@ fun AmountDisplayProductsPreview() {
             onPayCustomAmount = {},
             onPullToRefresh = {},
             isRefreshing = false,
-            tableDetails = TableDetailView(
-                name = "Mesa 1",
-                currentSplitType = SplitType.PERPRODUCT,
-                totalAmount = 100.0,
-                paymentsDone = listOf(
-                    Payment(
-                        amount = 20.0,
-                        products = listOf(
-                            "qwe123",
-                            "asd123"
+            tableDetails =
+                TableDetailView(
+                    name = "Mesa 1",
+                    currentSplitType = SplitType.PERPRODUCT,
+                    totalAmount = 100.0,
+                    paymentsDone =
+                        listOf(
+                            Payment(
+                                amount = 20.0,
+                                products =
+                                    listOf(
+                                        "qwe123",
+                                        "asd123",
+                                    ),
+                                splitType = SplitType.PERPRODUCT.value,
+                                equalPartsPayedFor = null,
+                                equalPartsPartySize = null,
+                            ),
                         ),
-                        splitType = SplitType.PERPRODUCT.value,
-                        equalPartsPayedFor = null,
-                        equalPartsPartySize = null
-                    )
-                )
-            )
+                ),
         )
     }
 }
@@ -424,20 +442,22 @@ fun AmountDisplayPartySizePreview() {
             onPayCustomAmount = {},
             onPullToRefresh = {},
             isRefreshing = false,
-            tableDetails = TableDetailView(
-                name = "Mesa 1",
-                currentSplitType = SplitType.EQUALPARTS,
-                totalAmount = 100.0,
-                paymentsDone = listOf(
-                    Payment(
-                        amount = 20.0,
-                        products = emptyList(),
-                        splitType = SplitType.EQUALPARTS.value,
-                        equalPartsPartySize = "5",
-                        equalPartsPayedFor = "1"
-                    )
-                )
-            )
+            tableDetails =
+                TableDetailView(
+                    name = "Mesa 1",
+                    currentSplitType = SplitType.EQUALPARTS,
+                    totalAmount = 100.0,
+                    paymentsDone =
+                        listOf(
+                            Payment(
+                                amount = 20.0,
+                                products = emptyList(),
+                                splitType = SplitType.EQUALPARTS.value,
+                                equalPartsPartySize = "5",
+                                equalPartsPayedFor = "1",
+                            ),
+                        ),
+                ),
         )
     }
 }
@@ -455,27 +475,29 @@ fun AmountDisplayCustomAmountPreview() {
             onPayCustomAmount = {},
             onPullToRefresh = {},
             isRefreshing = false,
-            tableDetails = TableDetailView(
-                name = "Mesa 1",
-                currentSplitType = SplitType.CUSTOMAMOUNT,
-                totalAmount = 100.0,
-                paymentsDone = listOf(
-                    Payment(
-                        amount = 20.0,
-                        products = emptyList(),
-                        splitType = SplitType.CUSTOMAMOUNT.value,
-                        equalPartsPartySize = "",
-                        equalPartsPayedFor = ""
-                    ),
-                    Payment(
-                        amount = 20.0,
-                        products = emptyList(),
-                        splitType = SplitType.CUSTOMAMOUNT.value,
-                        equalPartsPartySize = "",
-                        equalPartsPayedFor = ""
-                    )
-                )
-            )
+            tableDetails =
+                TableDetailView(
+                    name = "Mesa 1",
+                    currentSplitType = SplitType.CUSTOMAMOUNT,
+                    totalAmount = 100.0,
+                    paymentsDone =
+                        listOf(
+                            Payment(
+                                amount = 20.0,
+                                products = emptyList(),
+                                splitType = SplitType.CUSTOMAMOUNT.value,
+                                equalPartsPartySize = "",
+                                equalPartsPayedFor = "",
+                            ),
+                            Payment(
+                                amount = 20.0,
+                                products = emptyList(),
+                                splitType = SplitType.CUSTOMAMOUNT.value,
+                                equalPartsPartySize = "",
+                                equalPartsPayedFor = "",
+                            ),
+                        ),
+                ),
         )
     }
 }

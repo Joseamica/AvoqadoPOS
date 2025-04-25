@@ -17,9 +17,8 @@ class ShiftNotStartedViewModel constructor(
     private val navigationDispatcher: NavigationDispatcher,
     private val terminalRepository: TerminalRepository,
     private val snackbarDelegate: SnackbarDelegate,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
 ) : ViewModel() {
-
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
@@ -32,16 +31,17 @@ class ShiftNotStartedViewModel constructor(
             sessionManager.getVenueInfo()?.let {
                 _isLoading.update { true }
                 try {
-                    val shift = terminalRepository.startTerminalShift(
-                        venueId = it.id ?: "",
-                        posName = it.posName ?: ""
-                    )
+                    val shift =
+                        terminalRepository.startTerminalShift(
+                            venueId = it.id ?: "",
+                            posName = it.posName ?: "",
+                        )
                     sessionManager.setShift(shift)
                     navigationDispatcher.navigateBack()
                 } catch (e: Exception) {
                     if (e is AvoqadoError.BasicError) {
                         snackbarDelegate.showSnackbar(
-                            message = e.message
+                            message = e.message,
                         )
                     }
                 } finally {
@@ -49,7 +49,7 @@ class ShiftNotStartedViewModel constructor(
                 }
             } ?: run {
                 snackbarDelegate.showSnackbar(
-                    message = "No hay informacion del POS name."
+                    message = "No hay informacion del POS name.",
                 )
             }
         }
@@ -60,35 +60,36 @@ class ShiftNotStartedViewModel constructor(
             _isLoading.update { true }
             sessionManager.getVenueInfo()?.let {
                 try {
-                    val currentShift = terminalRepository.getTerminalShift(
-                        venueId = it.id ?: "",
-                        posName = it.posName ?: ""
-                    )
+                    val currentShift =
+                        terminalRepository.getTerminalShift(
+                            venueId = it.id ?: "",
+                            posName = it.posName ?: "",
+                        )
                     sessionManager.setShift(currentShift)
-                    
+
                     if (currentShift.endTime == null) {
                         // Shift is active, show success message and navigate back
                         snackbarDelegate.showSnackbar(
-                            message = "Turno abierto, puede continuar"
+                            message = "Turno abierto, puede continuar",
                         )
                         navigationDispatcher.navigateBack()
                     } else {
                         // Shift not active, show message
                         snackbarDelegate.showSnackbar(
-                            message = "Turno cerrado, abre el turno desde tu sistema POS"
+                            message = "Turno cerrado, abre el turno desde tu sistema POS",
                         )
                     }
                 } catch (e: Exception) {
                     // For any exception, show a consistent message about closed shift
                     snackbarDelegate.showSnackbar(
-                        message = "Turno cerrado, abre el turno desde tu sistema POS"
+                        message = "Turno cerrado, abre el turno desde tu sistema POS",
                     )
                 } finally {
                     _isLoading.update { false }
                 }
             } ?: run {
                 snackbarDelegate.showSnackbar(
-                    message = "No hay información del establecimiento"
+                    message = "No hay información del establecimiento",
                 )
                 _isLoading.update { false }
             }

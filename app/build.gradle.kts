@@ -28,7 +28,7 @@ android {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             signingConfig = signingConfigs.getByName("debug")
         }
@@ -91,7 +91,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    //Menta dependencies
+    // Menta dependencies
     implementation(files("libs/urovosdkLibs_v78.aar"))
     implementation(files("libs/com_menta_android_common_cross_common-cross_2.9.0_common-cross-2.9.0.aar"))
     implementation(files("libs/com_menta_android_core_core_payment_5.0.3_core_payment-5.0.3.aar"))
@@ -114,23 +114,23 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:$composeRuntimeVersion")
     implementation("com.google.accompanist:accompanist-placeholder-material:$accompanistPlaceholderVersion")
 
-    //Retrofit
+    // Retrofit
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
     implementation("com.squareup.retrofit2:converter-gson:$retrofitVersion")
 
-    //okhttpBomVersion
+    // okhttpBomVersion
     implementation(platform("com.squareup.okhttp3:okhttp-bom:$okhttpBomVersion"))
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:logging-interceptor")
 
-    //security
+    // security
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("org.bouncycastle:bcpkix-jdk15on:1.69")
 
-    //room database
+    // room database
     implementation("androidx.room:room-ktx:$roomVersion")
 
-    implementation ("androidx.compose.runtime:runtime-livedata:1.7.6")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.6")
     implementation("io.socket:socket.io-client:2.1.0") // Use latest version
 
     implementation("com.lightspark:compose-qr-code:1.0.1")

@@ -25,9 +25,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import com.avoqado.pos.R
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.model.enums.MmTypeCurrencyEnum
 import com.menta.android.common_cross.util.Utils
 import com.menta.android.keys.admin.core.repository.parametro.ParametroDB
@@ -39,7 +39,6 @@ import java.util.Calendar
 import java.util.Date
 
 object Utils {
-
     fun incrementBatch(context: Context) {
         Thread {
             if (mustIncrementBatch(context)) {
@@ -51,16 +50,17 @@ object Utils {
         }.start()
     }
 
-    fun mustIncrementBatch(context: Context): Boolean {
-        return isNextDate(KEY_NEXT_INCREMENT_BATCH_DATE, context)
-    }
+    fun mustIncrementBatch(context: Context): Boolean = isNextDate(KEY_NEXT_INCREMENT_BATCH_DATE, context)
 
     fun saveIncrementBatch(context: Context) {
         saveDate(KEY_NEXT_INCREMENT_BATCH_DATE, context)
     }
 
     @SuppressLint("SimpleDateFormat")
-    fun isNextDate(key: String?, context: Context): Boolean {
+    fun isNextDate(
+        key: String?,
+        context: Context,
+    ): Boolean {
         try {
             val hourDateFormat: DateFormat = SimpleDateFormat(PATTERN_DATE_FORMAT)
             val dateCurrent = hourDateFormat.format(Date())
@@ -81,7 +81,10 @@ object Utils {
     }
 
     @SuppressLint("SimpleDateFormat")
-    fun saveDate(key: String?, context: Context) {
+    fun saveDate(
+        key: String?,
+        context: Context,
+    ) {
         val dateFormat: DateFormat = SimpleDateFormat(PATTERN_DATE_FORMAT)
         val currentDate = Date()
         val days = 1
@@ -91,12 +94,18 @@ object Utils {
         editor.apply()
     }
 
-    private fun getDataSave(key: String?, context: Context): String? {
+    private fun getDataSave(
+        key: String?,
+        context: Context,
+    ): String? {
         val prefs = Utils.createEncryptedSharedPreferences(PREF_TRANSACTIONAL_DATA, context)
         return prefs.getString(key, null)
     }
 
-    private fun generateNewDate(date: Date, days: Int): Date {
+    private fun generateNewDate(
+        date: Date,
+        days: Int,
+    ): Date {
         val calendar = Calendar.getInstance()
         calendar.time = date
         calendar.add(Calendar.DAY_OF_YEAR, days)
@@ -118,14 +127,16 @@ object Utils {
             onClick = onClickR,
             shape = shape,
             enabled = enableButton,
-            colors = ButtonDefaults.buttonColors(
-                disabledContainerColor = colorDisable,
-                containerColor = color
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight()
-                .padding(6.dp)
+            colors =
+                ButtonDefaults.buttonColors(
+                    disabledContainerColor = colorDisable,
+                    containerColor = color,
+                ),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+                    .padding(6.dp),
         ) {
             Text(text = text, color = textColor, fontSize = 16.sp)
             if (drawableId != null) {
@@ -133,22 +144,22 @@ object Utils {
                 Image(
                     painterResource(id = drawableId),
                     contentDescription = EMPTY_STRING,
-                    modifier = Modifier.size(ButtonDefaults.IconSize)
+                    modifier = Modifier.size(ButtonDefaults.IconSize),
                 )
             }
         }
     }
 
     /* Implementation:
-    *      MmUtlAmountTextViewV2(
-    *          amount = "0.0505",
-    *          isVisible = visible,
-    *          currencyType = "BTC",
-    *          fullVisibility = true,
-    *          fullCoinDisplay = true,
-    *          maxDecimal = 6
-    *      )
-    */
+     *      MmUtlAmountTextViewV2(
+     *          amount = "0.0505",
+     *          isVisible = visible,
+     *          currencyType = "BTC",
+     *          fullVisibility = true,
+     *          fullCoinDisplay = true,
+     *          maxDecimal = 6
+     *      )
+     */
     @Composable
     fun MmUtlAmountTextViewV2(
         modifier: Modifier = Modifier,
@@ -162,18 +173,21 @@ object Utils {
         font: TextStyle = mumoSubTitleBold,
         currencyDisplay: Boolean = true,
         currencyFullDisplay: Boolean = false,
-        maxDecimal: Int = 2
+        maxDecimal: Int = 2,
     ) {
-        val am = try {
-            BigDecimal(amount).toPlainString()
-        } catch (e: NumberFormatException) {
-            "0"
-        }
+        val am =
+            try {
+                BigDecimal(amount).toPlainString()
+            } catch (e: NumberFormatException) {
+                "0"
+            }
 
         val isDigital = 1 == 1
         val amountParts = am.split(".")
         var entero =
-            (BigDecimal(amountParts[0]).abs().toPlainString()).reversed().chunked(3)
+            (BigDecimal(amountParts[0]).abs().toPlainString())
+                .reversed()
+                .chunked(3)
                 .joinToString(",")
                 .reversed()
         var decimal = if (amountParts.size > 1) amountParts[1] else "00"
@@ -187,24 +201,26 @@ object Utils {
         } else {
             Row(
                 modifier = modifier,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Row(
-                    verticalAlignment = Alignment.Top
+                    verticalAlignment = Alignment.Top,
                 ) {
                     if (coinDisplay) {
-                        if (currencyType in listOf(
+                        if (currencyType in
+                            listOf(
                                 MmTypeCurrencyEnum.MXN.name,
-                                MmTypeCurrencyEnum.USD.name
+                                MmTypeCurrencyEnum.USD.name,
                             )
                         ) {
                             Text(
                                 color = textColor,
                                 text = "$",
-                                style = font.copy(
-                                    fontSize = if (bigInt) baseSize.sp else (baseSize / INT_2).sp,
-                                    color = textColor
-                                )
+                                style =
+                                    font.copy(
+                                        fontSize = if (bigInt) baseSize.sp else (baseSize / INT_2).sp,
+                                        color = textColor,
+                                    ),
                             )
                         }
                     }
@@ -213,28 +229,31 @@ object Utils {
                             Text(
                                 color = textColor,
                                 text = entero,
-                                style = font
+                                style = font,
                             )
                         } else {
                             if (bigInt) entero = "$entero."
                             Text(
                                 color = textColor,
                                 text = entero,
-                                style = font.copy(
-                                    fontSize = if (bigInt) baseSize.sp else (baseSize / INT_2).sp,
-                                    color = textColor
-                                )
+                                style =
+                                    font.copy(
+                                        fontSize = if (bigInt) baseSize.sp else (baseSize / INT_2).sp,
+                                        color = textColor,
+                                    ),
                             )
                             if (bigDecimal && !bigInt) decimal = ".$decimal"
                             Text(
-                                text = truncateString(
-                                    decimal,
-                                    if (bigDecimal && !bigInt) maxDecimal + 1 else maxDecimal
-                                ),
-                                style = font.copy(
-                                    fontSize = if (bigDecimal) baseSize.sp else (baseSize / INT_2).sp,
-                                    color = textColor
-                                )
+                                text =
+                                    truncateString(
+                                        decimal,
+                                        if (bigDecimal && !bigInt) maxDecimal + 1 else maxDecimal,
+                                    ),
+                                style =
+                                    font.copy(
+                                        fontSize = if (bigDecimal) baseSize.sp else (baseSize / INT_2).sp,
+                                        color = textColor,
+                                    ),
                             )
                         }
                     } else {
@@ -251,30 +270,34 @@ object Utils {
                     Text(
                         modifier = Modifier.padding(start = 5.dp),
                         text = currencyType,
-                        style = font.copy(
-                            fontSize = if (bigInt) baseSize.sp else (baseSize / INT_2).sp,
-                            color = textColor
-                        )
+                        style =
+                            font.copy(
+                                fontSize = if (bigInt) baseSize.sp else (baseSize / INT_2).sp,
+                                color = textColor,
+                            ),
                     )
                 }
             }
         }
     }
 
-    fun truncateString(input: String, maxLength: Int): String {
-        return if (input.length > maxLength) {
+    fun truncateString(
+        input: String,
+        maxLength: Int,
+    ): String =
+        if (input.length > maxLength) {
             input.substring(0, maxLength)
         } else {
             input
         }
-    }
 
-    val mumoSubTitleBold = TextStyle(
-        color = Color.Black,
-        fontSize = 28.sp,
-        fontWeight = FontWeight.Normal,
-        fontFamily = FontFamily(Font(R.font.mulish_regular))
-    )
+    val mumoSubTitleBold =
+        TextStyle(
+            color = Color.Black,
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Normal,
+            fontFamily = FontFamily(Font(R.font.mulish_regular)),
+        )
 
     private const val PATTERN_DATE_FORMAT = "dd/MM/yyyy"
     private const val PREF_TRANSACTIONAL_DATA = "transactional_data"
@@ -292,5 +315,4 @@ object Utils {
     const val BASE_SIZE_25 = 25
     const val BASE_SIZE_30 = 11
     const val BASE_SIZE_35 = 35
-
 }

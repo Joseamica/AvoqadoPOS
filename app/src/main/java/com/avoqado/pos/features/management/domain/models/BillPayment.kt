@@ -5,5 +5,5 @@ data class BillPayment(
     val products: List<String>,
     val splitType: String?,
     val equalPartsPayedFor: String?,
-    val equalPartsPartySize: String?
+    val equalPartsPartySize: String?,
 )

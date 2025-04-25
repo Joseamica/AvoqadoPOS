@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class NetworkDataShift(
     @SerializedName("data")
-    val data : List<NetworkShiftRecord>,
+    val data: List<NetworkShiftRecord>,
     @SerializedName("pagination")
-    val pagination: Pagination
+    val pagination: Pagination,
 )

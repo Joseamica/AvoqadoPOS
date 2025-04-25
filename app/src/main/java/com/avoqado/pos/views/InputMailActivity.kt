@@ -37,11 +37,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
 import com.avoqado.pos.core.presentation.model.IconType
 import com.avoqado.pos.ui.screen.PrimaryButton
-import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 
 class InputMailActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -56,11 +56,11 @@ class InputMailActivity : ComponentActivity() {
                         IconAction(
                             flowStep = FlowStep.GO_TO_MENU,
                             context = this,
-                            iconType = IconType.BACK
-                        )
+                            iconType = IconType.BACK,
+                        ),
                     )
                 },
-                content = { RegisterScreenContent() }
+                content = { RegisterScreenContent() },
             )
         }
     }
@@ -70,7 +70,6 @@ class InputMailActivity : ComponentActivity() {
     fun RegisterScreenContent() {
         var textValue by remember { mutableStateOf(TextFieldValue()) }
         val focusRequester = remember { FocusRequester() }
-
 
         Column(modifier = Modifier.padding(vertical = 80.dp)) {
             TextField(
@@ -82,48 +81,50 @@ class InputMailActivity : ComponentActivity() {
                     .height(56.dp)
                     .background(
                         color = Color(0x0D000000),
-                        shape = RoundedCornerShape(size = 16.dp)
-                    )
-                    .focusRequester(focusRequester),
+                        shape = RoundedCornerShape(size = 16.dp),
+                    ).focusRequester(focusRequester),
                 label = {
                     Text(
                         text = "Ingrese el correo",
-                        style = TextStyle(
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight(400),
-                            color = Color(0xFF2A3256),
-                        )
+                        style =
+                            TextStyle(
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight(400),
+                                color = Color(0xFF2A3256),
+                            ),
                     )
                 },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Email,
-                ),
-
-                )
-
+                keyboardOptions =
+                    KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                    ),
+            )
         }
         Box(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentAlignment = Alignment.BottomCenter
+            modifier =
+                Modifier
+                    .fillMaxSize(),
+            contentAlignment = Alignment.BottomCenter,
         ) {
             Column(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter),
+                modifier =
+                    Modifier
+                        .align(Alignment.BottomCenter),
                 verticalArrangement = Arrangement.Bottom,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 PrimaryButton(
                     text = "Enviar",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(14.dp)
-                        .height(57.dp)
-                        .align(Alignment.End),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(14.dp)
+                            .height(57.dp)
+                            .align(Alignment.End),
                     onClick = {
                         Log.i("", "ingreso: ${textValue.text}")
                         goToSendTicket(textValue.text)
-                    }
+                    },
                 )
             }
         }
@@ -132,7 +133,6 @@ class InputMailActivity : ComponentActivity() {
             focusRequester.requestFocus()
         }
     }
-
 
     private fun goToSendTicket(email: String) {
         Log.i("", "email: $email")
@@ -150,5 +150,4 @@ class InputMailActivity : ComponentActivity() {
         }
         return false
     }
-
 }

@@ -23,32 +23,33 @@ import androidx.compose.ui.unit.dp
 fun DropdownMenuMoreActions(
     onPrintHistorical: () -> Unit,
     onSignOut: () -> Unit,
-    onRefresh: () -> Unit
-){
+    onRefresh: () -> Unit,
+) {
     var expanded by remember { mutableStateOf(false) }
 
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
     ) {
         IconButton(onClick = { expanded = !expanded }) {
             Icon(Icons.Default.MoreVert, contentDescription = "More options")
         }
         DropdownMenu(
             expanded = expanded,
-            onDismissRequest = { expanded = false }
+            onDismissRequest = { expanded = false },
         ) {
             // First section
             DropdownMenuItem(
                 text = { Text("Refrescar") },
-                onClick = onRefresh
+                onClick = onRefresh,
             )
 
             // First section
             DropdownMenuItem(
                 text = { Text("Resumen") },
-                onClick = onPrintHistorical
+                onClick = onPrintHistorical,
             )
 
             HorizontalDivider()
@@ -56,9 +57,8 @@ fun DropdownMenuMoreActions(
             // Second section
             DropdownMenuItem(
                 text = { Text("Cerrar sesión") },
-                onClick = onSignOut
+                onClick = onSignOut,
             )
-
         }
     }
 }

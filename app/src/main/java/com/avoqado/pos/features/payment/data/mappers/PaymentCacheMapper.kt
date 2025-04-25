@@ -4,8 +4,8 @@ import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.features.payment.data.cache.models.PaymentCacheEntity
 import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
 
-fun PaymentCacheEntity.toDomain(): PaymentInfoResult {
-    return PaymentInfoResult(
+fun PaymentCacheEntity.toDomain(): PaymentInfoResult =
+    PaymentInfoResult(
         subtotal = this.subtotal,
         tipAmount = this.tipAmount,
         date = this.date,
@@ -16,22 +16,20 @@ fun PaymentCacheEntity.toDomain(): PaymentInfoResult {
         venueId = venueId,
         tableNumber = tableNumber,
         billId = billId,
-        products = products
+        products = products,
     )
-}
 
-fun PaymentInfoResult.toCache(): PaymentCacheEntity {
-    return PaymentCacheEntity(
+fun PaymentInfoResult.toCache(): PaymentCacheEntity =
+    PaymentCacheEntity(
         subtotal = this.subtotal,
         tipAmount = this.tipAmount,
         date = this.date,
         paymentId = this.paymentId,
         rootData = this.rootData,
         waiterName = waiterName,
-        splitType = splitType?.value?:"",
+        splitType = splitType?.value ?: "",
         venueId = venueId,
         tableNumber = tableNumber,
         billId = billId,
-        products = products
+        products = products,
     )
-}

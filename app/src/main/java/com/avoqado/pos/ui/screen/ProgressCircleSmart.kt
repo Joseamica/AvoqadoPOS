@@ -16,30 +16,33 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import com.avoqado.pos.core.presentation.theme.dp_5
 
-
-object ConstCircle{
+object ConstCircle {
     const val startAngle = 0f
     const val endAngle = 360f
     const val angle = 300f
 }
+
 @Composable
 fun ProgressCircleSmart(
-    //modifier: Modifier = Modifier,
+    // modifier: Modifier = Modifier,
     circularProgressStyle: ProgressCircleStyleSmart = ProgressCircleStyleSmart(),
 ) {
-    val animatedRestart = animatedRestart(
-        direction = circularProgressStyle.direction,
-        durationInMilliSecond = circularProgressStyle.durationInMilliSecond
-    )
+    val animatedRestart =
+        animatedRestart(
+            direction = circularProgressStyle.direction,
+            durationInMilliSecond = circularProgressStyle.durationInMilliSecond,
+        )
 
     Box(
-        modifier = Modifier
-            .size(circularProgressStyle.size)
-            .padding(dp_5)
+        modifier =
+            Modifier
+                .size(circularProgressStyle.size)
+                .padding(dp_5),
     ) {
         Canvas(
-            modifier = Modifier
-                .fillMaxSize()
+            modifier =
+                Modifier
+                    .fillMaxSize(),
         ) {
             drawArc(
                 startAngle = ConstCircle.startAngle,
@@ -47,9 +50,10 @@ fun ProgressCircleSmart(
                 color = circularProgressStyle.backgroundColor,
                 useCenter = false,
                 size = size,
-                style = Stroke(
-                    width = circularProgressStyle.strokeBackgroundWidth.toPx()
-                )
+                style =
+                    Stroke(
+                        width = circularProgressStyle.strokeBackgroundWidth.toPx(),
+                    ),
             )
 
             drawArc(
@@ -58,10 +62,11 @@ fun ProgressCircleSmart(
                 sweepAngle = ConstCircle.angle,
                 useCenter = false,
                 size = size,
-                style = Stroke(
-                    width = circularProgressStyle.strokeWidth.toPx(),
-                    cap = if(circularProgressStyle.rounderBorder) StrokeCap.Round else StrokeCap.Square
-                )
+                style =
+                    Stroke(
+                        width = circularProgressStyle.strokeWidth.toPx(),
+                        cap = if (circularProgressStyle.rounderBorder) StrokeCap.Round else StrokeCap.Square,
+                    ),
             )
         }
     }
@@ -70,16 +75,17 @@ fun ProgressCircleSmart(
 @Composable
 fun animatedRestart(
     direction: ProgressDirectionSmart,
-    durationInMilliSecond: Int
-): Float {
-    return rememberInfiniteTransition().animateFloat(
-        initialValue = ConstCircle.startAngle,
-        targetValue = if (direction == ProgressDirectionSmart.RIGHT) ConstCircle.endAngle else -ConstCircle.endAngle,
-        animationSpec = infiniteRepeatable(
-            tween(
-                durationInMilliSecond,
-                easing = LinearEasing
-            )
-        )
-    ).value
-}
+    durationInMilliSecond: Int,
+): Float =
+    rememberInfiniteTransition()
+        .animateFloat(
+            initialValue = ConstCircle.startAngle,
+            targetValue = if (direction == ProgressDirectionSmart.RIGHT) ConstCircle.endAngle else -ConstCircle.endAngle,
+            animationSpec =
+                infiniteRepeatable(
+                    tween(
+                        durationInMilliSecond,
+                        easing = LinearEasing,
+                    ),
+                ),
+        ).value

@@ -8,11 +8,11 @@ import retrofit2.http.Header
 interface MentaService {
     @GET("v1/terminals?size=100")
     suspend fun getTerminals(
-        @Header("Authorization") token: String
+        @Header("Authorization") token: String,
     ): PagedTerminals
 
     @GET("v1/merchants?size=100")
     suspend fun getMerchants(
-        @Header("Authorization") token: String
-    ) : PagedMerchants
+        @Header("Authorization") token: String,
+    ): PagedMerchants
 }

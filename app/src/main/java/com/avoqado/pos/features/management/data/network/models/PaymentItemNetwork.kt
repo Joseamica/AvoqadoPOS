@@ -30,5 +30,5 @@ data class PaymentItemNetwork(
     @SerializedName("splitType")
     val splitType: String?,
     @SerializedName("user")
-    val user: String?
+    val user: String?,
 )

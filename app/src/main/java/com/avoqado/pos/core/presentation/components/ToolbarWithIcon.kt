@@ -40,25 +40,27 @@ fun ToolbarWithIcon(
     showSecondIcon: Boolean = false,
     secondIconRes: Int = R.drawable.icon_note,
     color: Color = Color.White,
-    contentColor: Color = Color.Black
+    contentColor: Color = Color.Black,
 ) {
     TopAppBar(
         expandedHeight = 48.dp,
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = color,
-            titleContentColor = contentColor,
-            actionIconContentColor = contentColor
-        ),
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = color,
+                titleContentColor = contentColor,
+                actionIconContentColor = contentColor,
+            ),
         title = {
             Box(modifier = Modifier.fillMaxWidth()) {
                 androidx.compose.material3.Text(
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .padding(
-                            end = if (showSecondIcon) 0.dp else 46.dp
-                        ),
+                    modifier =
+                        Modifier
+                            .align(Alignment.Center)
+                            .padding(
+                                end = if (showSecondIcon) 0.dp else 46.dp,
+                            ),
                     text = title,
-                    style = MaterialTheme.typography.titleSmall.copy(color= contentColor)
+                    style = MaterialTheme.typography.titleSmall.copy(color = contentColor),
                 )
             }
         },
@@ -96,7 +98,7 @@ fun ToolbarWithIcon(
                     Icon(painterResource(secondIconRes), contentDescription = "Note", tint = contentColor)
                 }
             }
-        }
+        },
     )
 }
 
@@ -106,35 +108,36 @@ fun SimpleToolbar(
     title: String,
     iconAction: IconAction? = null,
     onAction: () -> Unit = {},
-    onActionSecond: (() -> Unit)? = null
+    onActionSecond: (() -> Unit)? = null,
 ) {
     TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent
-        ),
+        colors =
+            TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent,
+            ),
         title = {
             onActionSecond?.let {
-                Row (
+                Row(
                     modifier = Modifier.fillMaxWidth().padding(end = 50.dp),
-                    horizontalArrangement = Arrangement.Center
-                ){
+                    horizontalArrangement = Arrangement.Center,
+                ) {
                     MainButton(
                         modifier = Modifier.height(50.dp),
                         text = title,
                         onClickR = it,
-                        contentPadding = PaddingValues(vertical = 4.dp)
+                        contentPadding = PaddingValues(vertical = 4.dp),
                     )
                 }
             }
-
         },
         navigationIcon = {
             iconAction?.let {
-                Button (
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color.Black
-                    ),
+                Button(
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = Color.Black,
+                        ),
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.size(50.dp),
                     shape = RoundedCornerShape(8.dp),
@@ -149,7 +152,8 @@ fun SimpleToolbar(
                                 onAction.invoke()
                             }
                         }
-                    }) {
+                    },
+                ) {
                     when (iconAction.iconType) {
                         IconType.CANCEL -> {
                             Icon(painterResource(R.drawable.icon_home), contentDescription = null)
@@ -164,5 +168,3 @@ fun SimpleToolbar(
         },
     )
 }
-
-

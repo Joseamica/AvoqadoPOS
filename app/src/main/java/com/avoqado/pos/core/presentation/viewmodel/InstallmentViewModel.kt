@@ -7,9 +7,7 @@ import com.avoqado.pos.OperationFlowHolder
 import com.menta.android.core.model.OperationFlow
 import com.menta.android.core.model.bin.InstallmentsApp
 
-class InstallmentViewModel(
-) : ViewModel() {
-
+class InstallmentViewModel : ViewModel() {
     private val operationFlow: OperationFlow?
         get() = OperationFlowHolder.operationFlow
 
@@ -18,9 +16,9 @@ class InstallmentViewModel(
 
     fun setInstallmentSelected(installmentWithTotal: InstallmentsApp) {
         operationFlow?.installments =
-        installmentWithTotal.code.toString().padStart(2, '0')
+            installmentWithTotal.code.toString().padStart(2, '0')
         operationFlow?.amount?.total =
-            installmentWithTotal.totalAmount//installmentWithTotal.totalAmountWithCft
+            installmentWithTotal.totalAmount // installmentWithTotal.totalAmountWithCft
 
         _installmentSelected.value = installmentWithTotal
     }

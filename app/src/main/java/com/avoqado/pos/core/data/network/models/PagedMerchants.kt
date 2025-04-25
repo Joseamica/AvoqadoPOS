@@ -6,5 +6,5 @@ data class PagedMerchants(
     @SerializedName("_embedded")
     val embedded: Embedded,
     @SerializedName("page")
-    val page: Page
+    val page: Page,
 )

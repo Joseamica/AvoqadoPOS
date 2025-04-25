@@ -13,9 +13,8 @@ import java.time.LocalDateTime
 class QuickPaymentViewModel(
     private val navigationDispatcher: NavigationDispatcher,
     private val sessionManager: SessionManager,
-    private val paymentRepository: PaymentRepository
+    private val paymentRepository: PaymentRepository,
 ) : ViewModel() {
-
     val currentUser = sessionManager.getAvoqadoSession()
 
     fun onBack() {
@@ -34,23 +33,23 @@ class QuickPaymentViewModel(
                 tableNumber = "",
                 venueId = currentUser?.venueId ?: "",
                 splitType = SplitType.FULLPAYMENT,
-                billId = ""
-            )
+                billId = "",
+            ),
         )
         navigationDispatcher.navigateBack()
         navigationDispatcher.navigateWithArgs(
             PaymentDests.InputTip,
             NavigationArg.StringArg(
                 PaymentDests.InputTip.ARG_SUBTOTAL,
-                amount.toString()
+                amount.toString(),
             ),
             NavigationArg.StringArg(
                 PaymentDests.InputTip.ARG_WAITER,
-                currentUser?.name ?: ""
+                currentUser?.name ?: "",
             ),
             NavigationArg.StringArg(
                 PaymentDests.InputTip.ARG_SPLIT_TYPE,
-                SplitType.EQUALPARTS.value
+                SplitType.EQUALPARTS.value,
             ),
         )
     }

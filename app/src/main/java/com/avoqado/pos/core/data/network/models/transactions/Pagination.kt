@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.data.network.models.transactions
 
-
 import com.google.gson.annotations.SerializedName
 
 data class Pagination(
@@ -15,5 +14,5 @@ data class Pagination(
     @SerializedName("totalCount")
     val totalCount: Int?,
     @SerializedName("totalPages")
-    val totalPages: Int?
+    val totalPages: Int?,
 )

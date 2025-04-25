@@ -32,52 +32,54 @@ import androidx.compose.ui.unit.sp
 import com.avoqado.pos.core.presentation.model.Product
 import com.avoqado.pos.core.presentation.utils.Utils
 
-
 @Composable
 fun ProductsScreen(
-    listProducts: List<Product>
-    //totalPrice: MutableState<Double>
+    listProducts: List<Product>,
+    // totalPrice: MutableState<Double>
 ) {
     var selectedProducts by remember { mutableStateOf<List<Product>>(emptyList()) }
     val ctx = LocalContext.current
     val totalPriceLocal by remember(selectedProducts) {
         derivedStateOf { selectedProducts.sumOf { it.price } }
     }
-    //LaunchedEffect(totalPriceLocal) { totalPrice.value = totalPriceLocal }
+    // LaunchedEffect(totalPriceLocal) { totalPrice.value = totalPriceLocal }
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
     ) {
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(
                 count = listProducts.size,
-                key = { index -> listProducts[index].id }
+                key = { index -> listProducts[index].id },
             ) { index ->
                 val product = listProducts[index]
                 AVProductItem(
                     product = product,
                     isSelected = product in selectedProducts,
                     onItemClicked = {
-                        selectedProducts = if (product in selectedProducts) {
-                            selectedProducts - product
-                        } else {
-                            selectedProducts + product
-                        }
-                    }
+                        selectedProducts =
+                            if (product in selectedProducts) {
+                                selectedProducts - product
+                            } else {
+                                selectedProducts + product
+                            }
+                    },
                 )
             }
         }
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
         ) {
             Utils.UtilButtonView(
                 text = "Pagar ${selectedProducts.size} productos $totalPriceLocal",
                 onClickR = {},
                 color = Color.Black,
-                textColor = Color.White
+                textColor = Color.White,
             )
         }
     }
@@ -87,28 +89,29 @@ fun ProductsScreen(
 fun AVProductItem(
     product: Product,
     isSelected: Boolean,
-    onItemClicked: () -> Unit
+    onItemClicked: () -> Unit,
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .clickable {
-                onItemClicked()
-            }
-            .border(
-                width = 2.dp,
-                color = if (isSelected) Color.Black else Color.Transparent,
-                shape = RoundedCornerShape(12.dp)
-            ),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .clickable {
+                    onItemClicked()
+                }.border(
+                    width = 2.dp,
+                    color = if (isSelected) Color.Black else Color.Transparent,
+                    shape = RoundedCornerShape(12.dp),
+                ),
         elevation = CardDefaults.cardElevation(12.dp),
         colors = CardDefaults.cardColors(Color.White),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
     ) {
         Row(
-            modifier = Modifier
-                .padding(12.dp)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(12.dp)
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Spacer(modifier = Modifier.width(8.dp))
@@ -116,7 +119,7 @@ fun AVProductItem(
             Row(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.weight(0.6f)
+                modifier = Modifier.weight(0.6f),
             ) {
                 Text(
                     text = product.name,
@@ -127,7 +130,7 @@ fun AVProductItem(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.End,
-                modifier = Modifier.weight(0.4f)
+                modifier = Modifier.weight(0.4f),
             ) {
                 Utils.MmUtlAmountTextViewV2(
                     amount = product.price.toInt().toString(),

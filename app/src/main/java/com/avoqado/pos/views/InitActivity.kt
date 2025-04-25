@@ -20,7 +20,6 @@ import com.menta.android.core.viewmodel.MasterKeyData
 import com.menta.android.restclient.core.RestClientConfiguration.configure
 import com.menta.android.restclient.core.Storage
 
-
 class InitActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,33 +28,33 @@ class InitActivity : ComponentActivity() {
         setContent {
             ProcessingOperationScreen(
                 title = stringResource(id = R.string.wait_payment),
-                message = stringResource(id = R.string.whileInitProcessFinishes)
+                message = stringResource(id = R.string.whileInitProcessFinishes),
             )
         }
         configure(AppfinRestClientConfigure())
         val externalTokenData = ExternalTokenData(this)
         Log.i(TAG, "Requesting token with API key: $merchantApiKey") // Log antes de solicitar el token
 
-        //Recuperar el token. TODO La apiKey es la que se generó previamente por el cliente, es una por merchant
+        // Recuperar el token. TODO La apiKey es la que se generó previamente por el cliente, es una por merchant
         externalTokenData.getExternalToken(merchantApiKey)
 
-        //Observer
+        // Observer
         externalTokenData.getExternalToken.observe(this) { token ->
             Log.i(TAG, "Token received: $token")
 
             if (token.status.statusType != StatusType.ERROR) {
                 Log.i(TAG, "Get token SUCCESS")
-                //Guardar el token
+                // Guardar el token
                 val storage = Storage(this)
                 storage.putIdToken(token.idToken)
                 storage.putTokenType(token.tokenType)
 
-                //Inyección de llaves
+                // Inyección de llaves
                 val masterKeyData = MasterKeyData(this)
                 masterKeyData.loadMasterKey(
-                    merchantId = merchantId, //TODO el cliente debe conocer su merchantId, es diferente por cada comercio que tenga
+                    merchantId = merchantId, // TODO el cliente debe conocer su merchantId, es diferente por cada comercio que tenga
                     acquirerId = ACQUIRER_NAME,
-                    countryCode = COUNTRY_CODE
+                    countryCode = COUNTRY_CODE,
                 )
                 masterKeyData.getMasterKey.observe(this) { keyResult ->
                     keyResult?.secretsList?.let {

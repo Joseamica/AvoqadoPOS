@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.data.network.models.transactions.payments
 
-
 import com.google.gson.annotations.SerializedName
 
 data class Tpv(
@@ -9,5 +8,5 @@ data class Tpv(
     @SerializedName("name")
     val name: String?,
     @SerializedName("serial")
-    val serial: String?
+    val serial: String?,
 )

@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.components.DashedDivider
+import com.avoqado.pos.core.presentation.components.SimpleToolbar
 import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
 import com.avoqado.pos.core.presentation.model.IconType
@@ -45,15 +46,11 @@ import com.avoqado.pos.core.presentation.theme.buttonGrayColor
 import com.avoqado.pos.core.presentation.utils.PrinterUtils
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 import com.avoqado.pos.core.presentation.utils.toAmountMx
-import com.avoqado.pos.core.presentation.components.SimpleToolbar
 import com.lightspark.composeqr.QrCodeColors
 import com.lightspark.composeqr.QrCodeView
 
-
 @Composable
-fun PaymentResultScreen(
-    viewModel: PaymentResultViewModel
-) {
+fun PaymentResultScreen(viewModel: PaymentResultViewModel) {
     val state by viewModel.paymentResult.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
@@ -69,26 +66,27 @@ fun PaymentResultScreen(
             PrinterUtils.printOrderReceipt(
                 context = context,
                 qrInfo = state.qrCode,
-                venue = viewModel.venue?.let {
-                    VenueInfo(
-                        name = it.name ?: "",
-                        id = it.id ?: "",
-                        address = it.address ?: "",
-                        phone = it.phone ?: "",
-                        acquisition = ""
-                    )
-                } ?: VenueInfo(
-                    name = "",
-                    id = "",
-                    address = "",
-                    phone = "",
-                    acquisition = ""
-                ),
+                venue =
+                    viewModel.venue?.let {
+                        VenueInfo(
+                            name = it.name ?: "",
+                            id = it.id ?: "",
+                            address = it.address ?: "",
+                            phone = it.phone ?: "",
+                            acquisition = "",
+                        )
+                    } ?: VenueInfo(
+                        name = "",
+                        id = "",
+                        address = "",
+                        phone = "",
+                        acquisition = "",
+                    ),
                 terminalSerialCode = state.terminalSerialCode,
                 operationInfo = state.operationInfo,
-                products = state.paidProducts
+                products = state.paidProducts,
             )
-        }
+        },
     )
 }
 
@@ -97,97 +95,101 @@ fun PaymentResultContent(
     state: PaymentResultViewState,
     onGoToHome: () -> Unit = {},
     onNewPayment: () -> Unit = {},
-    onPrintPayment: () -> Unit = {}
+    onPrintPayment: () -> Unit = {},
 ) {
     val context = LocalContext.current
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(backgroundPrimaryColor)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(backgroundPrimaryColor),
     ) {
-
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-        ) {
-
-            Box(
-                modifier = Modifier
+            modifier =
+                Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp)
+                    .weight(1f),
+        ) {
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 8.dp),
             ) {
                 SimpleToolbar(
                     title = "Nuevo pago",
-                    iconAction = IconAction(
-                        iconType = IconType.CANCEL,
-                        flowStep = FlowStep.NAVIGATE_BACK,
-                        context = context
-                    ),
+                    iconAction =
+                        IconAction(
+                            iconType = IconType.CANCEL,
+                            flowStep = FlowStep.NAVIGATE_BACK,
+                            context = context,
+                        ),
                     onAction = {
                         onGoToHome()
                     },
                     onActionSecond = {
                         onNewPayment()
-                    }
+                    },
                 )
             }
 
             Box(
-                modifier = Modifier.padding(
-                    top = 24.dp
-                )
+                modifier =
+                    Modifier.padding(
+                        top = 24.dp,
+                    ),
             ) {
                 Image(
                     painter = painterResource(R.drawable.ilu_ticket_background),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 90.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .padding(top = 90.dp),
                     contentDescription = "",
-                    contentScale = ContentScale.FillBounds
+                    contentScale = ContentScale.FillBounds,
                 )
 
                 state.qrCode?.let {
                     Box(
-                        modifier = Modifier
-                            .size(180.dp)
-                            .background(
-                                color = Color.White,
-                                shape = RoundedCornerShape(24.dp)
-                            )
-                            .border(
-                                width = 10.dp,
-                                color = Color.Black,
-                                shape = RoundedCornerShape(24.dp)
-                            )
-                            .align(Alignment.TopCenter)
+                        modifier =
+                            Modifier
+                                .size(180.dp)
+                                .background(
+                                    color = Color.White,
+                                    shape = RoundedCornerShape(24.dp),
+                                ).border(
+                                    width = 10.dp,
+                                    color = Color.Black,
+                                    shape = RoundedCornerShape(24.dp),
+                                ).align(Alignment.TopCenter),
                     ) {
                         QrCodeView(
                             data = state.qrCode,
-                            modifier = Modifier
-                                .size(140.dp)
-                                .align(Alignment.Center),
-                            colors = QrCodeColors(
-                                background = Color.White,
-                                foreground = Color.Black
-                            )
+                            modifier =
+                                Modifier
+                                    .size(140.dp)
+                                    .align(Alignment.Center),
+                            colors =
+                                QrCodeColors(
+                                    background = Color.White,
+                                    foreground = Color.Black,
+                                ),
                         )
                     }
                 }
 
-
                 Column(
-                    modifier = Modifier
-                        .padding(
-                            horizontal = 40.dp
-                        )
-                        .align(Alignment.BottomCenter)
+                    modifier =
+                        Modifier
+                            .padding(
+                                horizontal = 40.dp,
+                            ).align(Alignment.BottomCenter),
                 ) {
                     Text(
                         text = "Escanea el código QR para descargar el recibo y dejar una calificación",
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal)
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Normal),
                     )
 
                     Spacer(Modifier.height(20.dp))
@@ -207,17 +209,18 @@ fun PaymentResultContent(
                         Spacer(Modifier.width(8.dp))
                         Text(
                             "\$${state.totalAmount.toString().toAmountMx()}",
-                            style = MaterialTheme.typography.titleMedium
+                            style = MaterialTheme.typography.titleMedium,
                         )
                     }
 
                     Spacer(Modifier.height(16.dp))
 
                     Divider(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(1.dp),
-                        color = Color.LightGray
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .height(1.dp),
+                        color = Color.LightGray,
                     )
 
                     Spacer(Modifier.height(16.dp))
@@ -241,25 +244,26 @@ fun PaymentResultContent(
                     Spacer(Modifier.height(24.dp))
                 }
             }
-
         }
 
         Button(
             onClick = onPrintPayment,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-                .padding(horizontal = 16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.White,
-                contentColor = buttonGrayColor
-            )
+            colors =
+                ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                    contentColor = buttonGrayColor,
+                ),
         ) {
             Icon(
                 painter = painterResource(R.drawable.baseline_print_24),
                 contentDescription = "",
-                tint = buttonGrayColor
+                tint = buttonGrayColor,
             )
 
             Spacer(Modifier.width(8.dp))
@@ -267,13 +271,12 @@ fun PaymentResultContent(
             Text(
                 text = "O imprime el recibo",
                 color = buttonGrayColor,
-                fontSize = 16.sp
+                fontSize = 16.sp,
             )
         }
 
         Spacer(Modifier.height(24.dp))
     }
-
 }
 
 @Urovo9100DevicePreview
@@ -281,9 +284,10 @@ fun PaymentResultContent(
 fun PaymentResultContentPreview() {
     AvoqadoTheme {
         PaymentResultContent(
-            state = PaymentResultViewState(
-                qrCode = "testing1234"
-            )
+            state =
+                PaymentResultViewState(
+                    qrCode = "testing1234",
+                ),
         )
     }
 }

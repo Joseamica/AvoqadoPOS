@@ -19,5 +19,5 @@ data class ShiftUpdateMessage(
     val tipsSum: Int?,
     val tipsCount: Int?,
     val paymentSum: Int?,
-    val action: String? // Puede ser "created", "updated", etc.
+    val action: String?, // Puede ser "created", "updated", etc.
 ) 

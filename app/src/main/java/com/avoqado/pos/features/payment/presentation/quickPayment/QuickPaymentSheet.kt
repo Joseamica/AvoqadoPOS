@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ModalBottomSheetDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -39,76 +38,79 @@ import com.avoqado.pos.core.presentation.theme.hintTextColor
 import com.avoqado.pos.core.presentation.theme.lightGrayNumberField
 
 @Composable
-fun QuickPaymentSheet(
-    viewModel: QuickPaymentViewModel
-) {
+fun QuickPaymentSheet(viewModel: QuickPaymentViewModel) {
     var amount by remember { mutableStateOf(0L) } // Store amount in cents
     val formattedAmount =
         remember(amount) { formatAmount(amount, isPercentage = false) }
 
-
     Surface(
         modifier = Modifier.clip(RoundedCornerShape(10.dp, 10.dp, 0.dp, 0.dp)),
         color = MaterialTheme.colorScheme.surface,
-        shadowElevation = ModalBottomSheetDefaults.Elevation
+        shadowElevation = ModalBottomSheetDefaults.Elevation,
     ) {
         Column {
             Spacer(Modifier.height(16.dp))
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "Cantidad personalizada",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        color = Color.Black
-                    ),
-                    modifier = Modifier.weight(1f)
+                    style =
+                        MaterialTheme.typography.titleMedium.copy(
+                            color = Color.Black,
+                        ),
+                    modifier = Modifier.weight(1f),
                 )
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Icon(
                     painter = painterResource(R.drawable.baseline_close_24),
                     contentDescription = "Close",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .padding(8.dp)
-                        .clickable {
-                            viewModel.onBack()
-                        }
+                    modifier =
+                        Modifier
+                            .size(40.dp)
+                            .padding(8.dp)
+                            .clickable {
+                                viewModel.onBack()
+                            },
                 )
             }
 
             Spacer(Modifier.height(16.dp))
 
             Box(
-                modifier = Modifier
-                    .background(color = lightGrayNumberField)
-                    .fillMaxWidth()
+                modifier =
+                    Modifier
+                        .background(color = lightGrayNumberField)
+                        .fillMaxWidth(),
             ) {
                 Text(
                     text = formattedAmount,
                     textAlign = TextAlign.End,
-                    style = MaterialTheme.typography.headlineLarge.copy(
-                        color = hintTextColor,
-                        fontFamily = AppFont.EffraFamily
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            vertical = 24.dp,
-                            horizontal = 32.dp
+                    style =
+                        MaterialTheme.typography.headlineLarge.copy(
+                            color = hintTextColor,
+                            fontFamily = AppFont.EffraFamily,
                         ),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                vertical = 24.dp,
+                                horizontal = 32.dp,
+                            ),
                 )
             }
 
             Spacer(Modifier.height(16.dp))
 
             Box(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             ) {
                 CustomKeyboard(
                     modifier = Modifier.fillMaxWidth(),
@@ -125,7 +127,7 @@ fun QuickPaymentSheet(
                     },
                     onConfirmClick = {
                         viewModel.submitAmount(amount / 100.0) // Convert cents to dollars
-                    }
+                    },
                 )
             }
 

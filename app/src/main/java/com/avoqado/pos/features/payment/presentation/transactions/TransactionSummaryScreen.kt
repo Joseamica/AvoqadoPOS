@@ -1,6 +1,5 @@
 package com.avoqado.pos.features.payment.presentation.transactions
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,13 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Tab
-import androidx.compose.material3.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -52,14 +51,13 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 enum class SummaryTabs {
-    RESUMEN, PAGOS, TURNOS
+    RESUMEN,
+    PAGOS,
+    TURNOS,
 }
 
 @Composable
-fun TransactionsSummaryScreen(
-    viewModel: TransactionSummaryViewModel
-) {
-
+fun TransactionsSummaryScreen(viewModel: TransactionSummaryViewModel) {
     val context = LocalContext.current
 
     ObserverLifecycleEvents(
@@ -67,7 +65,7 @@ fun TransactionsSummaryScreen(
             viewModel.loadSummary()
             viewModel.loadShiftsSummary()
             viewModel.loadPaymentsSummary()
-        }
+        },
     )
 
     val currentTab by viewModel.currentTab.collectAsStateWithLifecycle()
@@ -81,6 +79,8 @@ fun TransactionsSummaryScreen(
     val shifts by viewModel.shiftsList.collectAsStateWithLifecycle()
     val summary by viewModel.shiftSummary.collectAsStateWithLifecycle()
     val payments by viewModel.paymentsShiftList.collectAsStateWithLifecycle()
+    val hasMoreShiftsPages by viewModel.hasMoreShiftsPages.collectAsStateWithLifecycle()
+    val hasMorePaymentsPages by viewModel.hasMorePaymentsPages.collectAsStateWithLifecycle()
 
     TransactionSummaryContent(
         onNavigateBack = viewModel::navigateBack,
@@ -97,6 +97,7 @@ fun TransactionsSummaryScreen(
         isLoading = isLoading,
         isLoadingMore = isLoadingMore,
         shifts = shifts,
+        hasMoreShiftsPages = hasMoreShiftsPages, // Add this parameter
         onLoadMore = {
             viewModel.loadShiftsSummary(nextPage = true)
         },
@@ -107,23 +108,24 @@ fun TransactionsSummaryScreen(
         },
         waiters = viewModel.venueInfo?.waiters?.map { Pair(it.id, it.nombre) } ?: emptyList(),
         onPrintPage = {
-            val venue = viewModel.venue?.let {
-                VenueInfo(
-                    name = it.name ?: "",
-                    id = it.id ?: "",
-                    address = it.address ?: "",
-                    phone = it.phone ?: "",
-                    acquisition = ""
+            val venue =
+                viewModel.venue?.let {
+                    VenueInfo(
+                        name = it.name ?: "",
+                        id = it.id ?: "",
+                        address = it.address ?: "",
+                        phone = it.phone ?: "",
+                        acquisition = "",
+                    )
+                } ?: VenueInfo(
+                    name = "",
+                    id = "",
+                    address = "",
+                    phone = "",
+                    acquisition = "",
                 )
-            } ?: VenueInfo(
-                name = "",
-                id = "",
-                address = "",
-                phone = "",
-                acquisition = ""
-            )
 
-            when(currentTab){
+            when (currentTab) {
                 SummaryTabs.RESUMEN -> {
                     PrinterUtils.printPeriodSummary(
                         context = context,
@@ -133,54 +135,60 @@ fun TransactionsSummaryScreen(
                         orderCount = summary?.ordersCount ?: 0,
                         ratingCount = summary?.ratingsCount ?: 0,
                         avgTipPercentage = summary?.averageTipPercentage ?: 0.0,
-                        tipsByUser = summary?.tips?.take(10)?.map {
-                            mapOf(
-                                "name" to it.first,
-                                "tip" to it.second.toAmountMXDouble()
-                            )
-                        } ?: emptyList(),
+                        tipsByUser =
+                            summary?.tips?.take(10)?.map {
+                                mapOf(
+                                    "name" to it.first,
+                                    "tip" to it.second.toAmountMXDouble(),
+                                )
+                            } ?: emptyList(),
                     )
                 }
                 SummaryTabs.PAGOS -> {
                     PrinterUtils.printPaymentsSummary(
                         context = context,
-                        shiftPayments =  payments.take(10).map { payment ->
-                            mapOf(
-                                "amount" to payment.totalSales.toString().toAmountMXDouble(),
-                                "tip" to payment.totalTip.toString().toAmountMXDouble(),
-                                "folio" to payment.id,
-                                "dateTime" to LocalDateTime.ofInstant(
-                                    payment.date,
-                                    ZoneId.systemDefault()
-                                ),
-                            )
-                        },
-                        venue = venue
+                        shiftPayments =
+                            payments.take(10).map { payment ->
+                                mapOf(
+                                    "amount" to payment.totalSales.toString().toAmountMXDouble(),
+                                    "tip" to payment.totalTip.toString().toAmountMXDouble(),
+                                    "folio" to payment.id,
+                                    "dateTime" to
+                                        LocalDateTime.ofInstant(
+                                            payment.date,
+                                            ZoneId.systemDefault(),
+                                        ),
+                                )
+                            },
+                        venue = venue,
                     )
                 }
                 SummaryTabs.TURNOS -> {
                     PrinterUtils.printShiftsSummary(
                         context = context,
-                        shifts = shifts.take(10).map { shift ->
-                            mapOf(
-                                "amount" to shift.paymentSum.toString().toAmountMXDouble(),
-                                "tip" to shift.tipsSum.toString().toAmountMXDouble(),
-                                "shift" to shift.id,
-                                "startTime" to LocalDateTime.ofInstant(
-                                    Instant.parse(shift.startTime),
-                                    ZoneId.systemDefault()
-                                ),
-                                "endTime" to LocalDateTime.ofInstant(
-                                    Instant.parse(shift.endTime),
-                                    ZoneId.systemDefault()
-                                ),
-                            )
-                        },
-                        venue = venue
+                        shifts =
+                            shifts.take(10).map { shift ->
+                                mapOf(
+                                    "amount" to shift.paymentSum.toString().toAmountMXDouble(),
+                                    "tip" to shift.tipsSum.toString().toAmountMXDouble(),
+                                    "shift" to shift.id,
+                                    "startTime" to
+                                        LocalDateTime.ofInstant(
+                                            Instant.parse(shift.startTime),
+                                            ZoneId.systemDefault(),
+                                        ),
+                                    "endTime" to
+                                        LocalDateTime.ofInstant(
+                                            Instant.parse(shift.endTime),
+                                            ZoneId.systemDefault(),
+                                        ),
+                                )
+                            },
+                        venue = venue,
                     )
                 }
             }
-        }
+        },
     )
 }
 
@@ -203,26 +211,29 @@ fun TransactionSummaryContent(
     isLoading: Boolean = false,
     isLoadingMore: Boolean = false,
     shifts: List<Shift> = emptyList(),
+    hasMoreShiftsPages: Boolean = true, // Add this parameter
+    hasMorePaymentsPages: Boolean = true, // Add this parameter
     onLoadMore: () -> Unit = {},
     summary: ShiftSummary? = null,
     payments: List<PaymentShift> = emptyList(),
     onLoadMorePayments: () -> Unit = {},
 ) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     ) {
         TopAppBar(
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White,
-                titleContentColor = Color.Black,
-                actionIconContentColor = Color.Black
-            ),
+            colors =
+                TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White,
+                    titleContentColor = Color.Black,
+                    actionIconContentColor = Color.Black,
+                ),
             title = {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = "Mas Info.",
                     style = MaterialTheme.typography.titleSmall.copy(color = Color.Black),
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
                 )
             },
             navigationIcon = {
@@ -231,9 +242,9 @@ fun TransactionSummaryContent(
                     content = {
                         Icon(
                             painter = painterResource(R.drawable.icon_back),
-                            contentDescription = null
+                            contentDescription = null,
                         )
-                    }
+                    },
                 )
             },
             actions = {
@@ -242,11 +253,11 @@ fun TransactionSummaryContent(
                     content = {
                         Icon(
                             painter = painterResource(R.drawable.baseline_print_24),
-                            contentDescription = null
+                            contentDescription = null,
                         )
-                    }
+                    },
                 )
-            }
+            },
         )
 
         TabRow(
@@ -261,12 +272,13 @@ fun TransactionSummaryContent(
                         Text(
                             modifier = Modifier.padding(12.dp),
                             text = "Resumen",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontWeight = if (selectedTab == SummaryTabs.RESUMEN) FontWeight.Bold else FontWeight.W400,
-                                color = Color.Black
-                            )
+                            style =
+                                MaterialTheme.typography.bodySmall.copy(
+                                    fontWeight = if (selectedTab == SummaryTabs.RESUMEN) FontWeight.Bold else FontWeight.W400,
+                                    color = Color.Black,
+                                ),
                         )
-                    }
+                    },
                 )
 
                 Tab(
@@ -276,12 +288,13 @@ fun TransactionSummaryContent(
                         Text(
                             modifier = Modifier.padding(12.dp),
                             text = "Pagos",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontWeight = if (selectedTab == SummaryTabs.PAGOS) FontWeight.Bold else FontWeight.W400,
-                                color = Color.Black
-                            )
+                            style =
+                                MaterialTheme.typography.bodySmall.copy(
+                                    fontWeight = if (selectedTab == SummaryTabs.PAGOS) FontWeight.Bold else FontWeight.W400,
+                                    color = Color.Black,
+                                ),
                         )
-                    }
+                    },
                 )
 
                 Tab(
@@ -291,96 +304,101 @@ fun TransactionSummaryContent(
                         Text(
                             modifier = Modifier.padding(12.dp),
                             text = "Turnos",
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                fontWeight = if (selectedTab == SummaryTabs.TURNOS) FontWeight.Bold else FontWeight.W400,
-                                color = Color.Black
-                            )
+                            style =
+                                MaterialTheme.typography.bodySmall.copy(
+                                    fontWeight = if (selectedTab == SummaryTabs.TURNOS) FontWeight.Bold else FontWeight.W400,
+                                    color = Color.Black,
+                                ),
                         )
-                    }
+                    },
                 )
-            }
+            },
         )
 
         Row(
-            modifier = Modifier.padding(
-                horizontal = 24.dp,
-            )
-                .padding(top = 8.dp)
+            modifier =
+                Modifier
+                    .padding(
+                        horizontal = 24.dp,
+                    ).padding(top = 8.dp),
         ) {
             Box(
-                modifier = Modifier
-                    .background(
-                        color = if (filteredWaiters.isNotEmpty()) Color.Black else Color.White,
-                        shape = RoundedCornerShape(100.dp)
-                    )
-                    .border(
-                        width = 1.dp,
-                        color = Color.LightGray,
-                        shape = RoundedCornerShape(100.dp)
-                    )
-                    .clickable {
-                        onToggleWaitersSheet(true)
-                    }
-                    .padding(
-                        vertical = 8.dp,
-                        horizontal = 16.dp
-                    )
+                modifier =
+                    Modifier
+                        .background(
+                            color = if (filteredWaiters.isNotEmpty()) Color.Black else Color.White,
+                            shape = RoundedCornerShape(100.dp),
+                        ).border(
+                            width = 1.dp,
+                            color = Color.LightGray,
+                            shape = RoundedCornerShape(100.dp),
+                        ).clickable {
+                            onToggleWaitersSheet(true)
+                        }.padding(
+                            vertical = 8.dp,
+                            horizontal = 16.dp,
+                        ),
             ) {
                 Text(
                     text = "Mesero",
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        color = if (filteredWaiters.isNotEmpty()) Color.White else Color.Black
-                    )
+                    style =
+                        MaterialTheme.typography.bodySmall.copy(
+                            color = if (filteredWaiters.isNotEmpty()) Color.White else Color.Black,
+                        ),
                 )
             }
 
             Spacer(Modifier.width(8.dp))
 
             Box(
-                modifier = Modifier
-                    .background(
-                        color = if (filteredDates.let { it.first != null || it.second != null }) Color.Black else Color.White,
-                        shape = RoundedCornerShape(100.dp)
-                    )
-                    .border(
-                        width = 1.dp,
-                        color = Color.LightGray,
-                        shape = RoundedCornerShape(100.dp)
-                    )
-                    .clickable {
-                        onToggleCreatedSheet(true)
-                    }
-                    .padding(
-                        vertical = 8.dp,
-                        horizontal = 16.dp
-                    )
+                modifier =
+                    Modifier
+                        .background(
+                            color = if (filteredDates.let { it.first != null || it.second != null }) Color.Black else Color.White,
+                            shape = RoundedCornerShape(100.dp),
+                        ).border(
+                            width = 1.dp,
+                            color = Color.LightGray,
+                            shape = RoundedCornerShape(100.dp),
+                        ).clickable {
+                            onToggleCreatedSheet(true)
+                        }.padding(
+                            vertical = 8.dp,
+                            horizontal = 16.dp,
+                        ),
             ) {
                 Text(
                     text = "Creado",
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        color = if (filteredDates.let { it.first != null || it.second != null }) Color.White else Color.Black
-                    )
+                    style =
+                        MaterialTheme.typography.bodySmall.copy(
+                            color = if (filteredDates.let { it.first != null || it.second != null }) Color.White else Color.Black,
+                        ),
                 )
             }
         }
 
         when (selectedTab) {
-            SummaryTabs.RESUMEN -> SummaryPage(
-                isLoading = isLoading,
-                summary = summary
-            )
+            SummaryTabs.RESUMEN ->
+                SummaryPage(
+                    isLoading = isLoading,
+                    summary = summary,
+                )
 
-            SummaryTabs.PAGOS -> PaymentsPage(
-                isLoading = isLoadingMore,
-                items = payments,
-                onLoadMore = onLoadMorePayments
-            )
+            SummaryTabs.PAGOS ->
+                PaymentsPage(
+                    isLoading = isLoadingMore,
+                    items = payments,
+                    onLoadMore = onLoadMorePayments,
+                    hasMorePages = hasMorePaymentsPages,
+                )
 
-            SummaryTabs.TURNOS -> ShiftsPage(
-                items = shifts,
-                isLoading = isLoadingMore,
-                onLoadMore = onLoadMore
-            )
+            SummaryTabs.TURNOS ->
+                ShiftsPage(
+                    items = shifts,
+                    isLoading = isLoadingMore,
+                    onLoadMore = onLoadMore,
+                    hasMorePages = hasMoreShiftsPages,
+                )
         }
     }
 
@@ -391,7 +409,7 @@ fun TransactionSummaryContent(
             },
             waiterList = waiters,
             onApplyFilter = onApplyWaiterFilter,
-            preSelectedWaiters = filteredWaiters
+            preSelectedWaiters = filteredWaiters,
         )
     }
 
@@ -401,11 +419,10 @@ fun TransactionSummaryContent(
                 onToggleCreatedSheet(false)
             },
             onApplyFilter = onApplyDateFilter,
-            preSelectedDates = filteredDates
+            preSelectedDates = filteredDates,
         )
     }
 }
-
 
 @Urovo9100DevicePreview
 @Composable
@@ -420,7 +437,7 @@ fun TransactionSummaryContentPreview() {
 fun PaymentsSummaryContentPreview() {
     AvoqadoTheme {
         TransactionSummaryContent(
-            selectedTab = SummaryTabs.PAGOS
+            selectedTab = SummaryTabs.PAGOS,
         )
     }
 }
@@ -430,8 +447,7 @@ fun PaymentsSummaryContentPreview() {
 fun ShiftsSummaryContentPreview() {
     AvoqadoTheme {
         TransactionSummaryContent(
-            selectedTab = SummaryTabs.TURNOS
+            selectedTab = SummaryTabs.TURNOS,
         )
     }
 }
-

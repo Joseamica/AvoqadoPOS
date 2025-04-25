@@ -13,7 +13,7 @@ data class TableDetailView(
     val paymentsDone: List<Payment> = emptyList(),
     val currentSplitType: SplitType? = null,
     val totalAmount: Double = 0.0,
-    val billId: String = ""
+    val billId: String = "",
 ) {
     val totalPending: Double
         get() = totalAmount - paymentsDone.sumOf { it.amount }
@@ -21,7 +21,7 @@ data class TableDetailView(
     val totalPayed: Double
         get() = paymentsDone.sumOf { it.amount }
 
-    val formattedTotalPrice : String
+    val formattedTotalPrice: String
         get() = StringUtils.notFormatAmount(totalAmount.toString()).toAmountMx()
 
     val formattedPendingTotalPrice: String

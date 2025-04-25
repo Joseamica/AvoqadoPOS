@@ -24,24 +24,27 @@ import com.avoqado.pos.core.presentation.theme.textlightGrayColor
 fun ProcessingOperationScreen(
     title: String,
     message: String,
-    showLoading: Boolean = true
+    showLoading: Boolean = true,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(textlightGrayColor)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(textlightGrayColor),
     ) {
         if (showLoading) {
             Column(
-                modifier = Modifier.weight(1f).fillMaxWidth().padding(120.dp), horizontalAlignment = Alignment.CenterHorizontally
+                modifier = Modifier.weight(1f).fillMaxWidth().padding(120.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 ProgressCircleSmart()
             }
         }
 
         Column(
-            modifier = Modifier
-                .padding(start = 24.dp,end=24.dp, bottom = 50.dp)
+            modifier =
+                Modifier
+                    .padding(start = 24.dp, end = 24.dp, bottom = 50.dp),
         ) {
             Text(
                 text = title,
@@ -65,6 +68,6 @@ fun ProcessingOperationScreen(
 fun ProcessingOperationScreenPreview() {
     ProcessingOperationScreen(
         title = "Aguarde",
-        message = "Mientras procesamos su pago"
+        message = "Mientras procesamos su pago",
     )
 }

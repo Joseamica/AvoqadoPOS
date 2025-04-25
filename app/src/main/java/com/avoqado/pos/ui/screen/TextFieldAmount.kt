@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.sp
 import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.theme.textColor
 
-
 @Composable
 fun TextFieldAmount(
     modifier: Modifier = Modifier,
@@ -39,11 +38,11 @@ fun TextFieldAmount(
     textFieldState: MutableState<TextFieldState>,
     onTextChange: (String) -> Unit,
     shimmer: Boolean = false,
-    clickOnDone: () -> Unit = {}
+    clickOnDone: () -> Unit = {},
 ) {
     if (shimmer) {
         ShimmerTextFieldAmount(
-            modifier = modifier
+            modifier = modifier,
         )
         return
     }
@@ -56,70 +55,81 @@ fun TextFieldAmount(
             textFieldState.value.textFieldValue = it.copy(selection = TextRange(it.text.length))
             onTextChange(it.text)
         },
-        modifier = modifier
-            .onFocusChanged {
-                val current = textFieldState.value
-                textFieldState.value = current.copy(
-                    isFocus = it.isFocused
-                )
-            },
-        textStyle = TextStyle(
-            color = textColor,
-            textAlign = TextAlign.End,
-            fontSize = 50.sp
-        ),
+        modifier =
+            modifier
+                .onFocusChanged {
+                    val current = textFieldState.value
+                    textFieldState.value =
+                        current.copy(
+                            isFocus = it.isFocused,
+                        )
+                },
+        textStyle =
+            TextStyle(
+                color = textColor,
+                textAlign = TextAlign.End,
+                fontSize = 50.sp,
+            ),
         singleLine = true,
-        keyboardOptions = KeyboardOptions(
-            keyboardType = KeyboardType.NumberPassword,
-            imeAction = ImeAction.Done
-        ),
-        keyboardActions = KeyboardActions(onDone = {
-            clickOnDone()
-            keyboardController?.hide()
-        }),
+        keyboardOptions =
+            KeyboardOptions(
+                keyboardType = KeyboardType.NumberPassword,
+                imeAction = ImeAction.Done,
+            ),
+        keyboardActions =
+            KeyboardActions(onDone = {
+                clickOnDone()
+                keyboardController?.hide()
+            }),
         decorationBox = { innerText ->
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier =
+                    Modifier
+                        .fillMaxWidth(),
             ) {
                 Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
                 ) {
                     innerText()
                 }
                 Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(height = 2.dp)
-                        .background(
-                            color =
-                            if (textFieldState.value.isFocus)
-                                textFieldStyle.onFocus
-                            else
-                                textFieldStyle.offFocus
-                        )
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(height = 2.dp)
+                            .background(
+                                color =
+                                    if (textFieldState.value.isFocus) {
+                                        textFieldStyle.onFocus
+                                    } else {
+                                        textFieldStyle.offFocus
+                                    },
+                            ),
                 )
                 Row {
                     Icon(
-                        modifier = Modifier
-                            .alpha(if (textFieldState.value.error.isEmpty()) 0f else 1f)
-                            .width(15.dp)
-                            .height(15.dp),
+                        modifier =
+                            Modifier
+                                .alpha(if (textFieldState.value.error.isEmpty()) 0f else 1f)
+                                .width(15.dp)
+                                .height(15.dp),
                         painter = painterResource(id = R.drawable.ic_info),
                         tint = Color.Unspecified,
-                        contentDescription = "description"
+                        contentDescription = "description",
                     )
                     Text(
-                        modifier = Modifier
-                            .alpha(if (textFieldState.value.error.isEmpty()) 0f else 1f),
+                        modifier =
+                            Modifier
+                                .alpha(if (textFieldState.value.error.isEmpty()) 0f else 1f),
                         textStyle = TextType.textNormalGray.textStyle,
                         text = textFieldState.value.error,
                         fontSize = 15.sp,
                     )
                 }
             }
-        }
+        },
     )
 }

@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.data.network.models
 
-
 import com.google.gson.annotations.SerializedName
 
 data class Terminal(
@@ -27,5 +26,5 @@ data class Terminal(
     @SerializedName("trade_mark")
     val tradeMark: String,
     @SerializedName("update_date")
-    val updateDate: String
+    val updateDate: String,
 )

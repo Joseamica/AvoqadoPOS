@@ -1,4 +1,3 @@
 package com.avoqado.pos.views
 
-class MeseroActivity {
-}
+class MeseroActivity

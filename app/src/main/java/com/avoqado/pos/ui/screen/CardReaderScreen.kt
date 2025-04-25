@@ -38,37 +38,39 @@ fun CardReaderScreen(
     amount: String,
     currency: String,
     onNavigateBack: () -> Unit = {},
-    onPayInCash: () -> Unit = {}
+    onPayInCash: () -> Unit = {},
 ) {
     val context = LocalContext.current
     Column(
-        modifier= Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     ) {
         SimpleToolbar(
-            iconAction = IconAction(
-                iconType = IconType.BACK,
-                flowStep = FlowStep.NAVIGATE_BACK,
-                context = context
-            ),
+            iconAction =
+                IconAction(
+                    iconType = IconType.BACK,
+                    flowStep = FlowStep.NAVIGATE_BACK,
+                    context = context,
+                ),
             title = "Pago con tarjeta",
             onAction = {
                 onNavigateBack()
-            }
+            },
         )
         Box(
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .padding(20.dp)
-                .background(color = Color.White)
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(20.dp)
+                    .background(color = Color.White),
         ) {
             Column(
                 modifier = Modifier.align(Alignment.Center),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Image(
-                    painter= painterResource(R.drawable.ic_contact_payment),
-                    contentDescription = ""
+                    painter = painterResource(R.drawable.ic_contact_payment),
+                    contentDescription = "",
                 )
 
                 androidx.compose.material3.Text(
@@ -76,17 +78,18 @@ fun CardReaderScreen(
                     color = Color.Black,
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier
+                    modifier = Modifier,
                 )
 
                 // Texto de cantidad
                 androidx.compose.material3.Text(
                     text = "\$${DecimalFormat("#,###.00").format(amount.toDouble())}",
                     color = Color.Black,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    modifier = Modifier.padding(top = 16.dp)
+                    style =
+                        MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                        ),
+                    modifier = Modifier.padding(top = 16.dp),
                 )
             }
 
@@ -94,17 +97,18 @@ fun CardReaderScreen(
                 onClick = {
                     onPayInCash()
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-                    .align(Alignment.BottomCenter),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .align(Alignment.BottomCenter),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             ) {
                 Icon(
                     painter = painterResource(R.drawable.ic_hand_cash),
                     contentDescription = "",
-                    tint = Color.Black
+                    tint = Color.Black,
                 )
 
                 Spacer(Modifier.width(8.dp))
@@ -112,10 +116,9 @@ fun CardReaderScreen(
                 androidx.compose.material3.Text(
                     text = "Efectivo",
                     color = Color.Black,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
                 )
             }
-
         }
     }
 }

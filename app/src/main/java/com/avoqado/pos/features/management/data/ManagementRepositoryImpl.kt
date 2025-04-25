@@ -22,10 +22,12 @@ import retrofit2.HttpException
 
 class ManagementRepositoryImpl(
     private val managementCacheStorage: ManagementCacheStorage,
-    private val avoqadoService: AvoqadoService
+    private val avoqadoService: AvoqadoService,
 ) : ManagementRepository {
-
-    override suspend fun getTableDetail(tableNumber: String, venueId: String) {
+    override suspend fun getTableDetail(
+        tableNumber: String,
+        venueId: String,
+    ) {
         TODO("Not yet implemented")
     }
 
@@ -33,47 +35,50 @@ class ManagementRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override fun getCachedTable(): TableDetail? {
-        return managementCacheStorage.getTable()?.toDomain()
-    }
+    override fun getCachedTable(): TableDetail? = managementCacheStorage.getTable()?.toDomain()
 
     override fun setTableCache(table: TableDetail) {
         managementCacheStorage.setTable(table.toCache())
     }
 
-    override fun connectToTableEvents(venueId: String, tableId: String) {
+    override fun connectToTableEvents(
+        venueId: String,
+        tableId: String,
+    ) {
         SocketIOManager.connect(getSocketServerUrl())
         SocketIOManager.subscribeToTable(venueId, tableId)
     }
 
-    override fun listenTableEvents(): Flow<PaymentUpdate> {
-        return SocketIOManager.messageFlow.map { message ->
+    override fun listenTableEvents(): Flow<PaymentUpdate> =
+        SocketIOManager.messageFlow.map { message ->
             Log.d("ManagementRepository", "Received socket message: $message")
 
             // Safely parse amount
-            val amount = try {
-                message.amount?.toDoubleOrNull() ?: 0.0
-            } catch (e: Exception) {
-                Log.e("ManagementRepository", "Error parsing amount: ${message.amount}", e)
-                0.0
-            }
+            val amount =
+                try {
+                    message.amount?.toDoubleOrNull() ?: 0.0
+                } catch (e: Exception) {
+                    Log.e("ManagementRepository", "Error parsing amount: ${message.amount}", e)
+                    0.0
+                }
 
             // Safely parse splitType with special handling for "NONE"
-            val splitType = try {
-                if (!message.splitType.isNullOrEmpty()) {
-                    if (message.splitType == "NONE") {
-                        // Special handling for "NONE" which isn't in our enum
-                        SplitType.EQUALPARTS // Map "NONE" to a reasonable default
+            val splitType =
+                try {
+                    if (!message.splitType.isNullOrEmpty()) {
+                        if (message.splitType == "NONE") {
+                            // Special handling for "NONE" which isn't in our enum
+                            SplitType.EQUALPARTS // Map "NONE" to a reasonable default
+                        } else {
+                            SplitType.valueOf(message.splitType)
+                        }
                     } else {
-                        SplitType.valueOf(message.splitType)
+                        SplitType.EQUALPARTS // Default value for null
                     }
-                } else {
-                    SplitType.EQUALPARTS // Default value for null
+                } catch (e: Exception) {
+                    Log.e("ManagementRepository", "Error parsing splitType: ${message.splitType}", e)
+                    SplitType.EQUALPARTS // Fallback value
                 }
-            } catch (e: Exception) {
-                Log.e("ManagementRepository", "Error parsing splitType: ${message.splitType}", e)
-                SplitType.EQUALPARTS // Fallback value
-            }
 
             PaymentUpdate(
                 amount = amount,
@@ -82,48 +87,50 @@ class ManagementRepositoryImpl(
                 tableNumber = message.tableNumber ?: 0,
                 method = message.method ?: "",
                 status = message.status, // This is correct for detecting DELETED events
-                billId = message.billId
+                billId = message.billId,
             )
         }
-    }
 
-    override fun listenVenueEvents(): Flow<PaymentUpdate> {
-        return SocketIOManager.venueMessageFlow.map { message ->
+    override fun listenVenueEvents(): Flow<PaymentUpdate> =
+        SocketIOManager.venueMessageFlow.map { message ->
             Log.d("ManagementRepository", "Received venue message: $message")
 
             // Safely parse amount
-            val amount = try {
-                message.amount?.toDoubleOrNull() ?: 0.0
-            } catch (e: Exception) {
-                Log.e("ManagementRepository", "Error parsing venue amount: ${message.amount}", e)
-                0.0
-            }
+            val amount =
+                try {
+                    message.amount?.toDoubleOrNull() ?: 0.0
+                } catch (e: Exception) {
+                    Log.e("ManagementRepository", "Error parsing venue amount: ${message.amount}", e)
+                    0.0
+                }
 
             // Safely parse splitType with special handling for "NONE"
-            val splitType = try {
-                if (!message.splitType.isNullOrEmpty()) {
-                    if (message.splitType == "NONE") {
-                        // Special handling for "NONE" which isn't in our enum
-                        SplitType.EQUALPARTS // Map "NONE" to a reasonable default
+            val splitType =
+                try {
+                    if (!message.splitType.isNullOrEmpty()) {
+                        if (message.splitType == "NONE") {
+                            // Special handling for "NONE" which isn't in our enum
+                            SplitType.EQUALPARTS // Map "NONE" to a reasonable default
+                        } else {
+                            SplitType.valueOf(message.splitType)
+                        }
                     } else {
-                        SplitType.valueOf(message.splitType)
+                        SplitType.EQUALPARTS // Default value for null
                     }
-                } else {
-                    SplitType.EQUALPARTS // Default value for null
+                } catch (e: Exception) {
+                    Log.e("ManagementRepository", "Error parsing venue splitType: ${message.splitType}", e)
+                    SplitType.EQUALPARTS // Fallback value
                 }
-            } catch (e: Exception) {
-                Log.e("ManagementRepository", "Error parsing venue splitType: ${message.splitType}", e)
-                SplitType.EQUALPARTS // Fallback value
-            }
 
             // Convert tableNumber from string to int if needed
-            val tableNumber = try {
-                message.tableNumber ?: // Remove the tableName references since they don't exist
-                0 // Default to 0 if tableNumber is null
-            } catch (e: Exception) {
-                Log.e("ManagementRepository", "Error parsing tableNumber", e)
-                0
-            }
+            val tableNumber =
+                try {
+                    message.tableNumber ?: // Remove the tableName references since they don't exist
+                        0 // Default to 0 if tableNumber is null
+                } catch (e: Exception) {
+                    Log.e("ManagementRepository", "Error parsing tableNumber", e)
+                    0
+                }
             PaymentUpdate(
                 amount = amount,
                 splitType = splitType,
@@ -131,17 +138,16 @@ class ManagementRepositoryImpl(
                 tableNumber = tableNumber,
                 method = message.method ?: "",
                 status = message.status,
-                billId = message.billId
+                billId = message.billId,
             )
         }
-    }
 
     override fun stopListeningTableEvents() {
         SocketIOManager.unsubscribe()
     }
 
-    override suspend fun getVenue(venueId: String): NetworkVenue {
-        return try {
+    override suspend fun getVenue(venueId: String): NetworkVenue =
+        try {
             avoqadoService.getVenueDetail(venueId)
         } catch (e: Exception) {
             if (e is HttpException) {
@@ -154,10 +160,9 @@ class ManagementRepositoryImpl(
                 throw AvoqadoError.BasicError(message = "Algo salio mal...")
             }
         }
-    }
 
-    override suspend fun getActiveBills(venueId: String): List<Pair<String, String>> {
-        return try {
+    override suspend fun getActiveBills(venueId: String): List<Pair<String, String>> =
+        try {
             avoqadoService.getActiveBills(venueId).let {
                 it
                     .filter { bill -> bill.status == "OPEN" }
@@ -176,58 +181,69 @@ class ManagementRepositoryImpl(
                 throw AvoqadoError.BasicError(message = "Algo salio mal...")
             }
         }
-    }
 
-    override suspend fun getDetailedBill(venueId: String, billId: String): TableBillDetail {
-        return try {
-            avoqadoService.getBillDetail(
-                venueId = venueId,
-                billId = billId
-            ).let { detailedBill ->
-                val totalPaid = detailedBill.payments?.sumOf { payment->
-                    payment?.amount?.toInt() ?: 0
-                } ?: 0
-                val total = detailedBill.total?.toInt() ?: 0
-                TableBillDetail(
-                    id = detailedBill.id ?: "",
-                    products = detailedBill.products?.map {
-                        Product(
-                            id = it.id ?: "",
-                            name = it.name ?: "",
-                            quantity = it.quantity?.toDoubleOrNull() ?: 0.0,
-                            price = (it.price?.toDoubleOrNull() ?: 0.0) / 100
-                        )
-                    } ?: emptyList(),
-                    totalPending = (total - totalPaid) / 100.0,
-                    name = detailedBill.tableName ?: "",
-                    totalAmount = detailedBill.total?.let {
-                        total / 100.0
-                    } ?: 0.0,
-                    waiterName = detailedBill.waiterName ?: "",
-                    paymentOverview = detailedBill.payments?.takeIf { it.isNotEmpty() }?.let {
-                        val byPerson = it.filter { payment -> payment?.splitType == SplitType.EQUALPARTS.value }
-                        PaymentOverview(
-                            paidProducts = it.filter { payment -> payment?.splitType == SplitType.PERPRODUCT.value }
-                                .mapNotNull { payment ->
-                                    payment?.products?.map { product ->  product.id }
-                                }.flatten(),
-                            equalPartySize = byPerson.firstOrNull()?.equalPartsPartySize?.toInt() ?: 0,
-                            equalPartyPaidSize = byPerson.sumOf { payment ->
-                                payment?.equalPartsPayedFor?.toInt() ?: 0
-                            }
-                        )
-                    },
-                    paymentsDone = detailedBill.payments?.map { payment ->
-                        BillPayment(
-                            amount = (payment?.amount?.toIntOrNull() ?: 0) / 100.0,
-                            products = payment?.products?.map { product -> product.id } ?: emptyList(),
-                            splitType = payment?.splitType,
-                            equalPartsPayedFor = payment?.equalPartsPayedFor,
-                            equalPartsPartySize = payment?.equalPartsPartySize
-                        )
-                    } ?: emptyList()
-                )
-            }
+    override suspend fun getDetailedBill(
+        venueId: String,
+        billId: String,
+    ): TableBillDetail =
+        try {
+            avoqadoService
+                .getBillDetail(
+                    venueId = venueId,
+                    billId = billId,
+                ).let { detailedBill ->
+                    val totalPaid =
+                        detailedBill.payments?.sumOf { payment ->
+                            payment?.amount?.toInt() ?: 0
+                        } ?: 0
+                    val total = detailedBill.total?.toInt() ?: 0
+                    TableBillDetail(
+                        id = detailedBill.id ?: "",
+                        products =
+                            detailedBill.products?.map {
+                                Product(
+                                    id = it.id ?: "",
+                                    name = it.name ?: "",
+                                    quantity = it.quantity?.toDoubleOrNull() ?: 0.0,
+                                    price = (it.price?.toDoubleOrNull() ?: 0.0) / 100,
+                                )
+                            } ?: emptyList(),
+                        totalPending = (total - totalPaid) / 100.0,
+                        name = detailedBill.tableName ?: "",
+                        totalAmount =
+                            detailedBill.total?.let {
+                                total / 100.0
+                            } ?: 0.0,
+                        waiterName = detailedBill.waiterName ?: "",
+                        paymentOverview =
+                            detailedBill.payments?.takeIf { it.isNotEmpty() }?.let {
+                                val byPerson = it.filter { payment -> payment?.splitType == SplitType.EQUALPARTS.value }
+                                PaymentOverview(
+                                    paidProducts =
+                                        it
+                                            .filter { payment -> payment?.splitType == SplitType.PERPRODUCT.value }
+                                            .mapNotNull { payment ->
+                                                payment?.products?.map { product -> product.id }
+                                            }.flatten(),
+                                    equalPartySize = byPerson.firstOrNull()?.equalPartsPartySize?.toInt() ?: 0,
+                                    equalPartyPaidSize =
+                                        byPerson.sumOf { payment ->
+                                            payment?.equalPartsPayedFor?.toInt() ?: 0
+                                        },
+                                )
+                            },
+                        paymentsDone =
+                            detailedBill.payments?.map { payment ->
+                                BillPayment(
+                                    amount = (payment?.amount?.toIntOrNull() ?: 0) / 100.0,
+                                    products = payment?.products?.map { product -> product.id } ?: emptyList(),
+                                    splitType = payment?.splitType,
+                                    equalPartsPayedFor = payment?.equalPartsPayedFor,
+                                    equalPartsPartySize = payment?.equalPartsPartySize,
+                                )
+                            } ?: emptyList(),
+                    )
+                }
         } catch (e: Exception) {
             if (e is HttpException) {
                 if (e.code() == 401) {
@@ -239,10 +255,9 @@ class ManagementRepositoryImpl(
                 throw AvoqadoError.BasicError(message = "Algo salio mal...")
             }
         }
-    }
 
     private fun getSocketServerUrl(): String {
         // Replace with your actual server URL
-        return "https://ee2b-2806-2f0-9140-e9df-45a0-7fbf-a066-4e70.ngrok-free.app"
+        return "https://3cee-189-203-45-177.ngrok-free.app"
     }
 }

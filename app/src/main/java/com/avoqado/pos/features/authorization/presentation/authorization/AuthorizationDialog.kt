@@ -24,9 +24,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.ACQUIRER_NAME
 import com.avoqado.pos.COUNTRY_CODE
+import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel
 import com.avoqado.pos.merchantApiKey
 import com.avoqado.pos.merchantId
-import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel
 import com.avoqado.pos.views.InitActivity.Companion.TAG
 import com.menta.android.common_cross.util.StatusType
 import com.menta.android.core.viewmodel.ExternalTokenData
@@ -37,26 +37,25 @@ import kotlinx.coroutines.flow.collectLatest
 fun AuthorizationDialog(
     viewModel: AuthorizationViewModel,
     externalTokenData: ExternalTokenData,
-    masterKeyData: MasterKeyData
-){
-
+    masterKeyData: MasterKeyData,
+) {
     val externalToken by externalTokenData.getExternalToken.observeAsState()
     val masterKey by masterKeyData.getMasterKey.observeAsState()
     val isConfiguring by viewModel.isConfiguring.collectAsStateWithLifecycle()
 
-    LaunchedEffect( key1 = Unit) {
+    LaunchedEffect(key1 = Unit) {
         viewModel.events.collectLatest {
-            when(it) {
+            when (it) {
                 SplashViewModel.START_CONFIG -> {
                     externalTokenData.getExternalToken(merchantApiKey)
                 }
 
                 SplashViewModel.GET_MASTER_KEY -> {
-                    //Inyección de llaves
+                    // Inyección de llaves
                     masterKeyData.loadMasterKey(
-                        merchantId = merchantId, //TODO el cliente debe conocer su merchantId, es diferente por cada comercio que tenga
+                        merchantId = merchantId, // TODO el cliente debe conocer su merchantId, es diferente por cada comercio que tenga
                         acquirerId = ACQUIRER_NAME,
-                        countryCode = COUNTRY_CODE
+                        countryCode = COUNTRY_CODE,
                     )
                 }
             }
@@ -71,7 +70,6 @@ fun AuthorizationDialog(
             } else {
                 Log.i(TAG, "Get token ERROR: ${token.status.message}")
             }
-
         }
     }
 
@@ -81,14 +79,14 @@ fun AuthorizationDialog(
         }
     }
 
-
     Dialog(onDismissRequest = { /*TODO*/ }) {
         Box(
-            modifier = Modifier
-                .size(200.dp)
-                .background(Color.White, shape = RoundedCornerShape(8.dp))
-                .padding(16.dp),
-            contentAlignment = Alignment.Center
+            modifier =
+                Modifier
+                    .size(200.dp)
+                    .background(Color.White, shape = RoundedCornerShape(8.dp))
+                    .padding(16.dp),
+            contentAlignment = Alignment.Center,
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 CircularProgressIndicator()
@@ -97,5 +95,4 @@ fun AuthorizationDialog(
             }
         }
     }
-
 }

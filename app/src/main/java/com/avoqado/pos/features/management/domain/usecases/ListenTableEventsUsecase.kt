@@ -5,10 +5,10 @@ import com.avoqado.pos.features.management.domain.ManagementRepository
 import kotlinx.coroutines.flow.Flow
 
 class ListenTableEventsUseCase(
-    private val managementRepository: ManagementRepository
+    private val managementRepository: ManagementRepository,
 ) {
     operator fun invoke(action: ListenTableAction): Flow<PaymentUpdate> {
-        when(action) {
+        when (action) {
             is ListenTableAction.Connect -> {
                 managementRepository.connectToTableEvents(action.venueId, action.tableId)
                 return managementRepository.listenTableEvents()
@@ -22,6 +22,10 @@ class ListenTableEventsUseCase(
 }
 
 sealed class ListenTableAction {
-    data class Connect(val venueId: String, val tableId: String) : ListenTableAction()
+    data class Connect(
+        val venueId: String,
+        val tableId: String,
+    ) : ListenTableAction()
+
     data object Disconnect : ListenTableAction()
 }

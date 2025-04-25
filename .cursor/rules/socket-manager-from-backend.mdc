@@ -1,0 +1,177 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+
+# SocketManager from backend
+
+// Path: server/src/services/sockets/socketManager.ts
+import http from 'http'
+import { Server } from 'socket.io'
+import prisma from '../../utils/prisma'
+import logger from '../../utils/logger'
+// Create a singleton instance that can be accessed by other modules
+let ioInstance: Server
+
+export function initializeSocket(server: http.Server) {
+  ioInstance = new Server(server, {
+    cors: {
+      origin: [
+        // Production/development domains
+        'https://www.dashboard.avoqado.io',
+        'https://dashboard.avoqado.io',
+        'https://www.demo.avoqado.io',
+        'https://demo.avoqado.io',
+        'https://avoqado.io',
+        'https://www.avoqado.io',
+        'https://avo-demo.onrender.com',
+
+        // Local development
+        'http://localhost:5173',
+        'http://localhost:3000',
+        'http://localhost:4173',
+        'http://localhost:5000',
+        'http://localhost:8080',
+        'http://localhost:8081',
+
+        // Your local IP addresses
+        'http://10.211.55.3:5173',
+        'http://10.211.55.3:3000',
+        'http://10.211.55.3:4173',
+        'http://10.211.55.3:5000',
+        'http://10.211.55.3:8080',
+        'http://10.211.55.3:8081',
+
+        // Tailscale IP
+        'http://100.101.16.47:5173',
+        'http://100.101.16.47:3000',
+        'http://100.101.16.47:4173',
+        'http://100.101.16.47:5000',
+        'http://100.101.16.47:8080',
+        'http://100.101.16.47:8081',
+      ],
+      methods: ['GET', 'POST', 'DELETE', 'PATCH', 'PUT'],
+      credentials: true,
+    },
+    // Add this if you need to send cookies with Socket.IO
+    allowRequest: (req, callback) => {
+      callback(null, true) // Accept all requests for now
+    },
+  })
+
+  ioInstance.on('connection', socket => {
+    logger.info('User connected', { socketId: socket.id })
+    logger.info('New connection from:', { ip: socket.handshake.address })
+
+    socket.on('register', data => {
+      logger.info('Register event received:', data)
+    })
+
+    socket.on('joinRoom', data => {
+      // Handle both object format and destructured format
+      const venueId = typeof data === 'object' ? data.venueId : ''
+      const table = typeof data === 'object' ? data.table : ''
+
+      if (!venueId || !table) {
+        logger.error('Invalid joinRoom data:', data)
+        return
+      }
+
+      // Create room ID in format expected by server
+      const roomId = `venue_${venueId}_table_${table}`
+      socket.join(roomId)
+      logger.info(`SOCKET: ${socket.id} joined room ${roomId}`, data)
+    })
+
+    socket.on('leaveRoom', data => {
+      // Handle both object format and destructured format
+      const venueId = typeof data === 'object' ? data.venueId : ''
+      const table = typeof data === 'object' ? data.table : ''
+
+      if (!venueId || !table) {
+        logger.error('Invalid leaveRoom data:', data)
+        return
+      }
+
+      const roomId = `venue_${venueId}_table_${table}`
+      socket.leave(roomId)
+      logger.info(`SOCKET: ${socket.id} left room ${roomId}`)
+    })
+
+    socket.on('joinMobileRoom', ({ venueId }) => {
+      const roomId = `venue_${venueId}`
+      socket.join(roomId)
+      logger.info(`SOCKET: Client ${socket.id} joined mobile room ${roomId}`)
+    })
+
+    socket.on('leaveMobileRoom', ({ venueId }) => {
+      const roomId = `venue_${venueId}`
+      socket.leave(roomId)
+      logger.info(`SOCKET: ${socket.id} left mobile room ${roomId}`)
+    })
+
+    socket.on('disconnect', () => {
+      logger.info('User disconnected', { socketId: socket.id })
+    })
+  })
+
+  return ioInstance
+}
+
+// Helper function to emit socket events from anywhere in the application
+export function emitSocketEvent(room: string, event: string, data: any): void {
+  if (!ioInstance) {
+    logger.error('Socket.IO not initialized yet - cannot emit event', { room, event })
+    return
+  }
+
+  ioInstance.to(room).emit(event, data)
+}
+// Function to emit shift updates to mobile clients
+export function emitShiftUpdate(venueId: string, data: any): void {
+  console.log('emitShiftUpdate', venueId, data)
+  if (!ioInstance) {
+    logger.error('Socket.IO not initialized yet - cannot emit shift update', { venueId })
+    return
+  }
+
+  const roomId = `venue_${venueId}`
+  logger.info(`SOCKET:Emitting shiftUpdate event to venue room ${roomId}`, data)
+
+  ioInstance.to(roomId).emit('shiftUpdate', { data })
+}
+// Function to emit POS updates specifically for ticket handler
+export function emitPosUpdate(venueId: string, tableName: string, data: any): void {
+  if (!ioInstance) {
+    logger.error('Socket.IO not initialized yet - cannot emit POS update', { venueId, tableName })
+    return
+  }
+
+  const roomId = `venue_${venueId}_table_${tableName}`
+  logger.info(`SOCKET:Emitting updatePos event to room ${roomId}`, data)
+
+  ioInstance.to(roomId).emit('updatePos', data)
+}
+
+// New function to emit venue-level updates
+export function emitVenueUpdate(venueId: string, data: any): void {
+  if (!ioInstance) {
+    logger.error('Socket.IO not initialized yet - cannot emit venue update', { venueId })
+    return
+  }
+
+  const roomId = `venue_${venueId}`
+  logger.info(`SOCKET:Emitting updatePos event to venue room ${roomId}`, data)
+
+  ioInstance.to(roomId).emit('updatePos', { data })
+}
+
+// Get the io instance from any module
+export function getIO(): Server {
+  if (!ioInstance) {
+    throw new Error('Socket.IO has not been initialized yet')
+  }
+  return ioInstance
+}
+

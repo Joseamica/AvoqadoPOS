@@ -35,23 +35,21 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.components.KeyboardSheet
+import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
 import com.avoqado.pos.core.presentation.model.IconType
-import com.avoqado.pos.core.presentation.utils.toAmountMx
-import com.avoqado.pos.features.payment.presentation.inputTipAmount.components.TipItemCard
-import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.theme.lightGrayNumberField
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
+import com.avoqado.pos.core.presentation.utils.toAmountMx
+import com.avoqado.pos.features.payment.presentation.inputTipAmount.components.TipItemCard
 import com.avoqado.pos.views.CardProcessActivity
 import com.menta.android.core.model.OperationType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InputTipScreen(
-    inputTipViewModel: InputTipViewModel
-) {
+fun InputTipScreen(inputTipViewModel: InputTipViewModel) {
     val context = LocalContext.current
     val showCustomKeyboard by inputTipViewModel.showCustomAmount.collectAsStateWithLifecycle()
 
@@ -63,7 +61,7 @@ fun InputTipScreen(
             val intent = Intent(context, CardProcessActivity::class.java)
             intent.putExtra(
                 "amount",
-                inputTipViewModel.subtotal.toAmountMx()
+                inputTipViewModel.subtotal.toAmountMx(),
             )
             intent.putExtra("tipAmount", "0.00")
             intent.putExtra("currency", CURRENCY_LABEL)
@@ -74,17 +72,18 @@ fun InputTipScreen(
             inputTipViewModel.navigateBack()
         },
         onPayWithTip = {
-            val intent = Intent(context, CardProcessActivity::class.java).apply {
-                putExtra(
-                    "amount",
-                    inputTipViewModel.subtotal.toAmountMx()
-                )
-                putExtra("tipAmount", it.toAmountMx())
-                putExtra("currency", CURRENCY_LABEL)
-                putExtra("operationType", OperationType.PAYMENT.name)
-                putExtra("splitType", inputTipViewModel.splitType.value)
-                putExtra("waiterName", inputTipViewModel.waiterName)
-            }
+            val intent =
+                Intent(context, CardProcessActivity::class.java).apply {
+                    putExtra(
+                        "amount",
+                        inputTipViewModel.subtotal.toAmountMx(),
+                    )
+                    putExtra("tipAmount", it.toAmountMx())
+                    putExtra("currency", CURRENCY_LABEL)
+                    putExtra("operationType", OperationType.PAYMENT.name)
+                    putExtra("splitType", inputTipViewModel.splitType.value)
+                    putExtra("waiterName", inputTipViewModel.waiterName)
+                }
             context.startActivity(intent)
             inputTipViewModel.navigateBack()
         },
@@ -92,7 +91,7 @@ fun InputTipScreen(
         waiterName = "",
         onCustomAmount = {
             inputTipViewModel.showCustomAmountKeyboard()
-        }
+        },
     )
 
     if (showCustomKeyboard) {
@@ -104,37 +103,37 @@ fun InputTipScreen(
             onAmountEntered = { amount, isPercentage ->
                 inputTipViewModel.hideCustomAmountKeyboard()
                 if (amount > 0) {
-                    val intent = Intent(context, CardProcessActivity::class.java).apply {
-                        putExtra(
-                            "amount",
-                            inputTipViewModel.subtotal.toAmountMx()
-                        )
-                        if (isPercentage){
-                            val subtotal = inputTipViewModel.subtotal.toAmountMx().toDouble()
+                    val intent =
+                        Intent(context, CardProcessActivity::class.java).apply {
                             putExtra(
-                                "tipAmount",
-                                (subtotal * amount / 100.0).toString().toAmountMx()
+                                "amount",
+                                inputTipViewModel.subtotal.toAmountMx(),
                             )
-                        } else {
-                            putExtra(
-                                "tipAmount",
-                                amount.toString().toAmountMx()
-                            )
-                        }
+                            if (isPercentage) {
+                                val subtotal = inputTipViewModel.subtotal.toAmountMx().toDouble()
+                                putExtra(
+                                    "tipAmount",
+                                    (subtotal * amount / 100.0).toString().toAmountMx(),
+                                )
+                            } else {
+                                putExtra(
+                                    "tipAmount",
+                                    amount.toString().toAmountMx(),
+                                )
+                            }
 
-                        putExtra("currency", CURRENCY_LABEL)
-                        putExtra("operationType", OperationType.PAYMENT.name)
-                        putExtra("splitType", inputTipViewModel.splitType.value)
-                        putExtra("waiterName", inputTipViewModel.waiterName)
-                    }
+                            putExtra("currency", CURRENCY_LABEL)
+                            putExtra("operationType", OperationType.PAYMENT.name)
+                            putExtra("splitType", inputTipViewModel.splitType.value)
+                            putExtra("waiterName", inputTipViewModel.waiterName)
+                        }
                     context.startActivity(intent)
                     inputTipViewModel.navigateBack()
                 }
             },
-            title = "Propina"
+            title = "Propina",
         )
     }
-
 }
 
 @Composable
@@ -144,7 +143,7 @@ fun InputTipContent(
     waiterName: String,
     onPayWithoutTip: () -> Unit,
     onPayWithTip: (String) -> Unit,
-    onCustomAmount: () -> Unit
+    onCustomAmount: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -166,43 +165,48 @@ fun InputTipContent(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(Color.White),
     ) {
         ToolbarWithIcon(
             title = "\$${totalAmount.toString().toAmountMx()}",
-            iconAction = IconAction(
-                flowStep = FlowStep.NAVIGATE_BACK,
-                context = context,
-                iconType = IconType.BACK
-            ),
+            iconAction =
+                IconAction(
+                    flowStep = FlowStep.NAVIGATE_BACK,
+                    context = context,
+                    iconType = IconType.BACK,
+                ),
             onAction = {
                 onNavigateBack()
             },
-            showSecondIcon = true
+            showSecondIcon = true,
         )
 
         Column(
-            modifier = Modifier
-                .weight(1f),
+            modifier =
+                Modifier
+                    .weight(1f),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
-                verticalArrangement = Arrangement.Center
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                verticalArrangement = Arrangement.Center,
             ) {
                 Text(
                     text = "Agrega una propina para $waiterName",
                     color = Color.Black,
                     style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp),
                 )
 
                 Spacer(Modifier.height(16.dp))
@@ -211,34 +215,36 @@ fun InputTipContent(
                     onClick = {
                         onCustomAmount()
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                        .padding(horizontal = 16.dp)
-                        .border(
-                            width = 1.dp,
-                            color = lightGrayNumberField,
-                            shape = RoundedCornerShape(12.dp),
-                        ),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .padding(horizontal = 16.dp)
+                            .border(
+                                width = 1.dp,
+                                color = lightGrayNumberField,
+                                shape = RoundedCornerShape(12.dp),
+                            ),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White
-                    )
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                        ),
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.icon_edit),
                             contentDescription = "",
-                            tint = Color.Black
+                            tint = Color.Black,
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
                             text = "Monto",
                             color = Color.Black,
-                            fontSize = 16.sp
+                            fontSize = 16.sp,
                         )
                     }
                 }
@@ -246,12 +252,13 @@ fun InputTipContent(
                 Spacer(Modifier.height(16.dp))
 
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            horizontal = 16.dp
-                        ),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = 16.dp,
+                            ),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
                     TipItemCard(
                         percentage = "12%",
@@ -259,7 +266,7 @@ fun InputTipContent(
                         isPopular = false,
                         onClickTip = {
                             onPayWithTip(tip1.toString())
-                        }
+                        },
                     )
                     TipItemCard(
                         percentage = "15%",
@@ -267,7 +274,7 @@ fun InputTipContent(
                         isPopular = true,
                         onClickTip = {
                             onPayWithTip(tip2.toString())
-                        }
+                        },
                     )
                     TipItemCard(
                         percentage = "18%",
@@ -275,26 +282,26 @@ fun InputTipContent(
                         isPopular = false,
                         onClickTip = {
                             onPayWithTip(tip3.toString())
-                        }
+                        },
                     )
                 }
-
             }
 
             Button(
                 onClick = {
                     onPayWithoutTip()
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
             ) {
                 Text(
                     text = "Sin propina",
                     color = Color.Black,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
                 )
             }
 
@@ -313,7 +320,7 @@ fun PreviewInputTipContent() {
             onNavigateBack = {},
             onPayWithoutTip = {},
             onPayWithTip = {},
-            onCustomAmount = {}
+            onCustomAmount = {},
         )
     }
 }

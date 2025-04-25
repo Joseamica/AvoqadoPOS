@@ -11,6 +11,6 @@ interface AvoqadoService {
     suspend fun recordPayment(
         @Path("venueId") venueId: String,
         @Path("tableNumber") tableNumber: String,
-        @Body recordPaymentBody: RecordPaymentBody
-    ) : PaymentRecordResponse
+        @Body recordPaymentBody: RecordPaymentBody,
+    ): PaymentRecordResponse
 }

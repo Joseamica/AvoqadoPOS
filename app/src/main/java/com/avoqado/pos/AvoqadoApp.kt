@@ -29,14 +29,14 @@ class AvoqadoApp : Application() {
         val managementRepository: ManagementRepository by lazy {
             ManagementRepositoryImpl(
                 managementCacheStorage = managementCacheStorage,
-                avoqadoService = AvoqadoAPI.apiService
+                avoqadoService = AvoqadoAPI.apiService,
             )
         }
         val PaymentCacheStorage: PaymentCacheStorage by lazy { PaymentCacheStorage() }
         val paymentRepository: PaymentRepository by lazy {
             PaymentRepositoryImpl(
                 paymentCacheStorage = PaymentCacheStorage,
-                avoqadoService = AvoqadoAPI.retrofit.create(AvoqadoService::class.java)
+                avoqadoService = AvoqadoAPI.retrofit.create(AvoqadoService::class.java),
             )
         }
         val terminalRepository: TerminalRepository by lazy {
@@ -44,13 +44,13 @@ class AvoqadoApp : Application() {
                 sessionManager = sessionManager,
                 mentaService = AvoqadoAPI.mentaService,
                 avoqadoService = AvoqadoAPI.apiService,
-                storage = storage
+                storage = storage,
             )
         }
         val authorizationRepository: AuthorizationRepository by lazy {
             AuthorizationRepositoryImpl(
                 sessionManager = sessionManager,
-                avoqadoService = AvoqadoAPI.apiService
+                avoqadoService = AvoqadoAPI.apiService,
             )
         }
     }
@@ -58,20 +58,37 @@ class AvoqadoApp : Application() {
     override fun onCreate() {
         super.onCreate()
         Timber.plant(
-            FirebasePlant()
+            FirebasePlant(),
         )
 
         storage = Storage(this)
         sessionManager = SessionManager(this)
-        terminalSerialCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
-        } else {
-            Build.SERIAL ?: "Unknown"
-        }
+        terminalSerialCode =
+            when {
+                // For Android 8+ (API 26+)
+                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
+                    // ANDROID_ID is consistent per app install across all Android versions
+                    Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+                }
+                // Fallback for older versions (shouldn't be needed given your minSdk)
+                else -> {
+                    val uuid =
+                        java.util.UUID
+                            .randomUUID()
+                            .toString()
+                    // Store this UUID persistently if needed
+                    uuid
+                }
+            }
     }
 
-    class FirebasePlant() : Timber.Tree() {
-        override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
+    class FirebasePlant : Timber.Tree() {
+        override fun log(
+            priority: Int,
+            tag: String?,
+            message: String,
+            t: Throwable?,
+        ) {
             super.log(priority, tag, message, t)
             FirebaseCrashlytics.getInstance().log("$tag: $message")
             t?.let {

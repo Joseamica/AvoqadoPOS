@@ -10,7 +10,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import com.avoqado.pos.MainActivity
 import com.avoqado.pos.OperationFlowHolder
-import com.avoqado.pos.core.presentation.destinations.MainDests
 import com.avoqado.pos.ui.screen.SuccessScreen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,20 +34,21 @@ class SuccessPaymentActivity : ComponentActivity() {
             {
                 CoroutineScope(Dispatchers.Main).launch {
                     Log.i(TAG, "goToInputAmount")
-                    //Clear Operation Flow
+                    // Clear Operation Flow
                     OperationFlowHolder.operationFlow = null
-                    val intent = Intent(this@SuccessPaymentActivity, MainActivity::class.java)
-                        .apply {
-                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                        }
+                    val intent =
+                        Intent(this@SuccessPaymentActivity, MainActivity::class.java)
+                            .apply {
+                                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                            }
 
                     startActivity(intent)
                     finish()
                 }
-            }, 3000
+            },
+            3000,
         )
     }
-
 
     companion object {
         const val TAG = "SuccessMessageActivity"

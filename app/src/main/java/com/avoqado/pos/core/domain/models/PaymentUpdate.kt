@@ -7,8 +7,8 @@ data class PaymentUpdate(
     val venueId: String = "",
     val tableNumber: Int = 0,
     val method: String = "",
-    val status: String? = null,  // Nullable to handle cases where status isn't provided
+    val status: String? = null, // Nullable to handle cases where status isn't provided
     val billId: String? = null,
     val equalPartsPartySize: String? = null,
-    val equalPartsPayedFor: String? = null
+    val equalPartsPayedFor: String? = null,
 )

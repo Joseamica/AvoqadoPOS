@@ -1,7 +1,6 @@
 package com.avoqado.pos.core.presentation.utils
 
 import android.content.Context
-import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.RemoteException
 import com.avoqado.pos.CURRENCY_LABEL
@@ -19,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -32,7 +32,7 @@ object PrinterUtils {
         terminalSerialCode: String,
         operationInfo: OperationInfo,
         qrInfo: String? = null,
-        products: List<Product> = emptyList()
+        products: List<Product> = emptyList(),
     ) {
         val devicePrintImpl = DevicePrintImpl(context)
         val status = devicePrintImpl.getStatus()
@@ -43,43 +43,43 @@ object PrinterUtils {
                 operationInfo.operationData?.let {
                     devicePrintImpl.addLine(
                         TextFormat(align = Align.CENTER, bold = true),
-                        "Pago con Tarjeta de Crédito"
+                        "Pago con Tarjeta de Crédito",
                     )
 
                     devicePrintImpl.addLinebreak(1)
 
                     devicePrintImpl.addLine(
                         TextFormat(align = Align.CENTER, bold = true),
-                        "Autorización: ${operationInfo.authOperationCode}"
+                        "Autorización: ${operationInfo.authOperationCode}",
                     )
 
                     devicePrintImpl.addDoubleColumnText(
                         TextFormat(align = Align.CENTER, bold = false),
                         "Terminal",
-                        terminalSerialCode
+                        terminalSerialCode,
                     )
 
                     devicePrintImpl.addDoubleColumnText(
                         TextFormat(),
                         "Número de Operación",
-                        operationInfo.transactionId
+                        operationInfo.transactionId,
                     )
 
                     devicePrintImpl.addDoubleColumnText(
                         TextFormat(),
                         "Tarj: ${it.pan}",
-                        it.cardBrand
+                        it.cardBrand,
                     )
                     devicePrintImpl.addDoubleColumnText(
                         TextFormat(),
                         "CONTACTLESS",
-                        ""
+                        "",
                     )
 
                     devicePrintImpl.addDoubleColumnText(
                         TextFormat(),
                         "Moneda",
-                        CURRENCY_LABEL
+                        CURRENCY_LABEL,
                     )
 
                     devicePrintImpl.addLinebreak(1)
@@ -88,7 +88,7 @@ object PrinterUtils {
                         devicePrintImpl.addImage(
                             context.getBitmap(
                                 R.drawable.line,
-                            )
+                            ),
                         )
                     } catch (e: RemoteException) {
                         e.printStackTrace()
@@ -99,7 +99,7 @@ object PrinterUtils {
                     TextFormat(bold = true, font = 1),
                     "U.",
                     "Producto",
-                    "Monto"
+                    "Monto",
                 )
 
                 products.forEach { product ->
@@ -107,7 +107,7 @@ object PrinterUtils {
                         TextFormat(bold = false, font = 1),
                         product.quantity.toString(),
                         product.name,
-                        "\$${product.totalPrice.toString().toAmountMx()}"
+                        "\$${product.totalPrice.toString().toAmountMx()}",
                     )
                 }
 
@@ -117,7 +117,7 @@ object PrinterUtils {
                     devicePrintImpl.addImage(
                         context.getBitmap(
                             R.drawable.line,
-                        )
+                        ),
                     )
                 } catch (e: RemoteException) {
                     e.printStackTrace()
@@ -126,13 +126,13 @@ object PrinterUtils {
                 devicePrintImpl.addDoubleColumnText(
                     TextFormat(bold = true, font = 1),
                     "SUBTOTAL",
-                    operationInfo.subtotal
+                    operationInfo.subtotal,
                 )
 
                 devicePrintImpl.addDoubleColumnText(
                     TextFormat(bold = true, font = 1),
                     TIP_LABEL.uppercase(Locale.getDefault()),
-                    operationInfo.tip
+                    operationInfo.tip,
                 )
 
                 devicePrintImpl.addLinebreak(1)
@@ -140,7 +140,7 @@ object PrinterUtils {
                 devicePrintImpl.addDoubleColumnText(
                     TextFormat(bold = true, font = 1),
                     TOTAL_LABEL.uppercase(Locale.getDefault()),
-                    operationInfo.total
+                    operationInfo.total,
                 )
 
                 devicePrintImpl.addLinebreak(1)
@@ -151,13 +151,14 @@ object PrinterUtils {
                             putInt("height", 200)
                             putInt("align", 1)
                         },
-                        it
+                        it,
                     )
                 }
 
                 try {
-                    devicePrintImpl.startPrint()
-
+                    withContext(Dispatchers.IO) {
+                        devicePrintImpl.startPrint()
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -169,7 +170,7 @@ object PrinterUtils {
         context: Context,
         venue: VenueInfo,
         tableInfo: TableInfo,
-        products: List<Product>
+        products: List<Product>,
     ) {
         val devicePrintImpl = DevicePrintImpl(context)
         val status = devicePrintImpl.getStatus()
@@ -179,27 +180,27 @@ object PrinterUtils {
 
                 devicePrintImpl.addLine(
                     TextFormat(bold = false, font = 1),
-                    "MESA: ${tableInfo.name}"
+                    "MESA: ${tableInfo.name}",
                 )
 
                 devicePrintImpl.addLine(
                     TextFormat(bold = false, font = 1),
-                    "MESERO: ${tableInfo.waiterName.uppercase()}"
+                    "MESERO: ${tableInfo.waiterName.uppercase()}",
                 )
 
                 devicePrintImpl.addLine(
                     TextFormat(bold = false, font = 1),
-                    "ORDEN: ${tableInfo.orderNumber.uppercase()}"
+                    "ORDEN: ${tableInfo.orderNumber.uppercase()}",
                 )
 
                 devicePrintImpl.addLine(
                     TextFormat(bold = false, font = 1),
-                    "FOLIO: ${tableInfo.folio.uppercase()}"
+                    "FOLIO: ${tableInfo.folio.uppercase()}",
                 )
 
                 devicePrintImpl.addLine(
                     TextFormat(bold = false, font = 1),
-                    tableInfo.timestamp.uppercase()
+                    tableInfo.timestamp.uppercase(),
                 )
 
                 devicePrintImpl.addLinebreak(1)
@@ -208,7 +209,7 @@ object PrinterUtils {
                     devicePrintImpl.addImage(
                         context.getBitmap(
                             R.drawable.line,
-                        )
+                        ),
                     )
                 } catch (e: RemoteException) {
                     e.printStackTrace()
@@ -218,7 +219,7 @@ object PrinterUtils {
                     TextFormat(bold = true, font = 1),
                     "CANT.",
                     "DESCRIPCION",
-                    "IMPORTE"
+                    "IMPORTE",
                 )
 
                 products.forEach { product ->
@@ -226,7 +227,7 @@ object PrinterUtils {
                         TextFormat(bold = false, font = 1),
                         product.quantity.toString(),
                         product.name,
-                        "\$${product.totalPrice.toString().toAmountMx()}"
+                        "\$${product.totalPrice.toString().toAmountMx()}",
                     )
                 }
 
@@ -235,24 +236,26 @@ object PrinterUtils {
                 devicePrintImpl.addDoubleColumnText(
                     TextFormat(bold = true, font = 1),
                     TOTAL_LABEL.uppercase(Locale.getDefault()),
-                    products.sumOf { it.totalPrice }.toString().toAmountMx()
+                    products.sumOf { it.totalPrice }.toString().toAmountMx(),
                 )
 
                 devicePrintImpl.addLinebreak(1)
 
                 devicePrintImpl.addLine(
                     TextFormat(align = Align.CENTER, bold = false),
-                    "ESTE NO ES UN COMPROBANTE FISCAL"
+                    "ESTE NO ES UN COMPROBANTE FISCAL",
                 )
                 devicePrintImpl.addLine(
                     TextFormat(align = Align.CENTER, bold = false),
-                    "PROPINA NO INCLUIDA"
+                    "PROPINA NO INCLUIDA",
                 )
 
                 devicePrintImpl.addLinebreak(1)
 
                 try {
-                    devicePrintImpl.startPrint()
+                    withContext(Dispatchers.IO) {
+                        devicePrintImpl.startPrint()
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -263,7 +266,7 @@ object PrinterUtils {
     fun printPaymentsSummary(
         context: Context,
         shiftPayments: List<Map<String, Any>>,
-        venue: VenueInfo
+        venue: VenueInfo,
     ) {
         val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
 
@@ -275,7 +278,7 @@ object PrinterUtils {
 
                 devicePrintImpl.addLine(
                     TextFormat(),
-                    "PAGOS"
+                    "PAGOS",
                 )
 
                 devicePrintImpl.addLinebreak(1)
@@ -283,7 +286,7 @@ object PrinterUtils {
                     devicePrintImpl.addImage(
                         context.getBitmap(
                             R.drawable.line,
-                        )
+                        ),
                     )
                 } catch (e: RemoteException) {
                     e.printStackTrace()
@@ -291,13 +294,11 @@ object PrinterUtils {
 
                 devicePrintImpl.addLinebreak(1)
 
-
                 shiftPayments.forEach { payment ->
                     val amount = payment["amount"] as? Double ?: 0.0
                     val tip = payment["tip"] as? Double ?: 0.0
                     val folio = payment["folio"] as? String ?: "-"
                     val dateTime = payment["dateTime"] as? LocalDateTime ?: LocalDateTime.now()
-
 
                     devicePrintImpl.addLine(TextFormat(), "#$folio")
                     devicePrintImpl.addLine(TextFormat(), dateTime.format(dateFormatter))
@@ -305,23 +306,24 @@ object PrinterUtils {
                     devicePrintImpl.addDoubleColumnText(
                         textFormat = TextFormat(),
                         leftText = "Venta",
-                        rightText = "\$${"%,.2f".format(amount)}"
+                        rightText = "\$${"%,.2f".format(amount)}",
                     )
 
                     devicePrintImpl.addDoubleColumnText(
                         textFormat = TextFormat(),
                         leftText = "Propina",
-                        rightText = "\$${"%,.2f".format(tip)}"
+                        rightText = "\$${"%,.2f".format(tip)}",
                     )
 
                     devicePrintImpl.addLinebreak(1)
-
                 }
 
                 devicePrintImpl.addLinebreak(1)
 
                 try {
-                    devicePrintImpl.startPrint()
+                    withContext(Dispatchers.IO) {
+                        devicePrintImpl.startPrint()
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -332,7 +334,7 @@ object PrinterUtils {
     fun printShiftsSummary(
         context: Context,
         shifts: List<Map<String, Any?>>,
-        venue: VenueInfo
+        venue: VenueInfo,
     ) {
         val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
 
@@ -344,7 +346,7 @@ object PrinterUtils {
 
                 devicePrintImpl.addLine(
                     TextFormat(),
-                    "TURNOS"
+                    "TURNOS",
                 )
 
                 devicePrintImpl.addLinebreak(1)
@@ -352,14 +354,13 @@ object PrinterUtils {
                     devicePrintImpl.addImage(
                         context.getBitmap(
                             R.drawable.line,
-                        )
+                        ),
                     )
                 } catch (e: RemoteException) {
                     e.printStackTrace()
                 }
 
                 devicePrintImpl.addLinebreak(1)
-
 
                 shifts.forEach { payment ->
                     val amount = payment["amount"] as? Double ?: 0.0
@@ -368,34 +369,34 @@ object PrinterUtils {
                     val startTime = payment["startTime"] as? LocalDateTime
                     val endTime = payment["endTime"] as? LocalDateTime
 
-
-                    devicePrintImpl.addDoubleColumnText(TextFormat(), "Turno",folio)
+                    devicePrintImpl.addDoubleColumnText(TextFormat(), "Turno", folio)
                     devicePrintImpl.addDoubleColumnText(
                         TextFormat(),
                         startTime?.format(dateFormatter) ?: "-",
-                        endTime?.format(dateFormatter) ?: "-"
+                        endTime?.format(dateFormatter) ?: "-",
                     )
 
                     devicePrintImpl.addDoubleColumnText(
                         textFormat = TextFormat(),
                         leftText = "Venta",
-                        rightText = "\$${"%,.2f".format(amount)}"
+                        rightText = "\$${"%,.2f".format(amount)}",
                     )
 
                     devicePrintImpl.addDoubleColumnText(
                         textFormat = TextFormat(),
                         leftText = "Propina",
-                        rightText = "\$${"%,.2f".format(tip)}"
+                        rightText = "\$${"%,.2f".format(tip)}",
                     )
 
                     devicePrintImpl.addLinebreak(1)
-
                 }
 
                 devicePrintImpl.addLinebreak(1)
 
                 try {
-                    devicePrintImpl.startPrint()
+                    withContext(Dispatchers.IO) {
+                        devicePrintImpl.startPrint()
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -411,9 +412,8 @@ object PrinterUtils {
         orderCount: Int,
         ratingCount: Int,
         avgTipPercentage: Double,
-        tipsByUser: List<Map<String, Any>>
+        tipsByUser: List<Map<String, Any>>,
     ) {
-
         val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
 
         val devicePrintImpl = DevicePrintImpl(context)
@@ -424,7 +424,7 @@ object PrinterUtils {
 
                 devicePrintImpl.addLine(
                     TextFormat(),
-                    "Resumen del periodo"
+                    "Resumen del periodo",
                 )
 
                 devicePrintImpl.addLinebreak(1)
@@ -432,7 +432,7 @@ object PrinterUtils {
                     devicePrintImpl.addImage(
                         context.getBitmap(
                             R.drawable.line,
-                        )
+                        ),
                     )
                 } catch (e: RemoteException) {
                     e.printStackTrace()
@@ -443,31 +443,31 @@ object PrinterUtils {
                 devicePrintImpl.addDoubleColumnText(
                     textFormat = TextFormat(),
                     leftText = "Ventas",
-                    rightText = "\$${"%,.2f".format(totalSales)}"
+                    rightText = "\$${"%,.2f".format(totalSales)}",
                 )
 
                 devicePrintImpl.addDoubleColumnText(
                     textFormat = TextFormat(),
                     leftText = "Propinas",
-                    rightText = "\$${"%,.2f".format(totalTips)}"
+                    rightText = "\$${"%,.2f".format(totalTips)}",
                 )
 
                 devicePrintImpl.addDoubleColumnText(
                     textFormat = TextFormat(),
                     leftText = "Ordenes",
-                    rightText = "$orderCount"
+                    rightText = "$orderCount",
                 )
 
                 devicePrintImpl.addDoubleColumnText(
                     textFormat = TextFormat(),
                     leftText = "Calificaciones",
-                    rightText = "$ratingCount"
+                    rightText = "$ratingCount",
                 )
 
                 devicePrintImpl.addDoubleColumnText(
                     textFormat = TextFormat(),
                     leftText = "Prom. Propinas",
-                    rightText = "${"%.2f".format(avgTipPercentage)}%"
+                    rightText = "${"%.2f".format(avgTipPercentage)}%",
                 )
 
                 devicePrintImpl.addLinebreak(1)
@@ -481,40 +481,43 @@ object PrinterUtils {
                 tipsByUser.forEach { entry ->
                     val name = entry["name"] as? String ?: "-"
                     val tip = entry["tip"] as? Double ?: 0.0
-                    devicePrintImpl.addDoubleColumnText(TextFormat(),name, tip.toString())
+                    devicePrintImpl.addDoubleColumnText(TextFormat(), name, tip.toString())
                 }
 
                 try {
-                    devicePrintImpl.startPrint()
+                    withContext(Dispatchers.IO) {
+                        devicePrintImpl.startPrint()
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
             }
-
         }
-
     }
 }
 
-suspend fun DevicePrintImpl.addHeading(context: Context, venue: VenueInfo) {
+suspend fun DevicePrintImpl.addHeading(
+    context: Context,
+    venue: VenueInfo,
+) {
     this.addLine(
         TextFormat(align = Align.CENTER, bold = true, font = 1),
-        venue.name
+        venue.name,
     )
 
     this.addLine(
         TextFormat(align = Align.CENTER, bold = false),
-        venue.address
+        venue.address,
     )
 
     this.addLine(
         TextFormat(align = Align.CENTER, bold = false),
-        "AFILIACION: ${venue.acquisition}"
+        "AFILIACION: ${venue.acquisition}",
     )
 
     this.addLine(
         TextFormat(align = Align.CENTER, bold = false),
-        "TEL: ${venue.phone}"
+        "TEL: ${venue.phone}",
     )
 
     this.addLinebreak(1)
@@ -523,7 +526,7 @@ suspend fun DevicePrintImpl.addHeading(context: Context, venue: VenueInfo) {
         this.addImage(
             context.getBitmap(
                 R.drawable.line,
-            )
+            ),
         )
     } catch (e: RemoteException) {
         e.printStackTrace()

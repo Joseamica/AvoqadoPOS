@@ -2,7 +2,6 @@ package com.avoqado.pos.features.payment.presentation.transactions
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.domain.models.AvoqadoError
 import com.avoqado.pos.core.domain.models.PaymentShift
@@ -25,9 +24,8 @@ class TransactionSummaryViewModel(
     private val snackbarDelegate: SnackbarDelegate,
     private val navigationDispatcher: NavigationDispatcher,
     private val terminalRepository: TerminalRepository,
-    private val initialTab: SummaryTabs
+    private val initialTab: SummaryTabs,
 ) : ViewModel() {
-
     companion object {
         const val PAGE_SIZE = 10
     }
@@ -72,6 +70,11 @@ class TransactionSummaryViewModel(
 
     val venueInfo = sessionManager.getVenueInfo()
 
+// Add this state property to your ViewModel class
+// Add this state property to your ViewModel class
+    private val _hasMoreShiftsPages = MutableStateFlow<Boolean>(true)
+    val hasMoreShiftsPages: StateFlow<Boolean> = _hasMoreShiftsPages.asStateFlow()
+
     fun loadShiftsSummary(nextPage: Boolean = false) {
         viewModelScope.launch {
             try {
@@ -79,34 +82,47 @@ class TransactionSummaryViewModel(
                     _isLoadingMore.update { true }
                 } else {
                     _isLoading.update { true }
+                    // Reset hasMorePages when starting a new search
+                    _hasMoreShiftsPages.update { true }
                 }
 
-                val shifts = terminalRepository.getShiftSummary(
-                    params = ShiftParams(
+                val params =
+                    ShiftParams(
                         pageSize = PAGE_SIZE,
-                        page = if (nextPage) {
-                            currentPage.value + 1
-                        } else {
-                            currentPage.value
-                        },
-                        venueId = venueInfo?.id ?: "",
-                        waiterIds = filteredWaiters.value.let {
-                            if (it.isNotEmpty()) {
-                                it.joinToString(",")
+                        page =
+                            if (nextPage) {
+                                currentPage.value + 1
                             } else {
-                                null
-                            }
-                        },
-                        startTime = filteredDates.value.first?.let {
-                            val instant = Instant.ofEpochMilli(it)
-                            instant.toString()
-                        },
-                        endTime = filteredDates.value.second?.let {
-                            val instant = Instant.ofEpochMilli(it)
-                            instant.toString()
-                        }
+                                currentPage.value
+                            },
+                        venueId = venueInfo?.id ?: "",
+                        waiterIds =
+                            filteredWaiters.value.let {
+                                if (it.isNotEmpty()) {
+                                    it.joinToString(",")
+                                } else {
+                                    null
+                                }
+                            },
+                        startTime =
+                            filteredDates.value.first?.let {
+                                val instant = Instant.ofEpochMilli(it)
+                                instant.toString()
+                            },
+                        endTime =
+                            filteredDates.value.second?.let {
+                                val instant = Instant.ofEpochMilli(it)
+                                instant.toString()
+                            },
                     )
-                )
+
+                val shifts = terminalRepository.getShiftSummary(params)
+
+                // Check if there are more pages based on response size and meta data
+                val hasNoMorePages = shifts.isEmpty() || shifts.size < PAGE_SIZE
+
+                // Update hasMorePages state
+                _hasMoreShiftsPages.update { !hasNoMorePages }
 
                 _shiftsList.update {
                     if (nextPage) {
@@ -115,26 +131,33 @@ class TransactionSummaryViewModel(
                         shifts
                     }
                 }
-                if (nextPage) {
+
+                // Only increment page if we're doing pagination and we got new data
+                if (nextPage && shifts.isNotEmpty()) {
                     _currentPage.update {
                         it + 1
                     }
                 }
-
             } catch (e: Exception) {
                 if (e is AvoqadoError) {
                     snackbarDelegate.showSnackbar(
-                        message = e.message ?: "Algo salio mal..."
+                        message = e.message ?: "Algo salio mal...",
                     )
                 } else {
                     Timber.e(e)
                 }
+                // If there's an error, assume no more pages
+                _hasMoreShiftsPages.update { false }
             } finally {
                 _isLoadingMore.update { false }
                 _isLoading.update { false }
             }
         }
     }
+
+// Add this state property to your ViewModel class
+    private val _hasMorePaymentsPages = MutableStateFlow<Boolean>(true)
+    val hasMorePaymentsPages: StateFlow<Boolean> = _hasMorePaymentsPages.asStateFlow()
 
     fun loadPaymentsSummary(nextPage: Boolean = false) {
         viewModelScope.launch {
@@ -143,56 +166,73 @@ class TransactionSummaryViewModel(
                     _isLoadingMore.update { true }
                 } else {
                     _isLoading.update { true }
+                    // Reset hasMorePages when starting a new search
+                    _hasMorePaymentsPages.update { true }
                 }
 
-                val shifts = terminalRepository.getShiftPaymentsSummary(
-                    params = ShiftParams(
-                        pageSize = PAGE_SIZE,
-                        page = if (nextPage) {
-                            currentPage.value + 1
-                        } else {
-                            currentPage.value
-                        },
-                        venueId = venueInfo?.id ?: "",
-                        waiterIds = filteredWaiters.value.let {
-                            if (it.isNotEmpty()) {
-                                it.joinToString(",")
-                            } else {
-                                null
-                            }
-                        },
-                        startTime = filteredDates.value.first?.let {
-                            val instant = Instant.ofEpochMilli(it)
-                            instant.toString()
-                        },
-                        endTime = filteredDates.value.second?.let {
-                            val instant = Instant.ofEpochMilli(it)
-                            instant.toString()
-                        }
+                val payments =
+                    terminalRepository.getShiftPaymentsSummary(
+                        params =
+                            ShiftParams(
+                                pageSize = PAGE_SIZE,
+                                page =
+                                    if (nextPage) {
+                                        currenPaymenttPage.value + 1
+                                    } else {
+                                        currenPaymenttPage.value
+                                    },
+                                venueId = venueInfo?.id ?: "",
+                                waiterIds =
+                                    filteredWaiters.value.let {
+                                        if (it.isNotEmpty()) {
+                                            it.joinToString(",")
+                                        } else {
+                                            null
+                                        }
+                                    },
+                                startTime =
+                                    filteredDates.value.first?.let {
+                                        val instant = Instant.ofEpochMilli(it)
+                                        instant.toString()
+                                    },
+                                endTime =
+                                    filteredDates.value.second?.let {
+                                        val instant = Instant.ofEpochMilli(it)
+                                        instant.toString()
+                                    },
+                            ),
                     )
-                )
+
+                // Check if there are more pages based on response size
+                val hasNoMorePages = payments.isEmpty() || payments.size < PAGE_SIZE
+
+                // Update the hasMorePages state
+                _hasMorePaymentsPages.update { !hasNoMorePages }
 
                 _paymentsShiftList.update {
                     if (nextPage) {
-                        it + shifts
+                        it + payments
                     } else {
-                        shifts
+                        payments
                     }
                 }
-                if (nextPage) {
+
+                // Only increment page if we're doing pagination and we got new data
+                if (nextPage && payments.isNotEmpty()) {
                     _currenPaymenttPage.update {
                         it + 1
                     }
                 }
-
             } catch (e: Exception) {
                 if (e is AvoqadoError) {
                     snackbarDelegate.showSnackbar(
-                        message = e.message ?: "Algo salio mal..."
+                        message = e.message ?: "Algo salio mal...",
                     )
                 } else {
                     Timber.e(e)
                 }
+                // If there's an error, assume no more pages
+                _hasMorePaymentsPages.update { false }
             } finally {
                 _isLoadingMore.update { false }
                 _isLoading.update { false }
@@ -204,28 +244,32 @@ class TransactionSummaryViewModel(
         viewModelScope.launch {
             try {
                 _isLoading.update { true }
-                val summary = terminalRepository.getSummary(
-                    ShiftParams(
-                        pageSize = PAGE_SIZE,
-                        page = 0,
-                        venueId = venueInfo?.id ?: "",
-                        waiterIds = filteredWaiters.value.let {
-                            if (it.isNotEmpty()) {
-                                it.joinToString(",")
-                            } else {
-                                null
-                            }
-                        },
-                        startTime = filteredDates.value.first?.let {
-                            val instant = Instant.ofEpochMilli(it)
-                            instant.toString()
-                        },
-                        endTime = filteredDates.value.second?.let {
-                            val instant = Instant.ofEpochMilli(it)
-                            instant.toString()
-                        }
+                val summary =
+                    terminalRepository.getSummary(
+                        ShiftParams(
+                            pageSize = PAGE_SIZE,
+                            page = 0,
+                            venueId = venueInfo?.id ?: "",
+                            waiterIds =
+                                filteredWaiters.value.let {
+                                    if (it.isNotEmpty()) {
+                                        it.joinToString(",")
+                                    } else {
+                                        null
+                                    }
+                                },
+                            startTime =
+                                filteredDates.value.first?.let {
+                                    val instant = Instant.ofEpochMilli(it)
+                                    instant.toString()
+                                },
+                            endTime =
+                                filteredDates.value.second?.let {
+                                    val instant = Instant.ofEpochMilli(it)
+                                    instant.toString()
+                                },
+                        ),
                     )
-                )
 
                 _shiftSummary.update {
                     summary
@@ -233,7 +277,7 @@ class TransactionSummaryViewModel(
             } catch (e: Exception) {
                 if (e is AvoqadoError) {
                     snackbarDelegate.showSnackbar(
-                        message = e.message ?: "Algo salio mal..."
+                        message = e.message ?: "Algo salio mal...",
                     )
                 } else {
                     Timber.e(e)

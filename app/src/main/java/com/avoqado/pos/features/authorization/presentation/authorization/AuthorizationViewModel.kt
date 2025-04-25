@@ -3,11 +3,9 @@ package com.avoqado.pos.features.authorization.presentation.authorization
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavOptions
 import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
-import com.avoqado.pos.core.presentation.destinations.MainDests
 import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel.Companion.GET_MASTER_KEY
 import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel.Companion.START_CONFIG
 import com.avoqado.pos.views.InitActivity.Companion.TAG
@@ -21,12 +19,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
-class AuthorizationViewModel (
+class AuthorizationViewModel(
     private val navigationDispatcher: NavigationDispatcher,
     private val storage: Storage,
-    private val sessionManager: SessionManager
-): ViewModel() {
-
+    private val sessionManager: SessionManager,
+) : ViewModel() {
     val currentUser = sessionManager.getAvoqadoSession()
     val operationPreference = sessionManager.getOperationPreference()
 
@@ -47,8 +44,11 @@ class AuthorizationViewModel (
         viewModelScope.launch { _events.send(START_CONFIG) }
     }
 
-    fun storePublicKey(token: String, tokenType: String) {
-        //Guardar el token
+    fun storePublicKey(
+        token: String,
+        tokenType: String,
+    ) {
+        // Guardar el token
         storage.putIdToken(token)
         storage.putTokenType(tokenType)
         viewModelScope.launch { _events.send(GET_MASTER_KEY) }
@@ -56,7 +56,7 @@ class AuthorizationViewModel (
 
     fun handleMasterKey(secretsList: ArrayList<SecretsV2>?) {
         if (secretsList != null) {
-            //TODO: aca se debe verificar si el usuario esta logeado en Avoqado API
+            // TODO: aca se debe verificar si el usuario esta logeado en Avoqado API
             navigationDispatcher.navigateBack()
         } else {
             Log.i(TAG, "Inyección de llaves ERROR")

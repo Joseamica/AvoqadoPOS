@@ -10,7 +10,6 @@ class ProductsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-
         }
     }
 }

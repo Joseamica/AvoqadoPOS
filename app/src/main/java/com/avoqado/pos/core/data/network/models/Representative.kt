@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.data.network.models
 
-
 import com.google.gson.annotations.SerializedName
 
 data class Representative(
@@ -11,5 +10,5 @@ data class Representative(
     @SerializedName("representative_id")
     val representativeId: RepresentativeId?,
     @SerializedName("surname")
-    val surname: String?
+    val surname: String?,
 )

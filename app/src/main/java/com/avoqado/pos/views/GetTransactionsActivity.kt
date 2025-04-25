@@ -17,7 +17,6 @@ import com.menta.android.core.model.LastTrxRequest
 import com.menta.android.core.viewmodel.TrxData
 import com.menta.android.restclient.core.RestClientConfiguration
 
-
 class GetTransactionsActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,21 +24,23 @@ class GetTransactionsActivity : ComponentActivity() {
         setContent {
             ProcessingOperationScreen(
                 title = stringResource(id = R.string.wait_payment),
-                message = stringResource(id = R.string.whileServiceTransactionProcess)
+                message = stringResource(id = R.string.whileServiceTransactionProcess),
             )
         }
         RestClientConfiguration.configure(AppfinRestClientConfigure())
         val trxData = TrxData(this)
-        val lastTrxRequest = LastTrxRequest(
-            appVersion = "",
-            operationType = "",
-            merchantId = merchantId,
-            customerId = customerId,
-            userEmail = null,
-            start = "2024-10-07T00:00:00Z",
-            end = "2024-10-08T23:59:00Z",
-            page = 0, size = 1000
-        )
+        val lastTrxRequest =
+            LastTrxRequest(
+                appVersion = "",
+                operationType = "",
+                merchantId = merchantId,
+                customerId = customerId,
+                userEmail = null,
+                start = "2024-10-07T00:00:00Z",
+                end = "2024-10-08T23:59:00Z",
+                page = 0,
+                size = 1000,
+            )
         trxData.getLastTrx(lastTrxRequest = lastTrxRequest)
         trxData.getLastTrx.observe(this) { lisTrx ->
             lisTrx?.let {
@@ -48,11 +49,9 @@ class GetTransactionsActivity : ComponentActivity() {
                     val intent = Intent(this, ListTransactionActivity::class.java)
                     intent.putExtra("transactionList", ArrayList(lisTrx.content))
                     startActivity(intent)
-
                 } else {
                     Log.i(TAG, "Error en la consulta")
                 }
-
             } ?: run {
                 Log.i(TAG, "Transacciones no disponibles")
             }

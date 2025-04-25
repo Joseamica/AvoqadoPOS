@@ -7,5 +7,5 @@ data class TableDetail(
     val name: String,
     val totalAmount: Double,
     val waiterName: String?,
-    val paymentOverview: PaymentOverview?
+    val paymentOverview: PaymentOverview?,
 )

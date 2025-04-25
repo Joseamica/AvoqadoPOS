@@ -13,5 +13,5 @@ data class TableBillDetail(
     val totalPending: Double,
     val name: String,
     val waiterName: String?,
-    val paymentOverview: PaymentOverview?
+    val paymentOverview: PaymentOverview?,
 )

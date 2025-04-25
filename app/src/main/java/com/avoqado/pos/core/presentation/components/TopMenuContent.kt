@@ -48,26 +48,27 @@ fun TopMenuContent(
     isShiftButtonDisabled: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
-
-    val modalSheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
-    )
+    val modalSheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+        )
 
     Column(
-        modifier = modifier
+        modifier = modifier,
     ) {
         TopAppBar(
             expandedHeight = 48.dp,
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = Color.White,
-                titleContentColor = Color.Black,
-                actionIconContentColor = Color.Black
-            ),
+            colors =
+                TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.White,
+                    titleContentColor = Color.Black,
+                    actionIconContentColor = Color.Black,
+                ),
             title = {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = title,
-                    style = MaterialTheme.typography.titleSmall.copy(color = Color.Black)
+                    style = MaterialTheme.typography.titleSmall.copy(color = Color.Black),
                 )
             },
             navigationIcon = {
@@ -77,9 +78,9 @@ fun TopMenuContent(
                         content = {
                             Icon(
                                 painter = painterResource(R.drawable.icon_back),
-                                contentDescription = null
+                                contentDescription = null,
                             )
-                        }
+                        },
                     )
                 }
             },
@@ -89,11 +90,11 @@ fun TopMenuContent(
                     content = {
                         Icon(
                             painter = painterResource(R.drawable.ic_settings),
-                            contentDescription = null
+                            contentDescription = null,
                         )
-                    }
+                    },
                 )
-            }
+            },
         )
 
         content()
@@ -103,23 +104,24 @@ fun TopMenuContent(
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
             modifier = Modifier.fillMaxWidth(),
-            sheetState = modalSheetState
+            sheetState = modalSheetState,
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         text = "Configuración",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
                     )
 
                     IconButton(
@@ -127,9 +129,9 @@ fun TopMenuContent(
                         content = {
                             Icon(
                                 painter = painterResource(R.drawable.baseline_close_24),
-                                contentDescription = null
+                                contentDescription = null,
                             )
-                        }
+                        },
                     )
                 }
 
@@ -137,19 +139,21 @@ fun TopMenuContent(
 
                 Button(
                     onClick = onLogout,
-                    modifier = Modifier
-                        .height(72.dp)
-                        .fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .height(72.dp)
+                            .fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = buttonGrayColor
-                    )
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = buttonGrayColor,
+                        ),
                 ) {
                     Text(
                         text = "Cambiar mesero",
                         color = Color.Black,
-                        style = MaterialTheme.typography.titleSmall
+                        style = MaterialTheme.typography.titleSmall,
                     )
                 }
 
@@ -157,32 +161,34 @@ fun TopMenuContent(
 
                 Button(
                     onClick = { if (!isShiftButtonDisabled) onToggleShift() },
-                    modifier = Modifier
-                        .height(72.dp)
-                        .fillMaxWidth(),
+                    modifier =
+                        Modifier
+                            .height(72.dp)
+                            .fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = if (isShiftButtonDisabled) Color.Gray else buttonGrayColor
-                    ),
-                    enabled = !isShiftButtonDisabled
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = if (isShiftButtonDisabled) Color.Gray else buttonGrayColor,
+                        ),
+                    enabled = !isShiftButtonDisabled,
                 ) {
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = if (shiftStarted) "Cerrar Turno" else "Abrir Turno",
                             color = if (isShiftButtonDisabled) Color.Gray else Color.Black,
-                            style = MaterialTheme.typography.titleSmall
+                            style = MaterialTheme.typography.titleSmall,
                         )
-                        
+
                         if (isShiftButtonDisabled) {
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "(desde POS)",
                                 color = Color.Gray,
                                 fontSize = 12.sp,
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall,
                             )
                         }
                     }

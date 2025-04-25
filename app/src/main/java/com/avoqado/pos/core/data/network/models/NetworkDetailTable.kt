@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.data.network.models
 
-
 import com.google.gson.annotations.SerializedName
 
 data class NetworkDetailTable(
@@ -15,5 +14,5 @@ data class NetworkDetailTable(
     @SerializedName("url")
     val url: String?,
     @SerializedName("userLoggedIn")
-    val userLoggedIn: Boolean?
+    val userLoggedIn: Boolean?,
 )

@@ -29,75 +29,76 @@ import com.avoqado.pos.core.presentation.theme.selectedItemColor
 import com.avoqado.pos.core.presentation.theme.unselectedItemColor
 
 @Composable
-fun<T> SelectableItemRow(
+fun <T> SelectableItemRow(
     isSelected: Boolean = false,
     label: String,
     data: T,
     onItemTap: ((T) -> Unit)?,
-    trailingLabel: String? = null
-){
+    trailingLabel: String? = null,
+) {
     val baseColor = if (isSelected) selectedItemColor else unselectedItemColor
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .let {
-                if (onItemTap != null) {
-                    it.clickable { onItemTap(data) }
-                } else {
-                    it
-                }
-            }
-            .border(
-                width = 1.dp,
-                color = baseColor,
-                shape = RoundedCornerShape(12.dp)
-            ),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .let {
+                    if (onItemTap != null) {
+                        it.clickable { onItemTap(data) }
+                    } else {
+                        it
+                    }
+                }.border(
+                    width = 1.dp,
+                    color = baseColor,
+                    shape = RoundedCornerShape(12.dp),
+                ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.cardColors(Color.White),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
     ) {
         Row(
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 18.dp)
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .padding(horizontal = 16.dp, vertical = 18.dp)
+                    .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (onItemTap != null) {
                 Icon(
-                    painter = painterResource(
-                        if (isSelected) {
-                            R.drawable.baseline_check_circle_24
-                        } else {
-                            R.drawable.baseline_add_circle_outline_24
-                        }
-                    ),
+                    painter =
+                        painterResource(
+                            if (isSelected) {
+                                R.drawable.baseline_check_circle_24
+                            } else {
+                                R.drawable.baseline_add_circle_outline_24
+                            },
+                        ),
                     contentDescription = "",
-                    tint = baseColor
+                    tint = baseColor,
                 )
             } else {
                 Spacer(modifier = Modifier.size(24.dp))
             }
-
 
             Spacer(modifier = Modifier.width(8.dp))
 
             Row(
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
             ) {
                 Text(
                     text = label,
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        color = baseColor
-                    ),
+                    style =
+                        MaterialTheme.typography.bodyMedium.copy(
+                            color = baseColor,
+                        ),
                     maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
-
 
             trailingLabel?.let {
                 Row(
@@ -107,9 +108,10 @@ fun<T> SelectableItemRow(
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         it,
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = baseColor
-                        )
+                        style =
+                            MaterialTheme.typography.bodyMedium.copy(
+                                color = baseColor,
+                            ),
                     )
                 }
             }
@@ -119,27 +121,27 @@ fun<T> SelectableItemRow(
 
 @Preview
 @Composable
-fun PreviewSelectableIconRow(){
+fun PreviewSelectableIconRow() {
     AvoqadoTheme {
         SelectableItemRow(
             label = "Pan Francés",
             trailingLabel = "$2.10",
             data = "123",
-            onItemTap = {}
+            onItemTap = {},
         )
     }
 }
 
 @Preview
 @Composable
-fun PreviewSelectedSelectableIconRow(){
+fun PreviewSelectedSelectableIconRow() {
     AvoqadoTheme {
         SelectableItemRow(
             isSelected = true,
             label = "Pan Francés",
             trailingLabel = "$2.10",
             data = "123",
-            onItemTap = {}
+            onItemTap = {},
         )
     }
 }

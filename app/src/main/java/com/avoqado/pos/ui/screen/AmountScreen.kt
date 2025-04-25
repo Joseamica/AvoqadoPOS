@@ -22,57 +22,58 @@ import com.avoqado.pos.core.presentation.viewmodel.InputAmountViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun AmountScreen(
-    viewModel: InputAmountViewModel,
-) {
+fun AmountScreen(viewModel: InputAmountViewModel) {
     val focusRequester = remember { FocusRequester() }
 
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             TextFieldAmount(
-                modifier = Modifier
-                    .layoutId("textFieldAmount")
-                    .padding(horizontal = 20.dp)
-                    .pointerInput(Unit) {
-                        focusRequester.requestFocus()
-                    }
-                    .focusRequester(focusRequester),
+                modifier =
+                    Modifier
+                        .layoutId("textFieldAmount")
+                        .padding(horizontal = 20.dp)
+                        .pointerInput(Unit) {
+                            focusRequester.requestFocus()
+                        }.focusRequester(focusRequester),
                 textFieldState = viewModel.textFieldAmount,
                 onTextChange = {
                     viewModel.formatAmount(it)
-                }
+                },
             )
         }
     }
     Box(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
+        modifier =
+            Modifier
+                .fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter,
     ) {
         Column(
-            modifier = Modifier
-                .align(Alignment.BottomCenter),
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter),
             verticalArrangement = Arrangement.Bottom,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             PrimaryButton(
                 text = "Continuar",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(14.dp)
-                    .height(57.dp)
-                    .align(Alignment.End),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp)
+                        .height(57.dp)
+                        .align(Alignment.End),
                 onClick = {
                     Log.i("", "ingreso: ${viewModel.textFieldAmount.value.textFieldValue.text}")
                     viewModel.isValidAmount(viewModel.textFieldAmount.value.textFieldValue.text)
-                }
+                },
             )
         }
     }

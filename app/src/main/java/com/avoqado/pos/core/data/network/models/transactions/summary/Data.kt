@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.data.network.models.transactions.summary
 
-
 import com.google.gson.annotations.SerializedName
 
 data class Data(
@@ -9,5 +8,5 @@ data class Data(
     @SerializedName("summary")
     val summary: Summary?,
     @SerializedName("waiterTips")
-    val waiterTips: List<WaiterTip?>?
+    val waiterTips: List<WaiterTip?>?,
 )

@@ -1,6 +1,5 @@
 package com.avoqado.pos.features.payment.presentation.transactions.components
 
-
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -43,13 +42,14 @@ import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WaiterFilterSheet(
-    sheetState: SheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
-    ),
+    sheetState: SheetState =
+        rememberModalBottomSheetState(
+            skipPartiallyExpanded = true,
+        ),
     onDismiss: () -> Unit = {},
     onApplyFilter: (List<String>) -> Unit = {},
     waiterList: List<Pair<String, String>> = emptyList(),
-    preSelectedWaiters: List<String> = emptyList()
+    preSelectedWaiters: List<String> = emptyList(),
 ) {
     // Usar mutableStateListOf para que los cambios en la lista actualicen la UI
     val selectedWaiters = remember { mutableStateListOf<String>().apply { addAll(preSelectedWaiters) } }
@@ -58,35 +58,37 @@ fun WaiterFilterSheet(
         onDismissRequest = onDismiss,
         modifier = Modifier.fillMaxWidth(),
         containerColor = Color.White,
-        sheetState = sheetState
+        sheetState = sheetState,
     ) {
-
         Column {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "Filtrar por mesero",
-                    style = MaterialTheme.typography.titleSmall.copy(
-                        color = Color.Black
-                    ),
-                    modifier = Modifier.weight(1f)
+                    style =
+                        MaterialTheme.typography.titleSmall.copy(
+                            color = Color.Black,
+                        ),
+                    modifier = Modifier.weight(1f),
                 )
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Icon(
                     painter = painterResource(R.drawable.baseline_close_24),
                     contentDescription = "Close",
-                    modifier = Modifier
-                        .size(40.dp)
-                        .padding(8.dp)
-                        .clickable {
-                            onDismiss()
-                        }
+                    modifier =
+                        Modifier
+                            .size(40.dp)
+                            .padding(8.dp)
+                            .clickable {
+                                onDismiss()
+                            },
                 )
             }
 
@@ -95,27 +97,28 @@ fun WaiterFilterSheet(
             LazyColumn {
                 items(
                     items = waiterList,
-                    key = { it.first } // Usar el ID del mesero como clave única
+                    key = { it.first }, // Usar el ID del mesero como clave única
                 ) { item ->
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                if (selectedWaiters.contains(item.first)) {
-                                    selectedWaiters.remove(item.first)
-                                } else {
-                                    selectedWaiters.add(item.first)
-                                }
-                            }
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    if (selectedWaiters.contains(item.first)) {
+                                        selectedWaiters.remove(item.first)
+                                    } else {
+                                        selectedWaiters.add(item.first)
+                                    }
+                                }.padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Text(
                             text = item.second,
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                color = Color.Black
-                            ),
-                            modifier = Modifier.weight(1f)
+                            style =
+                                MaterialTheme.typography.bodyMedium.copy(
+                                    color = Color.Black,
+                                ),
+                            modifier = Modifier.weight(1f),
                         )
 
                         Checkbox(
@@ -127,11 +130,12 @@ fun WaiterFilterSheet(
                                     selectedWaiters.remove(item.first)
                                 }
                             },
-                            colors = CheckboxDefaults.colors(
-                                checkedColor = Color.Black,
-                                uncheckedColor = Color.Gray,
-                                checkmarkColor = Color.White
-                            )
+                            colors =
+                                CheckboxDefaults.colors(
+                                    checkedColor = Color.Black,
+                                    uncheckedColor = Color.Gray,
+                                    checkmarkColor = Color.White,
+                                ),
                         )
                     }
                 }
@@ -140,43 +144,47 @@ fun WaiterFilterSheet(
             Spacer(Modifier.height(16.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
             ) {
                 Button(
                     modifier = Modifier.weight(1f).height(54.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White
-                    ),
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                        ),
                     shape = RoundedCornerShape(10.dp),
                     border = BorderStroke(1.dp, Color.LightGray),
                     onClick = {
                         selectedWaiters.clear()
                         onApplyFilter(emptyList())
-                    }
+                    },
                 ) {
                     Text(
                         text = "Limpiar",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = Color.Black
-                        )
+                        style =
+                            MaterialTheme.typography.bodyMedium.copy(
+                                color = Color.Black,
+                            ),
                     )
                 }
                 Spacer(Modifier.width(8.dp))
                 Button(
                     modifier = Modifier.weight(1f).height(54.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Black
-                    ),
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = Color.Black,
+                        ),
                     shape = RoundedCornerShape(10.dp),
                     onClick = {
                         onApplyFilter(selectedWaiters.toList())
-                    }
+                    },
                 ) {
                     Text(
                         text = "Aplicar",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = Color.White
-                        )
+                        style =
+                            MaterialTheme.typography.bodyMedium.copy(
+                                color = Color.White,
+                            ),
                     )
                 }
             }
@@ -192,17 +200,19 @@ fun WaiterFilterSheet(
 fun WaiterFilterSheetPreview() {
     AvoqadoTheme {
         WaiterFilterSheet(
-            sheetState = rememberStandardBottomSheetState(
-                initialValue = SheetValue.Expanded,
-                skipHiddenState = true
-            ),
-            waiterList = listOf(
-                Pair("1","Diego"),
-                Pair("2","Carlos"), // Asegurar IDs únicos en el preview
-                Pair("3","Ana"),
-                Pair("4","María"),
-            ),
-            preSelectedWaiters = listOf("1","3")
+            sheetState =
+                rememberStandardBottomSheetState(
+                    initialValue = SheetValue.Expanded,
+                    skipHiddenState = true,
+                ),
+            waiterList =
+                listOf(
+                    Pair("1", "Diego"),
+                    Pair("2", "Carlos"), // Asegurar IDs únicos en el preview
+                    Pair("3", "Ana"),
+                    Pair("4", "María"),
+                ),
+            preSelectedWaiters = listOf("1", "3"),
         )
     }
 }

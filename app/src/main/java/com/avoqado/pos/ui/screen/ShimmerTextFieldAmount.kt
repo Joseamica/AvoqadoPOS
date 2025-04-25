@@ -7,12 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ShimmerTextFieldAmount(
-    modifier: Modifier = Modifier
-) {
+fun ShimmerTextFieldAmount(modifier: Modifier = Modifier) {
     Shimmer(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(60.dp)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .height(60.dp),
     )
 }

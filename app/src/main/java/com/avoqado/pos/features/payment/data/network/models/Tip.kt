@@ -1,6 +1,5 @@
 package com.avoqado.pos.features.payment.data.network.models
 
-
 import com.google.gson.annotations.SerializedName
 
 data class Tip(
@@ -21,5 +20,5 @@ data class Tip(
     @SerializedName("updatedAt")
     val updatedAt: String,
     @SerializedName("waiterId")
-    val waiterId: String?
+    val waiterId: String?,
 )

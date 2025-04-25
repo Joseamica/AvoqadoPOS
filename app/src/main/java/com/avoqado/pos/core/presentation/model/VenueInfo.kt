@@ -7,4 +7,3 @@ data class VenueInfo(
     val phone: String,
     val acquisition: String,
 )
-

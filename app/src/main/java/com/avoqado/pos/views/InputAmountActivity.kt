@@ -10,9 +10,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.material3.Scaffold
 import com.avoqado.pos.CURRENCY_LABEL
 import com.avoqado.pos.core.domain.usecase.ValidateAmountUseCase
+import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 import com.avoqado.pos.core.presentation.viewmodel.InputAmountViewModel
 import com.avoqado.pos.ui.screen.AmountScreen
-import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 import com.menta.android.core.model.OperationType
 
 class InputAmountActivity : ComponentActivity() {
@@ -28,22 +28,20 @@ class InputAmountActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         viewModel = InputAmountViewModel(this, ValidateAmountUseCase())
 
         setContent {
             Scaffold(
                 topBar = {
                     ToolbarWithIcon(
-                        "Importe"
+                        "Importe",
                     )
                 },
-                content = { AmountScreen(viewModel) }
+                content = { AmountScreen(viewModel) },
             )
-
         }
         observer()
-
     }
 
     private fun observer() {
@@ -57,7 +55,6 @@ class InputAmountActivity : ComponentActivity() {
                 startActivity(intent)
             }
         }
-
     }
 
     companion object {

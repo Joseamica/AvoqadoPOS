@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.data.network.models
 
-
 import com.google.gson.annotations.SerializedName
 
 data class SettlementCondition(
@@ -9,5 +8,5 @@ data class SettlementCondition(
     @SerializedName("settlement")
     val settlement: String?,
     @SerializedName("transaction_fee")
-    val transactionFee: String?
+    val transactionFee: String?,
 )

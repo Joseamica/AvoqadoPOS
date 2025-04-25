@@ -9,5 +9,5 @@ data class PaymentShift(
     val totalTip: Int,
     val paymentId: String,
     val date: Instant,
-    val createdAt: Instant
+    val createdAt: Instant,
 )
