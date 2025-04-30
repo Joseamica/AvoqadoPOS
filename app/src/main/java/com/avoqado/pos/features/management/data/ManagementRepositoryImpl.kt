@@ -2,7 +2,7 @@ package com.avoqado.pos.features.management.data
 
 import android.util.Log
 import com.avoqado.pos.core.data.network.AvoqadoService
-import com.avoqado.pos.core.data.network.ServerConfig
+import com.avoqado.pos.core.data.network.AppConfig
 import com.avoqado.pos.core.data.network.SocketIOManager
 import com.avoqado.pos.core.data.network.models.NetworkVenue
 import com.avoqado.pos.core.domain.models.AvoqadoError
@@ -259,6 +259,6 @@ class ManagementRepositoryImpl(
 
     private fun getSocketServerUrl(): String {
         // Use the centralized ServerConfig for the socket URL
-        return ServerConfig.getSocketUrl()
+        return AppConfig.getSocketUrl()
     }
 }

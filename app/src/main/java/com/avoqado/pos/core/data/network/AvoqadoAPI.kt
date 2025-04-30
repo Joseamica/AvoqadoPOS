@@ -11,7 +11,7 @@ object AvoqadoAPI {
     val retrofit: Retrofit by lazy {
         Retrofit
             .Builder()
-            .baseUrl(ServerConfig.getApiBaseUrl())
+            .baseUrl(AppConfig.getApiBaseUrl())
             .client(
                 OkHttpClient
                     .Builder()
@@ -19,8 +19,8 @@ object AvoqadoAPI {
                         HttpLoggingInterceptor().apply {
                             level = HttpLoggingInterceptor.Level.BODY
                         },
-                    ).connectTimeout(120, TimeUnit.SECONDS)
-                    .readTimeout(120, TimeUnit.SECONDS)
+                    ).connectTimeout(AppConfig.getNetworkTimeoutSeconds(), TimeUnit.SECONDS)
+                    .readTimeout(AppConfig.getNetworkTimeoutSeconds(), TimeUnit.SECONDS)
                     .build(),
             ).addConverterFactory(GsonConverterFactory.create())
             .build()
@@ -37,8 +37,8 @@ object AvoqadoAPI {
                         HttpLoggingInterceptor().apply {
                             level = HttpLoggingInterceptor.Level.BODY
                         },
-                    ).connectTimeout(120, TimeUnit.SECONDS)
-                    .readTimeout(120, TimeUnit.SECONDS)
+                    ).connectTimeout(AppConfig.getNetworkTimeoutSeconds(), TimeUnit.SECONDS)
+                    .readTimeout(AppConfig.getNetworkTimeoutSeconds(), TimeUnit.SECONDS)
                     .addInterceptor {
                         it.proceed(
                             it.request().also {

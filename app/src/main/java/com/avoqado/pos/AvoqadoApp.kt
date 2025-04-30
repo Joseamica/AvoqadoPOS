@@ -11,7 +11,7 @@ import android.provider.Settings
 import android.util.Log
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.AvoqadoAPI
-import com.avoqado.pos.core.data.network.ServerConfig
+import com.avoqado.pos.core.data.network.AppConfig
 import com.avoqado.pos.core.data.network.SocketService
 import com.avoqado.pos.core.data.repository.TerminalRepositoryImpl
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
@@ -89,8 +89,8 @@ class AvoqadoApp : Application() {
             FirebasePlant(),
         )
 
-        // Initialize ServerConfig first so other components can use it
-        ServerConfig.initialize(this)
+        // Initialize AppConfig first so other components can use it
+        AppConfig.initialize(this)
 
         storage = Storage(this)
         sessionManager = SessionManager(this)

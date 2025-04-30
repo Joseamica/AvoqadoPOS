@@ -3,6 +3,7 @@ package com.avoqado.pos.core.data.network
 import android.util.Log
 import com.avoqado.pos.core.data.network.models.PaymentUpdateMessage
 import com.avoqado.pos.core.data.network.models.ShiftUpdateMessage
+import com.avoqado.pos.core.data.network.AppConfig
 import com.google.gson.Gson
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -47,7 +48,6 @@ object SocketIOManager {
     
     // Rate limiting for venue updates
     private var lastVenueUpdateTime = 0L
-    private const val MINIMUM_UPDATE_INTERVAL = 1000L // 1 second minimum between emitted updates
     private var pendingVenueUpdate: PaymentUpdateMessage? = null
     private var venueUpdateJob: Job? = null
 
@@ -57,8 +57,8 @@ object SocketIOManager {
             return serverUrl!!
         }
 
-        // Get the URL from the centralized ServerConfig
-        return ServerConfig.getSocketUrl()
+        // Get the URL from the centralized AppConfig
+        return AppConfig.getSocketUrl()
     }
 
     fun connect(url: String) {
@@ -70,8 +70,8 @@ object SocketIOManager {
                     IO.Options
                         .builder()
                         .setReconnection(true)
-                        .setReconnectionAttempts(10)
-                        .setReconnectionDelay(1000)
+                        .setReconnectionAttempts(AppConfig.getSocketReconnectAttempts())
+                        .setReconnectionDelay(AppConfig.getSocketReconnectDelayMs())
                         .build()
 
                 socket = IO.socket(url, options)
@@ -375,8 +375,8 @@ object SocketIOManager {
         val currentTime = System.currentTimeMillis()
         val timeSinceLastUpdate = currentTime - lastVenueUpdateTime
         
-        // If an update was emitted recently, schedule this one for later
-        if (timeSinceLastUpdate < MINIMUM_UPDATE_INTERVAL) {
+        // If not enough time has elapsed since the last update, delay this one
+        if (timeSinceLastUpdate < AppConfig.getSocketUpdateIntervalMs()) {
             // Cancel any already pending update
             venueUpdateJob?.cancel()
             
@@ -385,7 +385,7 @@ object SocketIOManager {
             
             // Schedule the update for later
             venueUpdateJob = coroutineScope.launch {
-                val delayTime = MINIMUM_UPDATE_INTERVAL - timeSinceLastUpdate
+                val delayTime = AppConfig.getSocketUpdateIntervalMs() - timeSinceLastUpdate
                 Log.d("SocketIO", "Rate limiting venue update, will emit in ${delayTime}ms")
                 delay(delayTime)
                 
