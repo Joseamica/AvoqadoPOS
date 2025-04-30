@@ -141,8 +141,14 @@ class PaymentResultViewModel(
                         id = "",
                     )
                 }
-            val token =
+            // Generate token based on whether this is a quick payment or a regular payment
+            val token = if (info.splitType == SplitType.FULLPAYMENT && info.tableNumber.isEmpty()) {
+                // Fast payment format for quick payments
+                "${info.venueId}---${System.currentTimeMillis()}"
+            } else {
+                // Regular payment format for table-based payments
                 "${info.venueId}-${info.tableNumber}-${info.billId}-${System.currentTimeMillis()}"
+            }
 
             _paymentResult.update { state ->
                 state
@@ -153,30 +159,58 @@ class PaymentResultViewModel(
                     )
             }
 
-            paymentRepository.recordPayment(
-                venueId = info.venueId,
-                tableNumber = info.tableNumber,
-                waiterName = info.waiterName,
-                tpvId = terminal.id,
-                splitType = info.splitType?.value ?: "",
-                status = PaymentStatus.ACCEPTED.value,
-                amount =
-                    info.subtotal
-                        .toString()
-                        .toAmountMx()
-                        .replace(".", "")
-                        .toInt(),
-                tip =
-                    info.tipAmount
-                        .toString()
-                        .toAmountMx()
-                        .replace(".", "")
-                        .toInt(),
-                billId = info.billId,
-                adquirer = adquirer,
-                token = token,
-                paidProductsId = info.products,
-            )
+            // Determine if this is a quick payment (no table number) or regular payment
+            if (info.splitType == SplitType.FULLPAYMENT && info.tableNumber.isEmpty()) {
+                // Use fast payment endpoint for quick payments
+                paymentRepository.recordFastPayment(
+                    venueId = info.venueId,
+                    waiterName = info.waiterName,
+                    tpvId = terminal.id,
+                    splitType = info.splitType.value,
+                    status = PaymentStatus.ACCEPTED.value,
+                    amount =
+                        info.subtotal
+                            .toString()
+                            .toAmountMx()
+                            .replace(".", "")
+                            .toInt(),
+                    tip =
+                        info.tipAmount
+                            .toString()
+                            .toAmountMx()
+                            .replace(".", "")
+                            .toInt(),
+                    adquirer = adquirer,
+                    token = token,
+                    paidProductsId = info.products,
+                )
+            } else {
+                // Use regular payment endpoint for table-based payments
+                paymentRepository.recordPayment(
+                    venueId = info.venueId,
+                    tableNumber = info.tableNumber,
+                    waiterName = info.waiterName,
+                    tpvId = terminal.id,
+                    splitType = info.splitType?.value ?: "",
+                    status = PaymentStatus.ACCEPTED.value,
+                    amount =
+                        info.subtotal
+                            .toString()
+                            .toAmountMx()
+                            .replace(".", "")
+                            .toInt(),
+                    tip =
+                        info.tipAmount
+                            .toString()
+                            .toAmountMx()
+                            .replace(".", "")
+                            .toInt(),
+                    billId = info.billId,
+                    adquirer = adquirer,
+                    token = token,
+                    paidProductsId = info.products,
+                )
+            }
         }
     }
 

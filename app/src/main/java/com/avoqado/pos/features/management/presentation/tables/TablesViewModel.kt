@@ -3,8 +3,11 @@ package com.avoqado.pos.features.management.presentation.tables
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.SocketIOManager
+import com.avoqado.pos.core.domain.mappers.ShiftMapper
+import com.avoqado.pos.core.domain.models.Shift
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.delegates.SnackbarState
@@ -14,6 +17,8 @@ import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -54,6 +59,16 @@ class TablesViewModel(
     // Track if we're currently collecting WebSocket events to avoid multiple collectors
     private var isCollectingSocketEvents = false
     private var isCollectingShiftEvents = false
+    
+    // Job for debouncing refresh calls
+    private var fetchTablesJob: Job? = null
+    
+    // Timestamp of last refresh to avoid excessive API calls
+    private var lastFetchTimestamp = 0L
+    private val MINIMUM_REFRESH_INTERVAL = 2000L // 2 seconds minimum between refreshes
+
+    // Get a reference to the socket service
+    private val socketService by lazy { AvoqadoApp.socketService }
 
     init {
         fetchTables()
@@ -61,9 +76,8 @@ class TablesViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        // Ensure we clean up WebSocket resources when ViewModel is destroyed
-        stopListeningForVenueUpdates()
-        stopListeningForShiftEvents()
+        // Don't disconnect from sockets here anymore - the service handles the connection lifecycle
+        fetchTablesJob?.cancel()
     }
 
     fun toggleSettingsModal(value: Boolean) {
@@ -75,7 +89,7 @@ class TablesViewModel(
     fun onPullToRefreshTrigger() {
         viewModelScope.launch {
             _isRefreshing.update { true }
-            fetchTables()
+            debouncedFetchTables(forceRefresh = true)
             _isRefreshing.update { false }
         }
     }
@@ -88,20 +102,16 @@ class TablesViewModel(
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Si el socket no está conectado, conectarlo
-                if (!SocketIOManager.isConnected()) {
-                    SocketIOManager.connect(SocketIOManager.getServerUrl())
-                }
-
-                SocketIOManager.joinMobileRoom(venueId)
+                // Join the venue room via the SocketService
+                socketService?.joinVenueRoom(venueId)
                 _isWebSocketConnected.update { true }
 
-                // Usar flatMapLatest para evitar múltiples colectores y asegurar que
-                // solo recibimos actualizaciones del último socket conectado
+                // Use flatMapLatest to avoid multiple collectors
                 if (!isCollectingSocketEvents) {
                     isCollectingSocketEvents = true
 
-                    SocketIOManager.venueMessageFlow.collectLatest { update ->
+                    // Collect venue-level events
+                    socketService?.venueMessageFlow?.collectLatest { update ->
                         Log.d("TablesViewModel", "Received venue update: $update")
 
                         val shouldRefresh =
@@ -111,10 +121,10 @@ class TablesViewModel(
                             }
 
                         if (shouldRefresh) {
-                            Log.d("TablesViewModel", "Refreshing tables list")
-                            fetchTables()
+                            Log.d("TablesViewModel", "Requesting tables refresh")
+                            debouncedFetchTables()
 
-                            // Notificar si es un evento significativo
+                            // Notify for significant events
                             if (update.status?.uppercase() == "OPEN") {
                                 snackbarDelegate.showSnackbar(
                                     state = SnackbarState.Default,
@@ -125,13 +135,37 @@ class TablesViewModel(
                     }
                 }
 
-                // También iniciamos la escucha de eventos de turnos
+                // Also start listening for shift events
                 startListeningForShiftEvents()
             } catch (e: Exception) {
                 Log.e("TablesViewModel", "Error setting up venue updates", e)
                 _isWebSocketConnected.update { false }
                 isCollectingSocketEvents = false
             }
+        }
+    }
+    
+    /**
+     * Debounced version of fetchTables to prevent rapid API calls
+     */
+    private fun debouncedFetchTables(forceRefresh: Boolean = false) {
+        val currentTime = System.currentTimeMillis()
+        val timeSinceLastFetch = currentTime - lastFetchTimestamp
+        
+        // If we're already loading or if it's too soon since the last refresh and not forced
+        if ((_isLoading.value || timeSinceLastFetch < MINIMUM_REFRESH_INTERVAL) && !forceRefresh) {
+            Log.d("TablesViewModel", "Skipping refresh: already loading or too soon (${timeSinceLastFetch}ms since last refresh)")
+            return
+        }
+        
+        // Cancel any pending refresh job
+        fetchTablesJob?.cancel()
+        
+        // Start a new debounced job
+        fetchTablesJob = viewModelScope.launch {
+            delay(300) // 300ms debounce delay
+            fetchTables()
+            lastFetchTimestamp = System.currentTimeMillis()
         }
     }
 
@@ -143,32 +177,34 @@ class TablesViewModel(
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                // Conectar al repositorio para escuchar eventos de turnos
-                terminalRepository.connectToShiftEvents(venueId)
-
                 if (!isCollectingShiftEvents) {
                     isCollectingShiftEvents = true
 
-                    terminalRepository.listenForShiftEvents().collectLatest { shift ->
-                        Log.d("TablesViewModel", "Received shift update: $shift")
+                    socketService?.shiftMessageFlow?.collectLatest { shiftUpdateMessage ->
+                        Log.d("TablesViewModel", "Received shift update: $shiftUpdateMessage")
 
-                        // Actualizamos el turno actual
-                        currentShift = shift
+                        // Map the network model to domain model
+                        val shift = socketService?.mapShiftToDomain(shiftUpdateMessage)
+                        
+                        if (shift != null) {
+                            // Update the current shift
+                            currentShift = shift
 
-                        // Actualizamos el estado del turno
-                        _shiftStarted.update { shift.isStarted }
+                            // Update shift status
+                            _shiftStarted.update { shift.isStarted }
 
-                        // Notificamos al usuario sobre el cambio
-                        if (shift.isStarted && !shift.isFinished) {
-                            snackbarDelegate.showSnackbar(
-                                state = SnackbarState.Default,
-                                message = "Se ha iniciado un nuevo turno.",
-                            )
-                        } else if (shift.isFinished) {
-                            snackbarDelegate.showSnackbar(
-                                state = SnackbarState.Default,
-                                message = "El turno ha sido cerrado.",
-                            )
+                            // Notify the user about the change
+                            if (shift.isStarted && !shift.isFinished) {
+                                snackbarDelegate.showSnackbar(
+                                    state = SnackbarState.Default,
+                                    message = "Se ha iniciado un nuevo turno.",
+                                )
+                            } else if (shift.isFinished) {
+                                snackbarDelegate.showSnackbar(
+                                    state = SnackbarState.Default,
+                                    message = "El turno ha sido cerrado.",
+                                )
+                            }
                         }
                     }
                 }
@@ -180,40 +216,29 @@ class TablesViewModel(
     }
 
     private fun stopListeningForShiftEvents() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                terminalRepository.disconnectFromShiftEvents()
-                isCollectingShiftEvents = false
-            } catch (e: Exception) {
-                Log.e("TablesViewModel", "Error stopping shift updates", e)
-            }
-        }
+        // We don't need to disconnect - the SocketService maintains the connection
+        isCollectingShiftEvents = false
     }
 
     fun stopListeningForVenueUpdates() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                if (_isWebSocketConnected.value) {
-                    Log.d("TablesViewModel", "Disconnecting from venue: $venueId")
-                    SocketIOManager.leaveMobileRoom(venueId)
-                    _isWebSocketConnected.update { false }
-                }
-                isCollectingSocketEvents = false
-
-                // También detenemos la escucha de eventos de turnos
-                stopListeningForShiftEvents()
-            } catch (e: Exception) {
-                Log.e("TablesViewModel", "Error stopping venue updates", e)
-            }
-        }
+        // We don't need to leave the venue room here - the SocketService maintains the connection
+        isCollectingSocketEvents = false
+        stopListeningForShiftEvents()
     }
 
     fun fetchTables() {
+        // Don't start a new fetch if we're already loading
+        if (_isLoading.value) {
+            Log.d("TablesViewModel", "Skipping fetch: already loading")
+            return
+        }
+        
         viewModelScope.launch(Dispatchers.IO) {
             _isLoading.update {
                 true
             }
             try {
+                Log.d("TablesViewModel", "Fetching tables from API")
                 managementRepository.getActiveBills(venueId).let { result ->
                     _tables.update {
                         result
@@ -246,9 +271,7 @@ class TablesViewModel(
     }
 
     fun logout() {
-        // Clean up WebSocket before logout
-        stopListeningForVenueUpdates()
-
+        // No need to clean up WebSocket before logout - the service handles the connection
         sessionManager.clearAvoqadoSession()
         navigationDispatcher.popToDestination(MainDests.Splash, inclusive = true)
         navigationDispatcher.navigateWithArgs(

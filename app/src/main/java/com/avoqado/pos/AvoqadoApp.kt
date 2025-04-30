@@ -1,10 +1,18 @@
 package com.avoqado.pos
 
 import android.app.Application
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Build
+import android.os.IBinder
 import android.provider.Settings
+import android.util.Log
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.AvoqadoAPI
+import com.avoqado.pos.core.data.network.ServerConfig
+import com.avoqado.pos.core.data.network.SocketService
 import com.avoqado.pos.core.data.repository.TerminalRepositoryImpl
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.avoqado.pos.features.authorization.data.AuthorizationRepositoryImpl
@@ -53,6 +61,26 @@ class AvoqadoApp : Application() {
                 avoqadoService = AvoqadoAPI.apiService,
             )
         }
+        
+        // Add a reference to the socket service
+        var socketService: SocketService? = null
+        private var socketServiceBound = false
+        
+        // Service connection for binding to the SocketService
+        private val socketServiceConnection = object : ServiceConnection {
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                val binder = service as SocketService.SocketBinder
+                socketService = binder.getService()
+                socketServiceBound = true
+                Log.d("AvoqadoApp", "Socket service connected")
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {
+                socketService = null
+                socketServiceBound = false
+                Log.d("AvoqadoApp", "Socket service disconnected")
+            }
+        }
     }
 
     override fun onCreate() {
@@ -60,6 +88,9 @@ class AvoqadoApp : Application() {
         Timber.plant(
             FirebasePlant(),
         )
+
+        // Initialize ServerConfig first so other components can use it
+        ServerConfig.initialize(this)
 
         storage = Storage(this)
         sessionManager = SessionManager(this)
@@ -80,6 +111,31 @@ class AvoqadoApp : Application() {
                     uuid
                 }
             }
+            
+        // Start and bind to the Socket service
+        startAndBindSocketService()
+    }
+    
+    private fun startAndBindSocketService() {
+        // Create an intent to start the service
+        val intent = Intent(this, SocketService::class.java)
+        
+        // Start the service
+        startService(intent)
+        
+        // Bind to the service
+        bindService(intent, socketServiceConnection, Context.BIND_AUTO_CREATE)
+        
+        Log.d("AvoqadoApp", "Started and binding to SocketService")
+    }
+    
+    override fun onTerminate() {
+        // Unbind from the service when the application is terminated
+        if (socketServiceBound) {
+            unbindService(socketServiceConnection)
+            socketServiceBound = false
+        }
+        super.onTerminate()
     }
 
     class FirebasePlant : Timber.Tree() {

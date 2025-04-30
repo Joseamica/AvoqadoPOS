@@ -30,9 +30,9 @@ class QuickPaymentViewModel(
                 rootData = "",
                 date = LocalDateTime.now(),
                 waiterName = currentUser?.name ?: "",
-                tableNumber = "",
+                tableNumber = "",  // Empty table number for fast payment
                 venueId = currentUser?.venueId ?: "",
-                splitType = SplitType.FULLPAYMENT,
+                splitType = SplitType.FULLPAYMENT,  // Keep this as FULLPAYMENT
                 billId = "",
             ),
         )
@@ -49,7 +49,7 @@ class QuickPaymentViewModel(
             ),
             NavigationArg.StringArg(
                 PaymentDests.InputTip.ARG_SPLIT_TYPE,
-                SplitType.EQUALPARTS.value,
+                SplitType.FULLPAYMENT.value,  // IMPORTANT: Keep it as FULLPAYMENT instead of EQUALPARTS
             ),
         )
     }

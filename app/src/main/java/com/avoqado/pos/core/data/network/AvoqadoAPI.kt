@@ -8,10 +8,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object AvoqadoAPI {
-    val retrofit: Retrofit =
+    val retrofit: Retrofit by lazy {
         Retrofit
             .Builder()
-            .baseUrl("https://3cee-189-203-45-177.ngrok-free.app/v1/")
+            .baseUrl(ServerConfig.getApiBaseUrl())
             .client(
                 OkHttpClient
                     .Builder()
@@ -24,8 +24,9 @@ object AvoqadoAPI {
                     .build(),
             ).addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
 
-    val retrofitMenta: Retrofit =
+    val retrofitMenta: Retrofit by lazy {
         Retrofit
             .Builder()
             .baseUrl("https://api.menta.global/api/")
@@ -47,6 +48,7 @@ object AvoqadoAPI {
                     }.build(),
             ).addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
 
     val apiService: AvoqadoService by lazy {
         retrofit.create(AvoqadoService::class.java)

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -222,6 +223,7 @@ fun TransactionSummaryContent(
         modifier = Modifier.fillMaxSize(),
     ) {
         TopAppBar(
+            modifier = Modifier.height(52.dp), // Decreased height
             colors =
                 TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.White,

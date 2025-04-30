@@ -1,6 +1,7 @@
 package com.avoqado.pos.features.payment.presentation.inputTipAmount
 
 import android.content.Intent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -166,18 +167,18 @@ fun InputTipContent(
 
     Column(
         modifier =
-            Modifier
-                .fillMaxSize()
-                .background(Color.White),
+        Modifier
+            .fillMaxSize()
+            .background(Color.White),
     ) {
         ToolbarWithIcon(
             title = "\$${totalAmount.toString().toAmountMx()}",
             iconAction =
-                IconAction(
-                    flowStep = FlowStep.NAVIGATE_BACK,
-                    context = context,
-                    iconType = IconType.BACK,
-                ),
+            IconAction(
+                flowStep = FlowStep.NAVIGATE_BACK,
+                context = context,
+                iconType = IconType.BACK,
+            ),
             onAction = {
                 onNavigateBack()
             },
@@ -186,16 +187,16 @@ fun InputTipContent(
 
         Column(
             modifier =
-                Modifier
-                    .weight(1f),
+            Modifier
+                .weight(1f),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Column(
                 modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
+                Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
@@ -204,9 +205,9 @@ fun InputTipContent(
                     style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center,
                     modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp),
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 24.dp),
                 )
 
                 Spacer(Modifier.height(16.dp))
@@ -216,20 +217,19 @@ fun InputTipContent(
                         onCustomAmount()
                     },
                     modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .padding(horizontal = 16.dp)
-                            .border(
-                                width = 1.dp,
-                                color = lightGrayNumberField,
-                                shape = RoundedCornerShape(12.dp),
-                            ),
+                    Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                        .padding(horizontal = 16.dp)
+                        .border(
+                            border = BorderStroke(1.dp, Color.LightGray),
+                            shape = RoundedCornerShape(12.dp),
+                        ),
                     shape = RoundedCornerShape(12.dp),
                     colors =
-                        ButtonDefaults.buttonColors(
-                            containerColor = Color.White,
-                        ),
+                    ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                    ),
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.Center,
@@ -253,11 +253,11 @@ fun InputTipContent(
 
                 Row(
                     modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                horizontal = 16.dp,
-                            ),
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = 16.dp,
+                        ),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
                     TipItemCard(
@@ -292,11 +292,15 @@ fun InputTipContent(
                     onPayWithoutTip()
                 },
                 modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 2.dp
+                ),
             ) {
                 Text(
                     text = "Sin propina",
@@ -304,9 +308,9 @@ fun InputTipContent(
                     fontSize = 16.sp,
                 )
             }
-
-            Spacer(Modifier.height(16.dp))
         }
+
+        Spacer(Modifier.height(26.dp))
     }
 }
 

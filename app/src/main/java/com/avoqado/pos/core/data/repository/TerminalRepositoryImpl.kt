@@ -365,26 +365,26 @@ class TerminalRepositoryImpl(
 
             // Convertimos el mensaje a un objeto Shift
             val shift =
-                Shift(
-                    id = message.id,
-                    turnId = message.turnId,
-                    insideTurnId = message.insideTurnId,
-                    origin = message.origin,
-                    startTime = message.startTime,
-                    endTime = message.endTime,
-                    fund = message.fund,
-                    cash = message.cash,
-                    card = message.card,
-                    credit = message.credit,
-                    cashier = message.cashier,
-                    venueId = message.venueId,
-                    updatedAt = message.updatedAt,
-                    createdAt = message.createdAt,
-                    avgTipPercentage = message.avgTipPercentage ?: 0,
-                    tipsSum = message.tipsSum ?: 0,
-                    tipsCount = message.tipsCount ?: 0,
-                    paymentSum = message.paymentSum ?: 0,
-                )
+    Shift(
+        id = message.id,
+        turnId = message.turnId,
+        insideTurnId = message.insideTurnId,
+        origin = message.origin,
+        startTime = message.startTime,
+        endTime = message.endTime,
+        fund = message.fund?.toString(),
+        cash = message.cash?.toString(),
+        card = message.card?.toString(),
+        credit = message.credit?.toString(),
+        cashier = message.cashier,
+        venueId = message.venueId,
+        updatedAt = message.updatedAt?.toString(),
+        createdAt = message.createdAt?.toString(),
+        avgTipPercentage = 0, // Default value
+        tipsSum = 0,          // Default value
+        tipsCount = 0,        // Default value
+        paymentSum = 0        // Default value
+    )
 
             // Guardamos el turno en SessionManager
             sessionManager.setShift(shift)

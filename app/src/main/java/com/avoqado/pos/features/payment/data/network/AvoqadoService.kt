@@ -13,4 +13,10 @@ interface AvoqadoService {
         @Path("tableNumber") tableNumber: String,
         @Body recordPaymentBody: RecordPaymentBody,
     ): PaymentRecordResponse
+    
+    @POST("tpv/venues/{venueId}/fast")
+    suspend fun recordFastPayment(
+        @Path("venueId") venueId: String,
+        @Body recordPaymentBody: RecordPaymentBody,
+    ): PaymentRecordResponse
 }

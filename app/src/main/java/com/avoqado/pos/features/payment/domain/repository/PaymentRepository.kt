@@ -24,4 +24,17 @@ interface PaymentRepository {
         paidProductsId: List<String>,
         adquirer: Adquirer?,
     ): String
+    
+    suspend fun recordFastPayment(
+        venueId: String,
+        waiterName: String,
+        tpvId: String,
+        splitType: String,
+        status: String,
+        amount: Int,
+        tip: Int,
+        token: String,
+        paidProductsId: List<String>,
+        adquirer: Adquirer?,
+    ): String
 }

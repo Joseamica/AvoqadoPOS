@@ -64,14 +64,8 @@ fun TablesScreen(tablesV: TablesViewModel) {
     val isRefreshing by tablesV.isRefreshing.collectAsStateWithLifecycle()
     val shiftStarted by tablesV.shiftStarted.collectAsStateWithLifecycle()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(key1 = Unit) {
         tablesV.startListeningForVenueUpdates()
-    }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            tablesV.stopListeningForVenueUpdates()
-        }
     }
 
     HomeContent(

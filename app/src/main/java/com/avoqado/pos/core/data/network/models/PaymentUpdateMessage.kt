@@ -4,71 +4,71 @@ import com.google.gson.annotations.SerializedName
 
 data class PaymentUpdateMessage(
     @SerializedName("amount")
-    val amount: String?,
+    val amount: String? = null,
     @SerializedName("anonymousUser")
-    val anonymousUser: String?,
+    val anonymousUser: String? = null,
     @SerializedName("avoFee")
-    val avoFee: String?,
+    val avoFee: String? = null,
     @SerializedName("bank")
-    val bank: String?,
+    val bank: String? = null,
     @SerializedName("billId")
-    val billId: String?,
+    val billId: String? = null,
     @SerializedName("cardBrand")
-    val cardBrand: String?,
+    val cardBrand: String? = null,
     @SerializedName("cardCountry")
-    val cardCountry: String?,
+    val cardCountry: String? = null,
     @SerializedName("createdAt")
-    val createdAt: String?,
+    val createdAt: String? = null,
     @SerializedName("currency")
-    val currency: String?,
+    val currency: String? = null,
     @SerializedName("customerId")
-    val customerId: String?,
+    val customerId: String? = null,
     @SerializedName("equalPartsPartySize")
-    val equalPartsPartySize: String?,
+    val equalPartsPartySize: String? = null,
     @SerializedName("equalPartsPayedFor")
-    val equalPartsPayedFor: String?,
+    val equalPartsPayedFor: String? = null,
     @SerializedName("id")
-    val id: String?,
+    val id: String? = null,
     @SerializedName("last4")
-    val last4: String?,
+    val last4: String? = null,
     @SerializedName("mentaAuthorizationReference")
-    val mentaAuthorizationReference: String?,
+    val mentaAuthorizationReference: String? = null,
     @SerializedName("mentaOperationId")
-    val mentaOperationId: String?,
+    val mentaOperationId: String? = null,
     @SerializedName("mentaTicketId")
-    val mentaTicketId: String?,
+    val mentaTicketId: String? = null,
     @SerializedName("method")
-    val method: String?,
+    val method: String? = null,
     @SerializedName("methodString")
-    val methodString: String?,
+    val methodString: String? = null,
     @SerializedName("receiptUrl")
-    val receiptUrl: String?,
+    val receiptUrl: String? = null,
     @SerializedName("source")
-    val source: String?,
+    val source: String? = null,
     @SerializedName("splitType")
-    val splitType: String?,
+    val splitType: String? = null,
     @SerializedName("status")
-    val status: String?,
+    val status: String? = null,
     @SerializedName("stripePaymentIntentId")
-    val stripePaymentIntentId: String?,
+    val stripePaymentIntentId: String? = null,
     @SerializedName("tableNumber")
-    val tableNumber: Int?,
+    val tableNumber: Int? = null,
     @SerializedName("token")
-    val token: String?,
+    val token: String? = null,
     @SerializedName("tpvId")
-    val tpvId: String?,
+    val tpvId: String? = null,
     @SerializedName("typeOfCard")
-    val typeOfCard: String?,
+    val typeOfCard: String? = null,
     @SerializedName("updatedAt")
-    val updatedAt: String?,
+    val updatedAt: String? = null,
     @SerializedName("userFee")
-    val userFee: String?,
+    val userFee: String? = null,
     @SerializedName("userId")
-    val userId: String?,
+    val userId: String? = null,
     @SerializedName("venueId")
-    val venueId: String?,
+    val venueId: String? = null,
     @SerializedName("waiterId")
-    val waiterId: String?,
+    val waiterId: String? = null,
     @SerializedName("waiterName")
-    val waiterName: String?,
+    val waiterName: String? = null,
 )

@@ -49,7 +49,6 @@ fun NavGraphBuilder.managementNavigation(
                     tableNumber = it.arguments?.getString(ManagementDests.TableDetail.ARG_TABLE_ID) ?: "",
                     venueId = it.arguments?.getString(ManagementDests.TableDetail.ARG_VENUE_ID) ?: "",
                     managementRepository = AvoqadoApp.managementRepository,
-                    listenTableEventsUseCase = ListenTableEventsUseCase(AvoqadoApp.managementRepository),
                 )
             }
 

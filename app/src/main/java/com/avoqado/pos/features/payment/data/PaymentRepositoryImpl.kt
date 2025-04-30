@@ -84,4 +84,62 @@ class PaymentRepositoryImpl(
 
         return adquirer?.let { it.id ?: "" } ?: token
     }
+    
+    override suspend fun recordFastPayment(
+        venueId: String,
+        waiterName: String,
+        tpvId: String,
+        splitType: String,
+        status: String,
+        amount: Int,
+        tip: Int,
+        token: String,
+        paidProductsId: List<String>,
+        adquirer: Adquirer?,
+    ): String {
+        try {
+            var body =
+                RecordPaymentBody(
+                    method = adquirer?.let { "CARD" } ?: "CASH",
+                    tpvId = tpvId,
+                    waiterName = waiterName,
+                    splitType = splitType,
+                    status = status,
+                    amount = amount,
+                    tip = tip,
+                    venueId = venueId,
+                    source = "AVOQADO_TPV",
+                    paidProductsId = paidProductsId,
+                    token = token,
+                    isInternational = adquirer?.let { data -> data.capture?.card?.isInternational } ?: false,
+                )
+
+            adquirer?.let {
+                body =
+                    body.copy(
+                        cardBrand = it.capture?.card?.brand,
+                        last4 =
+                            it.capture
+                                ?.card
+                                ?.maskedPan
+                                ?.let { pan -> pan.substring(pan.length - 4) },
+                        typeOfCard = it.capture?.card?.type,
+                        currency = it.amount.currency,
+                        bank = it.capture?.card?.bank,
+                        mentaAuthorizationReference = it.authorization?.retrievalReferenceNumber,
+                        mentaOperationId = it.id,
+                        mentaTicketId = it.ticketId.toString(),
+                    )
+            }
+            val result =
+                avoqadoService.recordFastPayment(
+                    venueId = venueId,
+                    recordPaymentBody = body,
+                )
+        } catch (e: Exception) {
+            Log.e("PaymentRepositoryImpl", "Error recording fast payment", e)
+        }
+
+        return adquirer?.let { it.id ?: "" } ?: token
+    }
 }

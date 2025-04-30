@@ -22,6 +22,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AvoqadoPOS"
         tools:targetApi="31">
+        <!-- Socket.IO service for managing connections -->
+        <service
+            android:name=".core.data.network.SocketService"
+            android:enabled="true"
+            android:exported="false" />
         <activity
             android:name=".views.ProductsActivity"
             android:exported="false"

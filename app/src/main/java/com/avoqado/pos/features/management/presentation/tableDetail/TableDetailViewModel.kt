@@ -12,8 +12,6 @@ import com.avoqado.pos.core.presentation.model.Product
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.features.management.domain.ManagementRepository
-import com.avoqado.pos.features.management.domain.usecases.ListenTableAction
-import com.avoqado.pos.features.management.domain.usecases.ListenTableEventsUseCase
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.avoqado.pos.features.management.presentation.tableDetail.model.Payment
 import com.avoqado.pos.features.management.presentation.tableDetail.model.TableDetailView
@@ -27,6 +25,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 
 class TableDetailViewModel(
@@ -35,10 +34,12 @@ class TableDetailViewModel(
     private val navigationDispatcher: NavigationDispatcher,
     private val snackbarDelegate: SnackbarDelegate,
     private val managementRepository: ManagementRepository,
-    private val listenTableEventsUseCase: ListenTableEventsUseCase,
 ) : ViewModel() {
     val venue = AvoqadoApp.sessionManager.getVenueInfo()
     var currentShift = AvoqadoApp.sessionManager.getShift()
+    
+    // Get a reference to the socket service
+    private val socketService by lazy { AvoqadoApp.socketService }
 
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
@@ -48,6 +49,9 @@ class TableDetailViewModel(
 
     private val _showPaymentPicker = MutableStateFlow(false)
     val showPaymentPicker: StateFlow<Boolean> = _showPaymentPicker.asStateFlow()
+    
+    // Track if we're collecting socket events
+    private var isCollectingSocketEvents = false
 
     fun navigateBack() {
         navigationDispatcher.navigateBack()
@@ -74,58 +78,98 @@ class TableDetailViewModel(
 
     fun startListeningUpdates() {
         viewModelScope.launch(Dispatchers.IO) {
-            listenTableEventsUseCase
-                .invoke(
-                    ListenTableAction.Connect(
-                        venueId = venueId,
-                        tableId = tableNumber,
-                    ),
-                ).collectLatest { update ->
-                    Log.d(TAG, "Socket event received: ${update.status}, data: $update")
+            if (venueId.isEmpty() || tableNumber.isEmpty()) {
+                Log.e(TAG, "Cannot listen for updates: venueId or tableNumber is empty")
+                return@launch
+            }
+            
+            try {
+                Log.d(TAG, "Starting to listen for updates - Venue: $venueId, Table: $tableNumber")
+                
+                // Join the table room using the SocketService
+                socketService?.joinTableRoom(venueId, tableNumber)
+                Log.d(TAG, "Joined table room for venue: $venueId, table: $tableNumber")
+                
+                // Only start collecting if we're not already
+                if (!isCollectingSocketEvents) {
+                    Log.d(TAG, "Starting to collect socket events")
+                    isCollectingSocketEvents = true
+                    
+                    // Collect the table-specific message flow
+                    socketService?.messageFlow?.collectLatest { update ->
+                        Log.d(TAG, "Socket event received - Raw update: $update")
+                        Log.d(TAG, "Current table number: $tableNumber, Current venue ID: $venueId")
+                        Log.d(TAG, "Update status: ${update.status}")
 
-                    // Check for bill status changes using status field
-                    when (update.status?.uppercase()) {
-                        "DELETED" -> {
-                            Log.d("AvoqadoSocket", "Bill DELETED - navigating back")
-                            snackbarDelegate.showSnackbar(
-                                state = SnackbarState.Default,
-                                message = "La cuenta ha sido eliminada",
-                            )
-                            viewModelScope.launch(Dispatchers.Main) {
-                                navigateBack()
+                        // Check for bill status changes using status field
+                        when (update.status?.uppercase()) {
+                            "DELETED" -> {
+                                Log.d(TAG, "Bill DELETED - navigating back")
+                                snackbarDelegate.showSnackbar(
+                                    state = SnackbarState.Default,
+                                    message = "La cuenta ha sido eliminada",
+                                )
+                                viewModelScope.launch(Dispatchers.Main) {
+                                    navigateBack()
+                                }
                             }
-                        }
-                        "CANCELED" -> {
-                            Log.d("AvoqadoSocket", "Bill CANCELED - navigating back")
-                            snackbarDelegate.showSnackbar(
-                                state = SnackbarState.Default,
-                                message = "La cuenta ha sido cancelada",
-                            )
-                            viewModelScope.launch(Dispatchers.Main) {
-                                navigateBack()
+                            "CANCELED" -> {
+                                Log.d(TAG, "Bill CANCELED - navigating back")
+                                snackbarDelegate.showSnackbar(
+                                    state = SnackbarState.Default,
+                                    message = "La cuenta ha sido cancelada",
+                                )
+                                viewModelScope.launch(Dispatchers.Main) {
+                                    navigateBack()
+                                }
                             }
-                        }
-                        "PAID" -> {
-                            Log.d("AvoqadoSocket", "Bill PAID - refreshing")
-                            fetchTableDetail()
-                        }
-                        "UPDATED", "PRODUCT_ADDED", "PRODUCT_UPDATED", "PRODUCT_REMOVED" -> {
-                            // Manejar explícitamente eventos de productos
-                            Log.d("AvoqadoSocket", "Products updated - refreshing table detail")
-                            fetchTableDetail()
-                            // Opcional: notificar al usuario
-                            snackbarDelegate.showSnackbar(
-                                state = SnackbarState.Default,
-                                message = "La cuenta ha sido actualizada",
-                            )
-                        }
-                        else -> {
-                            // Para cualquier otro estado, refrescar los datos
-                            Log.d("AvoqadoSocket", "Unhandled status: ${update.status} - refreshing anyway")
-                            fetchTableDetail()
+                            "PAID" -> {
+                                Log.d(TAG, "Bill PAID - refreshing")
+                                viewModelScope.launch(Dispatchers.Main) {
+                                    fetchTableDetail()
+                                }
+                            }
+                            "PRODUCT_ADDED" -> {
+                                Log.d(TAG, "Product added event received - Starting refresh")
+                                viewModelScope.launch(Dispatchers.Main) {
+                                    Log.d(TAG, "Fetching table detail after PRODUCT_ADDED")
+                                    fetchTableDetail()
+                                    Log.d(TAG, "Table detail refresh completed after PRODUCT_ADDED")
+                                }
+                                snackbarDelegate.showSnackbar(
+                                    state = SnackbarState.Default,
+                                    message = "La cuenta ha sido actualizada",
+                                )
+                            }
+                            "UPDATED", "PRODUCT_UPDATED", "PRODUCT_REMOVED" -> {
+                                Log.d(TAG, "Products updated - refreshing table detail")
+                                viewModelScope.launch(Dispatchers.Main) {
+                                    Log.d(TAG, "Fetching table detail after product update")
+                                    fetchTableDetail()
+                                    Log.d(TAG, "Table detail refresh completed after product update")
+                                }
+                                snackbarDelegate.showSnackbar(
+                                    state = SnackbarState.Default,
+                                    message = "La cuenta ha sido actualizada",
+                                )
+                            }
+                            else -> {
+                                Log.d(TAG, "Unhandled status: ${update.status} - refreshing anyway")
+                                viewModelScope.launch(Dispatchers.Main) {
+                                    Log.d(TAG, "Fetching table detail for unhandled status")
+                                    fetchTableDetail()
+                                    Log.d(TAG, "Table detail refresh completed for unhandled status")
+                                }
+                            }
                         }
                     }
+                } else {
+                    Log.d(TAG, "Already collecting socket events - skipping collection setup")
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error setting up socket updates", e)
+                isCollectingSocketEvents = false
+            }
         }
     }
 
@@ -134,73 +178,69 @@ class TableDetailViewModel(
     }
 
     fun stopListeningUpdates() {
-        viewModelScope.launch(Dispatchers.IO) {
-            listenTableEventsUseCase.invoke(
-                ListenTableAction.Disconnect,
-            )
-        }
+        // No need to explicitly disconnect from the socket - the SocketService manages connections
+        isCollectingSocketEvents = false
     }
 
     fun fetchTableDetail() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             _isLoading.value = true
             try {
-                managementRepository
-                    .getDetailedBill(
+                Log.d(TAG, "Starting table detail fetch for table: $tableNumber, venue: $venueId")
+                val billDetail = withContext(Dispatchers.IO) {
+                    managementRepository.getDetailedBill(
                         venueId = venueId,
                         billId = tableNumber,
-                    ).let { billDetail ->
-                        _tableDetail.update {
-                            it.copy(
-                                name = billDetail.name,
-                                tableId = billDetail.tableId,
-                                billId = billDetail.billId,
-                                totalAmount = billDetail.totalAmount,
-                                waiterName = billDetail.waiterName ?: "",
-                                products =
-                                    billDetail.products.map { item ->
-                                        Product(
-                                            id = item.id,
-                                            name = item.name,
-                                            price = item.price,
-                                            quantity = item.quantity,
-                                            totalPrice = item.price,
-                                        )
-                                    },
-                                paymentsDone =
-                                    billDetail.paymentsDone.map { payment ->
-                                        Payment(
-                                            amount = payment.amount,
-                                            products = payment.products,
-                                            splitType = payment.splitType,
-                                            equalPartsPayedFor = payment.equalPartsPayedFor,
-                                            equalPartsPartySize = payment.equalPartsPartySize,
-                                        )
-                                    },
-                                currentSplitType =
-                                    billDetail.paymentsDone.lastOrNull()?.splitType?.let {
-                                        SplitType.valueOf(it)
-                                    },
+                    )
+                }
+                
+                Log.d(TAG, "Successfully fetched bill detail: $billDetail")
+                
+                _tableDetail.update {
+                    it.copy(
+                        name = billDetail.name,
+                        tableId = billDetail.tableId,
+                        billId = billDetail.billId,
+                        totalAmount = billDetail.totalAmount,
+                        waiterName = billDetail.waiterName ?: "",
+                        products = billDetail.products.map { item ->
+                            Product(
+                                id = item.id,
+                                name = item.name,
+                                price = item.price,
+                                quantity = item.quantity,
+                                totalPrice = item.price,
                             )
-                        }
+                        },
+                        paymentsDone = billDetail.paymentsDone.map { payment ->
+                            Payment(
+                                amount = payment.amount,
+                                products = payment.products,
+                                splitType = payment.splitType,
+                                equalPartsPayedFor = payment.equalPartsPayedFor,
+                                equalPartsPartySize = payment.equalPartsPartySize,
+                            )
+                        },
+                        currentSplitType = billDetail.paymentsDone.lastOrNull()?.splitType?.let {
+                            SplitType.valueOf(it)
+                        },
+                    )
+                }
 
-                        managementRepository.setTableCache(
-                            _tableDetail.value.toDomain(),
-                        )
-                    }
+                Log.d(TAG, "Updated table detail state with new data")
+                managementRepository.setTableCache(_tableDetail.value.toDomain())
+                
             } catch (e: Exception) {
-                Log.i("TableDetailViewModel", "Error fetching table detail", e)
-
+                Log.e(TAG, "Error fetching table detail", e)
+                
                 // Check if the bill was not found (likely deleted)
                 if (e is AvoqadoError.BasicError && (e.code == 404 || e.code == 400)) {
-                    Log.d("TableDetailViewModel", "Bill not found (HTTP ${e.code}) - likely deleted")
+                    Log.d(TAG, "Bill not found (HTTP ${e.code}) - likely deleted")
                     snackbarDelegate.showSnackbar(
                         state = SnackbarState.Default,
                         message = "La cuenta ya no existe",
                     )
-                    viewModelScope.launch(Dispatchers.Main) {
-                        navigateBack()
-                    }
+                    navigateBack()
                 } else {
                     // Other errors
                     snackbarDelegate.showSnackbar(

@@ -2,6 +2,7 @@ package com.avoqado.pos.features.management.data
 
 import android.util.Log
 import com.avoqado.pos.core.data.network.AvoqadoService
+import com.avoqado.pos.core.data.network.ServerConfig
 import com.avoqado.pos.core.data.network.SocketIOManager
 import com.avoqado.pos.core.data.network.models.NetworkVenue
 import com.avoqado.pos.core.domain.models.AvoqadoError
@@ -257,7 +258,7 @@ class ManagementRepositoryImpl(
         }
 
     private fun getSocketServerUrl(): String {
-        // Replace with your actual server URL
-        return "https://3cee-189-203-45-177.ngrok-free.app"
+        // Use the centralized ServerConfig for the socket URL
+        return ServerConfig.getSocketUrl()
     }
 }

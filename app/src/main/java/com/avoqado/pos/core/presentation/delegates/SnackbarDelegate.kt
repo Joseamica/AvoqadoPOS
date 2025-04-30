@@ -1,10 +1,24 @@
 package com.avoqado.pos.core.presentation.delegates
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -45,7 +59,14 @@ class SnackbarDelegate {
         get() {
             return when (val state = snackbarState) {
                 else -> { data ->
-                    Snackbar(snackbarData = data)
+                    DismissibleSnackbar(
+                        snackbarData = data,
+                        onDismiss = {
+                            coroutineScope?.launch {
+                                snackbarHostState?.currentSnackbarData?.dismiss()
+                            }
+                        }
+                    )
                 }
 
 //                is SnackbarState.Success -> { data ->
@@ -66,6 +87,39 @@ class SnackbarDelegate {
 //                }
             }
         }
+
+    @Composable
+    private fun DismissibleSnackbar(
+        snackbarData: SnackbarData,
+        onDismiss: () -> Unit
+    ) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
+            Snackbar(
+                modifier = Modifier.padding(12.dp),
+                action = snackbarData.visuals.actionLabel?.let { actionLabel ->
+                    {
+                        Row {
+                            Text(actionLabel)
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                    }
+                },
+                dismissAction = {
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Dismiss"
+                        )
+                    }
+                }
+            ) {
+                Text(snackbarData.visuals.message)
+            }
+        }
+    }
 
     fun showSnackbar(
         state: SnackbarState = SnackbarState.Default,
@@ -97,6 +151,7 @@ class SnackbarDelegate {
                     message = message,
                     actionLabel = actionLabel,
                     duration = duration,
+                    withDismissAction = true,  // Enable dismiss action
                 )
             }
     }
@@ -132,6 +187,7 @@ class SnackbarDelegate {
                     message = message,
                     actionLabel = actionLabel,
                     duration = duration,
+                    withDismissAction = true,  // Enable dismiss action
                 )
             }
     }

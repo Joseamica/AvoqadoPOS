@@ -21,6 +21,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -65,18 +67,23 @@ fun TableDetailScreen(tableDetailViewModel: TableDetailViewModel) {
     val context = LocalContext.current
     val isRefreshing by tableDetailViewModel.isRefreshing.collectAsStateWithLifecycle()
 
-    ObserverLifecycleEvents(
-        onResume = {
-            tableDetailViewModel.refreshShift()
-        },
-        onCreate = {
-            tableDetailViewModel.fetchTableDetail()
-            tableDetailViewModel.startListeningUpdates()
-        },
-        onDestroy = {
+    // Start listening for socket updates when the screen becomes active
+    LaunchedEffect(key1 = Unit) {
+        tableDetailViewModel.startListeningUpdates()
+        tableDetailViewModel.fetchTableDetail()
+    }
+    
+    // Stop listening when the screen is disposed
+    DisposableEffect(key1 = Unit) {
+        onDispose {
             tableDetailViewModel.stopListeningUpdates()
-        },
-    )
+        }
+    }
+    
+    // Refresh shift status when screen resumes
+    LaunchedEffect(key1 = Unit) {
+        tableDetailViewModel.refreshShift()
+    }
 
     TableDetailContent(
         isLoading = isLoading,
