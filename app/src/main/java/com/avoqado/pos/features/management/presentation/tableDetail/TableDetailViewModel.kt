@@ -52,6 +52,9 @@ class TableDetailViewModel(
     
     // Track if we're collecting socket events
     private var isCollectingSocketEvents = false
+    
+    // Track if the bill has been deleted or is no longer available
+    private var isBillDeleted = false
 
     fun navigateBack() {
         navigationDispatcher.navigateBack()
@@ -105,6 +108,10 @@ class TableDetailViewModel(
                         when (update.status?.uppercase()) {
                             "DELETED" -> {
                                 Log.d(TAG, "Bill DELETED - navigating back")
+                                // Mark the bill as deleted to prevent further API calls
+                                isBillDeleted = true
+                                // Stop socket listener since the bill is gone
+                                stopListeningUpdates()
                                 snackbarDelegate.showSnackbar(
                                     state = SnackbarState.Default,
                                     message = "La cuenta ha sido eliminada",
@@ -115,6 +122,10 @@ class TableDetailViewModel(
                             }
                             "CANCELED" -> {
                                 Log.d(TAG, "Bill CANCELED - navigating back")
+                                // Mark the bill as deleted to prevent further API calls
+                                isBillDeleted = true
+                                // Stop socket listener since the bill is gone
+                                stopListeningUpdates()
                                 snackbarDelegate.showSnackbar(
                                     state = SnackbarState.Default,
                                     message = "La cuenta ha sido cancelada",
@@ -124,9 +135,23 @@ class TableDetailViewModel(
                                 }
                             }
                             "PAID" -> {
-                                Log.d(TAG, "Bill PAID - refreshing")
+                                Log.d(TAG, "Bill PAID - showing info and navigating back")
+                                // For paid bills, backend returns 404 since it only finds OPEN bills
+                                // So we should mark the bill as deleted to prevent further API calls
+                                isBillDeleted = true
+                                
+                                // Show success message
+                                snackbarDelegate.showSnackbar(
+                                    state = SnackbarState.Default,
+                                    message = "La cuenta ha sido pagada",
+                                )
+                                
                                 viewModelScope.launch(Dispatchers.Main) {
-                                    fetchTableDetail()
+                                    // First show any necessary success UI
+                                    // Wait a moment before navigating back to allow user to see the message
+                                    kotlinx.coroutines.delay(1500)
+                                    // Then navigate back since the bill is no longer available
+                                    navigateBack()
                                 }
                             }
                             "PRODUCT_ADDED" -> {
@@ -183,6 +208,12 @@ class TableDetailViewModel(
     }
 
     fun fetchTableDetail() {
+        // Don't fetch if the bill has been deleted
+        if (isBillDeleted) {
+            Log.d(TAG, "Skipping fetchTableDetail because bill is deleted")
+            return
+        }
+        
         viewModelScope.launch {
             _isLoading.value = true
             try {
@@ -236,6 +267,10 @@ class TableDetailViewModel(
                 // Check if the bill was not found (likely deleted)
                 if (e is AvoqadoError.BasicError && (e.code == 404 || e.code == 400)) {
                     Log.d(TAG, "Bill not found (HTTP ${e.code}) - likely deleted")
+                    // Mark the bill as deleted to prevent further API calls
+                    isBillDeleted = true
+                    // Stop socket listener since the bill is gone
+                    stopListeningUpdates()
                     snackbarDelegate.showSnackbar(
                         state = SnackbarState.Default,
                         message = "La cuenta ya no existe",
