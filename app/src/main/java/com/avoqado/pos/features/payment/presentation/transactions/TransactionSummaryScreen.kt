@@ -174,15 +174,29 @@ fun TransactionsSummaryScreen(viewModel: TransactionSummaryViewModel) {
                                     "tip" to shift.tipsSum.toString().toAmountMXDouble(),
                                     "shift" to shift.id,
                                     "startTime" to
-                                        LocalDateTime.ofInstant(
-                                            Instant.parse(shift.startTime),
-                                            ZoneId.systemDefault(),
-                                        ),
+                                        shift.startTime?.let {
+                                            try {
+                                                LocalDateTime.ofInstant(
+                                                    Instant.parse(it),
+                                                    ZoneId.systemDefault()
+                                                )
+                                            } catch (e: Exception) {
+                                                null
+                                            }
+                                        },
                                     "endTime" to
-                                        LocalDateTime.ofInstant(
-                                            Instant.parse(shift.endTime),
-                                            ZoneId.systemDefault(),
-                                        ),
+                                        if (!shift.endTime.isNullOrEmpty()) {
+                                            try {
+                                                LocalDateTime.ofInstant(
+                                                    Instant.parse(shift.endTime),
+                                                    ZoneId.systemDefault()
+                                                )
+                                            } catch (e: Exception) {
+                                                null
+                                            }
+                                        } else {
+                                            null
+                                        },
                                 )
                             },
                         venue = venue,

@@ -240,16 +240,27 @@ fun ShiftItemCard(shift: Shift) {
     }
 }
 
-fun formatDateTime(dateString: String): String {
-    // Parse the ISO-8601 date/time string (Z means UTC time)
-    val instant = Instant.parse(dateString)
+fun formatDateTime(dateString: String?): String {
+    // Check if dateString is null or empty
+    if (dateString.isNullOrEmpty()) {
+        return "--" // Return a placeholder for empty dates
+    }
+    
+    try {
+        // Parse the ISO-8601 date/time string (Z means UTC time)
+        val instant = Instant.parse(dateString)
 
-    // Convert instant to your desired time zone; system default shown here
-    val zonedDateTime = instant.atZone(ZoneId.systemDefault())
+        // Convert instant to your desired time zone; system default shown here
+        val zonedDateTime = instant.atZone(ZoneId.systemDefault())
 
-    // Define the output format
-    val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault())
+        // Define the output format
+        val formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm", Locale.getDefault())
 
-    // Format the ZonedDateTime
-    return zonedDateTime.format(formatter)
+        // Format the ZonedDateTime
+        return zonedDateTime.format(formatter)
+    } catch (e: Exception) {
+        // Log the error and return a fallback value
+        android.util.Log.e("ShiftsPage", "Error parsing date: $dateString", e)
+        return "Invalid date"
+    }
 }

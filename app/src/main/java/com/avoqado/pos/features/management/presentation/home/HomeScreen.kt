@@ -41,6 +41,7 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
     val showSettings by homeViewModel.showSettings.collectAsStateWithLifecycle()
     val isLoading by homeViewModel.isLoading.collectAsStateWithLifecycle()
     val shiftStarted by homeViewModel.shiftStarted.collectAsStateWithLifecycle()
+    val venuePosName = homeViewModel.getVenuePosName()
 
     HomeContent(
         waiterName = homeViewModel.currentSession?.name ?: "",
@@ -59,6 +60,7 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
         onLogout = homeViewModel::logout,
         onToggleShift = homeViewModel::toggleShift,
         shiftStarted = shiftStarted,
+        venuePosName = venuePosName,
     )
 
     if (isLoading) {
@@ -91,6 +93,7 @@ fun HomeContent(
     onShowPayments: () -> Unit = {},
     onLogout: () -> Unit = {},
     onToggleShift: () -> Unit = {},
+    venuePosName: String? = null,
 ) {
     TopMenuContent(
         onOpenSettings = onOpenSettings,
@@ -121,33 +124,36 @@ fun HomeContent(
                 textAlign = TextAlign.Center,
             )
 
-            Card(
-                modifier =
-                    Modifier.clickable {
-                        onNewPayment()
-                    },
-                colors =
-                    CardDefaults.cardColors(
-                        containerColor = Color.Black,
-                    ),
-                shape = RoundedCornerShape(24.dp),
-            ) {
-                Column(
-                    modifier = Modifier.fillMaxWidth().padding(24.dp),
+            // Only show the Nuevo pago card if posName is not NONE or null or empty
+if (venuePosName != null && venuePosName.isNotEmpty() && venuePosName != "NONE") {
+                Card(
+                    modifier =
+                        Modifier.clickable {
+                            onNewPayment()
+                        },
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = Color.Black,
+                        ),
+                    shape = RoundedCornerShape(24.dp),
                 ) {
-                    Spacer(Modifier.height(48.dp))
-                    Image(
-                        modifier = Modifier.size(40.dp),
-                        painter = painterResource(R.drawable.ic_card),
-                        contentDescription = "",
-                    )
-                    Text(
-                        text = "Nuevo pago",
-                        style =
-                            MaterialTheme.typography.headlineMedium.copy(
-                                color = Color.White,
-                            ),
-                    )
+                    Column(
+                        modifier = Modifier.fillMaxWidth().padding(24.dp),
+                    ) {
+                        Spacer(Modifier.height(48.dp))
+                        Image(
+                            modifier = Modifier.size(40.dp),
+                            painter = painterResource(R.drawable.ic_card),
+                            contentDescription = "",
+                        )
+                        Text(
+                            text = "Nuevo pago",
+                            style =
+                                MaterialTheme.typography.headlineMedium.copy(
+                                    color = Color.White,
+                                ),
+                        )
+                    }
                 }
             }
 
@@ -299,6 +305,7 @@ fun HomeContentPreview() {
         HomeContent(
             waiterName = "Diego",
             showSettings = false,
+            venuePosName = "SOFTRESTAURANT", // Example POS name that's not NONE
         )
     }
 }

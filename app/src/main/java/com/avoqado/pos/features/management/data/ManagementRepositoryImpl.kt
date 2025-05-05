@@ -215,7 +215,7 @@ class ManagementRepositoryImpl(
                             detailedBill.total?.let {
                                 total / 100.0
                             } ?: 0.0,
-                        waiterName = detailedBill.waiterName ?: "",
+                        waiterName = if (detailedBill.waiterName?.toIntOrNull() != null) "Mesero" else detailedBill.waiterName ?: "",
                         paymentOverview =
                             detailedBill.payments?.takeIf { it.isNotEmpty() }?.let {
                                 val byPerson = it.filter { payment -> payment?.splitType == SplitType.EQUALPARTS.value }

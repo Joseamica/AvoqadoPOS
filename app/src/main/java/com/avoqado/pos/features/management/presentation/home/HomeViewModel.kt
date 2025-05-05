@@ -195,6 +195,15 @@ class HomeViewModel(
             ),
         )
     }
+    
+    // Add a method to get the venue's posName
+    fun getVenuePosName(): String? {
+        val venue = sessionManager.getVenueInfo()
+        val posName = venue?.posName
+        Log.d("HomeViewModel", "Venue info: $venue")
+        Log.d("HomeViewModel", "Venue posName: $posName")
+        return posName
+    }
 
     fun toggleShift() {
         viewModelScope.launch {

@@ -200,7 +200,7 @@ fun InputTipContent(
                 verticalArrangement = Arrangement.Center,
             ) {
                 Text(
-                    text = "Agrega una propina para $waiterName",
+                    text = if (waiterName.isNullOrBlank()) "Agrega una propina para el mesero" else "Agrega una propina para $waiterName",
                     color = Color.Black,
                     style = MaterialTheme.typography.titleLarge,
                     textAlign = TextAlign.Center,
@@ -298,9 +298,6 @@ fun InputTipContent(
                     .padding(horizontal = 16.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 2.dp
-                ),
             ) {
                 Text(
                     text = "Sin propina",
@@ -310,7 +307,7 @@ fun InputTipContent(
             }
         }
 
-        Spacer(Modifier.height(26.dp))
+        Spacer(Modifier.height(36.dp))
     }
 }
 
