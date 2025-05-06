@@ -46,6 +46,7 @@ fun TopMenuContent(
     onToggleShift: () -> Unit = {},
     shiftStarted: Boolean = false,
     isShiftButtonDisabled: Boolean = true,
+    venuePosName: String? = null,
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val modalSheetState =
@@ -159,8 +160,12 @@ fun TopMenuContent(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Determine if button should be enabled based on original flag and posName
+                val isPosNameNone = venuePosName == "NONE"
+                val shouldEnableShiftButton = !isShiftButtonDisabled || isPosNameNone
+                
                 Button(
-                    onClick = { if (!isShiftButtonDisabled) onToggleShift() },
+                    onClick = { onToggleShift() },
                     modifier =
                         Modifier
                             .height(72.dp)
@@ -169,20 +174,24 @@ fun TopMenuContent(
                     colors =
                         ButtonDefaults.buttonColors(
                             containerColor = Color.White,
-                            contentColor = if (isShiftButtonDisabled) Color.Gray else buttonGrayColor,
+                            contentColor = if (!shouldEnableShiftButton) Color.Gray else buttonGrayColor,
                         ),
-                    enabled = !isShiftButtonDisabled,
+                    enabled = shouldEnableShiftButton,
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
+                        // Determine if button should be enabled based on original flag and posName
+                        val isPosNameNone = venuePosName == "NONE"
+                        val shouldEnableShiftButton = !isShiftButtonDisabled || isPosNameNone
+                        
                         Text(
                             text = if (shiftStarted) "Cerrar Turno" else "Abrir Turno",
-                            color = if (isShiftButtonDisabled) Color.Gray else Color.Black,
+                            color = if (!shouldEnableShiftButton) Color.Gray else Color.Black,
                             style = MaterialTheme.typography.titleSmall,
                         )
 
-                        if (isShiftButtonDisabled) {
+                        if (!shouldEnableShiftButton) {
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = "(desde POS)",

@@ -4,7 +4,10 @@ import android.app.Application
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.Manifest
+
 import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.IBinder
 import android.provider.Settings
@@ -94,23 +97,29 @@ class AvoqadoApp : Application() {
 
         storage = Storage(this)
         sessionManager = SessionManager(this)
-        terminalSerialCode =
-            when {
-                // For Android 8+ (API 26+)
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
-                    // ANDROID_ID is consistent per app install across all Android versions
+        terminalSerialCode = when {
+            // For Android 10+ (API 29+) - This covers your Android 12 production environment
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+                Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+            }
+            // For Android 8.0 to Android 9 (API 26-28) - This covers your Android 8.1 development environment
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
+                try {
+                    if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                        Build.getSerial()
+                    } else {
+                        // Fallback if permission not granted
+                        Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
+                    }
+                } catch (e: Exception) {
                     Settings.Secure.getString(contentResolver, Settings.Secure.ANDROID_ID)
                 }
-                // Fallback for older versions (shouldn't be needed given your minSdk)
-                else -> {
-                    val uuid =
-                        java.util.UUID
-                            .randomUUID()
-                            .toString()
-                    // Store this UUID persistently if needed
-                    uuid
-                }
             }
+            // For older versions (not needed in your case but included for completeness)
+            else -> {
+                Build.SERIAL ?: "Unknown"
+            }
+        }
             
         // Start and bind to the Socket service
         startAndBindSocketService()

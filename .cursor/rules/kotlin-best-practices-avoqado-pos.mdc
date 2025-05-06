@@ -1,3 +1,8 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
 # Kotlin Best Practices for Avoqado POS
 
 ## Architecture & State Management

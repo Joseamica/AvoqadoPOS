@@ -28,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.components.TopMenuContent
@@ -104,6 +105,7 @@ fun HomeContent(
         onToggleShift = onToggleShift,
         onLogout = onLogout,
         shiftStarted = shiftStarted,
+        venuePosName = venuePosName,
     ) {
         Column(
             modifier =
@@ -162,7 +164,9 @@ if (venuePosName != null && venuePosName.isNotEmpty() && venuePosName != "NONE")
             Row {
                 Card(
                     modifier =
-                        Modifier.weight(1f).clickable {
+                        Modifier.weight(1f).clickable(
+                            enabled = shiftStarted
+                        ) {
                             onQuickPayment()
                         },
                     colors =
@@ -178,6 +182,7 @@ if (venuePosName != null && venuePosName.isNotEmpty() && venuePosName != "NONE")
                             modifier = Modifier.size(30.dp),
                             painter = painterResource(R.drawable.ic_quick_pay),
                             contentDescription = "",
+                            alpha = if (shiftStarted) 1f else 0.5f
                         )
 
                         Spacer(Modifier.height(24.dp))
@@ -185,10 +190,21 @@ if (venuePosName != null && venuePosName.isNotEmpty() && venuePosName != "NONE")
                             text = "Pago rapido",
                             style =
                                 MaterialTheme.typography.titleMedium.copy(
-                                    color = textTitleColor,
+                                    color = if (shiftStarted) textTitleColor else Color.Gray,
                                     fontWeight = FontWeight.W400,
                                 ),
                         )
+                        
+                        if (!shiftStarted) {
+                            Spacer(Modifier.height(4.dp))
+                            Text(
+                                text = "Abre primero el turno",
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    color = Color.Gray,
+                                    fontSize = 12.sp
+                                ),
+                            )
+                        }
                     }
                 }
 
@@ -305,7 +321,6 @@ fun HomeContentPreview() {
         HomeContent(
             waiterName = "Diego",
             showSettings = false,
-            venuePosName = "SOFTRESTAURANT", // Example POS name that's not NONE
         )
     }
 }

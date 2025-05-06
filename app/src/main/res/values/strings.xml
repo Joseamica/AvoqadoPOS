@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Avoqado POS</string>
+    <string name="app_name">Avoqado TPV</string>
     <string name="wait_payment">Aguarde</string>
     <string name="whileServiceBinPaymentProcess">Mientras validamos la tarjeta</string>
     <string name="whileInitProcessFinishes">Mientras configuramos la terminal</string>
