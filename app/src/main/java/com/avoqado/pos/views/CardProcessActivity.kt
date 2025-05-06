@@ -18,6 +18,7 @@ import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.presentation.model.enums.Acquirer
 import com.avoqado.pos.core.presentation.model.enums.Country
+import com.avoqado.pos.core.presentation.utils.Utils
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.doTagListMxTest
 import com.avoqado.pos.doTagListTest
@@ -180,7 +181,6 @@ class CardProcessActivity : ComponentActivity() {
             dialog.dismiss()
 
             AvoqadoApp.paymentRepository.getCachePaymentInfo()?.let { info ->
-                Log.i("Diego", info.toString())
                 AvoqadoApp.paymentRepository.setCachePaymentInfo(
                     paymentInfoResult =
                         info.copy(
@@ -365,10 +365,17 @@ class CardProcessActivity : ComponentActivity() {
     private val navigateObserver: (Any) -> Unit = {
         when (it) {
             is Bundle -> {
+                Log.i(TAG, "Bundle: $it")
+                val status = it.get("status")
+                val statusResult: StatusResult = status as StatusResult
+                Utils.sendCrashlyticsReport(
+                    eventName = "CardProcessError",
+                    data = mapOf(
+                        "status" to statusResult,
+                        "operationType" to operationType
+                    )
+                )
                 if (isDestroying.not()) {
-                    Log.i(TAG, "Bundle: $it")
-                    val status = it.get("status")
-                    val statusResult: StatusResult = status as StatusResult
                     Log.i(TAG, "statusResult: $statusResult")
                     val intent = Intent(this, CardErrorActivity::class.java)
                     intent.putExtra("status", statusResult)

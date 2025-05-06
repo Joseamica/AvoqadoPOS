@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.model.enums.MmTypeCurrencyEnum
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.menta.android.common_cross.util.Utils
 import com.menta.android.keys.admin.core.repository.parametro.ParametroDB
 import java.math.BigDecimal
@@ -39,6 +40,16 @@ import java.util.Calendar
 import java.util.Date
 
 object Utils {
+
+    fun sendCrashlyticsReport(eventName: String, data: Map<String, Any?>){
+        FirebaseCrashlytics.getInstance().let { crashlytics ->
+            crashlytics.log(data.toString())
+            crashlytics.recordException(
+                Throwable("Something Failed: $eventName")
+            )
+        }
+    }
+
     fun incrementBatch(context: Context) {
         Thread {
             if (mustIncrementBatch(context)) {
