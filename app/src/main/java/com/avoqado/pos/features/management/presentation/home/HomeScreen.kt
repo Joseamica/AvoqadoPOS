@@ -162,51 +162,57 @@ if (venuePosName != null && venuePosName.isNotEmpty() && venuePosName != "NONE")
             Spacer(Modifier.height(16.dp))
 
             Row {
-                Card(
-                    modifier =
-                        Modifier.weight(1f).clickable(
-                            enabled = shiftStarted
-                        ) {
-                            onQuickPayment()
-                        },
-                    colors =
-                        CardDefaults.cardColors(
-                            containerColor = Color.White,
-                        ),
-                    shape = RoundedCornerShape(10.dp),
-                ) {
-                    Column(
-                        modifier = Modifier.padding(20.dp),
-                    ) {
-                        Image(
-                            modifier = Modifier.size(30.dp),
-                            painter = painterResource(R.drawable.ic_quick_pay),
-                            contentDescription = "",
-                            alpha = if (shiftStarted) 1f else 0.5f
-                        )
+Card(
+    modifier =
+        Modifier.weight(1f).clickable(
+            enabled = shiftStarted
+        ) {
+            onQuickPayment()
+        },
+    colors =
+        CardDefaults.cardColors(
+            containerColor = if (shiftStarted && venuePosName == "NONE") Color.Black else Color.White,
+        ),
+    shape = RoundedCornerShape(10.dp),
+) {
+    Column(
+        modifier = Modifier.padding(20.dp),
+    ) {
+        Image(
+            modifier = Modifier.size(30.dp),
+            painter = painterResource(R.drawable.ic_quick_pay),
+            contentDescription = "",
+            // Cuando el fondo es negro, ponemos el alpha a 1f y aplicamos un colorFilter blanco
+            alpha = if (shiftStarted) 1f else 0.5f,
+            colorFilter = if (shiftStarted && venuePosName == "NONE") 
+                androidx.compose.ui.graphics.ColorFilter.tint(Color.White)
+                else null
+        )
 
-                        Spacer(Modifier.height(24.dp))
-                        Text(
-                            text = "Pago rapido",
-                            style =
-                                MaterialTheme.typography.titleMedium.copy(
-                                    color = if (shiftStarted) textTitleColor else Color.Gray,
-                                    fontWeight = FontWeight.W400,
-                                ),
-                        )
-                        
-                        if (!shiftStarted) {
-                            Spacer(Modifier.height(4.dp))
-                            Text(
-                                text = "Abre primero el turno",
-                                style = MaterialTheme.typography.bodySmall.copy(
-                                    color = Color.Gray,
-                                    fontSize = 12.sp
-                                ),
-                            )
-                        }
-                    }
-                }
+        Spacer(Modifier.height(24.dp))
+        Text(
+            text = "Pago rapido",
+            style =
+                MaterialTheme.typography.titleMedium.copy(
+                    color = if (shiftStarted && venuePosName == "NONE") Color.White 
+                           else if (shiftStarted) textTitleColor 
+                           else Color.Gray,
+                    fontWeight = FontWeight.W400,
+                ),
+        )
+        
+        if (!shiftStarted) {
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = "Abre primero el turno",
+                style = MaterialTheme.typography.bodySmall.copy(
+                    color = Color.Gray,
+                    fontSize = 12.sp
+                ),
+            )
+        }
+    }
+}
 
                 Spacer(Modifier.width(10.dp))
 
