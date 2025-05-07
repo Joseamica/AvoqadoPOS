@@ -1,6 +1,7 @@
 package com.avoqado.pos.core.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -32,6 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.theme.buttonGrayColor
+import androidx.compose.material3.CircularProgressIndicator
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,6 +46,8 @@ fun TopMenuContent(
     showSettingsModal: Boolean = false,
     onDismissRequest: () -> Unit = {},
     onOpenSettings: () -> Unit = {},
+    onRefresh: () -> Unit = {},
+    isRefreshing: Boolean = false,
     onLogout: () -> Unit = {},
     onToggleShift: () -> Unit = {},
     shiftStarted: Boolean = false,
@@ -86,12 +92,36 @@ fun TopMenuContent(
                 }
             },
             actions = {
+                // Refresh icon - added to the left of settings icon
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(
+                        onClick = onRefresh,
+                        enabled = !isRefreshing,
+                        content = {
+                            if (isRefreshing) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    strokeWidth = 2.dp
+                                )
+                            } else {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_refresh_24),
+                                    contentDescription = "Refresh",
+                                )
+                            }
+                        },
+                    )
+                }
+                
+                // Settings icon
                 IconButton(
                     onClick = onOpenSettings,
                     content = {
                         Icon(
                             painter = painterResource(R.drawable.ic_settings),
-                            contentDescription = null,
+                            contentDescription = "Settings",
                         )
                     },
                 )

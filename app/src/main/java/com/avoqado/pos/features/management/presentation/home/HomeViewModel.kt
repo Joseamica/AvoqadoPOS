@@ -13,8 +13,8 @@ import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
 import com.avoqado.pos.features.payment.presentation.transactions.SummaryTabs
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -41,6 +41,9 @@ class HomeViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
     // Track if we're currently collecting shift events
     private var isCollectingShiftEvents = false
 
@@ -52,7 +55,7 @@ class HomeViewModel(
 
                 if (venueId.isNotEmpty() && venue != null) {
                     // Forzar una actualización del turno actual desde el servidor
-                    Log.d("HomeViewModel", "Fetching current shift from server...")
+                    Timber.tag("HomeViewModel").d("Fetching current shift from server...")
                     currentShift =
                         terminalRepository.getTerminalShift(
                             venueId = venueId,
@@ -117,7 +120,7 @@ class HomeViewModel(
                     }
                 }
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "Error setting up shift updates", e)
+                Timber.tag("HomeViewModel").e(e, "Error setting up shift updates")
                 isCollectingShiftEvents = false
             }
         }
@@ -195,7 +198,7 @@ class HomeViewModel(
             ),
         )
     }
-    
+
     // Add a method to get the venue's posName
     fun getVenuePosName(): String? {
         val venue = sessionManager.getVenueInfo()
@@ -205,13 +208,31 @@ class HomeViewModel(
         return posName
     }
 
+    fun onPullToRefreshTrigger() {
+        _isRefreshing.update { true }
+        viewModelScope.launch {
+            try {
+                // Add a small delay to ensure the refresh spinner is visible
+                delay(500)
+                // This calls a function that launches its own coroutine
+                forceRefreshShiftStatus()
+                // Make sure we don't hide the spinner too quickly
+                delay(500)
+                Log.d("HomeViewModel", "Data refreshed successfully")
+            } catch (e: Exception) {
+                Log.e("HomeViewModel", "Error refreshing data", e)
+            } finally {
+                _isRefreshing.update { false }
+            }
+        }
+    }
+
     fun toggleShift() {
         viewModelScope.launch {
             try {
                 toggleSettingsModal(false)
-                _isLoading.update {
-                    true
-                }
+                _isLoading.update { true }
+
                 val venue = sessionManager.getVenueInfo()
                 venue?.let {
                     if (currentShift != null) {
@@ -226,11 +247,10 @@ class HomeViewModel(
                             message = "El turno ha sido cerrado.",
                         )
                     } else {
-                        val shift =
-                            terminalRepository.startTerminalShift(
-                                venueId = it.id ?: "",
-                                posName = it.posName ?: "",
-                            )
+                        val shift = terminalRepository.startTerminalShift(
+                            venueId = it.id ?: "",
+                            posName = it.posName ?: "",
+                        )
                         sessionManager.setShift(shift)
                         currentShift = shift
                         _shiftStarted.update { true }
@@ -238,13 +258,14 @@ class HomeViewModel(
                             message = "Se ha iniciado un nuevo turno.",
                         )
                     }
+
+                    // Refresh our socket connections
+                    startListeningForShiftEvents()
                 }
             } catch (e: Exception) {
                 Timber.e(e)
             } finally {
-                _isLoading.update {
-                    false
-                }
+                _isLoading.update { false }
             }
         }
     }

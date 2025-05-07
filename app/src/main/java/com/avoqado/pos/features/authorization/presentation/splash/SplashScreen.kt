@@ -161,7 +161,7 @@ fun SplashScreen(
                 enter = fadeIn(animationSpec = tween(800)),
             ) {
                 Text(
-                    text = "Avoqado POS",
+                    text = "Avoqado TPV",
                     fontFamily = FontFamily(Font(R.font.mulish_bold)),
                     fontSize = 35.sp,
                     color = primary,

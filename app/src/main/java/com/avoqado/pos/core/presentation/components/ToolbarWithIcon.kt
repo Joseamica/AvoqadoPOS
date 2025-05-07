@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -109,6 +110,8 @@ fun SimpleToolbar(
     iconAction: IconAction? = null,
     onAction: () -> Unit = {},
     onActionSecond: (() -> Unit)? = null,
+    onRefresh: (() -> Unit)? = null,
+    isRefreshing: Boolean = false,
 ) {
     TopAppBar(
         colors =
@@ -126,6 +129,33 @@ fun SimpleToolbar(
                         text = title,
                         onClickR = it,
                         contentPadding = PaddingValues(vertical = 4.dp),
+                    )
+                }
+            }
+        },
+        actions = {
+            onRefresh?.let { refreshAction ->
+                Box(
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(
+                        onClick = refreshAction,
+                        enabled = !isRefreshing,
+                        content = {
+                            if (isRefreshing) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    strokeWidth = 2.dp,
+                                    color = Color.Black
+                                )
+                            } else {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_refresh_24),
+                                    contentDescription = "Refresh",
+                                    tint = Color.Black
+                                )
+                            }
+                        },
                     )
                 }
             }

@@ -1,6 +1,7 @@
 package com.avoqado.pos.features.management.presentation.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,11 +10,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +43,7 @@ import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 fun HomeScreen(homeViewModel: HomeViewModel) {
     val showSettings by homeViewModel.showSettings.collectAsStateWithLifecycle()
     val isLoading by homeViewModel.isLoading.collectAsStateWithLifecycle()
+    val isRefreshing by homeViewModel.isRefreshing.collectAsStateWithLifecycle()
     val shiftStarted by homeViewModel.shiftStarted.collectAsStateWithLifecycle()
     val venuePosName = homeViewModel.getVenuePosName()
 
@@ -60,6 +63,8 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
         onShowPayments = homeViewModel::goToShowPayments,
         onLogout = homeViewModel::logout,
         onToggleShift = homeViewModel::toggleShift,
+        onRefresh = homeViewModel::onPullToRefreshTrigger,
+        isRefreshing = isRefreshing,
         shiftStarted = shiftStarted,
         venuePosName = venuePosName,
     )
@@ -85,6 +90,7 @@ fun HomeContent(
     waiterName: String,
     showSettings: Boolean,
     shiftStarted: Boolean = false,
+    isRefreshing: Boolean = false,
     toggleSettingsModal: (Boolean) -> Unit = {},
     onOpenSettings: () -> Unit = {},
     onNewPayment: () -> Unit = {},
@@ -94,6 +100,7 @@ fun HomeContent(
     onShowPayments: () -> Unit = {},
     onLogout: () -> Unit = {},
     onToggleShift: () -> Unit = {},
+    onRefresh: () -> Unit = {},
     venuePosName: String? = null,
 ) {
     TopMenuContent(
@@ -102,6 +109,8 @@ fun HomeContent(
         onDismissRequest = {
             toggleSettingsModal(false)
         },
+        onRefresh = onRefresh,
+        isRefreshing = isRefreshing,
         onToggleShift = onToggleShift,
         onLogout = onLogout,
         shiftStarted = shiftStarted,
@@ -127,7 +136,7 @@ fun HomeContent(
             )
 
             // Only show the Nuevo pago card if posName is not NONE or null or empty
-if (venuePosName != null && venuePosName.isNotEmpty() && venuePosName != "NONE") {
+            if (!venuePosName.isNullOrEmpty() && venuePosName != "NONE") {
                 Card(
                     modifier =
                         Modifier.clickable {
@@ -142,7 +151,7 @@ if (venuePosName != null && venuePosName.isNotEmpty() && venuePosName != "NONE")
                     Column(
                         modifier = Modifier.fillMaxWidth().padding(24.dp),
                     ) {
-                        Spacer(Modifier.height(48.dp))
+                        Spacer(Modifier.height(40.dp))
                         Image(
                             modifier = Modifier.size(40.dp),
                             painter = painterResource(R.drawable.ic_card),
@@ -162,53 +171,67 @@ if (venuePosName != null && venuePosName.isNotEmpty() && venuePosName != "NONE")
             Spacer(Modifier.height(16.dp))
 
             Row {
-Card(
-    modifier =
-        Modifier.weight(1f).clickable(
-            enabled = shiftStarted
-        ) {
-            onQuickPayment()
-        },
-    colors =
-        CardDefaults.cardColors(
+Box(modifier = Modifier.weight(1f)) {  // Outer Box for absolute positioning
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(130.dp)
+            .clickable(enabled = shiftStarted) {
+                onQuickPayment()
+            },
+        colors = CardDefaults.cardColors(
             containerColor = if (shiftStarted && venuePosName == "NONE") Color.Black else Color.White,
         ),
-    shape = RoundedCornerShape(10.dp),
-) {
-    Column(
-        modifier = Modifier.padding(20.dp),
+            elevation = CardDefaults.cardElevation(
+        defaultElevation = 0.7.dp,
+        pressedElevation = 8.dp
+    ),
+        shape = RoundedCornerShape(10.dp),
     ) {
-        Image(
-            modifier = Modifier.size(30.dp),
-            painter = painterResource(R.drawable.ic_quick_pay),
-            contentDescription = "",
-            // Cuando el fondo es negro, ponemos el alpha a 1f y aplicamos un colorFilter blanco
-            alpha = if (shiftStarted) 1f else 0.5f,
-            colorFilter = if (shiftStarted && venuePosName == "NONE") 
-                androidx.compose.ui.graphics.ColorFilter.tint(Color.White)
-                else null
-        )
+        Column(
+            modifier = Modifier.padding(20.dp)
+        ) {
+            Image(
+                modifier = Modifier.size(30.dp),
+                painter = painterResource(R.drawable.ic_quick_pay),
+                contentDescription = "",
+                alpha = if (shiftStarted) 1f else 0.2f,
+                colorFilter = if (shiftStarted && venuePosName == "NONE") 
+                    androidx.compose.ui.graphics.ColorFilter.tint(Color.White)
+                    else null
+            )
 
-        Spacer(Modifier.height(24.dp))
-        Text(
-            text = "Pago rapido",
-            style =
-                MaterialTheme.typography.titleMedium.copy(
+            Spacer(Modifier.height(24.dp))
+            Text(
+                text = "Pago rápido",
+                style = MaterialTheme.typography.titleMedium.copy(
                     color = if (shiftStarted && venuePosName == "NONE") Color.White 
                            else if (shiftStarted) textTitleColor 
-                           else Color.Gray,
+                           else Color(0xFFC7C5C5),
                     fontWeight = FontWeight.W400,
                 ),
-        )
-        
-        if (!shiftStarted) {
-            Spacer(Modifier.height(4.dp))
+            )
+        }
+    }
+    
+    // Absolutely positioned text with background, outside the card's boundaries
+    if (!shiftStarted) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .offset(y = 8.dp)  // Push it down outside the card
+        ) {
             Text(
-                text = "Abre primero el turno",
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = Color.Gray,
-                    fontSize = 12.sp
-                ),
+                text = "Abre el turno primero",
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF333333),  // This applies a dark gray color
+                modifier = Modifier
+                    .background(
+                        Color(0xFFEDEDED),  // This applies a light gray background
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(horizontal = 6.dp, vertical = 1.dp)
             )
         }
     }
@@ -217,14 +240,19 @@ Card(
                 Spacer(Modifier.width(10.dp))
 
                 Card(
-                    modifier =
-                        Modifier.weight(1f).clickable {
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(130.dp) // Set fixed height for the card
+                        .clickable {
                             onShowSummary()
                         },
-                    colors =
-                        CardDefaults.cardColors(
-                            containerColor = Color.White,
-                        ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White,
+                    ),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 0.7.dp,
+                        pressedElevation = 8.dp
+                    ),
                     shape = RoundedCornerShape(10.dp),
                 ) {
                     Column(
@@ -252,14 +280,19 @@ Card(
 
             Row {
                 Card(
-                    modifier =
-                        Modifier.weight(1f).clickable {
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(130.dp) // Set fixed height for the card
+                        .clickable {
                             onShowShifts()
                         },
-                    colors =
-                        CardDefaults.cardColors(
-                            containerColor = Color.White,
-                        ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White,
+                    ),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 0.7.dp,
+                        pressedElevation = 8.dp
+                    ),
                     shape = RoundedCornerShape(10.dp),
                 ) {
                     Column(
@@ -286,14 +319,19 @@ Card(
                 Spacer(Modifier.width(10.dp))
 
                 Card(
-                    modifier =
-                        Modifier.weight(1f).clickable {
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(130.dp) // Set fixed height for the card
+                        .clickable {
                             onShowPayments()
                         },
-                    colors =
-                        CardDefaults.cardColors(
-                            containerColor = Color.White,
-                        ),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color.White,
+                    ),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 0.7.dp,
+                        pressedElevation = 8.dp
+                    ),
                     shape = RoundedCornerShape(10.dp),
                 ) {
                     Column(

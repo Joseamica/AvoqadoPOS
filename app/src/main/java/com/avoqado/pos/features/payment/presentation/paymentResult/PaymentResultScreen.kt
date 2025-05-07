@@ -18,6 +18,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -215,12 +216,11 @@ fun PaymentResultContent(
 
                     Spacer(Modifier.height(16.dp))
 
-                    Divider(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .height(1.dp),
-                        color = Color.LightGray,
+                    HorizontalDivider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1.dp),
+                        color = Color.LightGray
                     )
 
                     Spacer(Modifier.height(16.dp))

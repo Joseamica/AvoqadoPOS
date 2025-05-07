@@ -2,9 +2,12 @@ package com.avoqado.pos.features.payment.presentation.inputTipAmount
 
 import android.content.Intent
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,13 +15,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -26,9 +33,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -148,33 +157,32 @@ fun InputTipContent(
 ) {
     val context = LocalContext.current
 
+    // Use the percentages shown in the image: 5%, 10%, 15%
     val tip1 by remember {
         derivedStateOf {
-            totalAmount * 0.12
+            totalAmount * 0.05  // 5% as shown in the image
         }
     }
     val tip2 by remember {
         derivedStateOf {
-            totalAmount * 0.15
+            totalAmount * 0.10  // 10% as shown in the image
         }
     }
 
     val tip3 by remember {
         derivedStateOf {
-            totalAmount * 0.18
+            totalAmount * 0.15  // 15% as shown in the image
         }
     }
 
     Column(
-        modifier =
-        Modifier
+        modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
+            .background(Color(0xFFF6F7FB)), // Changed from Color.White to #F6F7FB
     ) {
         ToolbarWithIcon(
             title = "\$${totalAmount.toString().toAmountMx()}",
-            iconAction =
-            IconAction(
+            iconAction = IconAction(
                 flowStep = FlowStep.NAVIGATE_BACK,
                 context = context,
                 iconType = IconType.BACK,
@@ -185,129 +193,138 @@ fun InputTipContent(
             showSecondIcon = true,
         )
 
+        // Main content with tip cards
         Column(
-            modifier =
-            Modifier
+            modifier = Modifier
+                .fillMaxWidth()
                 .weight(1f),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Column(
-                modifier =
-                Modifier
+            Text(
+                text = if (waiterName.isNullOrBlank()) "Agrega una propina para el mesero" else "Agrega una propina para $waiterName",
+                color = Color.Black,
+                style = MaterialTheme.typography.titleLarge,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f),
-                verticalArrangement = Arrangement.Center,
-            ) {
-                Text(
-                    text = if (waiterName.isNullOrBlank()) "Agrega una propina para el mesero" else "Agrega una propina para $waiterName",
-                    color = Color.Black,
-                    style = MaterialTheme.typography.titleLarge,
-                    textAlign = TextAlign.Center,
-                    modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp),
-                )
+                    .padding(horizontal = 24.dp),
+            )
+            Spacer(Modifier.height(16.dp))
+            Image(
+                painter = painterResource(id = R.drawable.tipwaiter),
+                contentDescription = "Tip Waiter",
+                modifier = Modifier
+                    .height(150.dp)
+                    .width(150.dp)
+            )
 
-                Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
 
-                Button(
-                    onClick = {
-                        onCustomAmount()
-                    },
-                    modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                        .padding(horizontal = 16.dp)
-                        .border(
-                            border = BorderStroke(1.dp, Color.LightGray),
-                            shape = RoundedCornerShape(12.dp),
-                        ),
-                    shape = RoundedCornerShape(12.dp),
-                    colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 16.dp,
                     ),
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.icon_edit),
-                            contentDescription = "",
-                            tint = Color.Black,
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text(
-                            text = "Monto",
-                            color = Color.Black,
-                            fontSize = 16.sp,
-                        )
-                    }
-                }
-
-                Spacer(Modifier.height(16.dp))
-
-                Row(
-                    modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            horizontal = 16.dp,
-                        ),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                ) {
-                    TipItemCard(
-                        percentage = "12%",
-                        amount = "+ \$${tip1.toString().toAmountMx()}",
-                        isPopular = false,
-                        onClickTip = {
-                            onPayWithTip(tip1.toString())
-                        },
-                    )
-                    TipItemCard(
-                        percentage = "15%",
-                        amount = "+ \$${tip2.toString().toAmountMx()}",
-                        isPopular = true,
-                        onClickTip = {
-                            onPayWithTip(tip2.toString())
-                        },
-                    )
-                    TipItemCard(
-                        percentage = "18%",
-                        amount = "+ \$${tip3.toString().toAmountMx()}",
-                        isPopular = false,
-                        onClickTip = {
-                            onPayWithTip(tip3.toString())
-                        },
-                    )
-                }
-            }
-
-            Button(
-                onClick = {
-                    onPayWithoutTip()
-                },
-                modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-                    .padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
-                Text(
-                    text = "Sin propina",
-                    color = Color.Black,
-                    fontSize = 16.sp,
+                TipItemCard(
+                    percentage = "12%",
+                    amount = "+ \$${tip1.toString().toAmountMx()}",
+                    isPopular = false,
+                    onClickTip = {
+                        onPayWithTip(tip1.toString())
+                    },
+                )
+                TipItemCard(
+                    percentage = "15%",
+                    amount = "+ \$${tip2.toString().toAmountMx()}",
+                    isPopular = true,
+                    onClickTip = {
+                        onPayWithTip(tip2.toString())
+                    },
+                )
+                TipItemCard(
+                    percentage = "18%",
+                    amount = "+ \$${tip3.toString().toAmountMx()}",
+                    isPopular = false,
+                    onClickTip = {
+                        onPayWithTip(tip3.toString())
+                    },
                 )
             }
         }
-
+        
+        // Bottom row with both buttons - added elevation
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+               Button(
+                onClick = { onCustomAmount() },
+                modifier = Modifier
+                    .weight(1f)
+                    .height(62.dp),
+                    // .shadow(elevation = 0.7.dp, shape = RoundedCornerShape(12.dp)),  // Added elevation
+                shape = RoundedCornerShape(12.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                border = BorderStroke(width = 0.6.dp, color = Color(0xFFE5E5E5)),
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.icon_edit),
+                        contentDescription = "",
+                        tint = Color.Black,
+                        modifier = Modifier.size(12.dp),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = "Por monto",
+                        color = Color.Black,
+                        fontSize = 10.sp,
+                    )
+                }
+            }
+            Spacer(Modifier.width(8.dp))
+            Button(
+                onClick = { onPayWithoutTip() },
+                modifier = Modifier
+                    .weight(1f)
+                    .height(62.dp),
+                    // .shadow(elevation = 0.7.dp, shape = RoundedCornerShape(12.dp)),  // Added elevation
+                shape = RoundedCornerShape(12.dp),
+           colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                border = BorderStroke(width = 0.6.dp, color = Color(0xFFE5E5E5)),
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_close),
+                        contentDescription = "",
+                        tint = Color.Black,
+                        modifier = Modifier.size(12.dp),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = "Sin propina",
+                        color = Color.Black,
+                        fontSize = 10.sp,
+                    )
+                }
+            }
+            
+      
+        }
         Spacer(Modifier.height(36.dp))
+
     }
 }
 

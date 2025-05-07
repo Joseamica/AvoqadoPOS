@@ -1,4 +1,5 @@
 package com.avoqado.pos.features.management.presentation.tables
+import androidx.compose.material3.MenuAnchorType
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,6 +29,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -106,6 +108,8 @@ fun HomeContent(
         onDismissRequest = { onShowSettings(false) },
         onToggleShift = onToggleShift,
         onLogout = onLogout,
+        onRefresh = onPullToRefresh,
+        isRefreshing = isRefreshing,
         showSettingsModal = showSettings,
         shiftStarted = shiftStarted,
     ) {
@@ -129,10 +133,10 @@ fun HomeContent(
                 )
             }
 
-            Divider(
-                color = Color.LightGray,
-                thickness = 1.dp,
+            HorizontalDivider(
                 modifier = Modifier.padding(bottom = 16.dp),
+                thickness = 1.dp,
+                color = Color.LightGray
             )
 
             PullToRefreshBox(

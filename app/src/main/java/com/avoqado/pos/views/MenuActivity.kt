@@ -62,7 +62,7 @@ class MenuActivity : ComponentActivity() {
             ) {
                 Column {
                     TopAppBar(
-                        title = { Text(text = "Avoqado POS") },
+                        title = { Text(text = "Avoqado TPV") },
                         backgroundColor = primary,
                     )
                     Column(
