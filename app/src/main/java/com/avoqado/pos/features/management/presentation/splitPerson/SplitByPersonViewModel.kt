@@ -17,6 +17,7 @@ class SplitByPersonViewModel(
     private val navigationDispatcher: NavigationDispatcher,
     private val managementRepository: ManagementRepository,
     private val paymentRepository: PaymentRepository,
+    private val sessionManager: com.avoqado.pos.core.data.local.SessionManager,
 ) : ViewModel() {
     private val _state = MutableStateFlow<SplitByPersonViewState>(SplitByPersonViewState())
     val state: StateFlow<SplitByPersonViewState> = _state.asStateFlow()
@@ -83,18 +84,22 @@ class SplitByPersonViewModel(
         }
 
         navigationDispatcher.navigateWithArgs(
-            PaymentDests.InputTip,
+            PaymentDests.LeaveReview,
             NavigationArg.StringArg(
-                PaymentDests.InputTip.ARG_SUBTOTAL,
+                PaymentDests.LeaveReview.ARG_SUBTOTAL,
                 _state.value.totalSelectedAmount,
             ),
             NavigationArg.StringArg(
-                PaymentDests.InputTip.ARG_WAITER,
+                PaymentDests.LeaveReview.ARG_WAITER,
                 waiterName,
             ),
             NavigationArg.StringArg(
-                PaymentDests.InputTip.ARG_SPLIT_TYPE,
+                PaymentDests.LeaveReview.ARG_SPLIT_TYPE,
                 SplitType.EQUALPARTS.value,
+            ),
+            NavigationArg.StringArg(
+                PaymentDests.LeaveReview.ARG_VENUE_NAME,
+                sessionManager.getVenueInfo()?.name ?: "",
             ),
         )
     }

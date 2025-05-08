@@ -98,7 +98,7 @@ fun SignInContent(
 
         CustomKeyboard(
             modifier = Modifier.fillMaxWidth(),
-            type = CustomKeyboardType.simple,
+            type = CustomKeyboardType.Simple,
             onNumberClick = {
                 if (it == -3) {
                     onNext("")

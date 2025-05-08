@@ -1577,3 +1577,472 @@ export function getIO(): Server {
 
 - You can @ files here
 - You can use markdown but dont have to
+
+##filetree:
+app/
+┣ libs/
+┃ ┣ com_menta_android_common_cross_common-cross_2.9.2_common-cross-2.9.2.aar
+┃ ┣ com_menta_android_core_core_payment_6.0.6_core_payment-6.0.6.aar
+┃ ┣ com_menta_android_emv_i9100_reader_reader_3.0.0_reader-3.0.0.aar
+┃ ┣ com_menta_android_keys_admin_core_core_3.0.2_core-3.0.2.aar
+┃ ┣ com_menta_android_printer_i9100_printer_3.0.0_printer-3.0.0.aar
+┃ ┣ com_menta_android_restclient_core_2.5.5_core-2.5.5.aar
+┃ ┗ urovosdkLibs_v79.aar
+┣ src/
+┃ ┣ androidTest/
+┃ ┃ ┗ java/
+┃ ┃   ┗ com/
+┃ ┃ ┃   ┗ avoqado/
+┃ ┃ ┃ ┃   ┗ pos/
+┃ ┃ ┃ ┃ ┃   ┗ ExampleInstrumentedTest.kt
+┃ ┣ main/
+┃ ┃ ┣ java/
+┃ ┃ ┃ ┗ com/
+┃ ┃ ┃   ┗ avoqado/
+┃ ┃ ┃ ┃   ┗ pos/
+┃ ┃ ┃ ┃ ┃   ┣ core/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ architecture/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ data/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ local/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ SessionManager.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ logging/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ network/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ models/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ bills/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ BillProduct.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ BillProductDetail.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NetworkBillDetailV2.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NetworkBillV2.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ Waiter.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ transactions/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ payments/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Bill.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Data.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Meta.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NetworkShiftPaymentsData.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Tip.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Tpv.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ Waiter.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ summary/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Data.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ DateRange.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NetworkSummaryData.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Summary.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ WaiterTip.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NetworkDataShift.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NetworkShiftRecord.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Pagination.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Payment.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ Venue.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Address.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Embedded.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ MerchantData.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NetworkBill.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NetworkBillDetail.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NetworkDetailTable.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NetworkShift.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NetworkSimpleTable.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NetworkTable.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NetworkVenue.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NetworkWaiter.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Page.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ PagedMerchants.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ PagedTerminals.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ PasscodeBody.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ PaymentUpdateMessage.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Product.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Representative.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ RepresentativeId.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ RewardProduct.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ SettlementCondition.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ ShiftBody.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ ShiftUpdateMessage.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Table.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Tax.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Terminal.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ TerminalMerchant.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Venue.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ WaiterData.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ AppConfig.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ AvoqadoAPI.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ AvoqadoService.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ MentaService.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ SocketIOManager.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ SocketService.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ WebSocketManager.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ repository/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┗ TerminalRepositoryImpl.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ domain/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ mappers/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ ShiftMapper.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ model/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ models/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ AvoqadoError.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ PaymentShift.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ PaymentStatus.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ PaymentUpdate.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Shift.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ ShiftParams.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ ShiftSummary.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ SplitType.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ TerminalInfo.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ repositories/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ TerminalRepository.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ usecase/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┗ ValidateAmountUseCase.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ presentation/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ base/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ components/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ CustomKeyboard.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ DashedDivider.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ DropdownMenuMoreActions.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ InfiniteScrollList.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ KeyboardSheet.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ MainButton.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ ObserverLifecycleEvents.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ OtpField.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ PullToRefreshBox.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ SelectableItemRow.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ ToolbarWithIcon.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ TopMenuContent.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ delegates/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ SnackbarDelegate.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ destinations/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ MainDests.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ model/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ enums/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Acquirer.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Country.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ MmTypeCurrencyEnum.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ FlowStep.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ IconAction.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ IconType.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ OperationInfo.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Product.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ TableInfo.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ VenueInfo.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ navigation/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NavigaionManager.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NavigationAction.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NavigationArg.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ NavigationCommand.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ NavigationDispatcher.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ router/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ AppRouter.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ ComposableWrapper.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ theme/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Color.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Dimen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Theme.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ Type.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ utils/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ AmountStringExt.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ BitmapExt.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ DevicePreview.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ PrinterUtils.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ Utils.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ viewmodel/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ InputAmountViewModel.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ InstallmentViewModel.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┗ ListTransactionViewModel.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ services/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ utils/
+┃ ┃ ┃ ┃ ┃   ┣ di/
+┃ ┃ ┃ ┃ ┃   ┣ features/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ authorization/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ data/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ AuthorizationRepositoryImpl.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ domain/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ models/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ User.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ AuthorizationRepository.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ presentation/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ authorization/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ AuthorizationDialog.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ AuthorizationViewModel.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ signIn/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ SignInScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ SignInViewModel.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┗ splash/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ SplashScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┗ SplashViewModel.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ management/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ data/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ cache/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ ManagementCacheStorage.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ mapper/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ TableDetailMapper.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ model/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ PaymentOverviewEntity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ ProductCacheEntity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ TableCacheEntity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ network/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ models/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ PaymentItemNetwork.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┗ ProductItemNetwork.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ ManagementRepositoryImpl.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ domain/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ models/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ BillPayment.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ PaymentOverview.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Product.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ TableBillDetail.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ TableDetail.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ usecases/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ ListenTableEventsUsecase.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ ManagementRepository.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ presentation/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ home/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ models/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ Table.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ HomeScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ HomeViewModel.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ navigation/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ ManagementDests.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ ManagementNavigation.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ shiftNotStarted/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ ShiftNotStarted.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ ShiftNotStartedViewModel.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ splitPerson/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ SplitByPersonScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ SplitByPersonViewModel.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ SplitByPersonViewState.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ splitProduct/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ model/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Mapper.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ SplitByProductViewState.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ SplitByProductScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ SplitByProductViewModel.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ tableDetail/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ components/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ GenericOptions.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ ProductItemRow.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ ProductListSheet.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ model/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Mapper.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Payment.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ TableDetailView.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ ShowListProducts.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ TableDetailScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ TableDetailViewModel.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┗ tables/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ models/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ Table.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ TablesScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┗ TablesViewModel.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ payment/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ data/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ cache/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ models/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ PaymentCacheEntity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ PaymentCacheStorage.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ mappers/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ PaymentCacheMapper.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ network/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ models/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Bill.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ PaymentRecordResponse.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Product.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ RecordPaymentBody.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ Tip.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ TpvData.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ AvoqadoService.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ PaymentRepositoryImpl.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ domain/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ models/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ PaymentInfoResult.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ repository/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┗ PaymentRepository.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ presentation/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ inputTipAmount/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ components/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ TipItemCard.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ InputTipScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ InputTipViewModel.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ navigation/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ PaymentDests.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ PaymentNavigation.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ payment/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ paymentResult/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ PaymentResultScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ PaymentResultViewModel.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ PaymentResultViewState.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ quickPayment/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ QuickPaymentSheet.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ QuickPaymentViewModel.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ rating/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ review/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┗ transactions/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ components/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ CreatedFilterSheet.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ PaymentPage.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ ShiftsPage.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ SummaryPage.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ WaiterFilterSheet.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ TransactionSummaryScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┗ TransactionSummaryViewModel.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ review/
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┗ presentation/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┃   ┗ LeaveReviewViewModel.kt
+┃ ┃ ┃ ┃ ┃   ┣ ui/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ screen/
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ AmountScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ CardReaderScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ ConsumptionListSheet.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ ErrorScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ InstallmentScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ MenuScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ PrimaryButton.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ ProcessingOperationScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ ProgressCircleSmart.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ ProgressCircleStyleSmart.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ Shimmer.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ ShimmerText.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ ShimmerTextFieldAmount.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ SuccessScreen.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ Text.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ TextFieldAmount.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ TextFieldState.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ TextFieldStyle.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┣ TextType.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┗ Type.kt
+┃ ┃ ┃ ┃ ┃   ┣ utils/
+┃ ┃ ┃ ┃ ┃   ┣ views/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ CardErrorActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ CardProcessActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ CardRulesValidationActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ DeclineRefundActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ DeclinedPaymentActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ DoPaymentActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ DoRefundActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ ErrorActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ GetTransactionsActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ InitActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ InputAmountActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ InputMailActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ InstallmentsActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ ListTransactionActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ MenuActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ MeseroActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ ProductsActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ SendTicketActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ SuccessMessageActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ SuccessPaymentActivity.kt
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ SuccessRefundActivity.kt
+┃ ┃ ┃ ┃ ┃   ┣ AppfinRestClientConfigure.kt
+┃ ┃ ┃ ┃ ┃   ┣ AvoqadoApp.kt
+┃ ┃ ┃ ┃ ┃   ┣ Constants.kt
+┃ ┃ ┃ ┃ ┃   ┣ MainActivity.kt
+┃ ┃ ┃ ┃ ┃   ┣ NavigatorHolder.kt
+┃ ┃ ┃ ┃ ┃   ┗ OperationFlowHolder.kt
+┃ ┃ ┣ res/
+┃ ┃ ┃ ┣ drawable/
+┃ ┃ ┃ ┃ ┣ baseline_add_circle_outline_24.xml
+┃ ┃ ┃ ┃ ┣ baseline_arrow_forward_ios_24.xml
+┃ ┃ ┃ ┃ ┣ baseline_backspace_24.xml
+┃ ┃ ┃ ┃ ┣ baseline_check_circle_24.xml
+┃ ┃ ┃ ┃ ┣ baseline_close_24.xml
+┃ ┃ ┃ ┃ ┣ baseline_history_24.xml
+┃ ┃ ┃ ┃ ┣ baseline_print_24.xml
+┃ ┃ ┃ ┃ ┣ baseline_refresh_24.xml
+┃ ┃ ┃ ┃ ┣ ic_bag.xml
+┃ ┃ ┃ ┃ ┣ ic_card.xml
+┃ ┃ ┃ ┃ ┣ ic_close.xml
+┃ ┃ ┃ ┃ ┣ ic_contact_payment.xml
+┃ ┃ ┃ ┃ ┣ ic_hand_cash.xml
+┃ ┃ ┃ ┃ ┣ ic_info.xml
+┃ ┃ ┃ ┃ ┣ ic_launcher_background.xml
+┃ ┃ ┃ ┃ ┣ ic_launcher_foreground.xml
+┃ ┃ ┃ ┃ ┣ ic_quick_pay.xml
+┃ ┃ ┃ ┃ ┣ ic_resumen.xml
+┃ ┃ ┃ ┃ ┣ ic_settings.xml
+┃ ┃ ┃ ┃ ┣ ic_shifts.xml
+┃ ┃ ┃ ┃ ┣ ic_success.xml
+┃ ┃ ┃ ┃ ┣ ic_summary.xml
+┃ ┃ ┃ ┃ ┣ icon_back.xml
+┃ ┃ ┃ ┃ ┣ icon_edit.xml
+┃ ┃ ┃ ┃ ┣ icon_home.xml
+┃ ┃ ┃ ┃ ┣ icon_note.xml
+┃ ┃ ┃ ┃ ┣ icon_people.xml
+┃ ┃ ┃ ┃ ┣ icon_products.xml
+┃ ┃ ┃ ┃ ┣ ilu_ticket_background.xml
+┃ ┃ ┃ ┃ ┣ isotipo.png
+┃ ┃ ┃ ┃ ┣ line.xml
+┃ ┃ ┃ ┃ ┣ tipwaiter.png
+┃ ┃ ┃ ┃ ┗ tipwaiter2.png
+┃ ┃ ┃ ┣ drawable-xxhdpi/
+┃ ┃ ┃ ┣ font/
+┃ ┃ ┃ ┃ ┣ effra_bold.ttf
+┃ ┃ ┃ ┃ ┣ effra_regular.ttf
+┃ ┃ ┃ ┃ ┣ effra_semibold.ttf
+┃ ┃ ┃ ┃ ┣ mulish_bold.ttf
+┃ ┃ ┃ ┃ ┣ mulish_light.ttf
+┃ ┃ ┃ ┃ ┣ mulish_regular.ttf
+┃ ┃ ┃ ┃ ┣ sourcesanspro_bold.otf
+┃ ┃ ┃ ┃ ┣ sourcesanspro_regular.otf
+┃ ┃ ┃ ┃ ┗ sourcesanspro_semibold.otf
+┃ ┃ ┃ ┣ layout/
+┃ ┃ ┃ ┃ ┣ activity_bin_validation.xml
+┃ ┃ ┃ ┃ ┣ activity_card_error.xml
+┃ ┃ ┃ ┃ ┣ activity_card_process.xml
+┃ ┃ ┃ ┃ ┣ activity_decline_refund.xml
+┃ ┃ ┃ ┃ ┣ activity_do_payment.xml
+┃ ┃ ┃ ┃ ┣ activity_do_refund.xml
+┃ ┃ ┃ ┃ ┣ activity_error.xml
+┃ ┃ ┃ ┃ ┣ activity_get_transactions.xml
+┃ ┃ ┃ ┃ ┣ activity_init.xml
+┃ ┃ ┃ ┃ ┣ activity_input_mail.xml
+┃ ┃ ┃ ┃ ┣ activity_installments.xml
+┃ ┃ ┃ ┃ ┣ activity_list_transaction.xml
+┃ ┃ ┃ ┃ ┣ activity_menu.xml
+┃ ┃ ┃ ┃ ┣ activity_products.xml
+┃ ┃ ┃ ┃ ┣ activity_send_ticket.xml
+┃ ┃ ┃ ┃ ┣ activity_success_message.xml
+┃ ┃ ┃ ┃ ┗ activity_success_refund.xml
+┃ ┃ ┃ ┣ mipmap-anydpi-v26/
+┃ ┃ ┃ ┃ ┣ ic_launcher.xml
+┃ ┃ ┃ ┃ ┗ ic_launcher_round.xml
+┃ ┃ ┃ ┣ mipmap-hdpi/
+┃ ┃ ┃ ┃ ┣ ic_launcher.webp
+┃ ┃ ┃ ┃ ┣ ic_launcher_foreground.webp
+┃ ┃ ┃ ┃ ┗ ic_launcher_round.webp
+┃ ┃ ┃ ┣ mipmap-mdpi/
+┃ ┃ ┃ ┃ ┣ ic_launcher.webp
+┃ ┃ ┃ ┃ ┣ ic_launcher_foreground.webp
+┃ ┃ ┃ ┃ ┗ ic_launcher_round.webp
+┃ ┃ ┃ ┣ mipmap-xhdpi/
+┃ ┃ ┃ ┃ ┣ ic_launcher.webp
+┃ ┃ ┃ ┃ ┣ ic_launcher_foreground.webp
+┃ ┃ ┃ ┃ ┗ ic_launcher_round.webp
+┃ ┃ ┃ ┣ mipmap-xxhdpi/
+┃ ┃ ┃ ┃ ┣ ic_launcher.webp
+┃ ┃ ┃ ┃ ┣ ic_launcher_foreground.webp
+┃ ┃ ┃ ┃ ┗ ic_launcher_round.webp
+┃ ┃ ┃ ┣ mipmap-xxxhdpi/
+┃ ┃ ┃ ┃ ┣ ic_launcher.webp
+┃ ┃ ┃ ┃ ┣ ic_launcher_foreground.webp
+┃ ┃ ┃ ┃ ┗ ic_launcher_round.webp
+┃ ┃ ┃ ┣ values/
+┃ ┃ ┃ ┃ ┣ colors.xml
+┃ ┃ ┃ ┃ ┣ dimens.xml
+┃ ┃ ┃ ┃ ┣ strings.xml
+┃ ┃ ┃ ┃ ┗ themes.xml
+┃ ┃ ┃ ┗ xml/
+┃ ┃ ┃   ┣ backup_rules.xml
+┃ ┃ ┃   ┗ data_extraction_rules.xml
+┃ ┃ ┣ AndroidManifest.xml
+┃ ┃ ┗ ic_launcher-playstore.png
+┃ ┗ test/
+┃   ┗ java/
+┃ ┃   ┗ com/
+┃ ┃ ┃   ┗ avoqado/
+┃ ┃ ┃ ┃   ┗ pos/
+┃ ┃ ┃ ┃ ┃   ┣ core/
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ data/
+┃ ┃ ┃ ┃ ┃ ┃ ┃   ┗ network/
+┃ ┃ ┃ ┃ ┃   ┗ ExampleUnitTest.kt
+┣ .gitignore
+┣ build.gradle.kts
+┣ file_tree.txt
+┣ google-services.json
+┗ proguard-rules.pro

@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,14 +23,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.avoqado.pos.R
 
 enum class CustomKeyboardType {
-    default,
-    simple,
+    Default,
+    Simple,
 }
 
 @Composable
@@ -38,18 +41,18 @@ fun CustomKeyboard(
     onNumberClick: (Int) -> Unit,
     onBackspaceClick: () -> Unit,
     onConfirmClick: () -> Unit,
-    type: CustomKeyboardType = CustomKeyboardType.default,
+    type: CustomKeyboardType = CustomKeyboardType.Default,
 ) {
     val keys =
         when (type) {
-            CustomKeyboardType.default ->
+            CustomKeyboardType.Default ->
                 listOf(
                     listOf(1, 2, 3),
                     listOf(4, 5, 6),
                     listOf(7, 8, 9),
                     listOf(-3, 0, -4), // -1 for backspace, -2 for confirm, -3 to clear amount, -4 double zero, -99 for empty space
                 )
-            CustomKeyboardType.simple ->
+            CustomKeyboardType.Simple ->
                 listOf(
                     listOf(1, 2, 3),
                     listOf(4, 5, 6),
@@ -114,7 +117,7 @@ fun CustomKeyboard(
             }
         }
 
-        if (type == CustomKeyboardType.default) {
+        if (type == CustomKeyboardType.Default) {
             Spacer(modifier = Modifier.width(8.dp))
             Column {
                 KeyboardButton(
@@ -169,7 +172,7 @@ fun KeyboardButton(
                     color = if (isConfirm) Color.Black else Color.White,
                     shape = RoundedCornerShape(8.dp),
                 ).border(
-                    width = 1.dp,
+                    width = 0.2.dp,
                     color = if (isConfirm) Color.Transparent else Color.LightGray,
                     shape = RoundedCornerShape(8.dp),
                 ),
@@ -188,6 +191,63 @@ fun KeyboardButton(
                 modifier = Modifier.size(24.dp),
                 contentDescription = null,
                 tint = if (isConfirm) Color.White else Color.Black,
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CustomKeyboardPreview() {
+    Surface(
+        modifier = Modifier.background(Color.White)
+    ) {
+        Column {
+            // Default keyboard preview
+            Text(
+                text = "Default Keyboard",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            CustomKeyboard(
+                onNumberClick = {},
+                onBackspaceClick = {},
+                onConfirmClick = {},
+                type = CustomKeyboardType.Default
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Simple keyboard preview
+            Text(
+                text = "Simple Keyboard",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            CustomKeyboard(
+                onNumberClick = {},
+                onBackspaceClick = {},
+                onConfirmClick = {},
+                type = CustomKeyboardType.Simple
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Keyboard with percentage toggle
+            Text(
+                text = "Keyboard with Percentage Toggle",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            CustomKeyboard(
+                onNumberClick = {},
+                onBackspaceClick = {},
+                onConfirmClick = {},
+                togglePercentage = true,
+                type = CustomKeyboardType.Default
             )
         }
     }

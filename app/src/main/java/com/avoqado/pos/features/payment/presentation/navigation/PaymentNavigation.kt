@@ -15,6 +15,8 @@ import com.avoqado.pos.features.payment.presentation.paymentResult.PaymentResult
 import com.avoqado.pos.features.payment.presentation.paymentResult.PaymentResultViewModel
 import com.avoqado.pos.features.payment.presentation.quickPayment.QuickPaymentSheet
 import com.avoqado.pos.features.payment.presentation.quickPayment.QuickPaymentViewModel
+import com.avoqado.pos.features.payment.presentation.review.LeaveReviewScreen
+import com.avoqado.pos.features.payment.presentation.review.LeaveReviewViewModel
 import com.avoqado.pos.features.payment.presentation.transactions.SummaryTabs
 import com.avoqado.pos.features.payment.presentation.transactions.TransactionSummaryViewModel
 import com.avoqado.pos.features.payment.presentation.transactions.TransactionsSummaryScreen
@@ -25,6 +27,25 @@ fun NavGraphBuilder.paymentNavigation(
     snackbarDelegate: SnackbarDelegate,
     trxData: TrxData,
 ) {
+    composableHolder(PaymentDests.LeaveReview) {
+        val subtotal = it.arguments?.getString(PaymentDests.LeaveReview.ARG_SUBTOTAL) ?: "0.00"
+        val waiterName = it.arguments?.getString(PaymentDests.LeaveReview.ARG_WAITER) ?: ""
+        val splitType = it.arguments?.getString(PaymentDests.LeaveReview.ARG_SPLIT_TYPE) ?: ""
+        val venueName = it.arguments?.getString(PaymentDests.LeaveReview.ARG_VENUE_NAME) ?: ""
+        val leaveReviewViewModel =
+            remember {
+                LeaveReviewViewModel(
+                    subtotal = subtotal,
+                    waiterName = waiterName,
+                    splitType = splitType,
+                    venueName = venueName,
+                    navigationDispatcher = navigationDispatcher
+                )
+            }
+
+        LeaveReviewScreen(leaveReviewViewModel = leaveReviewViewModel)
+    }
+    
     composableHolder(PaymentDests.InputTip) {
         val subtotal = it.arguments?.getString(PaymentDests.InputTip.ARG_SUBTOTAL) ?: "0.00"
         val waiterName = it.arguments?.getString(PaymentDests.InputTip.ARG_WAITER) ?: ""

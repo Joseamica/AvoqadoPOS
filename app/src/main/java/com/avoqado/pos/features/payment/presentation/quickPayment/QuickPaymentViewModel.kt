@@ -38,18 +38,22 @@ class QuickPaymentViewModel(
         )
         navigationDispatcher.navigateBack()
         navigationDispatcher.navigateWithArgs(
-            PaymentDests.InputTip,
+            PaymentDests.LeaveReview,
             NavigationArg.StringArg(
-                PaymentDests.InputTip.ARG_SUBTOTAL,
+                PaymentDests.LeaveReview.ARG_SUBTOTAL,
                 amount.toString(),
             ),
             NavigationArg.StringArg(
-                PaymentDests.InputTip.ARG_WAITER,
+                PaymentDests.LeaveReview.ARG_WAITER,
                 currentUser?.name ?: "",
             ),
             NavigationArg.StringArg(
-                PaymentDests.InputTip.ARG_SPLIT_TYPE,
+                PaymentDests.LeaveReview.ARG_SPLIT_TYPE,
                 SplitType.FULLPAYMENT.value,  // IMPORTANT: Keep it as FULLPAYMENT instead of EQUALPARTS
+            ),
+            NavigationArg.StringArg(
+                PaymentDests.LeaveReview.ARG_VENUE_NAME,
+                sessionManager.getVenueInfo()?.name ?: "",
             ),
         )
     }

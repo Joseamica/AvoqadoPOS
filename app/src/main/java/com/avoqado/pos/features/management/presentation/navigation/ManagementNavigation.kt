@@ -64,6 +64,7 @@ fun NavGraphBuilder.managementNavigation(
                     navigationDispatcher = navigationDispatcher,
                     managementRepository = AvoqadoApp.managementRepository,
                     paymentRepository = AvoqadoApp.paymentRepository,
+                    sessionManager = AvoqadoApp.sessionManager,
                 )
             }
 
@@ -79,6 +80,7 @@ fun NavGraphBuilder.managementNavigation(
                     navigationDispatcher = navigationDispatcher,
                     managementRepository = AvoqadoApp.managementRepository,
                     paymentRepository = AvoqadoApp.paymentRepository,
+                    sessionManager = AvoqadoApp.sessionManager,
                 )
             }
 

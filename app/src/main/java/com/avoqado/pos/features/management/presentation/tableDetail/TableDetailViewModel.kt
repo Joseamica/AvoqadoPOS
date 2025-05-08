@@ -354,18 +354,22 @@ class TableDetailViewModel(
                 ),
             )
             navigationDispatcher.navigateWithArgs(
-                PaymentDests.InputTip,
+                PaymentDests.LeaveReview,
                 NavigationArg.StringArg(
-                    PaymentDests.InputTip.ARG_SUBTOTAL,
+                    PaymentDests.LeaveReview.ARG_SUBTOTAL,
                     _tableDetail.value.totalPending.toString(),
                 ),
                 NavigationArg.StringArg(
-                    PaymentDests.InputTip.ARG_WAITER,
+                    PaymentDests.LeaveReview.ARG_WAITER,
                     _tableDetail.value.waiterName,
                 ),
                 NavigationArg.StringArg(
-                    PaymentDests.InputTip.ARG_SPLIT_TYPE,
+                    PaymentDests.LeaveReview.ARG_SPLIT_TYPE,
                     SplitType.FULLPAYMENT.value,
+                ),
+                NavigationArg.StringArg(
+                    PaymentDests.LeaveReview.ARG_VENUE_NAME,
+                    venue?.name ?: "",
                 ),
             )
         } else {
@@ -391,18 +395,22 @@ class TableDetailViewModel(
                     ),
                 )
                 navigationDispatcher.navigateWithArgs(
-                    PaymentDests.InputTip,
+                    PaymentDests.LeaveReview,
                     NavigationArg.StringArg(
-                        PaymentDests.InputTip.ARG_SUBTOTAL,
+                        PaymentDests.LeaveReview.ARG_SUBTOTAL,
                         amount.toString(),
                     ),
                     NavigationArg.StringArg(
-                        PaymentDests.InputTip.ARG_WAITER,
+                        PaymentDests.LeaveReview.ARG_WAITER,
                         _tableDetail.value.waiterName,
                     ),
                     NavigationArg.StringArg(
-                        PaymentDests.InputTip.ARG_SPLIT_TYPE,
+                        PaymentDests.LeaveReview.ARG_SPLIT_TYPE,
                         SplitType.CUSTOMAMOUNT.value,
+                    ),
+                    NavigationArg.StringArg(
+                        PaymentDests.LeaveReview.ARG_VENUE_NAME,
+                        venue?.name ?: "",
                     ),
                 )
             } else {
