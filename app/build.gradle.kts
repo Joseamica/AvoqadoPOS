@@ -95,7 +95,7 @@ dependencies {
     // Menta dependencies
     implementation(files("libs/urovosdkLibs_v79.aar"))
     implementation(files("libs/com_menta_android_common_cross_common-cross_2.9.2_common-cross-2.9.2.aar"))
-    implementation(files("libs/com_menta_android_core_core_payment_6.0.6_core_payment-6.0.6.aar"))
+    implementation(files("libs/com_menta_android_core_core_payment_6.0.7_core_payment-6.0.7.aar"))
     implementation(files("libs/com_menta_android_emv_i9100_reader_reader_3.0.0_reader-3.0.0.aar"))
     implementation(files("libs/com_menta_android_keys_admin_core_core_3.0.2_core-3.0.2.aar"))
     implementation(files("libs/com_menta_android_printer_i9100_printer_3.0.0_printer-3.0.0.aar"))
