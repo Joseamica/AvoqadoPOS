@@ -1,5 +1,6 @@
 package com.avoqado.pos.features.authorization.presentation.splash
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavOptions
@@ -54,7 +55,7 @@ class SplashViewModel constructor(
 
     val currentUser = sessionManager.getAvoqadoSession()
 
-    init {
+    fun initSplash(){
         Timber.i("Init with serial number -> $serialNumber")
         viewModelScope.launch(Dispatchers.IO) {
             try {

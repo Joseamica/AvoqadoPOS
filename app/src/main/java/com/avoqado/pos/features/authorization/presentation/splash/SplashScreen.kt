@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.ACQUIRER_NAME
 import com.avoqado.pos.COUNTRY_CODE
 import com.avoqado.pos.R
+import com.avoqado.pos.core.presentation.components.RequestPermissions
 import com.avoqado.pos.core.presentation.theme.primary
 import com.avoqado.pos.core.presentation.theme.textColor
 import com.avoqado.pos.core.presentation.theme.textlightGrayColor
@@ -190,4 +191,12 @@ fun SplashScreen(
             }
         }
     }
+
+    RequestPermissions(
+        onPermissionResult = { isGranted ->
+            if (isGranted) {
+                viewModel.initSplash()
+            }
+        }
+    )
 }

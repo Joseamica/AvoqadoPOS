@@ -17,6 +17,10 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+//        ndk {
+//            abiFilters.add("armeabi-v7a")
+//        }
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
@@ -127,6 +131,7 @@ dependencies {
     // security
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
     implementation("org.bouncycastle:bcpkix-jdk15on:1.69")
+    implementation("commons-codec:commons-codec:1.16.1")
 
     // room database
     implementation("androidx.room:room-ktx:$roomVersion")
@@ -141,4 +146,6 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-crashlytics")
+
+    implementation("com.google.accompanist:accompanist-permissions:0.37.3")
 }
