@@ -104,9 +104,8 @@ fun TransactionsSummaryScreen(viewModel: TransactionSummaryViewModel) {
         },
         summary = summary,
         payments = payments,
-        onLoadMorePayments = {
-            viewModel.loadPaymentsSummary(nextPage = true)
-        },
+        onLoadMorePayments = viewModel::loadPaymentsSummary,
+        onPaymentSelected = viewModel::onPaymentSelected,
         waiters = viewModel.venueInfo?.waiters?.map { Pair(it.id, it.nombre) } ?: emptyList(),
         onPrintPage = {
             val venue =
@@ -232,6 +231,7 @@ fun TransactionSummaryContent(
     summary: ShiftSummary? = null,
     payments: List<PaymentShift> = emptyList(),
     onLoadMorePayments: () -> Unit = {},
+    onPaymentSelected: (PaymentShift) -> Unit = {},
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -406,6 +406,7 @@ fun TransactionSummaryContent(
                     items = payments,
                     onLoadMore = onLoadMorePayments,
                     hasMorePages = hasMorePaymentsPages,
+                    onPaymentSelected = onPaymentSelected,
                 )
 
             SummaryTabs.TURNOS ->

@@ -99,6 +99,24 @@ sealed class PaymentDests : NavigationAction {
         override val navAnimation: NavAnimation?
             get() = NavAnimation.fade()
     }
+    
+    data object PaymentDetail : PaymentDests() {
+        const val ARG_PAYMENT_ID = "arg_payment_id"
+        
+        override val route: String
+            get() = "payment_detail/{$ARG_PAYMENT_ID}"
+            
+        override val arguments: List<NamedNavArgument>
+            get() = listOf(
+                navArgument(ARG_PAYMENT_ID) {
+                    type = NavType.StringType
+                    nullable = false
+                }
+            )
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.fade()
+    }
 
     data object QuickPayment : PaymentDests() {
         override val route: String

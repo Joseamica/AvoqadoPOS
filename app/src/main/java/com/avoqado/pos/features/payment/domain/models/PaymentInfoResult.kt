@@ -1,6 +1,7 @@
 package com.avoqado.pos.features.payment.domain.models
 
 import com.avoqado.pos.core.domain.models.SplitType
+import com.avoqado.pos.features.payment.presentation.review.ReviewRating
 import java.time.LocalDateTime
 
 data class PaymentInfoResult(
@@ -17,4 +18,5 @@ data class PaymentInfoResult(
     val products: List<String> = emptyList(),
     val splitPartySize: Int = 0,
     val splitSelectedPartySize: Int = 0,
+    val reviewRating: ReviewRating? = null,
 )

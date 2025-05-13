@@ -1,6 +1,7 @@
 package com.avoqado.pos.features.payment.domain.repository
 
 import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
+import com.avoqado.pos.features.payment.presentation.review.ReviewRating
 import com.menta.android.core.model.Adquirer
 
 interface PaymentRepository {
@@ -23,6 +24,7 @@ interface PaymentRepository {
         token: String,
         paidProductsId: List<String>,
         adquirer: Adquirer?,
+        reviewRating: ReviewRating? = null,
     ): String
     
     suspend fun recordFastPayment(
@@ -36,5 +38,6 @@ interface PaymentRepository {
         token: String,
         paidProductsId: List<String>,
         adquirer: Adquirer?,
+        reviewRating: ReviewRating? = null,
     ): String
 }

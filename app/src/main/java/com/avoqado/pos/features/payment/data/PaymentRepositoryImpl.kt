@@ -8,6 +8,7 @@ import com.avoqado.pos.features.payment.data.network.AvoqadoService
 import com.avoqado.pos.features.payment.data.network.models.RecordPaymentBody
 import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
 import com.avoqado.pos.features.payment.domain.repository.PaymentRepository
+import com.avoqado.pos.features.payment.presentation.review.ReviewRating
 import com.menta.android.core.model.Adquirer
 
 class PaymentRepositoryImpl(
@@ -37,6 +38,7 @@ class PaymentRepositoryImpl(
         token: String,
         paidProductsId: List<String>,
         adquirer: Adquirer?,
+        reviewRating: ReviewRating?,
     ): String {
         try {
             var body =
@@ -53,6 +55,7 @@ class PaymentRepositoryImpl(
                     paidProductsId = paidProductsId,
                     token = token,
                     isInternational = adquirer?.let { data -> data.capture?.card?.isInternational } ?: false,
+                    reviewRating = reviewRating?.name,
                 )
 
             adquirer?.let {
@@ -96,6 +99,7 @@ class PaymentRepositoryImpl(
         token: String,
         paidProductsId: List<String>,
         adquirer: Adquirer?,
+        reviewRating: ReviewRating?,
     ): String {
         try {
             var body =
@@ -112,6 +116,7 @@ class PaymentRepositoryImpl(
                     paidProductsId = paidProductsId,
                     token = token,
                     isInternational = adquirer?.let { data -> data.capture?.card?.isInternational } ?: false,
+                    reviewRating = reviewRating?.name,
                 )
 
             adquirer?.let {

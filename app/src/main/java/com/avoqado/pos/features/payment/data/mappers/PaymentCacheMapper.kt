@@ -17,6 +17,7 @@ fun PaymentCacheEntity.toDomain(): PaymentInfoResult =
         tableNumber = tableNumber,
         billId = billId,
         products = products,
+        reviewRating = reviewRating,
     )
 
 fun PaymentInfoResult.toCache(): PaymentCacheEntity =
@@ -32,4 +33,5 @@ fun PaymentInfoResult.toCache(): PaymentCacheEntity =
         tableNumber = tableNumber,
         billId = billId,
         products = products,
+        reviewRating = reviewRating,
     )

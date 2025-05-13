@@ -153,7 +153,7 @@ class PaymentResultViewModel(
             _paymentResult.update { state ->
                 state
                     .copy(
-                        qrCode = "https://avoqado.io/receipt?token=$token",
+                        qrCode = "https://avoqado.io/receipt?token=$token${if (info.reviewRating == com.avoqado.pos.features.payment.presentation.review.ReviewRating.EXCELLENT) "&avoidReview=false" else "&avoidReview=true"}",
                         adquirer = adquirer,
                         terminalSerialCode = terminal.serialCode,
                     )
@@ -183,6 +183,7 @@ class PaymentResultViewModel(
                     adquirer = adquirer,
                     token = token,
                     paidProductsId = info.products,
+                    reviewRating = info.reviewRating,
                 )
             } else {
                 // Use regular payment endpoint for table-based payments
@@ -209,6 +210,7 @@ class PaymentResultViewModel(
                     adquirer = adquirer,
                     token = token,
                     paidProductsId = info.products,
+                    reviewRating = info.reviewRating,
                 )
             }
         }

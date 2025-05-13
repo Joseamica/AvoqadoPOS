@@ -1,5 +1,6 @@
 package com.avoqado.pos.features.payment.data.network.models
 
+import com.avoqado.pos.features.payment.presentation.review.ReviewRating
 import com.google.gson.annotations.SerializedName
 
 //            {
@@ -58,4 +59,5 @@ data class RecordPaymentBody(
     @SerializedName("mentaTicketId") val mentaTicketId: String? = null,
     @SerializedName("token") val token: String? = null,
     @SerializedName("isInternational") val isInternational: Boolean,
+    @SerializedName("reviewRating") val reviewRating: String? = null,
 )

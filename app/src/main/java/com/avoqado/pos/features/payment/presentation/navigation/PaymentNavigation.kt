@@ -1,8 +1,17 @@
 package com.avoqado.pos.features.payment.presentation.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import com.avoqado.pos.AvoqadoApp
+import com.avoqado.pos.core.domain.models.PaymentShift
 import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.domain.usecase.ValidateAmountUseCase
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
@@ -20,6 +29,7 @@ import com.avoqado.pos.features.payment.presentation.review.LeaveReviewViewModel
 import com.avoqado.pos.features.payment.presentation.transactions.SummaryTabs
 import com.avoqado.pos.features.payment.presentation.transactions.TransactionSummaryViewModel
 import com.avoqado.pos.features.payment.presentation.transactions.TransactionsSummaryScreen
+import com.avoqado.pos.features.payment.presentation.transactions.components.PaymentDetailScreen
 import com.menta.android.core.viewmodel.TrxData
 
 fun NavGraphBuilder.paymentNavigation(
@@ -110,5 +120,37 @@ fun NavGraphBuilder.paymentNavigation(
         QuickPaymentSheet(
             viewModel = viewModel,
         )
+    }
+    
+    composableHolder(PaymentDests.PaymentDetail) {
+        val paymentId = it.arguments?.getString(PaymentDests.PaymentDetail.ARG_PAYMENT_ID) ?: ""
+        val paymentState = remember { mutableStateOf<PaymentShift?>(null) }
+        
+        // Launch a coroutine effect to fetch the payment data
+        LaunchedEffect(paymentId) {
+            // Find the payment in the terminal repository
+            val payment = AvoqadoApp.terminalRepository.getPaymentById(paymentId)
+            paymentState.value = payment
+        }
+        
+        // Show loading state while payment is being fetched
+        if (paymentState.value == null) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
+        } else {
+            // Show payment details if payment was found
+            paymentState.value?.let { payment ->
+                PaymentDetailScreen(
+                    payment = payment,
+                    onBackClick = { navigationDispatcher.navigateBack() }
+                )
+            } ?: run {
+                // Handle case where payment is not found
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("Payment not found")
+                }
+            }
+        }
     }
 }

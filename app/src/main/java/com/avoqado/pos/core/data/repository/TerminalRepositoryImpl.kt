@@ -391,4 +391,27 @@ class TerminalRepositoryImpl(
 
             shift
         }
+        
+    override suspend fun getPaymentById(paymentId: String): PaymentShift? {
+        try {
+            // Get the current venue ID from session
+            val venueId = sessionManager.getVenueId() ?: return null
+            
+            // Set parameters to get all payments for the current venue
+            val params = ShiftParams(
+                venueId = venueId,
+                pageSize = 100, // Set a reasonable page size to ensure we retrieve enough payments
+                page = 1,
+                startTime = null, // No time restrictions
+                endTime = null
+            )
+            
+            // Get all payments and find the one that matches the paymentId
+            val payments = getShiftPaymentsSummary(params)
+            return payments.find { it.paymentId == paymentId }
+        } catch (e: Exception) {
+            Timber.e(e, "Error finding payment by ID: $paymentId")
+            return null
+        }
+    }
 }

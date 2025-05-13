@@ -10,4 +10,8 @@ data class PaymentShift(
     val paymentId: String,
     val date: Instant,
     val createdAt: Instant,
+    val paymentMethod: String? = null,
+    val tableNumber: Int? = null,
+    val status: String? = null,
+    val billId: String? = null
 )

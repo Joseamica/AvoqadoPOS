@@ -20,7 +20,8 @@ class LeaveReviewViewModel(
     val subtotal: String, // Made public so it can be accessed in the screen
     private val waiterName: String,
     private val splitType: String,
-    val venueName: String // Made public so it can be accessed in the screen
+    val venueName: String, // Made public so it can be accessed in the screen
+    private val paymentRepository: com.avoqado.pos.features.payment.domain.repository.PaymentRepository = AvoqadoApp.paymentRepository
 ) : ViewModel() {
 
     private val _rating = MutableStateFlow<ReviewRating?>(null)
@@ -28,6 +29,13 @@ class LeaveReviewViewModel(
 
     fun setRating(rating: ReviewRating) {
         _rating.value = rating
+        
+        // Store the rating in the payment info
+        paymentRepository.getCachePaymentInfo()?.let { info ->
+            paymentRepository.setCachePaymentInfo(
+                info.copy(reviewRating = rating)
+            )
+        }
         
         // Log the rating (simplified without recordMetric)
         viewModelScope.launch {

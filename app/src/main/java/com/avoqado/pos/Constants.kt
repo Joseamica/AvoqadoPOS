@@ -12,7 +12,7 @@ import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
 //    "create_date": "2024-11-11T22:41:03.77331Z",
 //    "update_date": "2024-11-11T22:41:03.773327Z"
 
-val merchantId = "8e341c9a-0298-4aa1-ba6b-be11a526560f"
+val merchantId = ""
 val customerId = "4b9d4822-9c94-4056-b58f-b84c7d214ed4"
 val merchantApiKey = "4mrOrkW27ZDvmNiDZVdDatcLrQQvVPH5Www1OlT8TL767v92P3e7DP6SmdW6zRW7"
 val terminalId = "7335c5cd-1d99-4eb7-abfb-9c43c5e9a122"

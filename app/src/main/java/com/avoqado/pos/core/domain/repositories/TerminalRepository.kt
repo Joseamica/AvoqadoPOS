@@ -37,4 +37,11 @@ interface TerminalRepository {
     fun disconnectFromShiftEvents()
 
     fun listenForShiftEvents(): Flow<Shift>
+    
+    /**
+     * Retrieves a payment by its ID
+     * @param paymentId The unique identifier of the payment
+     * @return The payment if found, null otherwise
+     */
+    suspend fun getPaymentById(paymentId: String): PaymentShift?
 }

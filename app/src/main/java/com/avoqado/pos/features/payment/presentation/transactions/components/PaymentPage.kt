@@ -1,6 +1,7 @@
 package com.avoqado.pos.features.payment.presentation.transactions.components
 
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +50,7 @@ fun ColumnScope.PaymentsPage(
     hasMorePages: Boolean = true,
     onLoadMore: () -> Unit = {},
     onRefresh: () -> Unit = {},
+    onPaymentSelected: (PaymentShift) -> Unit = {},
 ) {
     // Calculate the total from all payment items
     val totalSales = remember(items) {
@@ -85,7 +87,10 @@ fun ColumnScope.PaymentsPage(
                         items = items,
                         key = { payment -> "${payment.id}_${payment.date ?: ""}_${payment.paymentId}_${payment.hashCode()}" }
                     ) { payment ->
-                        PaymentShiftItemCard(payment)
+                        PaymentShiftItemCard(
+                            payment = payment,
+                            onClick = { onPaymentSelected(payment) }
+                        )
                     }
                     
                     if (isLoading && hasMorePages) {
@@ -142,13 +147,19 @@ fun TotalFooter(totalAmount: Int) {
 }
 
 @Composable
-fun PaymentShiftItemCard(payment: PaymentShift) {
+fun PaymentShiftItemCard(
+    payment: PaymentShift,
+    onClick: () -> Unit = {}
+) {
     Card(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp).padding(bottom = 16.dp),
-        colors =
-            CardDefaults.cardColors(
-                containerColor = Color.White,
-            ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .padding(bottom = 16.dp)
+            .clickable(onClick = onClick),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White,
+        ),
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -158,35 +169,31 @@ fun PaymentShiftItemCard(payment: PaymentShift) {
             ) {
                 Text(
                     text = "Venta",
-                    style =
-                        MaterialTheme.typography.bodySmall.copy(
-                            color = Color.Black,
-                        ),
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        color = Color.Black,
+                    ),
                 )
                 Text(
                     text = "$${payment.totalSales.toString().toAmountMx()}",
-                    style =
-                        MaterialTheme.typography.bodyMedium.copy(
-                            color = Color.Black,
-                            fontWeight = FontWeight.W600,
-                        ),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.Black,
+                        fontWeight = FontWeight.W600,
+                    ),
                 )
                 Spacer(Modifier.height(8.dp))
 
                 Text(
                     text = "Propina",
-                    style =
-                        MaterialTheme.typography.bodySmall.copy(
-                            color = Color.Black,
-                        ),
+                    style = MaterialTheme.typography.bodySmall.copy(
+                        color = Color.Black,
+                    ),
                 )
                 Text(
                     text = "$${payment.totalTip.toString().toAmountMx()}",
-                    style =
-                        MaterialTheme.typography.bodyMedium.copy(
-                            color = Color.Black,
-                            fontWeight = FontWeight.W600,
-                        ),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.Black,
+                        fontWeight = FontWeight.W600,
+                    ),
                 )
             }
 
@@ -196,32 +203,29 @@ fun PaymentShiftItemCard(payment: PaymentShift) {
             ) {
                 Text(
                     text = "#${payment.paymentId}",
-                    style =
-                        MaterialTheme.typography.bodyMedium.copy(
-                            color = Color.Black,
-                            fontWeight = FontWeight.W500,
-                        ),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.Black,
+                        fontWeight = FontWeight.W500,
+                    ),
                 )
                 Spacer(Modifier.height(8.dp))
 
                 Text(
                     text = payment.waiterName,
-                    style =
-                        MaterialTheme.typography.bodyMedium.copy(
-                            color = Color.Black,
-                            fontWeight = FontWeight.W500,
-                        ),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.Black,
+                        fontWeight = FontWeight.W500,
+                    ),
                 )
 
                 Spacer(Modifier.height(8.dp))
 
                 Text(
                     text = formatDateTime(payment.date),
-                    style =
-                        MaterialTheme.typography.bodyMedium.copy(
-                            color = Color.Black,
-                            fontWeight = FontWeight.W500,
-                        ),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.Black,
+                        fontWeight = FontWeight.W500,
+                    ),
                 )
             }
         }

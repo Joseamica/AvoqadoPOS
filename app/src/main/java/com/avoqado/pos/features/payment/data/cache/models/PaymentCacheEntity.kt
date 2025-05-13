@@ -1,5 +1,6 @@
 package com.avoqado.pos.features.payment.data.cache.models
 
+import com.avoqado.pos.features.payment.presentation.review.ReviewRating
 import java.time.LocalDateTime
 
 data class PaymentCacheEntity(
@@ -14,4 +15,5 @@ data class PaymentCacheEntity(
     val tableNumber: String,
     val billId: String,
     val products: List<String>,
+    val reviewRating: ReviewRating? = null,
 )

@@ -11,6 +11,7 @@ import com.avoqado.pos.core.domain.models.ShiftSummary
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
+import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -334,5 +335,15 @@ class TransactionSummaryViewModel(
 
     fun navigateBack() {
         navigationDispatcher.navigateBack()
+    }
+    
+    /**
+     * Navigates to the payment detail screen when a payment is selected
+     * @param payment The selected payment
+     */
+    fun onPaymentSelected(payment: PaymentShift) {
+        // The PaymentDetail destination uses a path parameter, so we need to replace it in the route
+        val route = PaymentDests.PaymentDetail.route.replace("{${PaymentDests.PaymentDetail.ARG_PAYMENT_ID}}", payment.paymentId)
+        navigationDispatcher.navigateTo(route)
     }
 }

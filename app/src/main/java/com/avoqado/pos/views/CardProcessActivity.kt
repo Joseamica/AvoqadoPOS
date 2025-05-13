@@ -52,6 +52,7 @@ import com.menta.android.emv.i9100.reader.util.InputMode
 import com.menta.android.restclient.core.RestClientConfiguration.configure
 import com.menta.android.restclient.core.Storage
 import java.time.LocalDateTime
+import kotlin.UninitializedPropertyAccessException
 
 class CardProcessActivity : ComponentActivity() {
     private val amount: String by lazy {
@@ -442,7 +443,13 @@ class CardProcessActivity : ComponentActivity() {
     override fun onDestroy() {
         Log.d("$TAG-AvoqadoTest", "CardProcessActivity on detroy")
         isDestroying = true
-        cardProcessData.stopReader()
+        try {
+            // Check if cardProcessUseCase is initialized before calling stopReader
+            Log.d("$TAG-AvoqadoTest", "CardProcessActivity stopReader")
+            cardProcessData.stopReader()
+        } catch (e: UninitializedPropertyAccessException) {
+            Log.e(TAG, "Error stopping card reader: ${e.message}")
+        }
         super.onDestroy()
     }
 }
