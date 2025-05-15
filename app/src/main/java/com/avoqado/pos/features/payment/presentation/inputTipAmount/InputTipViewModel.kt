@@ -1,6 +1,6 @@
 package com.avoqado.pos.features.payment.presentation.inputTipAmount
 
-import android.util.Log
+
 import androidx.lifecycle.ViewModel
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.domain.models.SplitType
@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import timber.log.Timber
 
 class InputTipViewModel(
     val subtotal: String,
@@ -58,11 +59,11 @@ class InputTipViewModel(
                     "${(percentage * 100).toInt()}%" 
                 }
                 
-                Log.d("InputTipViewModel", "Loaded tip percentages from venue: $percentages")
+                Timber.d("Loaded tip percentages from venue: $percentages")
             }
         } catch (e: Exception) {
             // If there's an error, keep using the default values
-            Log.e("InputTipViewModel", "Error loading tip percentages from venue", e)
+            Timber.e("Error loading tip percentages from venue", e)
         }
     }
 

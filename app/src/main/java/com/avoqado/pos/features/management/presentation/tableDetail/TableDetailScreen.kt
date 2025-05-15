@@ -188,7 +188,7 @@ private fun TableDetailContent(
                 IconAction(
                     flowStep = FlowStep.NAVIGATE_BACK,
                     context = context,
-                    iconType = IconType.CANCEL,
+                    iconType = IconType.BACK,
                 ),
             showSecondIcon = true,
             onAction = {
