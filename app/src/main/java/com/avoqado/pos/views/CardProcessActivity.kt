@@ -120,12 +120,12 @@ class CardProcessActivity : ComponentActivity() {
                     showPayInCashValidation()
                 },
             )
-            if (currentUser?.secondaryMerchantId == null) {
+            if (merchanVenue?.menta?.merchantIdB == null) {
                 cardReader(clearAmount, clearTip)
             }
         }
 
-        currentUser?.secondaryMerchantId?.let {
+        merchanVenue?.menta?.merchantIdB?.let {
             showChooserBillOption()
         }
     }
@@ -159,7 +159,7 @@ class CardProcessActivity : ComponentActivity() {
                 val clearTip = tipAmount.replace(",", "").replace(".", "")
                 cardReader(clearAmount, clearTip)
             } else {
-                currentUser?.secondaryMerchantId?.let {
+                merchanVenue?.menta?.merchantIdB?.let {
                     AvoqadoApp.sessionManager.setOperationPreference(needBill = false)
                     updateMerchantConfig(it) {
                         dialog.dismiss()
