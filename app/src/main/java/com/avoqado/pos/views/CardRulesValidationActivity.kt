@@ -40,6 +40,7 @@ class CardRulesValidationActivity : ComponentActivity() {
     }
 
     private val currentUser = AvoqadoApp.sessionManager.getAvoqadoSession()
+    private val venueInfo = AvoqadoApp.sessionManager.getVenueInfo()
     private val operationPreference = AvoqadoApp.sessionManager.getOperationPreference()
 
     private val operationFlow: OperationFlow?
@@ -60,13 +61,13 @@ class CardRulesValidationActivity : ComponentActivity() {
         binValidationData.setOperationFlow(
             operationFlow = operationFlow!!,
             merchantId =
-                currentUser?.let {
+                venueInfo?.menta?.let {
                     if (operationPreference) {
-                        it.primaryMerchantId
+                        it.merchantIdA
                     } else {
-                        it.secondaryMerchantId
+                        it.merchantIdB
                     }
-                } ?: merchantId,
+                } ?: "",
             customerId = customerId,
             currency = if (Currency.MX.name == currency) CURRENCY_LABEL_MX else CURRENCY_LABEL_ARG,
             interest = false,

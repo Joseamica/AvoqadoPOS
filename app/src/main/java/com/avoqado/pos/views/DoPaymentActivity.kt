@@ -52,6 +52,7 @@ class DoPaymentActivity : ComponentActivity() {
 
     private val currentUser = AvoqadoApp.sessionManager.getAvoqadoSession()
     private val operationPreference = AvoqadoApp.sessionManager.getOperationPreference()
+    private val venueInfo = AvoqadoApp.sessionManager.getVenueInfo()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,13 +75,13 @@ class DoPaymentActivity : ComponentActivity() {
                 terminalId = terminalId,
                 acquirerId = if (operationFlow?.amount?.currency == CURRENCY_LABEL_MX) Acquirer.BANORTE.name else Acquirer.GPS.name,
                 merchantId =
-                    currentUser?.let {
+                    venueInfo?.menta?.let {
                         if (operationPreference) {
-                            it.primaryMerchantId
+                            it.merchantIdA
                         } else {
-                            it.secondaryMerchantId
+                            it.merchantIdB
                         }
-                    } ?: merchantId,
+                    } ?: "",
                 aesKey = deviceKeyStorage.getAesKeyExecute(),
                 ivKey = deviceKeyStorage.getIvKeyExecute(),
                 banorteKey = deviceKeyStorage.getKeyExecute(),

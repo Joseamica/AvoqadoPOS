@@ -63,16 +63,6 @@ fun SplashScreen(
     val externalToken by externalTokenData.getExternalToken.observeAsState()
     val masterKey by masterKeyData.getMasterKey.observeAsState()
     val isConfiguring by viewModel.isConfiguring.collectAsStateWithLifecycle()
-    val context = LocalContext.current
-
-    val apiKey =
-        viewModel.currentUser?.let {
-            if (viewModel.operationPreference) {
-                it.apiKey
-            } else {
-                it.secondaryApiKey
-            }
-        } ?: merchantApiKey
 
     // Animation states
     var showLogo by remember { mutableStateOf(false) }
@@ -95,16 +85,39 @@ fun SplashScreen(
         viewModel.events.collectLatest {
             when (it) {
                 SplashViewModel.START_CONFIG -> {
-                    externalTokenData.getExternalToken(apiKey)
+                    viewModel.venueInfo?.let { venue ->
+                        val apiKey = venue.menta?.let { mentaVenue ->
+                            if (viewModel.operationPreference) {
+                                mentaVenue.apiKeyA
+                            } else {
+                                mentaVenue.apiKeyB
+                            }
+                        }
+
+                        apiKey?.let { key ->
+                            externalTokenData.getExternalToken(key)
+                        }
+                    }
                 }
 
                 SplashViewModel.GET_MASTER_KEY -> {
-                    // Inyección de llaves
-                    masterKeyData.loadMasterKey(
-                        merchantId = viewModel.currentUser?.primaryMerchantId ?: merchantId,
-                        acquirerId = ACQUIRER_NAME,
-                        countryCode = COUNTRY_CODE,
-                    )
+                    viewModel.venueInfo?.let { venue ->
+                        val merchantId = venue.menta?.let { mentaVenue ->
+                            if (viewModel.operationPreference) {
+                                mentaVenue.merchantIdA
+                            } else {
+                                mentaVenue.merchantIdB
+                            }
+                        }
+
+                        if (merchantId != null) {
+                            masterKeyData.loadMasterKey(
+                                merchantId = merchantId,
+                                acquirerId = ACQUIRER_NAME,
+                                countryCode = COUNTRY_CODE,
+                            )
+                        }
+                    }
                 }
             }
         }

@@ -7,6 +7,7 @@ import androidx.navigation.NavOptions
 import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.AvoqadoAPI
+import com.avoqado.pos.core.data.network.models.NetworkVenue
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.delegates.SnackbarState
@@ -54,6 +55,7 @@ class SplashViewModel constructor(
     val events = _events.receiveAsFlow()
 
     val currentUser = sessionManager.getAvoqadoSession()
+    var venueInfo: NetworkVenue? = null
 
     fun initSplash(){
         Timber.i("Init with serial number -> $serialNumber")
@@ -65,6 +67,7 @@ class SplashViewModel constructor(
                     sessionManager.saveVenueId(it)
                     val venue = managementRepository.getVenue(it)
                     sessionManager.saveVenueInfo(venue)
+                    venueInfo = venue
 
                     val shift =
                         terminalRepository.getTerminalShift(
@@ -136,7 +139,7 @@ class SplashViewModel constructor(
     private fun startConfiguring() {
         _isConfiguring.value = true
         configure(AppfinRestClientConfigure())
-        currentUser?.apiKey?.let {
+        venueInfo?.menta?.apiKeyA?.let {
             storage.putMerchantApiKey(it)
         }
         viewModelScope.launch {

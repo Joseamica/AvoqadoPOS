@@ -87,7 +87,7 @@ class CardProcessActivity : ComponentActivity() {
     private var isDestroying = false
 
     private val currentUser = AvoqadoApp.sessionManager.getAvoqadoSession()
-    private var merchantSelected: String = currentUser?.primaryMerchantId ?: merchantId
+    private val merchanVenue = AvoqadoApp.sessionManager.getVenueInfo()
     private var lastOperationPreference: Boolean =
         AvoqadoApp.sessionManager.getOperationPreference()
 
@@ -141,7 +141,7 @@ class CardProcessActivity : ComponentActivity() {
                 val clearTip = tipAmount.replace(",", "").replace(".", "")
                 cardReader(clearAmount, clearTip)
             } else {
-                currentUser?.primaryMerchantId?.let {
+                merchanVenue?.menta?.merchantIdA?.let {
                     AvoqadoApp.sessionManager.setOperationPreference(needBill = true)
                     updateMerchantConfig(it) {
                         dialog.dismiss()
@@ -216,39 +216,42 @@ class CardProcessActivity : ComponentActivity() {
         val externalTokenData = ExternalTokenData(this)
         val operationPreference = AvoqadoApp.sessionManager.getOperationPreference()
         val apiKey =
-            currentUser?.let {
+            merchanVenue?.menta?.let {
                 if (operationPreference) {
-                    it.apiKey
+                    it.apiKeyA
                 } else {
-                    it.secondaryApiKey
+                    it.apiKeyB
                 }
-            } ?: merchantApiKey
-        storage.putMerchantApiKey(apiKey)
-        externalTokenData.getExternalToken(apiKey)
+            }
 
-        // Observer
-        externalTokenData.getExternalToken.observe(this) { token ->
-            if (token.status.statusType != StatusType.ERROR) {
-                // Guardar el token
-                storage.putIdToken(token.idToken)
-                storage.putTokenType(token.tokenType)
+        if (apiKey != null) {
+            storage.putMerchantApiKey(apiKey)
+            externalTokenData.getExternalToken(apiKey)
 
-                // Inyección de llaves
-                val masterKeyData = MasterKeyData(this)
-                masterKeyData.loadMasterKey(
-                    merchantId = merchantId,
-                    acquirerId = ACQUIRER_NAME,
-                    countryCode = COUNTRY_CODE,
-                )
-                masterKeyData.getMasterKey.observe(this) { keyResult ->
-                    keyResult?.secretsList?.let {
-                        onTokenUpdated()
-                    } ?: run {
-                        Log.e(InitActivity.TAG, "Ocurrio algun error, secrets list is null")
+            // Observer
+            externalTokenData.getExternalToken.observe(this) { token ->
+                if (token.status.statusType != StatusType.ERROR) {
+                    // Guardar el token
+                    storage.putIdToken(token.idToken)
+                    storage.putTokenType(token.tokenType)
+
+                    // Inyección de llaves
+                    val masterKeyData = MasterKeyData(this)
+                    masterKeyData.loadMasterKey(
+                        merchantId = merchantId,
+                        acquirerId = ACQUIRER_NAME,
+                        countryCode = COUNTRY_CODE,
+                    )
+                    masterKeyData.getMasterKey.observe(this) { keyResult ->
+                        keyResult?.secretsList?.let {
+                            onTokenUpdated()
+                        } ?: run {
+                            Log.e(InitActivity.TAG, "Ocurrio algun error, secrets list is null")
+                        }
                     }
+                } else {
+                    Log.e(InitActivity.TAG, "Get token ERROR: ${token.status.message}")
                 }
-            } else {
-                Log.e(InitActivity.TAG, "Get token ERROR: ${token.status.message}")
             }
         }
     }

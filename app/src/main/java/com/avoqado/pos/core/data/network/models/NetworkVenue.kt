@@ -1,5 +1,6 @@
 package com.avoqado.pos.core.data.network.models
 
+import com.avoqado.pos.core.data.network.models.venue.MentaVenue
 import com.google.gson.annotations.SerializedName
 
 data class NetworkVenue(
@@ -75,4 +76,6 @@ data class NetworkVenue(
     val wifiPassword: String?,
     @SerializedName("waiters")
     val waiters: List<NetworkWaiter>?,
+    @SerializedName("menta")
+    val menta: MentaVenue?
 )
