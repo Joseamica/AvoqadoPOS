@@ -50,7 +50,15 @@ sealed class ManagementDests : NavigationAction {
     data object SplitByPerson : ManagementDests() {
         override val route: String
             get() = "splitByPerson"
-
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.fade()
+    }
+    
+    data object ShiftNotStartedBS : ManagementDests() {
+        override val route: String
+            get() = "shiftNotStartedBottomSheet"
+            
         override val navAnimation: NavAnimation?
             get() = NavAnimation.fade()
     }
@@ -69,5 +77,45 @@ sealed class ManagementDests : NavigationAction {
 
         override val navAnimation: NavAnimation?
             get() = NavAnimation.none()
+    }
+    
+    data object MenuList : ManagementDests() {
+        const val ARG_VENUE_ID = "ARG_VENUE_ID"
+        
+        override val route: String
+            get() = "menuList?$ARG_VENUE_ID={${ARG_VENUE_ID}}"
+            
+        override val arguments: List<NamedNavArgument>
+            get() = listOf(
+                navArgument(ARG_VENUE_ID) {
+                    type = NavType.StringType
+                    nullable = false
+                }
+            )
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.fade()
+    }
+    
+    data object MenuDetail : ManagementDests() {
+        const val ARG_MENU_ID = "ARG_MENU_ID"
+        
+        override val route: String
+            get() = "menuDetail?$ARG_MENU_ID={${ARG_MENU_ID}}"
+            
+        override val arguments: List<NamedNavArgument>
+            get() = listOf(
+                navArgument(ARG_MENU_ID) {
+                    type = NavType.StringType
+                    nullable = false
+                }
+            )
+            
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.fade()
+            
+        fun createRoute(menuId: String): String {
+            return "menuDetail?$ARG_MENU_ID=$menuId"
+        }
     }
 }

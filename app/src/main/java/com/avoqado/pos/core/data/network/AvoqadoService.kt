@@ -1,8 +1,10 @@
 package com.avoqado.pos.core.data.network
 
+import com.avoqado.pos.core.data.network.models.CreateBillRequest
 import com.avoqado.pos.core.data.network.models.NetworkVenue
 import com.avoqado.pos.core.data.network.models.PasscodeBody
 import com.avoqado.pos.core.data.network.models.ShiftBody
+import retrofit2.Response
 import com.avoqado.pos.core.data.network.models.TerminalMerchant
 import com.avoqado.pos.core.data.network.models.WaiterData
 import com.avoqado.pos.core.data.network.models.bills.NetworkBillDetailV2
@@ -11,6 +13,8 @@ import com.avoqado.pos.core.data.network.models.transactions.NetworkDataShift
 import com.avoqado.pos.core.data.network.models.transactions.NetworkShiftRecord
 import com.avoqado.pos.core.data.network.models.transactions.payments.NetworkShiftPaymentsData
 import com.avoqado.pos.core.data.network.models.transactions.summary.NetworkSummaryData
+import com.avoqado.pos.features.menu.data.network.models.AvoqadoMenuResponse
+import com.avoqado.pos.features.menu.data.network.models.NetworkModifierGroupResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.PATCH
@@ -91,4 +95,28 @@ interface AvoqadoService {
         @Path("venueId") venueId: String,
         @Path("billId") billId: String,
     ): NetworkBillDetailV2
+    
+    @GET("tpv/venues/{venueId}/avoqado-menus")
+    suspend fun getAvoqadoMenus(
+        @Path("venueId") venueId: String,
+    ): AvoqadoMenuResponse
+    
+    @GET("tpv/venues/{venueId}/products/{productId}/modifiers")
+    suspend fun getProductModifiers(
+        @Path("venueId") venueId: String,
+        @Path("productId") productId: String
+    ): NetworkModifierGroupResponse
+    
+    /**
+     * Create a new bill (account) with a custom name
+     * 
+     * @param venueId The ID of the venue where to create the bill
+     * @param requestBody Structured request with bill details
+     * @return The created bill details
+     */
+    @POST("tpv/venues/{venueId}/bills")
+    suspend fun createBill(
+        @Path("venueId") venueId: String,
+        @Body requestBody: CreateBillRequest
+    ): Response<NetworkBillV2>
 }

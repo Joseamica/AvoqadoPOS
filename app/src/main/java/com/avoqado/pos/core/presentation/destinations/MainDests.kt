@@ -9,6 +9,15 @@ import com.avoqado.pos.core.presentation.navigation.NavAnimation
 import com.avoqado.pos.core.presentation.navigation.NavigationAction
 
 sealed class MainDests : NavigationAction {
+    // Cart destination
+    data object Cart : MainDests() {
+        override val route: String
+            get() = "cart"
+
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.none()
+    }
+
     data object Authorization : MainDests() {
         override val route: String
             get() = "authorization"

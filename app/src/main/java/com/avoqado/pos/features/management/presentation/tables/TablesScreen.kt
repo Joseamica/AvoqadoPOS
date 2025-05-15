@@ -1,5 +1,10 @@
 package com.avoqado.pos.features.management.presentation.tables
 import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.Button
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.ButtonDefaults
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -65,6 +70,7 @@ fun TablesScreen(tablesV: TablesViewModel) {
     val isLoading by tablesV.isLoading.collectAsStateWithLifecycle()
     val isRefreshing by tablesV.isRefreshing.collectAsStateWithLifecycle()
     val shiftStarted by tablesV.shiftStarted.collectAsStateWithLifecycle()
+    val isOrderingEnabled = tablesV.isOrderingFeatureEnabled()
 
     LaunchedEffect(key1 = Unit) {
         tablesV.startListeningForVenueUpdates()
@@ -78,15 +84,17 @@ fun TablesScreen(tablesV: TablesViewModel) {
         onLogout = tablesV::logout,
         tables = tables,
         showSettings = showSettings,
+        isOrderingEnabled = isOrderingEnabled,
         onToggleShift = tablesV::toggleShift,
         shiftStarted = shiftStarted,
         isLoading = isLoading,
         isRefreshing = isRefreshing,
         onPullToRefresh = tablesV::onPullToRefreshTrigger,
+        onCreateNewBill = tablesV::createNewBill,
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun HomeContent(
     onBackAction: () -> Unit = {},
@@ -101,7 +109,14 @@ fun HomeContent(
     shiftStarted: Boolean = false,
     isLoading: Boolean = false,
     isRefreshing: Boolean = false,
+    isOrderingEnabled: Boolean = true,
+    onCreateNewBill: (String) -> Unit = {}
+
 ) {
+        var showNewBillSheet by remember { mutableStateOf(false) }
+    var newBillName by remember { mutableStateOf("") }
+    val sheetState = rememberModalBottomSheetState()
+
     TopMenuContent(
         onBackAction = onBackAction,
         onOpenSettings = { onShowSettings(true) },
@@ -112,21 +127,22 @@ fun HomeContent(
         isRefreshing = isRefreshing,
         showSettingsModal = showSettings,
         shiftStarted = shiftStarted,
+
     ) {
         Column(
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(16.dp),
+            Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .padding(16.dp),
         ) {
             selectedVenue?.name?.let {
                 Text(
                     text = it,
                     style =
-                        MaterialTheme.typography.headlineLarge.copy(
-                            fontFamily = AppFont.EffraFamily,
-                        ),
+                    MaterialTheme.typography.headlineLarge.copy(
+                        fontFamily = AppFont.EffraFamily,
+                    ),
                     color = Color.Black,
                     modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
                     textAlign = TextAlign.Center,
@@ -149,9 +165,9 @@ fun HomeContent(
                         // Mensaje cuando no hay mesas activas
                         Box(
                             modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .fillMaxSize(),
+                            Modifier
+                                .fillMaxWidth()
+                                .fillMaxSize(),
                             contentAlignment = Alignment.Center,
                         ) {
                             Column(
@@ -168,19 +184,19 @@ fun HomeContent(
                                 Text(
                                     text = "No hay cuentas activas",
                                     style =
-                                        MaterialTheme.typography.titleMedium.copy(
-                                            color = Color.DarkGray,
-                                            fontSize = 18.sp,
-                                        ),
+                                    MaterialTheme.typography.titleMedium.copy(
+                                        color = Color.DarkGray,
+                                        fontSize = 18.sp,
+                                    ),
                                     textAlign = TextAlign.Center,
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Text(
                                     text = "Las mesas con cuentas abiertas aparecerán aquí",
                                     style =
-                                        MaterialTheme.typography.bodyMedium.copy(
-                                            color = Color.Gray,
-                                        ),
+                                    MaterialTheme.typography.bodyMedium.copy(
+                                        color = Color.Gray,
+                                    ),
                                     textAlign = TextAlign.Center,
                                 )
                             }
@@ -209,9 +225,9 @@ fun HomeContent(
                     if (isLoading) {
                         Box(
                             modifier =
-                                Modifier
-                                    .fillMaxSize()
-                                    .background(Color.Black.copy(alpha = 0.15f)),
+                            Modifier
+                                .fillMaxSize()
+                                .background(Color.Black.copy(alpha = 0.15f)),
                             contentAlignment = Alignment.Center,
                         ) {
                             CircularProgressIndicator(
@@ -220,6 +236,83 @@ fun HomeContent(
                         }
                     }
                 }
+            }
+        }
+        if (isOrderingEnabled) {
+
+            // Sticky Button at the bottom
+            Button(
+                onClick = { showNewBillSheet = true },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary
+                )
+            ) {
+                Text(
+                    text = "Abrir cuenta",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                        color = Color.White
+                    )
+                )
+            }
+        }
+    }
+    
+    // Modal Bottom Sheet for New Bill
+    if (showNewBillSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showNewBillSheet = false },
+            modifier = Modifier.fillMaxWidth(),
+            containerColor = Color.White,
+            sheetState = sheetState,
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Nueva cuenta",
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontFamily = AppFont.EffraFamily,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                    ),
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                OutlinedTextField(
+                    value = newBillName,
+                    onValueChange = { newBillName = it },
+                    label = { Text("Nombre de la cuenta") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                )
+
+                Button(
+                    onClick = {
+                        if (newBillName.isNotBlank()) {
+                            onCreateNewBill(newBillName)
+                            newBillName = ""
+                            showNewBillSheet = false
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text(
+                        text = "Crear cuenta",
+                        color = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }
@@ -320,6 +413,7 @@ fun VenuesDropdownMenu(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Urovo9100DevicePreview
 @Composable
 fun HomeContentPreview() {
@@ -367,6 +461,7 @@ fun HomeContentPreview() {
                     wifiName = null,
                     wifiPassword = null,
                     waiters = emptyList(),
+                    menta = null,
                 ),
         )
     }

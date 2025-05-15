@@ -46,6 +46,7 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
     val isRefreshing by homeViewModel.isRefreshing.collectAsStateWithLifecycle()
     val shiftStarted by homeViewModel.shiftStarted.collectAsStateWithLifecycle()
     val venuePosName = homeViewModel.getVenuePosName()
+    val isOrderingEnabled = homeViewModel.isOrderingFeatureEnabled()
 
     HomeContent(
         waiterName = homeViewModel.currentSession?.name ?: "",
@@ -61,12 +62,14 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
         onShowShifts = homeViewModel::goToShowShifts,
         onShowSummary = homeViewModel::goToSummary,
         onShowPayments = homeViewModel::goToShowPayments,
+        onShowMenus = homeViewModel::goToMenuList,
         onLogout = homeViewModel::logout,
         onToggleShift = homeViewModel::toggleShift,
         onRefresh = homeViewModel::onPullToRefreshTrigger,
         isRefreshing = isRefreshing,
         shiftStarted = shiftStarted,
         venuePosName = venuePosName,
+        isOrderingEnabled = isOrderingEnabled,
     )
 
     if (isLoading) {
@@ -98,10 +101,12 @@ fun HomeContent(
     onShowSummary: () -> Unit = {},
     onShowShifts: () -> Unit = {},
     onShowPayments: () -> Unit = {},
+    onShowMenus: () -> Unit = {},
     onLogout: () -> Unit = {},
     onToggleShift: () -> Unit = {},
     onRefresh: () -> Unit = {},
     venuePosName: String? = null,
+    isOrderingEnabled: Boolean = true,
 ) {
     TopMenuContent(
         onOpenSettings = onOpenSettings,
@@ -351,6 +356,72 @@ Box(modifier = Modifier.weight(1f)) {  // Outer Box for absolute positioning
                                     fontWeight = FontWeight.W400,
                                 ),
                         )
+                    }
+                }
+            }
+            
+            Spacer(Modifier.height(10.dp))
+            
+            // Ordenar button - only display if the feature is enabled
+            if (isOrderingEnabled) {
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(130.dp)
+                        .clickable(enabled = shiftStarted) {
+                            onShowMenus()
+                        },
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (shiftStarted) Color.Black else Color.White,
+                    ),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 0.7.dp,
+                        pressedElevation = 8.dp
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp)
+                    ) {
+                        Image(
+                            modifier = Modifier.size(30.dp),
+                            painter = painterResource(R.drawable.baseline_restaurant_menu_24),
+                            contentDescription = "",
+                            alpha = if (shiftStarted) 1f else 0.2f,
+                            colorFilter = if (shiftStarted) 
+                                androidx.compose.ui.graphics.ColorFilter.tint(Color.White)
+                                else null
+                        )
+                        Spacer(Modifier.height(24.dp))
+                        Text(
+                            text = "Ordenar",
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                color = if (shiftStarted) Color.White else Color(0xFFC7C5C5),
+                                fontWeight = FontWeight.W500,
+                            ),
+                        )
+                    }
+                    
+                    // Show warning if shift not started
+                    if (!shiftStarted) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .offset(y = 8.dp)  // Push it down outside the card
+                        ) {
+                            Text(
+                                text = "Abre el turno primero",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF333333),  // This applies a dark gray color
+                                modifier = Modifier
+                                    .background(
+                                        Color(0xFFEDEDED),  // This applies a light gray background
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                    .padding(horizontal = 6.dp, vertical = 1.dp)
+                            )
+                        }
                     }
                 }
             }

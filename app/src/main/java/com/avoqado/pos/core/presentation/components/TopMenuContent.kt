@@ -1,5 +1,7 @@
 package com.avoqado.pos.core.presentation.components
 
+import android.app.Activity
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,20 +24,30 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.theme.buttonGrayColor
 import androidx.compose.material3.CircularProgressIndicator
+import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel
+import com.avoqado.pos.core.presentation.destinations.MainDests
+import com.avoqado.pos.views.InitActivity
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -132,6 +145,9 @@ fun TopMenuContent(
     }
 
     if (showSettingsModal) {
+        val context = LocalContext.current
+        var showConfirmationDialog by remember { mutableStateOf(false) }
+
         ModalBottomSheet(
             onDismissRequest = onDismissRequest,
             modifier = Modifier.fillMaxWidth(),
@@ -232,7 +248,76 @@ fun TopMenuContent(
                         }
                     }
                 }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Actualizar todo button - restarts the entire app
+                Button(
+                    onClick = { showConfirmationDialog = true },
+                    modifier = Modifier
+                        .height(72.dp)
+                        .fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                    ),
+                ) {
+                    Text(
+                        text = "Actualizar todo",
+                        color = Color.Red,
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                }
             }
+        }
+        
+        // Confirmation dialog for app restart
+        if (showConfirmationDialog) {
+            AlertDialog(
+                onDismissRequest = { showConfirmationDialog = false },
+                title = { Text("Reiniciar aplicación") },
+                text = { Text("¿Está seguro que desea reiniciar completamente la aplicación? Esto cerrará todas las pantallas y volverá a iniciar desde cero.") },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            showConfirmationDialog = false
+                            
+                            // Limpiar toda la sesión y caché primero
+                            AvoqadoApp.sessionManager.clearAll()
+                            
+                            // También limpiamos otras caches si existen
+                            try {
+                                context.cacheDir.deleteRecursively()
+                            } catch (e: Exception) {
+                                // Ignorar errores de limpieza de caché
+                            }
+                            
+                            // Reiniciar la app con intent a la pantalla de Splash
+                            val intent = Intent(context, InitActivity::class.java).apply {
+                                flags = Intent.FLAG_ACTIVITY_NEW_TASK or 
+                                        Intent.FLAG_ACTIVITY_CLEAR_TASK or
+                                        Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                // Añadir flag extra para forzar un inicio completamente nuevo
+                                putExtra("RESTART_COMPLETE", true)
+                            }
+                            context.startActivity(intent)
+                            
+                            // Cerrar todas las actividades actuales
+                            (context as? Activity)?.finishAffinity()
+                        }
+                    ) {
+                        Text("Confirmar")
+                    }
+                },
+                dismissButton = {
+                    TextButton(
+                        onClick = { showConfirmationDialog = false }
+                    ) {
+                        Text("Cancelar")
+                    }
+                }
+            )
         }
     }
 }

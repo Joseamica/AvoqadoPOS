@@ -27,6 +27,8 @@ import com.avoqado.pos.features.payment.data.PaymentRepositoryImpl
 import com.avoqado.pos.features.payment.data.cache.PaymentCacheStorage
 import com.avoqado.pos.features.payment.data.network.AvoqadoService
 import com.avoqado.pos.features.payment.domain.repository.PaymentRepository
+import com.avoqado.pos.features.menu.data.repository.MenuRepositoryImpl
+import com.avoqado.pos.features.menu.domain.repository.MenuRepository
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.menta.android.restclient.core.Storage
 import timber.log.Timber
@@ -48,6 +50,12 @@ class AvoqadoApp : Application() {
             PaymentRepositoryImpl(
                 paymentCacheStorage = PaymentCacheStorage,
                 avoqadoService = AvoqadoAPI.retrofit.create(AvoqadoService::class.java),
+            )
+        }
+        
+        val menuRepository: MenuRepository by lazy {
+            MenuRepositoryImpl(
+                avoqadoService = AvoqadoAPI.apiService
             )
         }
         val terminalRepository: TerminalRepository by lazy {

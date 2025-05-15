@@ -40,7 +40,9 @@ import com.avoqado.pos.features.authorization.presentation.signIn.SignInViewMode
 import com.avoqado.pos.features.authorization.presentation.splash.SplashScreen
 import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel
 import com.avoqado.pos.features.management.presentation.navigation.managementNavigation
+import com.avoqado.pos.features.menu.presentation.navigation.menuNavigation
 import com.avoqado.pos.features.payment.presentation.navigation.paymentNavigation
+import com.avoqado.pos.features.cart.presentation.navigation.cartGraph
 import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
 import com.menta.android.core.viewmodel.TrxData
@@ -240,10 +242,22 @@ fun AppRouter(
                         snackbarDelegate = snackbarDelegate,
                     )
 
+                    menuNavigation(
+                        navigationDispatcher = navigationDispatcher
+                    )
+
                     paymentNavigation(
                         navigationDispatcher = navigationDispatcher,
                         snackbarDelegate = snackbarDelegate,
                         trxData = trxData,
+                    )
+                    
+                    // Add cart navigation graph
+                    cartGraph(
+                        navController = navController,
+                        onCheckout = {
+                            // Navigate to payment or handle checkout logic
+                        }
                     )
                 }
             }

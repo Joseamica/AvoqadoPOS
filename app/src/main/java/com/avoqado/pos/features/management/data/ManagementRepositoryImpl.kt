@@ -3,6 +3,7 @@ package com.avoqado.pos.features.management.data
 import android.util.Log
 import com.avoqado.pos.core.data.network.AvoqadoService
 import com.avoqado.pos.core.data.network.AppConfig
+import com.avoqado.pos.core.data.network.models.CreateBillRequest
 import com.avoqado.pos.core.data.network.SocketIOManager
 import com.avoqado.pos.core.data.network.models.NetworkVenue
 import com.avoqado.pos.core.domain.models.AvoqadoError
@@ -260,5 +261,62 @@ class ManagementRepositoryImpl(
     private fun getSocketServerUrl(): String {
         // Use the centralized ServerConfig for the socket URL
         return AppConfig.getSocketUrl()
+    }
+    
+    /**
+     * Creates a new bill with the specified name
+     * 
+     * @param venueId The ID of the venue where to create the bill
+     * @param billName The name to assign to the new bill
+     * @return true if the bill was created successfully, false otherwise
+     */
+    override suspend fun createNewBill(venueId: String, billName: String): Boolean {
+        return try {
+            Log.d("ManagementRepository", "Creating new bill: $billName for venue: $venueId")
+            Log.d("ManagementRepository", "API URL: tpv/venues/$venueId/bills")
+            
+            // Get the current waiter info from session
+            val waiterId = "" // If available from session manager
+            val waiterName = "" // If available from session manager
+            
+            // Create a structured request body
+            val requestBody = CreateBillRequest(
+                tableName = billName,
+                venueId = venueId,
+                status = "OPEN",
+                waiterName = waiterName,
+                waiterId = waiterId
+                // products and total will use default values from the class
+            )
+            
+            Log.d("ManagementRepository", "Request body: $requestBody")
+            
+            // Make API request to create a new bill
+            val response = avoqadoService.createBill(
+                venueId = venueId,
+                requestBody = requestBody
+            )
+            
+            // Log full response details
+            Log.d("ManagementRepository", "Response code: ${response.code()}")
+            Log.d("ManagementRepository", "Response message: ${response.message()}")
+            Log.d("ManagementRepository", "Response headers: ${response.headers()}")
+            
+            // Check if the response is successful
+            val success = response.isSuccessful && response.body() != null
+            
+            if (success) {
+                Log.d("ManagementRepository", "Successfully created new bill: ${response.body()?.id}")
+            } else {
+                val errorBody = response.errorBody()?.string() ?: "No error body"
+                Log.e("ManagementRepository", "Failed to create bill. Code: ${response.code()}, Error: $errorBody")
+            }
+            
+            success
+        } catch (e: Exception) {
+            Log.e("ManagementRepository", "Error creating new bill", e)
+            e.printStackTrace() // Print the full stack trace
+            false
+        }
     }
 }

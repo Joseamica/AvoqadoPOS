@@ -71,4 +71,6 @@ data class Venue(
     val wifiName: String,
     @SerializedName("wifiPassword")
     val wifiPassword: String,
+    @SerializedName("feature")
+    val feature: Feature? = null
 )

@@ -2,6 +2,7 @@ package com.avoqado.pos.core.data.network.models
 
 import com.avoqado.pos.core.data.network.models.venue.MentaVenue
 import com.google.gson.annotations.SerializedName
+import com.avoqado.pos.core.data.network.models.Feature
 
 data class NetworkVenue(
     @SerializedName("address")
@@ -77,5 +78,7 @@ data class NetworkVenue(
     @SerializedName("waiters")
     val waiters: List<NetworkWaiter>?,
     @SerializedName("menta")
-    val menta: MentaVenue?
+    val menta: MentaVenue?,
+    @SerializedName("feature")
+    val feature: Feature? = null,
 )

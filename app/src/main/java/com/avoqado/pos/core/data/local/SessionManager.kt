@@ -120,4 +120,12 @@ class SessionManager(
     fun clearShift() {
         sharedPreferences.edit().remove(AVOQADO_SHIFT).apply()
     }
+    
+    /**
+     * Limpia completamente todos los datos de sesión
+     * Usar con precaución ya que elimina toda la información del usuario, turno, terminal, etc.
+     */
+    fun clearAll() {
+        sharedPreferences.edit().clear().apply()
+    }
 }

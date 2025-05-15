@@ -41,4 +41,13 @@ interface ManagementRepository {
         venueId: String,
         billId: String,
     ): TableBillDetail
+    
+    /**
+     * Create a new bill with the given name
+     * 
+     * @param venueId The ID of the venue where to create the bill
+     * @param billName The name to assign to the new bill
+     * @return true if the bill was created successfully, false otherwise
+     */
+    suspend fun createNewBill(venueId: String, billName: String): Boolean
 }

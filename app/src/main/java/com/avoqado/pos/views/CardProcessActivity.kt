@@ -184,14 +184,14 @@ class CardProcessActivity : ComponentActivity() {
             AvoqadoApp.paymentRepository.getCachePaymentInfo()?.let { info ->
                 AvoqadoApp.paymentRepository.setCachePaymentInfo(
                     paymentInfoResult =
-                        info.copy(
-                            paymentId = "CASH",
-                            tipAmount = tipAmount.toDoubleOrNull() ?: 0.0,
-                            subtotal = amount.toDoubleOrNull() ?: 0.0,
-                            date = LocalDateTime.now(),
-                            waiterName = waiterName,
-                            splitType = splitType,
-                        ),
+                    info.copy(
+                        paymentId = "CASH",
+                        tipAmount = tipAmount.toDoubleOrNull() ?: 0.0,
+                        subtotal = amount.toDoubleOrNull() ?: 0.0,
+                        date = LocalDateTime.now(),
+                        waiterName = waiterName,
+                        splitType = splitType,
+                    ),
                 )
             }
 

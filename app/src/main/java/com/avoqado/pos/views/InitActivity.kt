@@ -10,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 import com.avoqado.pos.ACQUIRER_NAME
 import com.avoqado.pos.AppfinRestClientConfigure
 import com.avoqado.pos.COUNTRY_CODE
+import com.avoqado.pos.MainActivity
 import com.avoqado.pos.R
 import com.avoqado.pos.merchantApiKey
 import com.avoqado.pos.merchantId
@@ -24,6 +25,20 @@ class InitActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i(TAG, "InitActivity started") // Log al inicio de la actividad
+        
+        // Comprobar si estamos reiniciando la app completamente
+        val isCompleteRestart = intent.getBooleanExtra("RESTART_COMPLETE", false)
+        
+        if (isCompleteRestart) {
+            Log.i(TAG, "Detected RESTART_COMPLETE flag, redirecting to MainActivity")
+            // Si es un reinicio completo, ir directamente a MainActivity (SplashScreen)
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+            return
+        }
+        
         enableEdgeToEdge()
         setContent {
             ProcessingOperationScreen(
@@ -71,8 +86,21 @@ class InitActivity : ComponentActivity() {
 
     private fun goToContinue() {
         Log.i(TAG, "Inyección de llaves SUCCESS")
-        Intent(this, MenuActivity::class.java)
-            .let(::startActivity)
+        
+        // Comprobar si estamos reiniciando la app completamente
+        val isCompleteRestart = intent.getBooleanExtra("RESTART_COMPLETE", false)
+        
+        if (isCompleteRestart) {
+            // Si es un reinicio completo, volver a MainActivity para pasar por SplashScreen
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+        } else {
+            // Flujo normal
+            Intent(this, MenuActivity::class.java)
+                .let(::startActivity)
+        }
     }
 
     private fun goToFailedScreen() {

@@ -8,6 +8,10 @@ import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
 import com.avoqado.pos.core.presentation.router.bottomSheetHolder
 import com.avoqado.pos.core.presentation.router.composableHolder
 import com.avoqado.pos.features.management.domain.usecases.ListenTableEventsUseCase
+import com.avoqado.pos.features.menu.presentation.menudetail.MenuDetailScreen
+import com.avoqado.pos.features.menu.presentation.menudetail.MenuDetailViewModel
+import com.avoqado.pos.features.menu.presentation.menulist.MenuListScreen
+import com.avoqado.pos.features.menu.presentation.menulist.MenuListViewModel
 import com.avoqado.pos.features.management.presentation.home.HomeScreen
 import com.avoqado.pos.features.management.presentation.home.HomeViewModel
 import com.avoqado.pos.features.management.presentation.shiftNotStarted.ShiftNotStartedSheet
@@ -74,7 +78,7 @@ fun NavGraphBuilder.managementNavigation(
     }
 
     composableHolder(ManagementDests.SplitByPerson) {
-        val splitByProductViewModel =
+        val splitByPersonViewModel =
             remember {
                 SplitByPersonViewModel(
                     navigationDispatcher = navigationDispatcher,
@@ -85,7 +89,7 @@ fun NavGraphBuilder.managementNavigation(
             }
 
         SplitByPersonScreen(
-            splitByProductViewModel,
+            splitByPersonViewModel,
         )
     }
 
@@ -111,15 +115,39 @@ fun NavGraphBuilder.managementNavigation(
             remember {
                 ShiftNotStartedViewModel(
                     navigationDispatcher = navigationDispatcher,
-                    snackbarDelegate = snackbarDelegate,
                     terminalRepository = AvoqadoApp.terminalRepository,
+                    snackbarDelegate = snackbarDelegate,
                     sessionManager = AvoqadoApp.sessionManager,
                 )
             }
 
-        ShiftNotStartedSheet(
-            viewModel = viewModel,
-            isButtonDisabled = true,
-        )
+        ShiftNotStartedSheet(viewModel = viewModel)
+    }
+    
+    composableHolder(ManagementDests.MenuList) {
+        val menuListViewModel =
+            remember {
+                MenuListViewModel(
+                    menuRepository = AvoqadoApp.menuRepository,
+                    navigationDispatcher = navigationDispatcher,
+                    venueId = it.arguments?.getString(ManagementDests.MenuList.ARG_VENUE_ID) ?: ""
+                )
+            }
+        
+        MenuListScreen(viewModel = menuListViewModel)
+    }
+    
+    composableHolder(ManagementDests.MenuDetail) {
+        val menuDetailViewModel =
+            remember {
+                MenuDetailViewModel(
+                    menuId = it.arguments?.getString(ManagementDests.MenuDetail.ARG_MENU_ID) ?: "",
+                    menuRepository = AvoqadoApp.menuRepository,
+                    navigationDispatcher = navigationDispatcher,
+                    venueId = AvoqadoApp.sessionManager.getVenueId() ?: ""
+                )
+            }
+        
+        MenuDetailScreen(viewModel = menuDetailViewModel)
     }
 }

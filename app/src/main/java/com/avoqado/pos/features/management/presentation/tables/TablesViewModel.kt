@@ -3,6 +3,7 @@ package com.avoqado.pos.features.management.presentation.tables
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.withContext
 import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.SocketIOManager
@@ -93,7 +94,9 @@ class TablesViewModel(
             _isRefreshing.update { false }
         }
     }
-
+    fun isOrderingFeatureEnabled(): Boolean {
+        return sessionManager.getVenueInfo()?.feature?.ordering ?: false
+    }
     fun startListeningForVenueUpdates() {
         if (venueId.isEmpty()) {
             Log.e("TablesViewModel", "Cannot listen for updates: venueId is empty")
@@ -329,6 +332,68 @@ class TablesViewModel(
                 _isLoading.update {
                     false
                 }
+            }
+        }
+    }
+    
+    /**
+     * Creates a new bill with the specified name
+     * 
+     * @param billName The name to assign to the new bill
+     */
+    fun createNewBill(billName: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.update { true }
+            try {
+                val venueId = sessionManager.getVenueId()
+                if (venueId.isEmpty()) {
+                    snackbarDelegate.showSnackbar(
+                        state = SnackbarState.Default,
+                        message = "No se pudo crear la cuenta: falta el ID del establecimiento"
+                    )
+                    return@launch
+                }
+                
+                if (currentShift == null) {
+                    // Show error if no shift is active
+                    withContext(Dispatchers.Main) {
+                        snackbarDelegate.showSnackbar(
+                            state = SnackbarState.Default,
+                            message = "No se pudo crear la cuenta: no hay un turno iniciado"
+                        )
+                    }
+                    return@launch
+                }
+                
+                // Call repository to create a new bill
+                val result = managementRepository.createNewBill(venueId, billName)
+                
+                // Show success message
+                withContext(Dispatchers.Main) {
+                    if (result) {
+                        snackbarDelegate.showSnackbar(
+                            state = SnackbarState.Default,
+                            message = "Cuenta '${billName}' creada exitosamente"
+                        )
+                        // Refresh the tables list
+                        fetchTables()
+                    } else {
+                        snackbarDelegate.showSnackbar(
+                            state = SnackbarState.Default,
+                            message = "No se pudo crear la cuenta"
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("TablesViewModel", "Error creating new bill", e)
+                withContext(Dispatchers.Main) {
+                    snackbarDelegate.showSnackbar(
+                        state = SnackbarState.Default,
+                        message = "Error: ${e.message ?: "Ocurrió un error inesperado"}"
+                    )
+                }
+            } finally {
+                _isLoading.update { false }
             }
         }
     }
