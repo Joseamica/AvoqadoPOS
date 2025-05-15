@@ -1,6 +1,6 @@
 package com.avoqado.pos.features.payment.data
 
-import android.util.Log
+import timber.log.Timber
 import com.avoqado.pos.features.payment.data.cache.PaymentCacheStorage
 import com.avoqado.pos.features.payment.data.mappers.toCache
 import com.avoqado.pos.features.payment.data.mappers.toDomain
@@ -82,7 +82,7 @@ class PaymentRepositoryImpl(
                     recordPaymentBody = body,
                 )
         } catch (e: Exception) {
-            Log.e("PaymentRepositoryImpl", "Error recording payment", e)
+            Timber.e( "Error recording payment", e)
         }
 
         return adquirer?.let { it.id ?: "" } ?: token
@@ -142,7 +142,7 @@ class PaymentRepositoryImpl(
                     recordPaymentBody = body,
                 )
         } catch (e: Exception) {
-            Log.e("PaymentRepositoryImpl", "Error recording fast payment", e)
+            Timber.e("Error recording fast payment", e)
         }
 
         return adquirer?.let { it.id ?: "" } ?: token

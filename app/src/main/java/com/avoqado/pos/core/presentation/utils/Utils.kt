@@ -2,7 +2,7 @@ package com.avoqado.pos.core.presentation.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,6 +32,7 @@ import com.avoqado.pos.core.presentation.model.enums.MmTypeCurrencyEnum
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.menta.android.common_cross.util.Utils
 import com.menta.android.keys.admin.core.repository.parametro.ParametroDB
+import timber.log.Timber
 import java.math.BigDecimal
 import java.text.DateFormat
 import java.text.ParseException
@@ -85,8 +86,7 @@ object Utils {
                 return ret >= 0
             }
         } catch (e: ParseException) {
-            Log.e(TAG, e.message!!)
-            e.printStackTrace()
+            Timber.e(e, e.message!!)
         }
         return false
     }

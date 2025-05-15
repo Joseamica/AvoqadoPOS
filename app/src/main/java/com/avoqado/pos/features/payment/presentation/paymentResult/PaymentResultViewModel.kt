@@ -1,6 +1,5 @@
 package com.avoqado.pos.features.payment.presentation.paymentResult
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.AvoqadoApp
@@ -38,7 +37,7 @@ class PaymentResultViewModel(
 
     init {
         paymentRepository.getCachePaymentInfo()?.let {
-            Log.d("PaymentResultViewModel", it.rootData)
+            Timber.d(it.rootData)
             _paymentResult.update { state ->
                 state
                     .copy(

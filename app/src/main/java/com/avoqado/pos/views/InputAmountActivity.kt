@@ -3,7 +3,7 @@ package com.avoqado.pos.views
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import timber.log.Timber
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -47,7 +47,7 @@ class InputAmountActivity : ComponentActivity() {
     private fun observer() {
         viewModel.isValidAmount.observe(this) { amount ->
             if (amount != null) {
-                Log.i(TAG, "Ready to read card")
+                Timber.i("Ready to read card")
                 val intent = Intent(this, CardProcessActivity::class.java)
                 intent.putExtra("amount", amount)
                 intent.putExtra("currency", currency)
@@ -55,9 +55,5 @@ class InputAmountActivity : ComponentActivity() {
                 startActivity(intent)
             }
         }
-    }
-
-    companion object {
-        const val TAG = "InputAmountActivity"
     }
 }

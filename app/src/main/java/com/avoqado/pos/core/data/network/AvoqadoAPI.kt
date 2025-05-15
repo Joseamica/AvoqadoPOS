@@ -1,6 +1,6 @@
 package com.avoqado.pos.core.data.network
 
-import android.util.Log
+import timber.log.Timber
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -42,7 +42,7 @@ object AvoqadoAPI {
                     .addInterceptor {
                         it.proceed(
                             it.request().also {
-                                Log.i("AvoqadoLogging", "Request: ${it.url} \n ${it.headers}")
+                                Timber.i("Request: ${it.url} \n ${it.headers}")
                             },
                         )
                     }.build(),

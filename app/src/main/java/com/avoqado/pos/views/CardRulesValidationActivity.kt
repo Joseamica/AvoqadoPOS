@@ -13,7 +13,6 @@ import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.R
 import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.customerId
-import com.avoqado.pos.merchantId
 import com.avoqado.pos.ui.screen.ProcessingOperationScreen
 import com.menta.android.common_cross.util.CURRENCY_LABEL_ARG
 import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
@@ -22,6 +21,7 @@ import com.menta.android.core.model.Currency
 import com.menta.android.core.model.OperationFlow
 import com.menta.android.core.viewmodel.bin.BinValidationData
 import com.menta.android.restclient.core.RestClientConfiguration
+import timber.log.Timber
 
 class CardRulesValidationActivity : ComponentActivity() {
     private lateinit var binValidationData: BinValidationData
@@ -48,7 +48,7 @@ class CardRulesValidationActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i("$TAG-AvoqadoTest", "New instance of $TAG")
+        Timber.i("New instance of CardRulesValidationActivity")
         enableEdgeToEdge()
         setContent {
             ProcessingOperationScreen(
@@ -72,7 +72,7 @@ class CardRulesValidationActivity : ComponentActivity() {
             currency = if (Currency.MX.name == currency) CURRENCY_LABEL_MX else CURRENCY_LABEL_ARG,
             interest = false,
         )
-        Log.i("", "bin: $bin")
+        Timber.i("bin: $bin")
         binValidationData.doBinValidation(bin)
         binValidationData.binValidationResponse.observe(this) {
             if (it.status == "FOUND") {
@@ -95,7 +95,7 @@ class CardRulesValidationActivity : ComponentActivity() {
                 binValidationData.setIsInternational(it.isInternational ?: false)
 
                 operationFlow!!.installments = "01"
-                Log.i(TAG, "Ir directo al pago")
+                Timber.i("Ir directo al pago")
                 val intent =
                     Intent(this, DoPaymentActivity::class.java).apply {
                         putExtra("splitType", splitType.value)
@@ -104,9 +104,9 @@ class CardRulesValidationActivity : ComponentActivity() {
                 startActivity(intent)
                 finish()
             } else {
-                Log.i(TAG, "Bin no encontrado")
+                Timber.i("Bin no encontrado")
                 val brandsAvailable = it.brandsAvailable
-                Log.i(TAG, "Marcas y tipos disponibles: $brandsAvailable")
+                Timber.i("Marcas y tipos disponibles: $brandsAvailable")
 
                 // TODO el cliente puede construir pantallas para selección manual, tomando como input brandsAvailable. Además, debe construir el consumo de installments, ejemplo:
                 getInstallments(binValidationData)
@@ -127,11 +127,7 @@ class CardRulesValidationActivity : ComponentActivity() {
             isInternational = isInternational,
         )
         binValidationViewModel.getInstallmentsResponse.observe(this) {
-            Log.i(TAG, "installments: ${it.installments}")
+            Timber.i("installments: ${it.installments}")
         }
-    }
-
-    companion object {
-        const val TAG = "BinValidationActivity"
     }
 }

@@ -4,7 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.Binder
 import android.os.IBinder
-import android.util.Log
+import timber.log.Timber
 import com.avoqado.pos.core.data.network.models.PaymentUpdateMessage
 import com.avoqado.pos.core.data.network.models.ShiftUpdateMessage
 import com.avoqado.pos.core.domain.mappers.ShiftMapper
@@ -38,12 +38,12 @@ class SocketService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "SocketService created")
+        Timber.d("SocketService created")
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (!isServiceStarted) {
-            Log.d(TAG, "SocketService started")
+            Timber.d("SocketService started")
             // Initialize the socket connection when service starts
             socketManager.connect(socketManager.getServerUrl())
             isServiceStarted = true
@@ -92,14 +92,12 @@ class SocketService : Service() {
         ShiftMapper.mapToDomain(shiftUpdateMessage)
 
     override fun onDestroy() {
-        Log.d(TAG, "SocketService destroyed")
+        Timber.d("SocketService destroyed")
         // Disconnect only when service is destroyed
         socketManager.disconnect()
         isServiceStarted = false
         super.onDestroy()
     }
 
-    companion object {
-        private const val TAG = "SocketService"
-    }
+    
 } 

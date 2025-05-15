@@ -1,6 +1,4 @@
 package com.avoqado.pos.features.authorization.presentation.authorization
-
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,11 +25,11 @@ import com.avoqado.pos.COUNTRY_CODE
 import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel
 import com.avoqado.pos.merchantApiKey
 import com.avoqado.pos.merchantId
-import com.avoqado.pos.views.InitActivity.Companion.TAG
 import com.menta.android.common_cross.util.StatusType
 import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 
 @Composable
 fun AuthorizationDialog(
@@ -65,10 +63,10 @@ fun AuthorizationDialog(
     LaunchedEffect(key1 = externalToken) {
         externalToken?.let { token ->
             if (token.status.statusType != StatusType.ERROR) {
-                Log.i(TAG, "Get token SUCCESS")
+                Timber.i("Get token SUCCESS")
                 viewModel.storePublicKey(token.idToken, token.tokenType)
             } else {
-                Log.i(TAG, "Get token ERROR: ${token.status.message}")
+                Timber.i("Get token ERROR: ${token.status.message}")
             }
         }
     }

@@ -3,7 +3,7 @@ package com.avoqado.pos.views
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import timber.log.Timber
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -92,7 +92,7 @@ class ListTransactionActivity : ComponentActivity() {
             },
         )
         selectedTransaction.value?.let { transaction ->
-            Log.i(TAG, "transaction selected: $transaction")
+            Timber.i("transaction selected: $transaction")
             goToReadCard(transaction)
         }
     }
@@ -225,9 +225,5 @@ class ListTransactionActivity : ComponentActivity() {
         intent.putExtra("operationType", "REFUND")
         intent.putExtra("currency", CURRENCY_LABEL)
         startActivity(intent)
-    }
-
-    companion object {
-        const val TAG = "ListTransactionActivity"
     }
 }

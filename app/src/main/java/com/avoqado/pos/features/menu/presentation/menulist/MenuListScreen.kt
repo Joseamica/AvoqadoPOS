@@ -1,6 +1,6 @@
 package com.avoqado.pos.features.menu.presentation.menulist
 
-import android.util.Log
+import timber.log.Timber
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -56,15 +56,16 @@ import com.avoqado.pos.features.menu.domain.models.AvoqadoMenu
 import com.avoqado.pos.features.menu.domain.models.Language
 import com.avoqado.pos.features.menu.domain.models.MenuCategory
 
+
 @Composable
 fun MenuListScreen(viewModel: MenuListViewModel) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     
     // Debug logs to check what's in UI state
     LaunchedEffect(uiState) {
-        Log.d("MenuListScreen", "UI State: loading=${uiState.isLoading}, menus.size=${uiState.menus.size}, error=${uiState.error}")
+        Timber.d("UI State: loading=${uiState.isLoading}, menus.size=${uiState.menus.size}, error=${uiState.error}")
         if (uiState.menus.isNotEmpty()) {
-            Log.d("MenuListScreen", "First menu: ${uiState.menus.first().name}")
+            Timber.d("First menu: ${uiState.menus.first().name}")
         }
     }
 

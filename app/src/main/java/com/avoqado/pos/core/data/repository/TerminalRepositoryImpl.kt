@@ -94,7 +94,7 @@ class TerminalRepositoryImpl(
                     sessionManager.setShift(it)
                 }
         } catch (e: Exception) {
-            Log.e("TerminalRepository", e.message ?: "", e)
+            Timber.e(e, e.message ?: "")
             if (e is HttpException) {
                 if (e.code() == 401) {
                     throw AvoqadoError.Unauthorized
@@ -361,7 +361,7 @@ class TerminalRepositoryImpl(
 
     override fun listenForShiftEvents(): Flow<Shift> =
         SocketIOManager.shiftMessageFlow.map { message ->
-            Log.d("TerminalRepository", "Received shift update: $message")
+            Timber.d("Received shift update: $message")
 
             // Convertimos el mensaje a un objeto Shift
             val shift =

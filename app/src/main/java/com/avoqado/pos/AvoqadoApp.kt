@@ -1,5 +1,6 @@
 package com.avoqado.pos
 
+
 import android.app.Application
 import android.content.ComponentName
 import android.content.Context
@@ -11,7 +12,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.IBinder
 import android.provider.Settings
-import android.util.Log
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.AvoqadoAPI
 import com.avoqado.pos.core.data.network.AppConfig
@@ -83,23 +83,28 @@ class AvoqadoApp : Application() {
                 val binder = service as SocketService.SocketBinder
                 socketService = binder.getService()
                 socketServiceBound = true
-                Log.d("AvoqadoApp", "Socket service connected")
+                Timber.tag("AvoqadoApp").d("Socket service connected")
             }
 
             override fun onServiceDisconnected(name: ComponentName?) {
                 socketService = null
                 socketServiceBound = false
-                Log.d("AvoqadoApp", "Socket service disconnected")
+                Timber.tag("AvoqadoApp").d("Socket service disconnected")
             }
         }
     }
 
     override fun onCreate() {
         super.onCreate()
-        Timber.plant(
-            FirebasePlant(),
-        )
 
+        // Plant Firebase tree for production crash reporting
+        Timber.plant(FirebasePlant())
+        val isDebugBuild = applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE != 0
+
+        // Add a DebugTree in debug builds to show logs in Logcat
+        if (isDebugBuild) {
+            Timber.plant(Timber.DebugTree())
+        }
         // Initialize AppConfig first so other components can use it
         AppConfig.initialize(this)
 
@@ -142,8 +147,8 @@ class AvoqadoApp : Application() {
         
         // Bind to the service
         bindService(intent, socketServiceConnection, Context.BIND_AUTO_CREATE)
-        
-        Log.d("AvoqadoApp", "Started and binding to SocketService")
+
+        Timber.d("Started and binding to SocketService")
     }
     
     override fun onTerminate() {

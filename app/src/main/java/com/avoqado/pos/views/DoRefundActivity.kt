@@ -2,7 +2,7 @@ package com.avoqado.pos.views
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import timber.log.Timber
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -79,39 +79,35 @@ class DoRefundActivity : ComponentActivity() {
 
         doRefund.doOperation(operationType = OperationType.REFUND)
         doRefund.operationResponse.observe(this) {
-            Log.i(TAG, "Resultado de la devolución: $it")
-            Log.i(TAG, "Error message: ${it.status.message}")
+            Timber.i("Resultado de la devolución: $it")
+            Timber.i("Error message: ${it.status.message}")
             it.data?.let { response ->
                 val operationResponse = response as Adquirer
                 val gson = Gson()
                 val operationResponseJson = gson.toJson(operationResponse)
 
-                Log.i(TAG, "operationResponseJson: $operationResponseJson")
-                Log.i(TAG, "response.code: ${operationResponse.response?.code}")
-                Log.i(TAG, "response.description: ${operationResponse.response?.description}")
-                Log.i(TAG, "response.name: ${operationResponse.response?.name}")
+                Timber.i("operationResponseJson: $operationResponseJson")
+                Timber.i("response.code: ${operationResponse.response?.code}")
+                Timber.i("response.description: ${operationResponse.response?.description}")
+                Timber.i("response.name: ${operationResponse.response?.name}")
 
                 if (operationResponse.status?.code == OperationResponseCode.APPROVED) {
-                    Log.i(TAG, "Id: ${operationResponse.id}")
-                    Log.i(TAG, "OperationNumber: ${operationResponse.ticketId}")
+                    Timber.i("Id: ${operationResponse.id}")
+                    Timber.i("OperationNumber: ${operationResponse.ticketId}")
                     val intent = Intent(this, SuccessRefundActivity::class.java)
                     startActivity(intent)
                 } else {
-                    Log.i(TAG, "Devolución declinada!")
+                    Timber.i("Devolución declinada!")
                     val intent = Intent(this, DeclineRefundActivity::class.java)
                     intent.putExtra("message", it.status.message)
                     startActivity(intent)
                 }
             } ?: run {
-                Log.i(TAG, "Devolución no procesada!")
+                Timber.i("Devolución no procesada!")
                 val intent = Intent(this, DeclineRefundActivity::class.java)
                 intent.putExtra("message", it.status.message)
                 startActivity(intent)
             }
         }
-    }
-
-    companion object {
-        const val TAG = "DoRefundActivity"
     }
 }

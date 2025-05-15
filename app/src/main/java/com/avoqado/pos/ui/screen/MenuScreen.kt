@@ -1,7 +1,7 @@
 package com.avoqado.pos.ui.screen
 
 import android.annotation.SuppressLint
-import android.util.Log
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +19,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.unit.dp
 import com.avoqado.pos.core.presentation.viewmodel.InputAmountViewModel
+import timber.log.Timber
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -71,7 +72,7 @@ fun MenuScreen(viewModel: InputAmountViewModel) {
                         .height(57.dp)
                         .align(Alignment.End),
                 onClick = {
-                    Log.i("", "ingreso: ${viewModel.textFieldAmount.value.textFieldValue.text}")
+                    Timber.i("ingreso: ${viewModel.textFieldAmount.value.textFieldValue.text}")
                     viewModel.isValidAmount(viewModel.textFieldAmount.value.textFieldValue.text)
                 },
             )

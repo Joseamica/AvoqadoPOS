@@ -1,6 +1,6 @@
 package com.avoqado.pos.features.management.data
 
-import android.util.Log
+import timber.log.Timber
 import com.avoqado.pos.core.data.network.AvoqadoService
 import com.avoqado.pos.core.data.network.AppConfig
 import com.avoqado.pos.core.data.network.models.CreateBillRequest
@@ -53,14 +53,14 @@ class ManagementRepositoryImpl(
 
     override fun listenTableEvents(): Flow<PaymentUpdate> =
         SocketIOManager.messageFlow.map { message ->
-            Log.d("ManagementRepository", "Received socket message: $message")
+            Timber.d("Received socket message: $message")
 
             // Safely parse amount
             val amount =
                 try {
                     message.amount?.toDoubleOrNull() ?: 0.0
                 } catch (e: Exception) {
-                    Log.e("ManagementRepository", "Error parsing amount: ${message.amount}", e)
+                    Timber.e("Error parsing amount: ${message.amount}", e)
                     0.0
                 }
 
@@ -78,7 +78,7 @@ class ManagementRepositoryImpl(
                         SplitType.EQUALPARTS // Default value for null
                     }
                 } catch (e: Exception) {
-                    Log.e("ManagementRepository", "Error parsing splitType: ${message.splitType}", e)
+                    Timber.e("Error parsing splitType: ${message.splitType}", e)
                     SplitType.EQUALPARTS // Fallback value
                 }
 
@@ -95,14 +95,14 @@ class ManagementRepositoryImpl(
 
     override fun listenVenueEvents(): Flow<PaymentUpdate> =
         SocketIOManager.venueMessageFlow.map { message ->
-            Log.d("ManagementRepository", "Received venue message: $message")
+            Timber.d("Received venue message: $message")
 
             // Safely parse amount
             val amount =
                 try {
                     message.amount?.toDoubleOrNull() ?: 0.0
                 } catch (e: Exception) {
-                    Log.e("ManagementRepository", "Error parsing venue amount: ${message.amount}", e)
+                    Timber.e("Error parsing venue amount: ${message.amount}", e)
                     0.0
                 }
 
@@ -120,7 +120,7 @@ class ManagementRepositoryImpl(
                         SplitType.EQUALPARTS // Default value for null
                     }
                 } catch (e: Exception) {
-                    Log.e("ManagementRepository", "Error parsing venue splitType: ${message.splitType}", e)
+                    Timber.e("Error parsing venue splitType: ${message.splitType}", e)
                     SplitType.EQUALPARTS // Fallback value
                 }
 
@@ -130,7 +130,7 @@ class ManagementRepositoryImpl(
                     message.tableNumber ?: // Remove the tableName references since they don't exist
                         0 // Default to 0 if tableNumber is null
                 } catch (e: Exception) {
-                    Log.e("ManagementRepository", "Error parsing tableNumber", e)
+                    Timber.e("Error parsing tableNumber", e)
                     0
                 }
             PaymentUpdate(
@@ -272,8 +272,8 @@ class ManagementRepositoryImpl(
      */
     override suspend fun createNewBill(venueId: String, billName: String): Boolean {
         return try {
-            Log.d("ManagementRepository", "Creating new bill: $billName for venue: $venueId")
-            Log.d("ManagementRepository", "API URL: tpv/venues/$venueId/bills")
+            Timber.d("Creating new bill: $billName for venue: $venueId")
+            Timber.d("API URL: tpv/venues/$venueId/bills")
             
             // Get the current waiter info from session
             val waiterId = "" // If available from session manager
@@ -289,7 +289,7 @@ class ManagementRepositoryImpl(
                 // products and total will use default values from the class
             )
             
-            Log.d("ManagementRepository", "Request body: $requestBody")
+            Timber.d("Request body: $requestBody")
             
             // Make API request to create a new bill
             val response = avoqadoService.createBill(
@@ -298,23 +298,23 @@ class ManagementRepositoryImpl(
             )
             
             // Log full response details
-            Log.d("ManagementRepository", "Response code: ${response.code()}")
-            Log.d("ManagementRepository", "Response message: ${response.message()}")
-            Log.d("ManagementRepository", "Response headers: ${response.headers()}")
+            Timber.d("Response code: ${response.code()}")
+            Timber.d("Response message: ${response.message()}")
+            Timber.d("Response headers: ${response.headers()}")
             
             // Check if the response is successful
             val success = response.isSuccessful && response.body() != null
             
             if (success) {
-                Log.d("ManagementRepository", "Successfully created new bill: ${response.body()?.id}")
+                Timber.d("Successfully created new bill: ${response.body()?.id}")
             } else {
                 val errorBody = response.errorBody()?.string() ?: "No error body"
-                Log.e("ManagementRepository", "Failed to create bill. Code: ${response.code()}, Error: $errorBody")
+                Timber.e("Failed to create bill. Code: ${response.code()}, Error: $errorBody")
             }
             
             success
         } catch (e: Exception) {
-            Log.e("ManagementRepository", "Error creating new bill", e)
+            Timber.e("Error creating new bill", e)
             e.printStackTrace() // Print the full stack trace
             false
         }

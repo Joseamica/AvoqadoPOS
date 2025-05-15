@@ -51,6 +51,7 @@ import com.menta.android.core.viewmodel.MasterKeyData
 import com.menta.android.emv.i9100.reader.util.InputMode
 import com.menta.android.restclient.core.RestClientConfiguration.configure
 import com.menta.android.restclient.core.Storage
+import timber.log.Timber
 import java.time.LocalDateTime
 import kotlin.UninitializedPropertyAccessException
 
@@ -93,7 +94,7 @@ class CardProcessActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i("$TAG-AvoqadoTest", "New instance of $TAG")
+        Timber.i("New instance of CardProcessActivity")
 
         enableEdgeToEdge()
         cardProcessData = CardProcessData()
@@ -246,11 +247,11 @@ class CardProcessActivity : ComponentActivity() {
                         keyResult?.secretsList?.let {
                             onTokenUpdated()
                         } ?: run {
-                            Log.e(InitActivity.TAG, "Ocurrio algun error, secrets list is null")
+                            Timber.e("Ocurrio algun error, secrets list is null")
                         }
                     }
                 } else {
-                    Log.e(InitActivity.TAG, "Get token ERROR: ${token.status.message}")
+                    Timber.e("Get token ERROR: ${token.status.message}")
                 }
             }
         }
@@ -264,7 +265,7 @@ class CardProcessActivity : ComponentActivity() {
             if (operationType != "PAYMENT" && operationType != "PREAUTHORIZATION") {
                 transaction = intent.getParcelableExtra("transaction")!!
                 transaction.let {
-                    Log.i(TAG, "Transaction ID: ${it.id}")
+                    Timber.i("Transaction ID: ${it.id}")
                 }
             }
         }
@@ -369,7 +370,7 @@ class CardProcessActivity : ComponentActivity() {
     private val navigateObserver: (Any) -> Unit = {
         when (it) {
             is Bundle -> {
-                Log.i(TAG, "Bundle: $it")
+                Timber.i("Bundle: $it")
                 val status = it.get("status")
                 val statusResult: StatusResult = status as StatusResult
                 Utils.sendCrashlyticsReport(
@@ -380,7 +381,7 @@ class CardProcessActivity : ComponentActivity() {
                     )
                 )
                 if (isDestroying.not()) {
-                    Log.i(TAG, "statusResult: $statusResult")
+                    Timber.i("statusResult: $statusResult")
                     val intent = Intent(this, CardErrorActivity::class.java)
                     intent.putExtra("status", statusResult)
                     intent.putExtra("amount", amount)
@@ -389,17 +390,14 @@ class CardProcessActivity : ComponentActivity() {
                     intent.putExtra("operationType", operationType)
                     intent.putExtra("splitType", splitType?.value)
                     startActivity(intent)
-                    Log.i(
-                        "$TAG-AvoqadoTest",
-                        "CardProcessActivity closed by navigateObserver with StatusResult: $statusResult",
-                    )
+                    Timber.i("CardProcessActivity closed by navigateObserver with StatusResult: $statusResult")
                     finish()
                 }
             }
 
             is String -> {
                 if (operationType == "PAYMENT" || operationType == "PREAUTHORIZATION") {
-                    Log.i(TAG, "BIN de la tarjeta: $it")
+                    Timber.i("BIN de la tarjeta: $it")
                     // Validar BIN
                     val bundle =
                         Bundle().apply {
@@ -426,7 +424,7 @@ class CardProcessActivity : ComponentActivity() {
                     val intent = Intent(this, DoRefundActivity::class.java)
                     startActivity(intent)
                 }
-                Log.i("$TAG-AvoqadoTest", "CardProcessActivity closed by navigateObserver")
+                Timber.i("CardProcessActivity closed by navigateObserver")
                 finish()
             }
         }
@@ -439,19 +437,16 @@ class CardProcessActivity : ComponentActivity() {
 
     private fun String.isNotNull(): Boolean = this != "null"
 
-    companion object {
-        const val TAG = "CardProcessActivity"
-    }
 
     override fun onDestroy() {
-        Log.d("$TAG-AvoqadoTest", "CardProcessActivity on detroy")
+        Timber.d("CardProcessActivity on detroy")
         isDestroying = true
         try {
             // Check if cardProcessUseCase is initialized before calling stopReader
-            Log.d("$TAG-AvoqadoTest", "CardProcessActivity stopReader")
+            Timber.d("CardProcessActivity stopReader")
             cardProcessData.stopReader()
         } catch (e: UninitializedPropertyAccessException) {
-            Log.e(TAG, "Error stopping card reader: ${e.message}")
+            Timber.e("Error stopping card reader: ${e.message}")
         }
         super.onDestroy()
     }

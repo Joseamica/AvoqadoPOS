@@ -36,6 +36,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -260,7 +261,7 @@ fun formatDateTime(dateString: String?): String {
         return zonedDateTime.format(formatter)
     } catch (e: Exception) {
         // Log the error and return a fallback value
-        android.util.Log.e("ShiftsPage", "Error parsing date: $dateString", e)
+        Timber.e("ShiftsPage", "Error parsing date: $dateString", e)
         return "Invalid date"
     }
 }

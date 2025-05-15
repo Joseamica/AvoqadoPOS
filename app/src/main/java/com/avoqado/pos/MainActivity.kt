@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.Log
+import timber.log.Timber
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -50,7 +51,7 @@ class MainActivity : ComponentActivity() {
 
         configure(AppfinRestClientConfigure())
         val serialNumber = getDeviceSerialNumber()
-        Log.d("MainActivity", "Device Serial Number: $serialNumber")
+        Timber.d("Device Serial Number: $serialNumber")
         getScreenInfo()
 
         val externalTokenData = ExternalTokenData(this)
@@ -107,8 +108,8 @@ class MainActivity : ComponentActivity() {
             val density = resources.displayMetrics.density
             val densityDpi = resources.displayMetrics.densityDpi
 
-            Log.d("AvoqadoSettings", "Screen Width: ${widthPx}px")
-            Log.d("AvoqadoSettings", "Screen Height: ${heightPx}px")
+            Timber.d("Screen Width: ${widthPx}px")
+            Timber.d("Screen Height: ${heightPx}px")
         } else {
             val displayMetrics = DisplayMetrics()
 
@@ -121,11 +122,11 @@ class MainActivity : ComponentActivity() {
             val density = displayMetrics.density
             val scaledDensity = displayMetrics.scaledDensity
 
-            Log.d("AvoqadoSettings", "Screen Width: ${widthPx}px")
-            Log.d("AvoqadoSettings", "Screen Height: ${heightPx}px")
-            Log.d("AvoqadoSettings", "Density: $density")
-            Log.d("AvoqadoSettings", "Density DPI: $densityDpi dpi")
-            Log.d("AvoqadoSettings", "Scaled Density: $scaledDensity")
+            Timber.d("AvoqadoSettings", "Screen Width: ${widthPx}px")
+            Timber.d("Screen Height: ${heightPx}px")
+            Timber.d("Density: $density")
+            Timber.d("Density DPI: $densityDpi dpi")
+            Timber.d("Scaled Density: $scaledDensity")
         }
     }
 }

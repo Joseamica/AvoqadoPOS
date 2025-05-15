@@ -65,15 +65,15 @@ class HomeViewModel(
                     // Actualizar el estado basado en la información del servidor
                     _shiftStarted.update { currentShift != null && currentShift!!.isStarted }
 
-                    Log.d("HomeViewModel", "Current shift after fetch: $currentShift, isStarted: ${_shiftStarted.value}")
+                    Timber.d("Current shift after fetch: $currentShift, isStarted: ${_shiftStarted.value}")
 
                     // Luego iniciar la escucha de eventos
                     startListeningForShiftEvents()
                 } else {
-                    Log.e("HomeViewModel", "Cannot fetch current shift: venue info incomplete")
+                    Timber.e("Cannot fetch current shift: venue info incomplete")
                 }
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "Error fetching current shift", e)
+                Timber.e("Error fetching current shift", e)
             }
         }
     }
@@ -86,7 +86,7 @@ class HomeViewModel(
     private fun startListeningForShiftEvents() {
         val venueId = sessionManager.getVenueId()
         if (venueId.isEmpty()) {
-            Log.e("HomeViewModel", "Cannot listen for shift updates: venueId is empty")
+            Timber.e("Cannot listen for shift updates: venueId is empty")
             return
         }
 
@@ -99,7 +99,7 @@ class HomeViewModel(
                     isCollectingShiftEvents = true
 
                     terminalRepository.listenForShiftEvents().collectLatest { shift ->
-                        Log.d("HomeViewModel", "Received shift update: $shift")
+                        Timber.d("Received shift update: $shift")
 
                         // Actualizamos el turno actual
                         currentShift = shift
@@ -120,7 +120,7 @@ class HomeViewModel(
                     }
                 }
             } catch (e: Exception) {
-                Timber.tag("HomeViewModel").e(e, "Error setting up shift updates")
+                Timber.e(e, "Error setting up shift updates")
                 isCollectingShiftEvents = false
             }
         }
@@ -132,7 +132,7 @@ class HomeViewModel(
                 terminalRepository.disconnectFromShiftEvents()
                 isCollectingShiftEvents = false
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "Error stopping shift updates", e)
+                Timber.e(e, "Error stopping shift updates")
             }
         }
     }
@@ -231,9 +231,9 @@ class HomeViewModel(
                 forceRefreshShiftStatus()
                 // Make sure we don't hide the spinner too quickly
                 delay(500)
-                Log.d("HomeViewModel", "Data refreshed successfully")
+                Timber.d("Data refreshed successfully")
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "Error refreshing data", e)
+                Timber.e("Error refreshing data", e)
             } finally {
                 _isRefreshing.update { false }
             }
@@ -307,13 +307,13 @@ class HomeViewModel(
                     // Actualizar el estado
                     _shiftStarted.update { currentShift != null && currentShift!!.isStarted }
 
-                    Log.d("HomeViewModel", "Shift status refreshed: isStarted=${_shiftStarted.value}")
+                    Timber.d("Shift status refreshed: isStarted=${_shiftStarted.value}")
 
                     // Reconectar para escuchar eventos
                     startListeningForShiftEvents()
                 }
             } catch (e: Exception) {
-                Log.e("HomeViewModel", "Error refreshing shift status", e)
+                Timber.e("Error refreshing shift status", e)
             }
         }
     }

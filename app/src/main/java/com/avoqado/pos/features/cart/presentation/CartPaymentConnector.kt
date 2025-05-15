@@ -2,7 +2,7 @@ package com.avoqado.pos.features.cart.presentation
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
+import timber.log.Timber
 import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.OperationFlowHolder
 import com.avoqado.pos.core.domain.models.SplitType
@@ -31,7 +31,7 @@ object CartPaymentConnector {
         val cart = cartRepository.cart.value
         
         if (cart.isEmpty()) {
-            Log.e(TAG, "Cannot start payment process with empty cart")
+            Timber.e("Cannot start payment process with empty cart")
             return
         }
         
@@ -71,7 +71,7 @@ object CartPaymentConnector {
             // Optionally clear the cart after successful payment initiation
             // cartRepository.clearCart()
         } catch (e: Exception) {
-            Log.e(TAG, "Error starting payment process: ${e.message}", e)
+            Timber.e("Error starting payment process: ${e.message}", e)
         }
     }
 }

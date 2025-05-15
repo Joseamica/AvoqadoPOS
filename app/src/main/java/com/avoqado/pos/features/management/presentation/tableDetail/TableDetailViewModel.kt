@@ -1,6 +1,5 @@
 package com.avoqado.pos.features.management.presentation.tableDetail
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.AvoqadoApp
@@ -26,6 +25,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.time.LocalDateTime
 
 class TableDetailViewModel(
@@ -82,32 +82,32 @@ class TableDetailViewModel(
     fun startListeningUpdates() {
         viewModelScope.launch(Dispatchers.IO) {
             if (venueId.isEmpty() || tableNumber.isEmpty()) {
-                Log.e(TAG, "Cannot listen for updates: venueId or tableNumber is empty")
+                Timber.e("Cannot listen for updates: venueId or tableNumber is empty")
                 return@launch
             }
             
             try {
-                Log.d(TAG, "Starting to listen for updates - Venue: $venueId, Table: $tableNumber")
+                Timber.d("Starting to listen for updates - Venue: $venueId, Table: $tableNumber")
                 
                 // Join the table room using the SocketService
                 socketService?.joinTableRoom(venueId, tableNumber)
-                Log.d(TAG, "Joined table room for venue: $venueId, table: $tableNumber")
+                Timber.d("Joined table room for venue: $venueId, table: $tableNumber")
                 
                 // Only start collecting if we're not already
                 if (!isCollectingSocketEvents) {
-                    Log.d(TAG, "Starting to collect socket events")
+                    Timber.d("Starting to collect socket events")
                     isCollectingSocketEvents = true
                     
                     // Collect the table-specific message flow
                     socketService?.messageFlow?.collectLatest { update ->
-                        Log.d(TAG, "Socket event received - Raw update: $update")
-                        Log.d(TAG, "Current table number: $tableNumber, Current venue ID: $venueId")
-                        Log.d(TAG, "Update status: ${update.status}")
+                        Timber.d("Socket event received - Raw update: $update")
+                        Timber.d("Current table number: $tableNumber, Current venue ID: $venueId")
+                        Timber.d("Update status: ${update.status}")
 
                         // Check for bill status changes using status field
                         when (update.status?.uppercase()) {
                             "DELETED" -> {
-                                Log.d(TAG, "Bill DELETED - navigating back")
+                                Timber.d("Bill DELETED - navigating back")
                                 // Mark the bill as deleted to prevent further API calls
                                 isBillDeleted = true
                                 // Stop socket listener since the bill is gone
@@ -121,7 +121,7 @@ class TableDetailViewModel(
                                 }
                             }
                             "CANCELED" -> {
-                                Log.d(TAG, "Bill CANCELED - navigating back")
+                                Timber.d("Bill CANCELED - navigating back")
                                 // Mark the bill as deleted to prevent further API calls
                                 isBillDeleted = true
                                 // Stop socket listener since the bill is gone
@@ -135,7 +135,7 @@ class TableDetailViewModel(
                                 }
                             }
                             "PAID" -> {
-                                Log.d(TAG, "Bill PAID - showing info and navigating back")
+                                Timber.d("Bill PAID - showing info and navigating back")
                                 // For paid bills, backend returns 404 since it only finds OPEN bills
                                 // So we should mark the bill as deleted to prevent further API calls
                                 isBillDeleted = true
@@ -155,11 +155,11 @@ class TableDetailViewModel(
                                 }
                             }
                             "PRODUCT_ADDED" -> {
-                                Log.d(TAG, "Product added event received - Starting refresh")
+                                Timber.d("Product added event received - Starting refresh")
                                 viewModelScope.launch(Dispatchers.Main) {
-                                    Log.d(TAG, "Fetching table detail after PRODUCT_ADDED")
+                                    Timber.d("Fetching table detail after PRODUCT_ADDED")
                                     fetchTableDetail()
-                                    Log.d(TAG, "Table detail refresh completed after PRODUCT_ADDED")
+                                    Timber.d("Table detail refresh completed after PRODUCT_ADDED")
                                 }
                                 snackbarDelegate.showSnackbar(
                                     state = SnackbarState.Default,
@@ -167,11 +167,11 @@ class TableDetailViewModel(
                                 )
                             }
                             "UPDATED", "PRODUCT_UPDATED", "PRODUCT_REMOVED" -> {
-                                Log.d(TAG, "Products updated - refreshing table detail")
+                                Timber.d("Products updated - refreshing table detail")
                                 viewModelScope.launch(Dispatchers.Main) {
-                                    Log.d(TAG, "Fetching table detail after product update")
+                                    Timber.d("Fetching table detail after product update")
                                     fetchTableDetail()
-                                    Log.d(TAG, "Table detail refresh completed after product update")
+                                    Timber.d("Table detail refresh completed after product update")
                                 }
                                 snackbarDelegate.showSnackbar(
                                     state = SnackbarState.Default,
@@ -179,20 +179,20 @@ class TableDetailViewModel(
                                 )
                             }
                             else -> {
-                                Log.d(TAG, "Unhandled status: ${update.status} - refreshing anyway")
+                                Timber.d("Unhandled status: ${update.status} - refreshing anyway")
                                 viewModelScope.launch(Dispatchers.Main) {
-                                    Log.d(TAG, "Fetching table detail for unhandled status")
+                                    Timber.d("Fetching table detail for unhandled status")
                                     fetchTableDetail()
-                                    Log.d(TAG, "Table detail refresh completed for unhandled status")
+                                    Timber.d("Table detail refresh completed for unhandled status")
                                 }
                             }
                         }
                     }
                 } else {
-                    Log.d(TAG, "Already collecting socket events - skipping collection setup")
+                    Timber.d("Already collecting socket events - skipping collection setup")
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "Error setting up socket updates", e)
+                Timber.e("Error setting up socket updates", e)
                 isCollectingSocketEvents = false
             }
         }
@@ -210,14 +210,14 @@ class TableDetailViewModel(
     fun fetchTableDetail() {
         // Don't fetch if the bill has been deleted
         if (isBillDeleted) {
-            Log.d(TAG, "Skipping fetchTableDetail because bill is deleted")
+            Timber.d("Skipping fetchTableDetail because bill is deleted")
             return
         }
         
         viewModelScope.launch {
             _isLoading.value = true
             try {
-                Log.d(TAG, "Starting table detail fetch for table: $tableNumber, venue: $venueId")
+                Timber.d("Starting table detail fetch for table: $tableNumber, venue: $venueId")
                 val billDetail = withContext(Dispatchers.IO) {
                     managementRepository.getDetailedBill(
                         venueId = venueId,
@@ -225,7 +225,7 @@ class TableDetailViewModel(
                     )
                 }
                 
-                Log.d(TAG, "Successfully fetched bill detail: $billDetail")
+                Timber.d("Successfully fetched bill detail: $billDetail")
                 
                 _tableDetail.update {
                     it.copy(
@@ -258,15 +258,15 @@ class TableDetailViewModel(
                     )
                 }
 
-                Log.d(TAG, "Updated table detail state with new data")
+                Timber.d("Updated table detail state with new data")
                 managementRepository.setTableCache(_tableDetail.value.toDomain())
                 
             } catch (e: Exception) {
-                Log.e(TAG, "Error fetching table detail", e)
+                Timber.e("Error fetching table detail", e)
                 
                 // Check if the bill was not found (likely deleted)
                 if (e is AvoqadoError.BasicError && (e.code == 404 || e.code == 400)) {
-                    Log.d(TAG, "Bill not found (HTTP ${e.code}) - likely deleted")
+                    Timber.d("Bill not found (HTTP ${e.code}) - likely deleted")
                     // Mark the bill as deleted to prevent further API calls
                     isBillDeleted = true
                     // Stop socket listener since the bill is gone
@@ -422,9 +422,5 @@ class TableDetailViewModel(
         } else {
             navigationDispatcher.navigateTo(ManagementDests.OpenShift)
         }
-    }
-
-    companion object {
-        private const val TAG = "TableSocket"
     }
 }

@@ -62,6 +62,8 @@ import com.menta.android.core.model.OperationType
 fun InputTipScreen(inputTipViewModel: InputTipViewModel) {
     val context = LocalContext.current
     val showCustomKeyboard by inputTipViewModel.showCustomAmount.collectAsStateWithLifecycle()
+    val tipPercentages by inputTipViewModel.tipPercentages.collectAsStateWithLifecycle()
+    val tipPercentageLabels by inputTipViewModel.tipPercentageLabels.collectAsStateWithLifecycle()
 
     InputTipContent(
         onNavigateBack = {
@@ -98,7 +100,9 @@ fun InputTipScreen(inputTipViewModel: InputTipViewModel) {
             inputTipViewModel.navigateBack()
         },
         totalAmount = inputTipViewModel.subtotal.toDouble(),
-        waiterName = "",
+        waiterName = inputTipViewModel.waiterName,
+        tipPercentages = tipPercentages,
+        tipPercentageLabels = tipPercentageLabels,
         onCustomAmount = {
             inputTipViewModel.showCustomAmountKeyboard()
         },
@@ -151,27 +155,29 @@ fun InputTipContent(
     onNavigateBack: () -> Unit,
     totalAmount: Double,
     waiterName: String,
+    tipPercentages: List<Float>, // Percentages from venue settings (e.g., 0.12f, 0.15f, 0.18f)
+    tipPercentageLabels: List<String>, // Labels from venue settings (e.g., "12%", "15%", "18%")
     onPayWithoutTip: () -> Unit,
     onPayWithTip: (String) -> Unit,
     onCustomAmount: () -> Unit,
 ) {
     val context = LocalContext.current
 
-    // Use the percentages shown in the image: 5%, 10%, 15%
-    val tip1 by remember {
+    // Calculate tips based on the venue's percentage settings
+    val tip1 by remember(tipPercentages) {
         derivedStateOf {
-            totalAmount * 0.05  // 5% as shown in the image
+            totalAmount * tipPercentages.getOrElse(0) { 0.12f }.toDouble()
         }
     }
-    val tip2 by remember {
+    val tip2 by remember(tipPercentages) {
         derivedStateOf {
-            totalAmount * 0.10  // 10% as shown in the image
+            totalAmount * tipPercentages.getOrElse(1) { 0.15f }.toDouble()
         }
     }
 
-    val tip3 by remember {
+    val tip3 by remember(tipPercentages) {
         derivedStateOf {
-            totalAmount * 0.15  // 15% as shown in the image
+            totalAmount * tipPercentages.getOrElse(2) { 0.18f }.toDouble()
         }
     }
 
@@ -230,7 +236,7 @@ fun InputTipContent(
                 horizontalArrangement = Arrangement.SpaceEvenly,
             ) {
                 TipItemCard(
-                    percentage = "12%",
+                    percentage = tipPercentageLabels.getOrElse(0) { "12%" },
                     amount = "+ \$${tip1.toString().toAmountMx()}",
                     isPopular = false,
                     onClickTip = {
@@ -238,7 +244,7 @@ fun InputTipContent(
                     },
                 )
                 TipItemCard(
-                    percentage = "15%",
+                    percentage = tipPercentageLabels.getOrElse(1) { "15%" },
                     amount = "+ \$${tip2.toString().toAmountMx()}",
                     isPopular = true,
                     onClickTip = {
@@ -246,7 +252,7 @@ fun InputTipContent(
                     },
                 )
                 TipItemCard(
-                    percentage = "18%",
+                    percentage = tipPercentageLabels.getOrElse(2) { "18%" },
                     amount = "+ \$${tip3.toString().toAmountMx()}",
                     isPopular = false,
                     onClickTip = {
@@ -335,6 +341,8 @@ fun PreviewInputTipContent() {
         InputTipContent(
             totalAmount = 60.0,
             waiterName = "Juan",
+            tipPercentages = listOf(0.12f, 0.15f, 0.18f),
+            tipPercentageLabels = listOf("12%", "15%", "18%"),
             onNavigateBack = {},
             onPayWithoutTip = {},
             onPayWithTip = {},

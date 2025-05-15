@@ -1,6 +1,6 @@
 package com.avoqado.pos.core.data.network
 
-import android.util.Log
+import timber.log.Timber
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -32,7 +32,7 @@ class WebSocketManager(
                 webSocket: WebSocket,
                 response: Response,
             ) {
-                Log.d("WebSocket", "Connected to room: $currentRoomId")
+                Timber.d("Connected to room: $currentRoomId")
                 webSocket.send("{\"action\": \"subscribe\", \"room\": \"$currentRoomId\"}") // Subscribe to table updates
             }
 
@@ -59,7 +59,7 @@ class WebSocketManager(
                 code: Int,
                 reason: String,
             ) {
-                Log.d("WebSocket", "Closing connection for table: $currentRoomId")
+                Timber.d("Closing connection for table: $currentRoomId")
                 webSocket.close(1000, null)
             }
 
@@ -68,7 +68,7 @@ class WebSocketManager(
                 t: Throwable,
                 response: Response?,
             ) {
-                Log.e("WebSocket", "Error: ${t.message}", t)
+                Timber.e(t, "Error: ${t.message}")
             }
         }
 

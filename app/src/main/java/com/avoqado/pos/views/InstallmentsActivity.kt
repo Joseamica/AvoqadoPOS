@@ -2,7 +2,7 @@ package com.avoqado.pos.views
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import timber.log.Timber
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -55,7 +55,7 @@ class InstallmentsActivity : ComponentActivity() {
         }
 
         viewmodel.installmentSelected.observe(this) {
-            Log.i(TAG, "Ir a procesar el pago")
+            Timber.i("Ir a procesar el pago")
             val intent = Intent(this, DoPaymentActivity::class.java)
             startActivity(intent)
             finish()
@@ -135,7 +135,7 @@ class InstallmentsActivity : ComponentActivity() {
                         .height(57.dp)
                         .align(Alignment.End),
                 onClick = {
-                    Log.i("", "Selección: ${selectedInstallment?.installmentLabel}")
+                    Timber.i("Selección: ${selectedInstallment?.installmentLabel}")
                     selectedInstallment?.let {
                         viewmodel.setInstallmentSelected(selectedInstallment!!)
                     }
@@ -144,7 +144,4 @@ class InstallmentsActivity : ComponentActivity() {
         }
     }
 
-    companion object {
-        const val TAG = "InstallmentsActivity"
-    }
 }

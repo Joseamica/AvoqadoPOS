@@ -1,6 +1,6 @@
 package com.avoqado.pos.features.management.presentation.tables
 
-import android.util.Log
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.withContext
@@ -99,7 +99,7 @@ class TablesViewModel(
     }
     fun startListeningForVenueUpdates() {
         if (venueId.isEmpty()) {
-            Log.e("TablesViewModel", "Cannot listen for updates: venueId is empty")
+            Timber.e("Cannot listen for updates: venueId is empty")
             return
         }
 
@@ -115,7 +115,7 @@ class TablesViewModel(
 
                     // Collect venue-level events
                     socketService?.venueMessageFlow?.collectLatest { update ->
-                        Log.d("TablesViewModel", "Received venue update: $update")
+                        Timber.d("Received venue update: $update")
 
                         val shouldRefresh =
                             when (update.status?.uppercase()) {
@@ -124,7 +124,7 @@ class TablesViewModel(
                             }
 
                         if (shouldRefresh) {
-                            Log.d("TablesViewModel", "Requesting tables refresh")
+                            Timber.d("Requesting tables refresh")
                             debouncedFetchTables()
 
                             // Notify for significant events
@@ -141,7 +141,7 @@ class TablesViewModel(
                 // Also start listening for shift events
                 startListeningForShiftEvents()
             } catch (e: Exception) {
-                Log.e("TablesViewModel", "Error setting up venue updates", e)
+                Timber.e("Error setting up venue updates", e)
                 _isWebSocketConnected.update { false }
                 isCollectingSocketEvents = false
             }
@@ -157,7 +157,7 @@ class TablesViewModel(
         
         // If we're already loading or if it's too soon since the last refresh and not forced
         if ((_isLoading.value || timeSinceLastFetch < MINIMUM_REFRESH_INTERVAL) && !forceRefresh) {
-            Log.d("TablesViewModel", "Skipping refresh: already loading or too soon (${timeSinceLastFetch}ms since last refresh)")
+            Timber.d("Skipping refresh: already loading or too soon (${timeSinceLastFetch}ms since last refresh)")
             return
         }
         
@@ -174,7 +174,7 @@ class TablesViewModel(
 
     private fun startListeningForShiftEvents() {
         if (venueId.isEmpty()) {
-            Log.e("TablesViewModel", "Cannot listen for shift updates: venueId is empty")
+            Timber.e("Cannot listen for shift updates: venueId is empty")
             return
         }
 
@@ -184,7 +184,7 @@ class TablesViewModel(
                     isCollectingShiftEvents = true
 
                     socketService?.shiftMessageFlow?.collectLatest { shiftUpdateMessage ->
-                        Log.d("TablesViewModel", "Received shift update: $shiftUpdateMessage")
+                        Timber.d("Received shift update: $shiftUpdateMessage")
 
                         // Map the network model to domain model
                         val shift = socketService?.mapShiftToDomain(shiftUpdateMessage)
@@ -212,7 +212,7 @@ class TablesViewModel(
                     }
                 }
             } catch (e: Exception) {
-                Log.e("TablesViewModel", "Error setting up shift updates", e)
+                Timber.e("Error setting up shift updates", e)
                 isCollectingShiftEvents = false
             }
         }
@@ -232,7 +232,7 @@ class TablesViewModel(
     fun fetchTables() {
         // Don't start a new fetch if we're already loading
         if (_isLoading.value) {
-            Log.d("TablesViewModel", "Skipping fetch: already loading")
+            Timber.d("Skipping fetch: already loading")
             return
         }
         
@@ -241,14 +241,14 @@ class TablesViewModel(
                 true
             }
             try {
-                Log.d("TablesViewModel", "Fetching tables from API")
+                Timber.d("Fetching tables from API")
                 managementRepository.getActiveBills(venueId).let { result ->
                     _tables.update {
                         result
                     }
                 }
             } catch (e: Exception) {
-                Log.e("TablesViewModel", "Error fetching tables", e)
+                Timber.e("Error fetching tables", e)
             } finally {
                 _isLoading.update { false }
             }
@@ -385,7 +385,7 @@ class TablesViewModel(
                     }
                 }
             } catch (e: Exception) {
-                Log.e("TablesViewModel", "Error creating new bill", e)
+                Timber.e("Error creating new bill", e)
                 withContext(Dispatchers.Main) {
                     snackbarDelegate.showSnackbar(
                         state = SnackbarState.Default,

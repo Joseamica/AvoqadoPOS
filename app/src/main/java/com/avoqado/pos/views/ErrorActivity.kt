@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
+import timber.log.Timber
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -35,7 +35,7 @@ class ErrorActivity : ComponentActivity() {
         Handler(Looper.getMainLooper()).postDelayed(
             {
                 CoroutineScope(Dispatchers.Main).launch {
-                    Log.i(SuccessMessageActivity.TAG, "goToMenu")
+                    Timber.i("goToMenu")
                     Intent(this@ErrorActivity, MainActivity::class.java)
                         .let(::startActivity)
                     finish()

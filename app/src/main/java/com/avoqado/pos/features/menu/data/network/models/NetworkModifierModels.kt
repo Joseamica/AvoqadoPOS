@@ -3,6 +3,7 @@ package com.avoqado.pos.features.menu.data.network.models
 import com.avoqado.pos.features.menu.domain.models.ModifierGroup
 import com.avoqado.pos.features.menu.domain.models.ProductModifier
 import com.google.gson.annotations.SerializedName
+import timber.log.Timber
 
 data class NetworkModifierGroupResponse(
     @SerializedName("data")
@@ -89,7 +90,7 @@ data class NetworkModifier(
                 cleaned.toDoubleOrNull() ?: 0.0
             } catch (e: Exception) {
                 // Return 0.0 as fallback
-                android.util.Log.e("NetworkModifier", "Error parsing price from strings: $priceString, $altPriceString", e)
+                Timber.e("Error parsing price from strings: $priceString, $altPriceString", e)
                 0.0
             }
         }

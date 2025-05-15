@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
+import timber.log.Timber
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -28,7 +28,7 @@ class SuccessRefundActivity : ComponentActivity() {
         Handler(Looper.getMainLooper()).postDelayed(
             {
                 CoroutineScope(Dispatchers.Main).launch {
-                    Log.i(TAG, "goToInputAmount")
+                    Timber.i("goToInputAmount")
                     Intent(this@SuccessRefundActivity, MainActivity::class.java)
                         .let(::startActivity)
                     finish()
@@ -36,9 +36,5 @@ class SuccessRefundActivity : ComponentActivity() {
             },
             3000,
         )
-    }
-
-    companion object {
-        const val TAG = "SuccessRefundActivity"
     }
 }

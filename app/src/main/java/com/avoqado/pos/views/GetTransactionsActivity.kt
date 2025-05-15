@@ -2,7 +2,7 @@ package com.avoqado.pos.views
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import timber.log.Timber
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -44,21 +44,17 @@ class GetTransactionsActivity : ComponentActivity() {
         trxData.getLastTrx(lastTrxRequest = lastTrxRequest)
         trxData.getLastTrx.observe(this) { lisTrx ->
             lisTrx?.let {
-                Log.i(TAG, "Transaccions response: $lisTrx")
+                Timber.i("Transaccions response: $lisTrx")
                 if (lisTrx.statusResult?.statusType == StatusType.SUCCESS) {
                     val intent = Intent(this, ListTransactionActivity::class.java)
                     intent.putExtra("transactionList", ArrayList(lisTrx.content))
                     startActivity(intent)
                 } else {
-                    Log.i(TAG, "Error en la consulta")
+                    Timber.i("Error en la consulta")
                 }
             } ?: run {
-                Log.i(TAG, "Transacciones no disponibles")
+                Timber.i("Transacciones no disponibles")
             }
         }
-    }
-
-    companion object {
-        const val TAG = "GetTransactionsActivity"
     }
 }

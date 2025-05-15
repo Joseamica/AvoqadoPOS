@@ -2,7 +2,6 @@ package com.avoqado.pos.views
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -31,6 +30,7 @@ import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.presentation.theme.textColor
 import com.avoqado.pos.ui.screen.PrimaryButton
 import com.menta.android.common_cross.util.StatusResult
+import timber.log.Timber
 
 class CardErrorActivity : ComponentActivity() {
     private val amount: String by lazy {
@@ -64,11 +64,11 @@ class CardErrorActivity : ComponentActivity() {
                 statusResult = it.getParcelable("status")
                 statusResult?.apply {
                     messageToShow = message
-                    Log.i(TAG, "Title: $title")
-                    Log.i(TAG, "Message: $message")
-                    Log.i(TAG, "StatusType: $statusType")
-                    Log.i(TAG, "ShowButton: $showButton")
-                    Log.i(TAG, "BtnTitle: $btnTitle")
+                    Timber.i("Title: $title")
+                    Timber.i("Message: $message")
+                    Timber.i("StatusType: $statusType")
+                    Timber.i("ShowButton: $showButton")
+                    Timber.i("BtnTitle: $btnTitle")
                 }
             }
             ErrorScreen(title = "Error de lectura", message = messageToShow)
@@ -143,7 +143,7 @@ class CardErrorActivity : ComponentActivity() {
                             .height(57.dp)
                             .align(Alignment.End),
                     onClick = {
-                        Log.i(TAG, "goToInputAmount")
+                        Timber.i("goToInputAmount")
                         Intent(this@CardErrorActivity, CardProcessActivity::class.java)
                             .apply {
                                 putExtra("amount", amount)
@@ -167,7 +167,7 @@ class CardErrorActivity : ComponentActivity() {
                             .height(57.dp)
                             .align(Alignment.End),
                     onClick = {
-                        Log.i(TAG, "goToInputAmount")
+                        Timber.i("goToInputAmount")
                         Intent(this@CardErrorActivity, MainActivity::class.java)
                             .let(::startActivity)
                         finish()
@@ -177,7 +177,4 @@ class CardErrorActivity : ComponentActivity() {
         }
     }
 
-    companion object {
-        const val TAG = "CardErrorActivity"
-    }
 }

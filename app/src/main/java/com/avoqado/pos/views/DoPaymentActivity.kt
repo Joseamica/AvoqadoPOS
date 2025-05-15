@@ -2,7 +2,6 @@ package com.avoqado.pos.views
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -109,15 +108,15 @@ class DoPaymentActivity : ComponentActivity() {
                 val gson = Gson()
                 val operationResponseJson = gson.toJson(operationResponse)
 
-                Log.i(TAG, "operationResponseJson: $operationResponseJson")
-                Log.i(TAG, "response.code: ${operationResponse.response?.code}")
-                Log.i(TAG, "response.description: ${operationResponse.response?.description}")
-                Log.i(TAG, "response.name: ${operationResponse.response?.name}")
+                Timber.i("operationResponseJson: $operationResponseJson")
+                Timber.i("response.code: ${operationResponse.response?.code}")
+                Timber.i("response.description: ${operationResponse.response?.description}")
+                Timber.i("response.name: ${operationResponse.response?.name}")
                 Timber.i("Operation response: $operationResponseJson")
 
                 if (operationResponse.status?.code == OperationResponseCode.APPROVED) {
-                    Log.i(TAG, "PaymentId: ${operationResponse.id}")
-                    Log.i(TAG, "OperationNumber: ${operationResponse.ticketId}")
+                    Timber.i("PaymentId: ${operationResponse.id}")
+                    Timber.i("OperationNumber: ${operationResponse.ticketId}")
 
                     AvoqadoApp.paymentRepository.getCachePaymentInfo()?.let { info ->
                         AvoqadoApp.paymentRepository.setCachePaymentInfo(
@@ -165,9 +164,5 @@ class DoPaymentActivity : ComponentActivity() {
     }
 
     override fun onBackPressed() {
-    }
-
-    companion object {
-        const val TAG = "DoPaymentActivity"
     }
 }

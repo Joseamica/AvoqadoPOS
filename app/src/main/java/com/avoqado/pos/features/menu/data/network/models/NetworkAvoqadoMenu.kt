@@ -1,5 +1,5 @@
 package com.avoqado.pos.features.menu.data.network.models
-
+import timber.log.Timber
 import com.google.gson.annotations.SerializedName
 
 data class AvoqadoMenuResponse(
@@ -167,7 +167,7 @@ data class NetworkAvoqadoProduct(
                 cleaned.toDoubleOrNull() ?: 0.0
             } catch (e: Exception) {
                 // Log the error and return 0.0 as fallback
-                android.util.Log.e("NetworkAvoqadoProduct", "Error parsing price: $priceString", e)
+                Timber.e("Error parsing price: $priceString", e)
                 0.0
             }
         }

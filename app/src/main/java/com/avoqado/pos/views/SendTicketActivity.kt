@@ -2,7 +2,7 @@ package com.avoqado.pos.views
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import timber.log.Timber
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -61,26 +61,22 @@ class SendTicketActivity : ComponentActivity() {
             )
         emailData.sendEmail(sendEmailRequest = sendEmailRequest)
         emailData.sendEmailResponse.observe(this) { result ->
-            Log.i(TAG, "Resultado: $result")
+            Timber.i("Resultado: $result")
             when (result) {
                 is Resource.Success -> {
-                    Log.i(TAG, "Email enviado correctamente")
+                    Timber.i("Email enviado correctamente")
                     val intent = Intent(this, SuccessMessageActivity::class.java)
                     intent.putExtra("message", "Email enviado correctamente")
                     startActivity(intent)
                 }
 
                 else -> {
-                    Log.i(TAG, "Error al enviar mail")
+                    Timber.i("Error al enviar mail")
                     val intent = Intent(this, ErrorActivity::class.java)
                     intent.putExtra("message", "Revise los datos enviados")
                     startActivity(intent)
                 }
             }
         }
-    }
-
-    companion object {
-        const val TAG = "SendTicketActivity"
     }
 }

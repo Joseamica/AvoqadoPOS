@@ -4,7 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
+import timber.log.Timber
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 class SuccessPaymentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.i("$TAG-AvoqadoTest", "New instance of $TAG")
+        Timber.i("New instance created")
         enableEdgeToEdge()
         setContent {
             SuccessScreen(message = "pago realizado con éxito")
@@ -33,7 +33,7 @@ class SuccessPaymentActivity : ComponentActivity() {
         Handler(Looper.getMainLooper()).postDelayed(
             {
                 CoroutineScope(Dispatchers.Main).launch {
-                    Log.i(TAG, "goToInputAmount")
+                    Timber.i("goToInputAmount")
                     // Clear Operation Flow
                     OperationFlowHolder.operationFlow = null
                     val intent =
@@ -48,9 +48,5 @@ class SuccessPaymentActivity : ComponentActivity() {
             },
             3000,
         )
-    }
-
-    companion object {
-        const val TAG = "SuccessMessageActivity"
     }
 }

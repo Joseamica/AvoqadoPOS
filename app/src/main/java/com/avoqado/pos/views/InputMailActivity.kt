@@ -3,7 +3,7 @@ package com.avoqado.pos.views
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
+import timber.log.Timber
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -122,7 +122,7 @@ class InputMailActivity : ComponentActivity() {
                             .height(57.dp)
                             .align(Alignment.End),
                     onClick = {
-                        Log.i("", "ingreso: ${textValue.text}")
+                        Timber.i("ingreso: ${textValue.text}")
                         goToSendTicket(textValue.text)
                     },
                 )
@@ -135,7 +135,7 @@ class InputMailActivity : ComponentActivity() {
     }
 
     private fun goToSendTicket(email: String) {
-        Log.i("", "email: $email")
+        Timber.i("email: $email")
         if (isValidEmail(email)) {
             val intent = Intent(this, SendTicketActivity::class.java)
             intent.putExtra("email", email)

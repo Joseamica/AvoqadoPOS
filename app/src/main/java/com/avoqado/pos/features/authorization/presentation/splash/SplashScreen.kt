@@ -1,6 +1,5 @@
 package com.avoqado.pos.features.authorization.presentation.splash
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
@@ -28,7 +27,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -44,15 +42,14 @@ import com.avoqado.pos.core.presentation.components.RequestPermissions
 import com.avoqado.pos.core.presentation.theme.primary
 import com.avoqado.pos.core.presentation.theme.textColor
 import com.avoqado.pos.core.presentation.theme.textlightGrayColor
-import com.avoqado.pos.merchantApiKey
-import com.avoqado.pos.merchantId
+
 import com.avoqado.pos.ui.screen.ProgressCircleSmart
-import com.avoqado.pos.views.InitActivity.Companion.TAG
 import com.menta.android.common_cross.util.StatusType
 import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 
 @Composable
 fun SplashScreen(
@@ -124,13 +121,13 @@ fun SplashScreen(
     }
 
     LaunchedEffect(key1 = externalToken) {
-        Log.i("SplashViewModel", "externalToken: ${externalToken?.idToken}")
+        Timber.i("externalToken: ${externalToken?.idToken}")
         externalToken?.let { token ->
             if (token.status.statusType != StatusType.ERROR) {
-                Log.i(TAG, "Get token SUCCESS")
+                Timber.i("Get token SUCCESS")
                 viewModel.storePublicKey(token.idToken, token.tokenType)
             } else {
-                Log.i(TAG, "Get token ERROR: ${token.status.message}")
+                Timber.i("Get token ERROR: ${token.status.message}")
             }
         }
     }

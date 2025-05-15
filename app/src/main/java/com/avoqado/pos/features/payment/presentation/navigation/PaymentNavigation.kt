@@ -68,6 +68,7 @@ fun NavGraphBuilder.paymentNavigation(
                     splitType = SplitType.valueOf(splitType),
                     navigationDispatcher = navigationDispatcher,
                     validateAmountUseCase = ValidateAmountUseCase(),
+                    sessionManager = AvoqadoApp.sessionManager
                 )
             }
 

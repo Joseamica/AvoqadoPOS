@@ -3,7 +3,6 @@ package com.avoqado.pos.core.presentation.router
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.AnimationSpec
@@ -47,6 +46,7 @@ import com.menta.android.core.viewmodel.ExternalTokenData
 import com.menta.android.core.viewmodel.MasterKeyData
 import com.menta.android.core.viewmodel.TrxData
 import kotlinx.coroutines.flow.collectLatest
+import timber.log.Timber
 
 @Composable
 fun AppRouter(
@@ -157,7 +157,7 @@ fun AppRouter(
                     }
                 }
         } catch (e: Exception) {
-            Log.e("AppRouter", "Error collecting navigation commands", e)
+            Timber.e(e, "Error collecting navigation commands")
         }
     }
 

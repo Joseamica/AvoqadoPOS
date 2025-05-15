@@ -9,7 +9,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.RemoteException
-import android.util.Log
+import timber.log.Timber
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -80,7 +80,7 @@ class MenuActivity : ComponentActivity() {
                                     .height(57.dp)
                                     .align(Alignment.End),
                             onClick = {
-                                Log.i("", "Hacer un pago")
+                                Timber.i("Hacer un pago")
                                 val intent = Intent(this@MenuActivity, InputAmountActivity::class.java)
                                 intent.putExtra("operationType", OperationType.PAYMENT.name)
                                 intent.putExtra("currency", CURRENCY_LABEL)
@@ -96,7 +96,7 @@ class MenuActivity : ComponentActivity() {
                                     .height(57.dp)
                                     .align(Alignment.End),
                             onClick = {
-                                Log.i("", "Hacer una devolución")
+                                Timber.i("Hacer una devolución")
                                 Intent(this@MenuActivity, GetTransactionsActivity::class.java)
                                     .let(::startActivity)
                             },
@@ -110,10 +110,10 @@ class MenuActivity : ComponentActivity() {
                                     .height(57.dp)
                                     .align(Alignment.End),
                             onClick = {
-                                Log.i("", "Probar impresora")
+                                Timber.i("Probar impresora")
                                 val devicePrintImpl = DevicePrintImpl(context = applicationContext)
                                 val status = devicePrintImpl.getStatus()
-                                Log.i(TAG, "status impresora: $status")
+                                Timber.i("status impresora: $status")
                                 if (status == 0) {
                                     val thread =
                                         Thread {
@@ -209,7 +209,7 @@ class MenuActivity : ComponentActivity() {
                                     .height(57.dp)
                                     .align(Alignment.End),
                             onClick = {
-                                Log.i("", "Enviar ticket por mailn")
+                                Timber.i("Enviar ticket por mailn")
                                 Intent(this@MenuActivity, InputMailActivity::class.java)
                                     .let(::startActivity)
                             },
@@ -224,7 +224,7 @@ class MenuActivity : ComponentActivity() {
                                     .height(57.dp)
                                     .align(Alignment.End),
                             onClick = {
-                                Log.i("", "Hacer una preautorizacion")
+                                Timber.i("Hacer una preautorizacion")
                                 val intent = Intent(this@MenuActivity, InputAmountActivity::class.java)
                                 intent.putExtra("operationType", OperationType.PREAUTHORIZATION.name)
                                 intent.putExtra("currency", CURRENCY_LABEL)
@@ -240,9 +240,9 @@ class MenuActivity : ComponentActivity() {
     private val resultObserver =
         Observer<Int> { result ->
             if (result == 0) {
-                Log.i(TAG, "Impresión exitosa")
+                Timber.i("Impresión exitosa")
             } else {
-                Log.i(TAG, "Error de impresión: $result")
+                Timber.i("Error de impresión: $result")
             }
         }
 
@@ -264,7 +264,4 @@ class MenuActivity : ComponentActivity() {
         return bitmap
     }
 
-    companion object {
-        const val TAG = "MenuActivity"
-    }
 }
