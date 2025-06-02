@@ -38,7 +38,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.presentation.components.KeyboardSheet
 import com.avoqado.pos.core.presentation.components.MainButton
-import com.avoqado.pos.core.presentation.components.ObserverLifecycleEvents
 import com.avoqado.pos.core.presentation.components.PullToRefreshBox
 import com.avoqado.pos.core.presentation.components.ToolbarWithIcon
 import com.avoqado.pos.core.presentation.model.FlowStep

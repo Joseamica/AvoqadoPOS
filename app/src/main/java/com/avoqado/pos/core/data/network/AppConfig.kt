@@ -21,10 +21,10 @@ object AppConfig {
     private const val KEY_SOCKET_UPDATE_INTERVAL = "socket_update_interval"
     
     // Default values
-    private const val DEFAULT_SERVER_URL = "https://1c87-189-203-45-177.ngrok-free.app"
+    private const val DEFAULT_SERVER_URL = "https://5ffc-187-190-190-247.ngrok-free.app"
     private const val DEFAULT_API_PATH = "/v1/"
     private const val DEFAULT_NETWORK_TIMEOUT_SECONDS = 60L  // Reduced from 120s
-    private const val DEFAULT_SOCKET_RECONNECT_ATTEMPTS = 10
+    private const val DEFAULT_SOCKET_RECONNECT_ATTEMPTS = 10       
     private const val DEFAULT_SOCKET_RECONNECT_DELAY_MS = 1000L
     private const val DEFAULT_SOCKET_UPDATE_INTERVAL_MS = 1000L
     

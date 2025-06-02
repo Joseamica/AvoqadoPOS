@@ -214,7 +214,7 @@ fun TopMenuContent(
                     onClick = { onToggleShift() },
                     modifier =
                         Modifier
-                            .height(72.dp)
+                            .height(52.dp)
                             .fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     colors =
@@ -255,7 +255,7 @@ fun TopMenuContent(
                 Button(
                     onClick = { showConfirmationDialog = true },
                     modifier = Modifier
-                        .height(72.dp)
+                        .height(52.dp)
                         .fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(

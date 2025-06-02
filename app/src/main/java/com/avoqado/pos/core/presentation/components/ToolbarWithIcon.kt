@@ -112,6 +112,7 @@ fun SimpleToolbar(
     onActionSecond: (() -> Unit)? = null,
     onRefresh: (() -> Unit)? = null,
     isRefreshing: Boolean = false,
+    enableSecondAction: Boolean = true,
 ) {
     TopAppBar(
         colors =
@@ -129,6 +130,7 @@ fun SimpleToolbar(
                         text = title,
                         onClickR = it,
                         contentPadding = PaddingValues(vertical = 4.dp),
+                        enableButton = enableSecondAction
                     )
                 }
             }

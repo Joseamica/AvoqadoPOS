@@ -159,31 +159,41 @@ class PaymentResultViewModel(
             }
 
             // Determine if this is a quick payment (no table number) or regular payment
-            if (info.splitType == SplitType.FULLPAYMENT && info.tableNumber.isEmpty()) {
+            val isQuickPayment = info.splitType == SplitType.FULLPAYMENT && info.tableNumber.isEmpty()
+            
+            _paymentResult.update { state ->
+                state.copy(
+                    isQuickPayment = isQuickPayment
+                )
+            }
+            
+            if (isQuickPayment) {
                 // Use fast payment endpoint for quick payments
-                paymentRepository.recordFastPayment(
-                    venueId = info.venueId,
-                    waiterName = info.waiterName,
-                    tpvId = terminal.id,
-                    splitType = info.splitType.value,
-                    status = PaymentStatus.ACCEPTED.value,
-                    amount =
+                info.splitType?.let {
+                    paymentRepository.recordFastPayment(
+                        venueId = info.venueId,
+                        waiterName = info.waiterName,
+                        tpvId = terminal.id,
+                        splitType = it.value,
+                        status = PaymentStatus.ACCEPTED.value,
+                        amount =
                         info.subtotal
                             .toString()
                             .toAmountMx()
                             .replace(".", "")
                             .toInt(),
-                    tip =
+                        tip =
                         info.tipAmount
                             .toString()
                             .toAmountMx()
                             .replace(".", "")
                             .toInt(),
-                    adquirer = adquirer,
-                    token = token,
-                    paidProductsId = info.products,
-                    reviewRating = info.reviewRating,
-                )
+                        adquirer = adquirer,
+                        token = token,
+                        paidProductsId = info.products,
+                        reviewRating = info.reviewRating,
+                    )
+                }
             } else {
                 // Use regular payment endpoint for table-based payments
                 paymentRepository.recordPayment(

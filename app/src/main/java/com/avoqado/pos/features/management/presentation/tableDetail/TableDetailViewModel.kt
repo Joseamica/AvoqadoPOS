@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.time.LocalDateTime
+import java.util.Collections
 
 class TableDetailViewModel(
     private val tableNumber: String = "",
@@ -55,6 +56,12 @@ class TableDetailViewModel(
     
     // Track if the bill has been deleted or is no longer available
     private var isBillDeleted = false
+    
+    // Track bills that have been marked as paid to prevent duplicate handling
+    private val processedPaidBills = Collections.synchronizedSet(HashSet<String>())
+    
+    // Track if we're already processing a PAID status to prevent duplicate handling
+    private var isProcessingPaidStatus = false
 
     fun navigateBack() {
         navigationDispatcher.navigateBack()
@@ -135,7 +142,34 @@ class TableDetailViewModel(
                                 }
                             }
                             "PAID" -> {
-                                Timber.d("Bill PAID - showing info and navigating back")
+                                Timber.d("Bill PAID status received for billId=${update.billId}")
+                                
+                                // First check if we've already processed this bill's payment
+                                // This provides synchronized protection against concurrent events
+                                val billId = update.billId ?: ""
+                                if (billId.isNotEmpty()) {
+                                    // Use synchronized to prevent race conditions when checking/adding to the set
+                                    synchronized(processedPaidBills) {
+                                        if (processedPaidBills.contains(billId)) {
+                                            Timber.d("Ignoring duplicate PAID status for bill $billId - already processed")
+                                            return@collectLatest
+                                        }
+                                        // Add to processed set immediately to block other concurrent events
+                                        processedPaidBills.add(billId)
+                                        Timber.d("Bill $billId marked as processed for PAID status")
+                                    }
+                                } else {
+                                    // Skip processing if we're already handling a PAID status (fallback)
+                                    if (isProcessingPaidStatus) {
+                                        Timber.d("Ignoring duplicate PAID status event - no billId available")
+                                        return@collectLatest
+                                    }
+                                    // Mark that we're processing a PAID status to prevent duplicate handling
+                                    isProcessingPaidStatus = true
+                                }
+                                
+                                Timber.d("Processing PAID status - showing info and navigating back")
+                                
                                 // For paid bills, backend returns 404 since it only finds OPEN bills
                                 // So we should mark the bill as deleted to prevent further API calls
                                 isBillDeleted = true
@@ -147,11 +181,18 @@ class TableDetailViewModel(
                                 )
                                 
                                 viewModelScope.launch(Dispatchers.Main) {
-                                    // First show any necessary success UI
-                                    // Wait a moment before navigating back to allow user to see the message
-                                    kotlinx.coroutines.delay(1500)
-                                    // Then navigate back since the bill is no longer available
-                                    navigateBack()
+                                    try {
+                                        // First show any necessary success UI
+                                        // Wait a moment before navigating back to allow user to see the message
+                                        kotlinx.coroutines.delay(1500)
+                                        // Then navigate back since the bill is no longer available
+                                        navigateBack()
+                                    } finally {
+                                        // Reset the flag if we used it (for the case with no billId)
+                                        if (billId.isEmpty()) {
+                                            isProcessingPaidStatus = false
+                                        }
+                                    }
                                 }
                             }
                             "PRODUCT_ADDED" -> {

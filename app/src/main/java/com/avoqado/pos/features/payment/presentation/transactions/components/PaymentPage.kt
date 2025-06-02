@@ -1,6 +1,6 @@
 package com.avoqado.pos.features.payment.presentation.transactions.components
 
-import androidx.compose.foundation.border
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,11 +17,12 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Surface
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -119,9 +120,9 @@ fun TotalFooter(totalAmount: Int) {
     Surface(
         color = Color.White,
         modifier = Modifier.fillMaxWidth(),
-        elevation = 8.dp
+        tonalElevation = 8.dp,
     ) {
-        Divider(color = Color.LightGray, thickness = 1.dp)
+        HorizontalDivider(thickness = 1.dp, color = Color.LightGray)
         Row(
             modifier = Modifier
                 .fillMaxWidth()

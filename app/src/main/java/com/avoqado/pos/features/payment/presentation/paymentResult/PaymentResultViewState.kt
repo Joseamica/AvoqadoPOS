@@ -17,6 +17,7 @@ data class PaymentResultViewState(
     val adquirer: Adquirer? = null,
     val terminalSerialCode: String = "",
     val paidProducts: List<Product> = emptyList(),
+    val isQuickPayment: Boolean = false,
 ) {
     val totalAmount: Double
         get() = tipAmount + subtotalAmount

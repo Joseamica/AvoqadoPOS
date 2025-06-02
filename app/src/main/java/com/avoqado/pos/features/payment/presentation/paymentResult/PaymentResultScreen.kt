@@ -131,6 +131,7 @@ fun PaymentResultContent(
                     onActionSecond = {
                         onNewPayment()
                     },
+                    enableSecondAction = !state.isQuickPayment,
                 )
             }
 

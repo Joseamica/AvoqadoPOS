@@ -1,8 +1,8 @@
 ---
 trigger: model_decision
-description: 
-globs: 
+description: Deciding best practices
 ---
+
 # Kotlin Best Practices for Avoqado POS
 
 ## Architecture & State Management
