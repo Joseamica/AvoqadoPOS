@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.SocketIOManager
+import com.avoqado.pos.core.domain.models.AvoqadoError
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.destinations.MainDests
@@ -283,38 +284,72 @@ class HomeViewModel(
         }
     }
 
-    private fun forceRefreshShiftStatus() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val venueId = sessionManager.getVenueId()
-                val venue = sessionManager.getVenueInfo()
+private fun forceRefreshShiftStatus() {
+    viewModelScope.launch(Dispatchers.IO) {
+        try {
+            val venueId = sessionManager.getVenueId()
+            val venue = sessionManager.getVenueInfo()
 
-                if (venueId.isNotEmpty() && venue != null) {
-                    // Forzar desconexión y reconexión
-                    SocketIOManager.disconnect()
-                    SocketIOManager.connect(SocketIOManager.getServerUrl())
+            if (venueId.isNotEmpty() && venue != null) {
+                // Forzar desconexión y reconexión
+                SocketIOManager.disconnect()
+                SocketIOManager.connect(SocketIOManager.getServerUrl())
 
-                    // Esperar un momento para asegurar la conexión
-                    delay(500)
+                // Esperar un momento para asegurar la conexión
+                delay(500)
 
+                try {
                     // Forzar una actualización del turno desde el servidor
-                    currentShift =
-                        terminalRepository.getTerminalShift(
-                            venueId = venueId,
-                            posName = venue.posName ?: "",
-                        )
-
-                    // Actualizar el estado
+                    currentShift = terminalRepository.getTerminalShift(
+                        venueId = venueId,
+                        posName = venue.posName ?: "",
+                    )
+                    
+                    // Actualizar el estado - solo se llega aquí si no hay excepciones
                     _shiftStarted.update { currentShift != null && currentShift!!.isStarted }
-
-                    Timber.d("Shift status refreshed: isStarted=${_shiftStarted.value}")
-
-                    // Reconectar para escuchar eventos
-                    startListeningForShiftEvents()
+                    Timber.d("Shift encontrado y actualizado: ${currentShift?.id}")
+                } catch (e: Exception) {
+                    Timber.e("Error al obtener el turno: ${e.message}")
+                    
+                    // Manejo ampliado de excepciones
+                    if (e is AvoqadoError.BasicError) {
+                        Timber.d("Error básico: ${e.message}")
+                        // Comprobar varios posibles mensajes de error
+                        val errorMessage = e.message.lowercase()
+                        if (errorMessage.contains("not found") || 
+                            errorMessage.contains("no encontrado") || 
+                            errorMessage.contains("404")) {
+                            
+                            // Asegurarse de limpiar el estado del turno
+                            sessionManager.clearShift() // Asegurarse que se limpie en la sesión
+                            currentShift = null
+                            _shiftStarted.update { false }
+                            Timber.d("No hay turno activo - UI actualizada")
+                        }
+                    } else {
+                        // Para otros tipos de error, también marcar como sin turno
+                        Timber.d("Error no esperado, asumiendo sin turno: ${e.javaClass.simpleName}")
+                        sessionManager.clearShift()
+                        currentShift = null
+                        _shiftStarted.update { false }
+                    }
                 }
-            } catch (e: Exception) {
-                Timber.e("Error refreshing shift status", e)
+
+                Timber.d("Estado del turno actualizado: isStarted=${_shiftStarted.value}")
+
+                // Reconectar para escuchar eventos
+                startListeningForShiftEvents()
             }
+        } catch (e: Exception) {
+            Timber.e("Error grave al refrescar estado del turno", e)
+            // En caso de error general, asumir que no hay turno
+            currentShift = null
+            _shiftStarted.update { false }
         }
+    }
+}
+
+    fun navigateToQrScannerScreen() {
+        navigationDispatcher.navigateTo(MainDests.QrScannerScreen.route)
     }
 }

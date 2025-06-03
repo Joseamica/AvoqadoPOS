@@ -38,6 +38,8 @@ import com.avoqado.pos.features.authorization.presentation.signIn.SignInScreen
 import com.avoqado.pos.features.authorization.presentation.signIn.SignInViewModel
 import com.avoqado.pos.features.authorization.presentation.splash.SplashScreen
 import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel
+// Asegúrate que la ruta de importación sea correcta según la declaración del paquete en QrScannerScreen.kt
+import com.avoqado.pos.core.presentation.QrScannerScreen
 import com.avoqado.pos.features.management.presentation.navigation.managementNavigation
 import com.avoqado.pos.features.menu.presentation.navigation.menuNavigation
 import com.avoqado.pos.features.payment.presentation.navigation.paymentNavigation
@@ -259,6 +261,13 @@ fun AppRouter(
                             // Navigate to payment or handle checkout logic
                         }
                     )
+
+                    composableHolder(MainDests.QrScannerScreen) {
+                        QrScannerScreen(
+                            navigationDispatcher = navigationDispatcher,
+                            snackbarDelegate = snackbarDelegate
+                        )
+                    }
                 }
             }
         },

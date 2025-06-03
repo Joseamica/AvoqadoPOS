@@ -66,6 +66,7 @@ fun TopMenuContent(
     shiftStarted: Boolean = false,
     isShiftButtonDisabled: Boolean = true,
     venuePosName: String? = null,
+    onScanQrClicked: () -> Unit = {},
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val modalSheetState =
@@ -200,6 +201,31 @@ fun TopMenuContent(
                     Text(
                         text = "Cambiar mesero",
                         color = Color.Black,
+                        style = MaterialTheme.typography.titleSmall,
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = onScanQrClicked,
+                    enabled = shiftStarted,
+                    modifier =
+                        Modifier
+                            .height(72.dp)
+                            .fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    colors =
+                        ButtonDefaults.buttonColors(
+                            containerColor = if (shiftStarted) Color.White else Color(0xFFF5F5F5),
+                            disabledContainerColor = Color(0xFFEEEEEE),
+                            contentColor = buttonGrayColor,
+                            disabledContentColor = Color(0xFFBDBDBD),
+                        ),
+                ) {
+                    Text(
+                        text = "Escanear QR",
+                        color = if (shiftStarted) Color.Black else Color(0xFFC7C5C5),
                         style = MaterialTheme.typography.titleSmall,
                     )
                 }
