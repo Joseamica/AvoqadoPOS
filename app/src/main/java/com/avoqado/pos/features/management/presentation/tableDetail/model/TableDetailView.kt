@@ -2,8 +2,6 @@ package com.avoqado.pos.features.management.presentation.tableDetail.model
 
 import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.presentation.model.Product
-import com.avoqado.pos.core.presentation.utils.toAmountMx
-import com.menta.android.core.utils.StringUtils
 
 data class TableDetailView(
     val tableId: String = "",
@@ -21,9 +19,5 @@ data class TableDetailView(
     val totalPayed: Double
         get() = paymentsDone.sumOf { it.amount }
 
-    val formattedTotalPrice: String
-        get() = StringUtils.notFormatAmount(totalAmount.toString()).toAmountMx()
 
-    val formattedPendingTotalPrice: String
-        get() = StringUtils.notFormatAmount(totalPending.toString()).toAmountMx()
 }

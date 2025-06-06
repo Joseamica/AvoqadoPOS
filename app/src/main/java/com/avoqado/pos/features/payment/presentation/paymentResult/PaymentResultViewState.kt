@@ -4,7 +4,7 @@ import com.avoqado.pos.core.presentation.model.OperationData
 import com.avoqado.pos.core.presentation.model.OperationInfo
 import com.avoqado.pos.core.presentation.model.Product
 import com.avoqado.pos.core.presentation.utils.toAmountMx
-import com.menta.android.core.model.Adquirer
+import com.example.content_core_service.transaction_service.models.TransactionModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -14,7 +14,7 @@ data class PaymentResultViewState(
     val tipAmount: Double = 0.0,
     val subtotalAmount: Double = 0.0,
     val qrCode: String? = null,
-    val adquirer: Adquirer? = null,
+    val adquirer: TransactionModel? = null,
     val terminalSerialCode: String = "",
     val paidProducts: List<Product> = emptyList(),
     val isQuickPayment: Boolean = false,
@@ -31,12 +31,12 @@ data class PaymentResultViewState(
                 operationData =
                     adquirer?.let {
                         OperationData(
-                            cardBrand = it.capture?.card?.brand ?: "",
-                            cardType = it.capture?.card?.type ?: "",
-                            pan = it.capture?.card?.maskedPan ?: "",
+                            cardBrand = it.additionalInformation?.cardBrand ?: "",
+                            cardType = it.additionalInformation?.cvmType ?: "",
+                            pan = it.maskPan ?: "",
                         )
                     },
-                authOperationCode = adquirer?.authorization?.code ?: "",
+                authOperationCode = adquirer?.authorizationNumber ?: "",
                 subtotal = subtotalAmount.toString().toAmountMx(),
                 tip = tipAmount.toString().toAmountMx(),
             )

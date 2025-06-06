@@ -20,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -35,8 +34,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.avoqado.pos.ACQUIRER_NAME
-import com.avoqado.pos.COUNTRY_CODE
 import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.components.RequestPermissions
 import com.avoqado.pos.core.presentation.theme.primary
@@ -44,21 +41,13 @@ import com.avoqado.pos.core.presentation.theme.textColor
 import com.avoqado.pos.core.presentation.theme.textlightGrayColor
 
 import com.avoqado.pos.ui.screen.ProgressCircleSmart
-import com.menta.android.common_cross.util.StatusType
-import com.menta.android.core.viewmodel.ExternalTokenData
-import com.menta.android.core.viewmodel.MasterKeyData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import timber.log.Timber
 
 @Composable
 fun SplashScreen(
     viewModel: SplashViewModel,
-    externalTokenData: ExternalTokenData,
-    masterKeyData: MasterKeyData,
 ) {
-    val externalToken by externalTokenData.getExternalToken.observeAsState()
-    val masterKey by masterKeyData.getMasterKey.observeAsState()
     val isConfiguring by viewModel.isConfiguring.collectAsStateWithLifecycle()
 
     // Animation states
@@ -81,62 +70,13 @@ fun SplashScreen(
     LaunchedEffect(key1 = Unit) {
         viewModel.events.collectLatest {
             when (it) {
-                SplashViewModel.START_CONFIG -> {
-                    viewModel.venueInfo?.let { venue ->
-                        val apiKey = venue.menta?.let { mentaVenue ->
-                            if (viewModel.operationPreference) {
-                                mentaVenue.apiKeyA
-                            } else {
-                                mentaVenue.apiKeyB
-                            }
-                        }
+                SplashViewModel.START_CONFIG -> {}
 
-                        apiKey?.let { key ->
-                            externalTokenData.getExternalToken(key)
-                        }
-                    }
-                }
-
-                SplashViewModel.GET_MASTER_KEY -> {
-                    viewModel.venueInfo?.let { venue ->
-                        val merchantId = venue.menta?.let { mentaVenue ->
-                            if (viewModel.operationPreference) {
-                                mentaVenue.merchantIdA
-                            } else {
-                                mentaVenue.merchantIdB
-                            }
-                        }
-
-                        if (merchantId != null) {
-                            masterKeyData.loadMasterKey(
-                                merchantId = merchantId,
-                                acquirerId = ACQUIRER_NAME,
-                                countryCode = COUNTRY_CODE,
-                            )
-                        }
-                    }
-                }
+                SplashViewModel.GET_MASTER_KEY -> {}
             }
         }
     }
 
-    LaunchedEffect(key1 = externalToken) {
-        Timber.i("externalToken: ${externalToken?.idToken}")
-        externalToken?.let { token ->
-            if (token.status.statusType != StatusType.ERROR) {
-                Timber.i("Get token SUCCESS")
-                viewModel.storePublicKey(token.idToken, token.tokenType)
-            } else {
-                Timber.i("Get token ERROR: ${token.status.message}")
-            }
-        }
-    }
-
-    LaunchedEffect(key1 = masterKey) {
-        masterKey?.let { key ->
-            viewModel.handleMasterKey(key.secretsList)
-        }
-    }
 
     // Splash screen UI with animations
     Box(
