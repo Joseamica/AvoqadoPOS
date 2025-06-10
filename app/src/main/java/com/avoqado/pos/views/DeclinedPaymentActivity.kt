@@ -31,7 +31,6 @@ class DeclinedPaymentActivity : ComponentActivity() {
         Handler(Looper.getMainLooper()).postDelayed(
             {
                 CoroutineScope(Dispatchers.Main).launch {
-                    Timber.i("goToInputAmount")
                     Intent(this@DeclinedPaymentActivity, MainActivity::class.java)
                         .let(::startActivity)
                     finish()

@@ -4,10 +4,7 @@ import android.content.Intent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,24 +17,20 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -50,54 +43,64 @@ import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
 import com.avoqado.pos.core.presentation.model.IconType
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
-import com.avoqado.pos.core.presentation.theme.lightGrayNumberField
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.features.payment.presentation.inputTipAmount.components.TipItemCard
-import com.avoqado.pos.views.CardProcessActivity
-import com.menta.android.core.model.OperationType
+import com.avoqado.pos.views.DeclinedPaymentActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InputTipScreen(inputTipViewModel: InputTipViewModel) {
+fun InputTipScreen(
+    inputTipViewModel: InputTipViewModel,
+) {
     val context = LocalContext.current
     val showCustomKeyboard by inputTipViewModel.showCustomAmount.collectAsStateWithLifecycle()
     val tipPercentages by inputTipViewModel.tipPercentages.collectAsStateWithLifecycle()
     val tipPercentageLabels by inputTipViewModel.tipPercentageLabels.collectAsStateWithLifecycle()
+    val paymentDeclined by inputTipViewModel.paymentDeclined.collectAsStateWithLifecycle()
+
+
+    LaunchedEffect(paymentDeclined) {
+        if (paymentDeclined) {
+            val intent = Intent(context, DeclinedPaymentActivity::class.java)
+            context.startActivity(intent)
+        }
+    }
 
     InputTipContent(
         onNavigateBack = {
             inputTipViewModel.navigateBack()
         },
         onPayWithoutTip = {
-            val intent = Intent(context, CardProcessActivity::class.java)
-            intent.putExtra(
-                "amount",
-                inputTipViewModel.subtotal.toAmountMx(),
-            )
-            intent.putExtra("tipAmount", "0.00")
-            intent.putExtra("currency", CURRENCY_LABEL)
-            intent.putExtra("operationType", OperationType.PAYMENT.name)
-            intent.putExtra("splitType", inputTipViewModel.splitType.value)
-            intent.putExtra("waiterName", inputTipViewModel.waiterName)
-            context.startActivity(intent)
-            inputTipViewModel.navigateBack()
+//            val intent = Intent(context, CardProcessActivity::class.java)
+//            intent.putExtra(
+//                "amount",
+//                inputTipViewModel.subtotal.toAmountMx(),
+//            )
+//            intent.putExtra("tipAmount", "0.00")
+//            intent.putExtra("currency", CURRENCY_LABEL)
+//            intent.putExtra("operationType", OperationType.PAYMENT.name)
+//            intent.putExtra("splitType", inputTipViewModel.splitType.value)
+//            intent.putExtra("waiterName", inputTipViewModel.waiterName)
+//            context.startActivity(intent)
+
+            inputTipViewModel.startPayment(0.0)
         },
         onPayWithTip = {
-            val intent =
-                Intent(context, CardProcessActivity::class.java).apply {
-                    putExtra(
-                        "amount",
-                        inputTipViewModel.subtotal.toAmountMx(),
-                    )
-                    putExtra("tipAmount", it.toAmountMx())
-                    putExtra("currency", CURRENCY_LABEL)
-                    putExtra("operationType", OperationType.PAYMENT.name)
-                    putExtra("splitType", inputTipViewModel.splitType.value)
-                    putExtra("waiterName", inputTipViewModel.waiterName)
-                }
-            context.startActivity(intent)
-            inputTipViewModel.navigateBack()
+//            val intent =
+//                Intent(context, CardProcessActivity::class.java).apply {
+//                    putExtra(
+//                        "amount",
+//                        inputTipViewModel.subtotal.toAmountMx(),
+//                    )
+//                    putExtra("tipAmount", it.toAmountMx())
+//                    putExtra("currency", CURRENCY_LABEL)
+//                    putExtra("operationType", OperationType.PAYMENT.name)
+//                    putExtra("splitType", inputTipViewModel.splitType.value)
+//                    putExtra("waiterName", inputTipViewModel.waiterName)
+//                }
+//            context.startActivity(intent)
+            inputTipViewModel.startPayment(it.toAmountMx().toDouble())
         },
         totalAmount = inputTipViewModel.subtotal.toDouble(),
         waiterName = inputTipViewModel.waiterName,
@@ -117,32 +120,41 @@ fun InputTipScreen(inputTipViewModel: InputTipViewModel) {
             onAmountEntered = { amount, isPercentage ->
                 inputTipViewModel.hideCustomAmountKeyboard()
                 if (amount > 0) {
-                    val intent =
-                        Intent(context, CardProcessActivity::class.java).apply {
-                            putExtra(
-                                "amount",
-                                inputTipViewModel.subtotal.toAmountMx(),
-                            )
-                            if (isPercentage) {
-                                val subtotal = inputTipViewModel.subtotal.toAmountMx().toDouble()
-                                putExtra(
-                                    "tipAmount",
-                                    (subtotal * amount / 100.0).toString().toAmountMx(),
-                                )
-                            } else {
-                                putExtra(
-                                    "tipAmount",
-                                    amount.toString().toAmountMx(),
-                                )
-                            }
+//                    val intent =
+//                        Intent(context, CardProcessActivity::class.java).apply {
+//                            putExtra(
+//                                "amount",
+//                                inputTipViewModel.subtotal.toAmountMx(),
+//                            )
+//                            if (isPercentage) {
+//                                val subtotal = inputTipViewModel.subtotal.toAmountMx().toDouble()
+//                                putExtra(
+//                                    "tipAmount",
+//                                    (subtotal * amount / 100.0).toString().toAmountMx(),
+//                                )
+//                            } else {
+//                                putExtra(
+//                                    "tipAmount",
+//                                    amount.toString().toAmountMx(),
+//                                )
+//                            }
+//
+//                            putExtra("currency", CURRENCY_LABEL)
+//                            putExtra("operationType", OperationType.PAYMENT.name)
+//                            putExtra("splitType", inputTipViewModel.splitType.value)
+//                            putExtra("waiterName", inputTipViewModel.waiterName)
+//                        }
+//                    context.startActivity(intent)
+                    val tip = if (isPercentage) {
+                        val subtotal = inputTipViewModel.subtotal.toAmountMx().toDouble()
+                        (subtotal * amount / 100.0).toString().toAmountMx()
+                    } else {
+                        amount.toString().toAmountMx()
+                    }
 
-                            putExtra("currency", CURRENCY_LABEL)
-                            putExtra("operationType", OperationType.PAYMENT.name)
-                            putExtra("splitType", inputTipViewModel.splitType.value)
-                            putExtra("waiterName", inputTipViewModel.waiterName)
-                        }
-                    context.startActivity(intent)
-                    inputTipViewModel.navigateBack()
+                    inputTipViewModel.startPayment(
+                        tip = tip.toDouble()
+                    )
                 }
             },
             title = "Propina",
@@ -261,7 +273,7 @@ fun InputTipContent(
                 )
             }
         }
-        
+
         // Bottom row with both buttons - added elevation
         Row(
             modifier = Modifier
@@ -269,12 +281,12 @@ fun InputTipContent(
                 .padding(horizontal = 16.dp, vertical = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-               Button(
+            Button(
                 onClick = { onCustomAmount() },
                 modifier = Modifier
                     .weight(1f)
                     .height(62.dp),
-                    // .shadow(elevation = 0.7.dp, shape = RoundedCornerShape(12.dp)),  // Added elevation
+                // .shadow(elevation = 0.7.dp, shape = RoundedCornerShape(12.dp)),  // Added elevation
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 border = BorderStroke(width = 0.6.dp, color = Color(0xFFE5E5E5)),
@@ -303,9 +315,9 @@ fun InputTipContent(
                 modifier = Modifier
                     .weight(1f)
                     .height(62.dp),
-                    // .shadow(elevation = 0.7.dp, shape = RoundedCornerShape(12.dp)),  // Added elevation
+                // .shadow(elevation = 0.7.dp, shape = RoundedCornerShape(12.dp)),  // Added elevation
                 shape = RoundedCornerShape(12.dp),
-           colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent),
                 border = BorderStroke(width = 0.6.dp, color = Color(0xFFE5E5E5)),
             ) {
                 Row(
@@ -326,8 +338,8 @@ fun InputTipContent(
                     )
                 }
             }
-            
-      
+
+
         }
         Spacer(Modifier.height(36.dp))
 

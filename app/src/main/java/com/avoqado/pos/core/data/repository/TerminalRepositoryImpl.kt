@@ -1,6 +1,6 @@
 package com.avoqado.pos.core.data.repository
 
-import android.util.Log
+
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.AvoqadoService
 import com.avoqado.pos.core.data.network.MentaService
@@ -13,7 +13,6 @@ import com.avoqado.pos.core.domain.models.ShiftParams
 import com.avoqado.pos.core.domain.models.ShiftSummary
 import com.avoqado.pos.core.domain.models.TerminalInfo
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
-import com.menta.android.restclient.core.Storage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
@@ -23,7 +22,6 @@ import java.time.Instant
 class TerminalRepositoryImpl(
     private val sessionManager: SessionManager,
     private val mentaService: MentaService,
-    private val storage: Storage,
     private val avoqadoService: AvoqadoService,
 ) : TerminalRepository {
     override suspend fun getTerminalId(serialCode: String): TerminalInfo {

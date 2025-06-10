@@ -10,8 +10,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.core.domain.usecase.ValidateAmountUseCase
+import com.avoqado.pos.core.presentation.utils.toAmountMx
 import com.avoqado.pos.ui.screen.TextFieldState
-import com.menta.android.core.utils.StringUtils
 import kotlinx.coroutines.launch
 
 class InputAmountViewModel(
@@ -40,7 +40,7 @@ class InputAmountViewModel(
 
     fun formatAmount(value: String) {
         val currentTextFieldAmount = _textFieldAmount.value
-        val amount = StringUtils.toStringThousandAmount(StringUtils.notFormatAmount(value))
+        val amount = value.toAmountMx()
         _textFieldAmount.value =
             currentTextFieldAmount.copy(
                 textFieldValue =

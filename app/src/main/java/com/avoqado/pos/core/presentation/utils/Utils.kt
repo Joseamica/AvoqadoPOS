@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.sp
 import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.model.enums.MmTypeCurrencyEnum
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.menta.android.common_cross.util.Utils
-import com.menta.android.keys.admin.core.repository.parametro.ParametroDB
+//import com.menta.android.common_cross.util.Utils
+//import com.menta.android.keys.admin.core.repository.parametro.ParametroDB
 import timber.log.Timber
 import java.math.BigDecimal
 import java.text.DateFormat
@@ -52,20 +52,20 @@ object Utils {
     }
 
     fun incrementBatch(context: Context) {
-        Thread {
-            if (mustIncrementBatch(context)) {
-                val parameterDB = ParametroDB(context)
-                val batch: Int = parameterDB.getValueParam(BATCH).toInt() + 1
-                parameterDB.setValueParam(BATCH, batch.toString())
-                saveIncrementBatch(context)
-            }
-        }.start()
+//        Thread {
+//            if (mustIncrementBatch(context)) {
+//                val parameterDB = ParametroDB(context)
+//                val batch: Int = parameterDB.getValueParam(BATCH).toInt() + 1
+//                parameterDB.setValueParam(BATCH, batch.toString())
+//                saveIncrementBatch(context)
+//            }
+//        }.start()
     }
 
     fun mustIncrementBatch(context: Context): Boolean = isNextDate(KEY_NEXT_INCREMENT_BATCH_DATE, context)
 
     fun saveIncrementBatch(context: Context) {
-        saveDate(KEY_NEXT_INCREMENT_BATCH_DATE, context)
+//        saveDate(KEY_NEXT_INCREMENT_BATCH_DATE, context)
     }
 
     @SuppressLint("SimpleDateFormat")
@@ -73,45 +73,45 @@ object Utils {
         key: String?,
         context: Context,
     ): Boolean {
-        try {
-            val hourDateFormat: DateFormat = SimpleDateFormat(PATTERN_DATE_FORMAT)
-            val dateCurrent = hourDateFormat.format(Date())
-            val dateSaved = getDataSave(key, context) ?: return true
-
-            val currentDate = hourDateFormat.parse(dateCurrent)
-            val savedDate = hourDateFormat.parse(dateSaved)
-
-            if (currentDate != null && savedDate != null) {
-                val ret = currentDate.compareTo(savedDate)
-                return ret >= 0
-            }
-        } catch (e: ParseException) {
-            Timber.e(e, e.message!!)
-        }
+//        try {
+//            val hourDateFormat: DateFormat = SimpleDateFormat(PATTERN_DATE_FORMAT)
+//            val dateCurrent = hourDateFormat.format(Date())
+//            val dateSaved = getDataSave(key, context) ?: return true
+//
+//            val currentDate = hourDateFormat.parse(dateCurrent)
+//            val savedDate = hourDateFormat.parse(dateSaved)
+//
+//            if (currentDate != null && savedDate != null) {
+//                val ret = currentDate.compareTo(savedDate)
+//                return ret >= 0
+//            }
+//        } catch (e: ParseException) {
+//            Timber.e(e, e.message!!)
+//        }
         return false
     }
 
-    @SuppressLint("SimpleDateFormat")
-    fun saveDate(
-        key: String?,
-        context: Context,
-    ) {
-        val dateFormat: DateFormat = SimpleDateFormat(PATTERN_DATE_FORMAT)
-        val currentDate = Date()
-        val days = 1
-        val dateChange = generateNewDate(currentDate, days)
-        val editor = Utils.createEncryptedSharedPreferences(PREF_TRANSACTIONAL_DATA, context).edit()
-        editor.putString(key, dateFormat.format(dateChange))
-        editor.apply()
-    }
-
-    private fun getDataSave(
-        key: String?,
-        context: Context,
-    ): String? {
-        val prefs = Utils.createEncryptedSharedPreferences(PREF_TRANSACTIONAL_DATA, context)
-        return prefs.getString(key, null)
-    }
+//    @SuppressLint("SimpleDateFormat")
+//    fun saveDate(
+//        key: String?,
+//        context: Context,
+//    ) {
+//        val dateFormat: DateFormat = SimpleDateFormat(PATTERN_DATE_FORMAT)
+//        val currentDate = Date()
+//        val days = 1
+//        val dateChange = generateNewDate(currentDate, days)
+//        val editor = Utils.createEncryptedSharedPreferences(PREF_TRANSACTIONAL_DATA, context).edit()
+//        editor.putString(key, dateFormat.format(dateChange))
+//        editor.apply()
+//    }
+//
+//    private fun getDataSave(
+//        key: String?,
+//        context: Context,
+//    ): String? {
+//        val prefs = Utils.createEncryptedSharedPreferences(PREF_TRANSACTIONAL_DATA, context)
+//        return prefs.getString(key, null)
+//    }
 
     private fun generateNewDate(
         date: Date,
