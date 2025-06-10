@@ -1,6 +1,5 @@
 package com.avoqado.pos.features.management.presentation.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.core.data.local.SessionManager

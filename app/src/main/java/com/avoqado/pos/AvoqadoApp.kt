@@ -29,14 +29,14 @@ import com.avoqado.pos.features.payment.data.network.AvoqadoService
 import com.avoqado.pos.features.payment.domain.repository.PaymentRepository
 import com.avoqado.pos.features.menu.data.repository.MenuRepositoryImpl
 import com.avoqado.pos.features.menu.domain.repository.MenuRepository
+import com.example.content_core_service.ContentService
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.menta.android.restclient.core.Storage
 import timber.log.Timber
 
 class AvoqadoApp : Application() {
     companion object {
-        lateinit var storage: Storage
         lateinit var sessionManager: SessionManager
+        lateinit var contentService: ContentService
         var terminalSerialCode: String = ""
         val managementCacheStorage: ManagementCacheStorage by lazy { ManagementCacheStorage() }
         val managementRepository: ManagementRepository by lazy {
@@ -62,8 +62,7 @@ class AvoqadoApp : Application() {
             TerminalRepositoryImpl(
                 sessionManager = sessionManager,
                 mentaService = AvoqadoAPI.mentaService,
-                avoqadoService = AvoqadoAPI.apiService,
-                storage = storage,
+                avoqadoService = AvoqadoAPI.apiService
             )
         }
         val authorizationRepository: AuthorizationRepository by lazy {
@@ -107,8 +106,7 @@ class AvoqadoApp : Application() {
         }
         // Initialize AppConfig first so other components can use it
         AppConfig.initialize(this)
-
-        storage = Storage(this)
+        contentService = ContentService(this)
         sessionManager = SessionManager(this)
         terminalSerialCode = when {
             // For Android 10+ (API 29+) - This covers your Android 12 production environment

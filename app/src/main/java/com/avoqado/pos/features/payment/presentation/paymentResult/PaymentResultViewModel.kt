@@ -16,7 +16,6 @@ import com.avoqado.pos.features.management.presentation.navigation.ManagementDes
 import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
 import com.avoqado.pos.features.payment.domain.repository.PaymentRepository
 import com.google.gson.Gson
-import com.menta.android.core.model.Adquirer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -55,7 +54,8 @@ class PaymentResultViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             val adquirer =
                 try {
-                    Gson().fromJson(info.rootData, Adquirer::class.java)
+//                    Gson().fromJson(info.rootData, Adquirer::class.java)
+                    null
                 } catch (e: Exception) {
                     null
                 }

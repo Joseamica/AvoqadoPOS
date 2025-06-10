@@ -45,67 +45,7 @@
             android:name=".core.data.network.SocketService"
             android:enabled="true"
             android:exported="false" />
-        <activity
-            android:name=".views.ProductsActivity"
-            android:exported="false"
-            android:theme="@style/Theme.AvoqadoPOS" />
-        <activity
-            android:name=".views.ErrorActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.SendTicketActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.InputMailActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.SuccessRefundActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.DeclineRefundActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.DoRefundActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.ListTransactionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.GetTransactionsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.MenuActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.InstallmentsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.DoPaymentActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.CardRulesValidationActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.CardErrorActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.CardProcessActivity"
-            android:exported="true" />
-        <activity
-            android:name=".views.SuccessMessageActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.InitActivity"
-            android:exported="true"/>
-        <activity
-            android:name=".views.InputAmountActivity"
-            android:exported="true" />
-        <activity
-            android:name=".views.SuccessPaymentActivity"
-            android:exported="false" />
-        <activity
-            android:name=".views.DeclinedPaymentActivity"
-            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -128,6 +68,10 @@
                     android:path="/unauthorized"
                     android:scheme="menta" />
             </intent-filter>
+
+            <queries>
+                <package android:name="com.solopago.metaappcontent"/>
+            </queries>
         </activity>
     </application>
 

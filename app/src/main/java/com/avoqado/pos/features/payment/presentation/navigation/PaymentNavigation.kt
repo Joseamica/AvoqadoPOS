@@ -30,12 +30,10 @@ import com.avoqado.pos.features.payment.presentation.transactions.SummaryTabs
 import com.avoqado.pos.features.payment.presentation.transactions.TransactionSummaryViewModel
 import com.avoqado.pos.features.payment.presentation.transactions.TransactionsSummaryScreen
 import com.avoqado.pos.features.payment.presentation.transactions.components.PaymentDetailScreen
-import com.menta.android.core.viewmodel.TrxData
 
 fun NavGraphBuilder.paymentNavigation(
     navigationDispatcher: NavigationDispatcher,
     snackbarDelegate: SnackbarDelegate,
-    trxData: TrxData,
 ) {
     composableHolder(PaymentDests.LeaveReview) {
         val subtotal = it.arguments?.getString(PaymentDests.LeaveReview.ARG_SUBTOTAL) ?: "0.00"
@@ -68,7 +66,10 @@ fun NavGraphBuilder.paymentNavigation(
                     splitType = SplitType.valueOf(splitType),
                     navigationDispatcher = navigationDispatcher,
                     validateAmountUseCase = ValidateAmountUseCase(),
-                    sessionManager = AvoqadoApp.sessionManager
+                    sessionManager = AvoqadoApp.sessionManager,
+                    contentService = AvoqadoApp.contentService,
+                    paymentRepository = AvoqadoApp.paymentRepository,
+                    snackbarDelegate = snackbarDelegate
                 )
             }
 

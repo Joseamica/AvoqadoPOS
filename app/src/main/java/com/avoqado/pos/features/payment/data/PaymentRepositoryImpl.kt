@@ -9,7 +9,7 @@ import com.avoqado.pos.features.payment.data.network.models.RecordPaymentBody
 import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
 import com.avoqado.pos.features.payment.domain.repository.PaymentRepository
 import com.avoqado.pos.features.payment.presentation.review.ReviewRating
-import com.menta.android.core.model.Adquirer
+import com.example.content_core_service.transaction_service.models.TransactionModel
 
 class PaymentRepositoryImpl(
     private val paymentCacheStorage: PaymentCacheStorage,
@@ -37,7 +37,7 @@ class PaymentRepositoryImpl(
         billId: String,
         token: String,
         paidProductsId: List<String>,
-        adquirer: Adquirer?,
+        adquirer: TransactionModel?,
         reviewRating: ReviewRating?,
     ): String {
         try {
@@ -54,25 +54,23 @@ class PaymentRepositoryImpl(
                     source = "AVOQADO_TPV",
                     paidProductsId = paidProductsId,
                     token = token,
-                    isInternational = adquirer?.let { data -> data.capture?.card?.isInternational } ?: false,
+                    isInternational = adquirer?.let { data -> data.additionalInformation?.onlineRequested } ?: false,
                     reviewRating = reviewRating?.name,
                 )
 
             adquirer?.let {
                 body =
                     body.copy(
-                        cardBrand = it.capture?.card?.brand,
+                        cardBrand = it.additionalInformation?.cardBrand,
                         last4 =
-                            it.capture
-                                ?.card
-                                ?.maskedPan
+                            it.maskPan
                                 ?.let { pan -> pan.substring(pan.length - 4) },
-                        typeOfCard = it.capture?.card?.type,
-                        currency = it.amount.currency,
-                        bank = it.capture?.card?.bank,
-                        mentaAuthorizationReference = it.authorization?.retrievalReferenceNumber,
+                        typeOfCard = it.additionalInformation?.cvmType,
+                        currency = it.additionalInformation?.entryMode,
+                        bank = "",
+                        mentaAuthorizationReference = it.authorizationNumber,
                         mentaOperationId = it.id,
-                        mentaTicketId = it.ticketId.toString(),
+                        mentaTicketId = it.id,
                     )
             }
             val result =
@@ -87,7 +85,7 @@ class PaymentRepositoryImpl(
 
         return adquirer?.let { it.id ?: "" } ?: token
     }
-    
+
     override suspend fun recordFastPayment(
         venueId: String,
         waiterName: String,
@@ -98,7 +96,7 @@ class PaymentRepositoryImpl(
         tip: Int,
         token: String,
         paidProductsId: List<String>,
-        adquirer: Adquirer?,
+        adquirer: TransactionModel?,
         reviewRating: ReviewRating?,
     ): String {
         try {
@@ -115,25 +113,23 @@ class PaymentRepositoryImpl(
                     source = "AVOQADO_TPV",
                     paidProductsId = paidProductsId,
                     token = token,
-                    isInternational = adquirer?.let { data -> data.capture?.card?.isInternational } ?: false,
+                    isInternational = adquirer?.let { data -> data.additionalInformation?.onlineRequested } ?: false,
                     reviewRating = reviewRating?.name,
                 )
 
             adquirer?.let {
                 body =
                     body.copy(
-                        cardBrand = it.capture?.card?.brand,
+                        cardBrand = it.additionalInformation?.cardBrand,
                         last4 =
-                            it.capture
-                                ?.card
-                                ?.maskedPan
+                            it.maskPan
                                 ?.let { pan -> pan.substring(pan.length - 4) },
-                        typeOfCard = it.capture?.card?.type,
-                        currency = it.amount.currency,
-                        bank = it.capture?.card?.bank,
-                        mentaAuthorizationReference = it.authorization?.retrievalReferenceNumber,
+                        typeOfCard = it.additionalInformation?.cvmType,
+                        currency = it.additionalInformation?.entryMode,
+                        bank = "",
+                        mentaAuthorizationReference = it.authorizationNumber,
                         mentaOperationId = it.id,
-                        mentaTicketId = it.ticketId.toString(),
+                        mentaTicketId = it.id,
                     )
             }
             val result =

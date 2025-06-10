@@ -2,7 +2,7 @@ package com.avoqado.pos.features.payment.domain.repository
 
 import com.avoqado.pos.features.payment.domain.models.PaymentInfoResult
 import com.avoqado.pos.features.payment.presentation.review.ReviewRating
-import com.menta.android.core.model.Adquirer
+import com.example.content_core_service.transaction_service.models.TransactionModel
 
 interface PaymentRepository {
     fun getCachePaymentInfo(): PaymentInfoResult?
@@ -23,7 +23,7 @@ interface PaymentRepository {
         billId: String,
         token: String,
         paidProductsId: List<String>,
-        adquirer: Adquirer?,
+        adquirer: TransactionModel?,
         reviewRating: ReviewRating? = null,
     ): String
     
@@ -37,7 +37,7 @@ interface PaymentRepository {
         tip: Int,
         token: String,
         paidProductsId: List<String>,
-        adquirer: Adquirer?,
+        adquirer: TransactionModel?,
         reviewRating: ReviewRating? = null,
     ): String
 }

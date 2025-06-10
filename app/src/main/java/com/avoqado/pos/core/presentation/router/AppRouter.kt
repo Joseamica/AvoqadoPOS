@@ -44,9 +44,6 @@ import com.avoqado.pos.features.management.presentation.navigation.managementNav
 import com.avoqado.pos.features.menu.presentation.navigation.menuNavigation
 import com.avoqado.pos.features.payment.presentation.navigation.paymentNavigation
 import com.avoqado.pos.features.cart.presentation.navigation.cartGraph
-import com.menta.android.core.viewmodel.ExternalTokenData
-import com.menta.android.core.viewmodel.MasterKeyData
-import com.menta.android.core.viewmodel.TrxData
 import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 
@@ -54,9 +51,6 @@ import timber.log.Timber
 fun AppRouter(
     navigationDispatcher: NavigationDispatcher,
     snackbarDelegate: SnackbarDelegate,
-    externalTokenData: ExternalTokenData,
-    masterKeyData: MasterKeyData,
-    trxData: TrxData,
     context: Context,
 ) {
     val navController = rememberNavController()
@@ -192,7 +186,6 @@ fun AppRouter(
                             remember {
                                 SplashViewModel(
                                     navigationDispatcher = navigationDispatcher,
-                                    storage = AvoqadoApp.storage,
                                     sessionManager = AvoqadoApp.sessionManager,
                                     serialNumber = AvoqadoApp.terminalSerialCode,
                                     snackbarDelegate = snackbarDelegate,
@@ -203,8 +196,6 @@ fun AppRouter(
 
                         SplashScreen(
                             viewModel = splashViewModel,
-                            externalTokenData = externalTokenData,
-                            masterKeyData = masterKeyData,
                         )
                     }
 
@@ -228,14 +219,11 @@ fun AppRouter(
                             remember {
                                 AuthorizationViewModel(
                                     navigationDispatcher = navigationDispatcher,
-                                    storage = AvoqadoApp.storage,
                                     sessionManager = AvoqadoApp.sessionManager,
                                 )
                             }
                         AuthorizationDialog(
                             viewModel = viewModel,
-                            externalTokenData = externalTokenData,
-                            masterKeyData = masterKeyData,
                         )
                     }
 
@@ -251,7 +239,6 @@ fun AppRouter(
                     paymentNavigation(
                         navigationDispatcher = navigationDispatcher,
                         snackbarDelegate = snackbarDelegate,
-                        trxData = trxData,
                     )
                     
                     // Add cart navigation graph

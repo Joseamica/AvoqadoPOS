@@ -2,7 +2,7 @@ package com.avoqado.pos
 
 import com.avoqado.pos.core.presentation.model.enums.Acquirer
 import com.avoqado.pos.core.presentation.model.enums.Country
-import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
+//import com.menta.android.common_cross.util.CURRENCY_LABEL_MX
 
 //    "id": "bd0fc6c6-d698-444a-b4ce-baa2af32f9c7",
 //    "api_key": "8vn8MTN02NvZff8NwWv4NhI8UOHKAloWxMc6JMIwKTFqoKb4Z5aoKdw2eFZhiUAK",
@@ -16,7 +16,7 @@ val merchantId = ""
 val customerId = "4b9d4822-9c94-4056-b58f-b84c7d214ed4"
 val merchantApiKey = "4mrOrkW27ZDvmNiDZVdDatcLrQQvVPH5Www1OlT8TL767v92P3e7DP6SmdW6zRW7"
 val terminalId = "7335c5cd-1d99-4eb7-abfb-9c43c5e9a122"
-val CURRENCY_LABEL = CURRENCY_LABEL_MX // Ugit psar CURRENCY_LABEL_ARG si es Argentina. Usar CURRENCY_LABEL_MX si es Mexico
+val CURRENCY_LABEL = "CURRENCY_LABEL_MX" // Ugit psar CURRENCY_LABEL_ARG si es Argentina. Usar CURRENCY_LABEL_MX si es Mexico
 val ACQUIRER_NAME = Acquirer.BANORTE.name // Usar Acquirer.GPS.name para Argentina. Usar Acquirer.BANORTE.name para México
 val COUNTRY_CODE = Country.MEX.code // Usar Country.ARG.code para Argentina. Usar Country.MEX.code para México
 
