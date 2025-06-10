@@ -11,6 +11,7 @@ import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
 import com.avoqado.pos.core.presentation.destinations.MainDests
 import com.avoqado.pos.core.presentation.navigation.NavigationArg
 import com.avoqado.pos.core.presentation.navigation.NavigationDispatcher
+import com.avoqado.pos.features.management.domain.ManagementRepository
 import com.avoqado.pos.features.management.presentation.navigation.ManagementDests
 import com.avoqado.pos.features.payment.presentation.navigation.PaymentDests
 import com.avoqado.pos.features.payment.presentation.transactions.SummaryTabs
@@ -29,6 +30,7 @@ class HomeViewModel(
     private val sessionManager: SessionManager,
     private val terminalRepository: TerminalRepository,
     private val snackbarDelegate: SnackbarDelegate,
+    private val managementRepository: ManagementRepository,
 ) : ViewModel() {
     val currentSession = sessionManager.getAvoqadoSession()
     var currentShift = sessionManager.getShift()
@@ -291,6 +293,16 @@ private fun forceRefreshShiftStatus() {
             val venue = sessionManager.getVenueInfo()
 
             if (venueId.isNotEmpty() && venue != null) {
+                // Refresh venue information from server
+                try {
+                    val updatedVenue = managementRepository.getVenue(venueId)
+                    sessionManager.saveVenueInfo(updatedVenue)
+                    Timber.d("Venue information refreshed successfully")
+                } catch (e: Exception) {
+                    Timber.e("Error refreshing venue information: ${e.message}")
+                    // Continue with the rest of the refresh even if venue refresh fails
+                }
+                
                 // Forzar desconexión y reconexión
                 SocketIOManager.disconnect()
                 SocketIOManager.connect(SocketIOManager.getServerUrl())
@@ -302,7 +314,7 @@ private fun forceRefreshShiftStatus() {
                     // Forzar una actualización del turno desde el servidor
                     currentShift = terminalRepository.getTerminalShift(
                         venueId = venueId,
-                        posName = venue.posName ?: "",
+                        posName = sessionManager.getVenueInfo()?.posName ?: "", // Use potentially updated venue info
                     )
                     
                     // Actualizar el estado - solo se llega aquí si no hay excepciones
@@ -347,7 +359,7 @@ private fun forceRefreshShiftStatus() {
             _shiftStarted.update { false }
         }
     }
-}
+    }
 
     fun navigateToQrScannerScreen() {
         navigationDispatcher.navigateTo(MainDests.QrScannerScreen.route)

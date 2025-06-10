@@ -37,6 +37,7 @@ fun NavGraphBuilder.managementNavigation(
                     sessionManager = AvoqadoApp.sessionManager,
                     terminalRepository = AvoqadoApp.terminalRepository,
                     snackbarDelegate = snackbarDelegate,
+                    managementRepository = AvoqadoApp.managementRepository,
                 )
             }
         HomeScreen(
