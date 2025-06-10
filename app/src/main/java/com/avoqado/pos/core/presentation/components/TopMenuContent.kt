@@ -45,9 +45,7 @@ import com.avoqado.pos.AvoqadoApp
 import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.theme.buttonGrayColor
 import androidx.compose.material3.CircularProgressIndicator
-import com.avoqado.pos.features.authorization.presentation.splash.SplashViewModel
-import com.avoqado.pos.core.presentation.destinations.MainDests
-import com.avoqado.pos.views.InitActivity
+import com.avoqado.pos.MainActivity
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -320,7 +318,7 @@ fun TopMenuContent(
                             }
                             
                             // Reiniciar la app con intent a la pantalla de Splash
-                            val intent = Intent(context, InitActivity::class.java).apply {
+                            val intent = Intent(context, MainActivity::class.java).apply {
                                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or 
                                         Intent.FLAG_ACTIVITY_CLEAR_TASK or
                                         Intent.FLAG_ACTIVITY_CLEAR_TOP
