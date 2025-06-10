@@ -70,6 +70,7 @@ dependencies {
     val accompanistPlaceholderVersion: String by project
     val navVersion: String by project
     val lifecycleVersion: String by project
+    val camerax_version = "1.3.1" // O la versión estable más reciente
 
     implementation(libs.androidx.material)
     implementation(libs.androidx.material.navigation)
@@ -96,9 +97,21 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    //Meta
+
     implementation(files("libs/content_core_service_release.aar"))
 
+// CameraX
+implementation ("androidx.camera:camera-core:$camerax_version")
+implementation ("androidx.camera:camera-camera2:$camerax_version")
+implementation ("androidx.camera:camera-lifecycle:$camerax_version")
+implementation ("androidx.camera:camera-view:$camerax_version")
+
+
+// ML Kit Barcode Scanning
+implementation ("com.google.mlkit:barcode-scanning:17.2.0")
+
+// Accompanist Permissions (si no la tienes ya)
+implementation ("com.google.accompanist:accompanist-permissions:0.32.0") // O la versión estable más reciente
     // Compose and UI
     implementation("com.google.android.material:material:$googleMaterialVersion")
     implementation("androidx.compose.ui:ui:$composeVersion")

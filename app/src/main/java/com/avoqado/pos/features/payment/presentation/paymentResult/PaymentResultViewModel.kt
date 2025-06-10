@@ -3,6 +3,7 @@ package com.avoqado.pos.features.payment.presentation.paymentResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.AvoqadoApp
+import com.avoqado.pos.core.data.network.AppConfig
 import com.avoqado.pos.core.domain.models.PaymentStatus
 import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.domain.models.TerminalInfo
@@ -149,10 +150,12 @@ class PaymentResultViewModel(
                 "${info.venueId}-${info.tableNumber}-${info.billId}-${System.currentTimeMillis()}"
             }
 
+            val receiptUrl = "${AppConfig.getWebFrontendUrl()}/receipt?token=$token${if (info.reviewRating == com.avoqado.pos.features.payment.presentation.review.ReviewRating.EXCELLENT) "&avoidReview=false" else "&avoidReview=true"}"
+
             _paymentResult.update { state ->
                 state
                     .copy(
-                        qrCode = "https://avoqado.io/receipt?token=$token${if (info.reviewRating == com.avoqado.pos.features.payment.presentation.review.ReviewRating.EXCELLENT) "&avoidReview=false" else "&avoidReview=true"}",
+                        qrCode = receiptUrl,
                         adquirer = adquirer,
                         terminalSerialCode = terminal.serialCode,
                     )

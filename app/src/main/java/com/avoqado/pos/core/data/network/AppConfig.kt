@@ -19,9 +19,20 @@ object AppConfig {
     private const val KEY_SOCKET_RECONNECT_ATTEMPTS = "socket_reconnect_attempts"
     private const val KEY_SOCKET_RECONNECT_DELAY = "socket_reconnect_delay"
     private const val KEY_SOCKET_UPDATE_INTERVAL = "socket_update_interval"
+    private const val KEY_IS_DEV_MODE = "is_dev_mode"
     
-    // Default values
-    private const val DEFAULT_SERVER_URL = "https://5ffc-187-190-190-247.ngrok-free.app"
+    // Environment configurations
+    private const val DEFAULT_DEV_MODE = true // Set default development mode
+    
+    // Backend URLs
+    private const val DEV_SERVER_URL = "https://5ffc-187-190-190-247.ngrok-free.app"
+    private const val PROD_SERVER_URL = "https://api.avoqado.io"
+    
+    // Frontend URLs
+    private const val DEV_WEB_FRONTEND_URL = "http://localhost:5173"
+    private const val PROD_WEB_FRONTEND_URL = "https://avoqado.io"
+    
+    // Default values for other configurations
     private const val DEFAULT_API_PATH = "/v1/"
     private const val DEFAULT_NETWORK_TIMEOUT_SECONDS = 60L  // Reduced from 120s
     private const val DEFAULT_SOCKET_RECONNECT_ATTEMPTS = 10       
@@ -36,6 +47,31 @@ object AppConfig {
      */
     fun initialize(context: Context) {
         prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    }
+    
+    // ------------------- Environment Configuration -------------------
+    
+    /**
+     * Check if the app is running in development mode
+     */
+    fun isDevMode(): Boolean {
+        return prefs?.getBoolean(KEY_IS_DEV_MODE, DEFAULT_DEV_MODE) ?: DEFAULT_DEV_MODE
+    }
+    
+    /**
+     * Set the app's development mode
+     */
+    fun setDevMode(isDev: Boolean) {
+        prefs?.edit {
+            putBoolean(KEY_IS_DEV_MODE, isDev)
+        }
+    }
+    
+    /**
+     * Get the appropriate web frontend URL based on current environment
+     */
+    fun getWebFrontendUrl(): String {
+        return if (isDevMode()) DEV_WEB_FRONTEND_URL else PROD_WEB_FRONTEND_URL
     }
     
     // ------------------- Server URL Configuration -------------------
@@ -54,16 +90,20 @@ object AppConfig {
     
     /**
      * Returns the socket server URL (without the path)
+     * Uses environment-specific URLs if no custom URL is set
      */
     fun getSocketUrl(): String {
-        return prefs?.getString(KEY_SOCKET_URL, DEFAULT_SERVER_URL) ?: DEFAULT_SERVER_URL
+        val defaultUrl = if (isDevMode()) DEV_SERVER_URL else PROD_SERVER_URL
+        return prefs?.getString(KEY_SOCKET_URL, defaultUrl) ?: defaultUrl
     }
     
     /**
      * Returns the base server URL (without the path)
+     * Uses environment-specific URLs if no custom URL is set
      */
     fun getServerUrl(): String {
-        return prefs?.getString(KEY_API_BASE_URL, DEFAULT_SERVER_URL) ?: DEFAULT_SERVER_URL
+        val defaultUrl = if (isDevMode()) DEV_SERVER_URL else PROD_SERVER_URL
+        return prefs?.getString(KEY_API_BASE_URL, defaultUrl) ?: defaultUrl
     }
     
     /**

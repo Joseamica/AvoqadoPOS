@@ -66,6 +66,7 @@ fun HomeScreen(homeViewModel: HomeViewModel) {
         onLogout = homeViewModel::logout,
         onToggleShift = homeViewModel::toggleShift,
         onRefresh = homeViewModel::onPullToRefreshTrigger,
+        onScanQrClicked = { homeViewModel.navigateToQrScannerScreen() },
         isRefreshing = isRefreshing,
         shiftStarted = shiftStarted,
         venuePosName = venuePosName,
@@ -105,6 +106,7 @@ fun HomeContent(
     onLogout: () -> Unit = {},
     onToggleShift: () -> Unit = {},
     onRefresh: () -> Unit = {},
+    onScanQrClicked: () -> Unit = {},
     venuePosName: String? = null,
     isOrderingEnabled: Boolean = true,
 ) {
@@ -118,6 +120,7 @@ fun HomeContent(
         isRefreshing = isRefreshing,
         onToggleShift = onToggleShift,
         onLogout = onLogout,
+        onScanQrClicked = onScanQrClicked,
         shiftStarted = shiftStarted,
         venuePosName = venuePosName,
     ) {

@@ -61,4 +61,12 @@ sealed class MainDests : NavigationAction {
         override val navAnimation: NavAnimation?
             get() = NavAnimation.fade()
     }
+
+    data object QrScannerScreen : MainDests() {
+        override val route: String
+            get() = "qrScannerScreen"
+
+        override val navAnimation: NavAnimation?
+            get() = NavAnimation.fade()
+    }
 }
