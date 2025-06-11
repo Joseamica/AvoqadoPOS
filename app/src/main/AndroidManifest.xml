@@ -75,7 +75,11 @@
                     android:path="/unauthorized"
                     android:scheme="menta" />
             </intent-filter>
+
         </activity>
     </application>
 
+    <queries>
+        <package android:name="com.solopago.metaappcontent"/>
+    </queries>
 </manifest>
