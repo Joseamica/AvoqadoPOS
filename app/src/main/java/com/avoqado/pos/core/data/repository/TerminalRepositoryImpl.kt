@@ -32,9 +32,10 @@ class TerminalRepositoryImpl(
                 serialCode = terminal.serialCode,
             )
         } else {
+            //TODO: Cambiar a MetaContent para obtener datos del terminal
             return try {
                 val terminals =
-                    mentaService.getTerminals("${storage.getTokenType()} ${storage.getIdToken()}")
+                    mentaService.getTerminals("")
                 val currentTerminal =
                     terminals.embedded.terminals?.firstOrNull { terminal -> terminal.serialCode == serialCode }
                 currentTerminal?.let {

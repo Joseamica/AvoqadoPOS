@@ -29,7 +29,6 @@ import com.avoqado.pos.R
 import com.avoqado.pos.core.presentation.model.FlowStep
 import com.avoqado.pos.core.presentation.model.IconAction
 import com.avoqado.pos.core.presentation.model.IconType
-import com.avoqado.pos.views.MenuActivity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,8 +69,7 @@ fun ToolbarWithIcon(
                 IconButton(onClick = {
                     when (iconAction.flowStep) {
                         FlowStep.GO_TO_MENU -> {
-                            val intent = Intent(iconAction.context, MenuActivity::class.java)
-                            iconAction.context.startActivity(intent)
+
                         }
 
                         else -> {
@@ -176,8 +174,7 @@ fun SimpleToolbar(
                     onClick = {
                         when (iconAction.flowStep) {
                             FlowStep.GO_TO_MENU -> {
-                                val intent = Intent(iconAction.context, MenuActivity::class.java)
-                                iconAction.context.startActivity(intent)
+
                             }
 
                             else -> {
