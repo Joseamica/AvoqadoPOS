@@ -78,8 +78,4 @@
 
         </activity>
     </application>
-
-    <queries>
-        <package android:name="com.solopago.metaappcontent"/>
-    </queries>
 </manifest>
