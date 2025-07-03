@@ -19,4 +19,5 @@ data class PaymentInfoResult(
     val splitPartySize: Int = 0,
     val splitSelectedPartySize: Int = 0,
     val reviewRating: ReviewRating? = null,
+    val paymentMethod: String = "CARD", // Añadir método de pago (CASH o CARD)
 )
