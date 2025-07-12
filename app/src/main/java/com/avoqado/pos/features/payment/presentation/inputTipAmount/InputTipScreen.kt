@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -45,6 +46,7 @@ import com.avoqado.pos.core.presentation.model.IconType
 import com.avoqado.pos.core.presentation.theme.AvoqadoTheme
 import com.avoqado.pos.core.presentation.utils.Urovo9100DevicePreview
 import com.avoqado.pos.core.presentation.utils.toAmountMx
+import com.avoqado.pos.features.payment.presentation.inputTipAmount.components.PaymentMethodSelectionSheet
 import com.avoqado.pos.features.payment.presentation.inputTipAmount.components.TipItemCard
 import com.avoqado.pos.views.DeclinedPaymentActivity
 
@@ -58,7 +60,8 @@ fun InputTipScreen(
     val tipPercentages by inputTipViewModel.tipPercentages.collectAsStateWithLifecycle()
     val tipPercentageLabels by inputTipViewModel.tipPercentageLabels.collectAsStateWithLifecycle()
     val paymentDeclined by inputTipViewModel.paymentDeclined.collectAsStateWithLifecycle()
-
+    val showPaymentMethodSelection by inputTipViewModel.showPaymentMethodSelection.collectAsStateWithLifecycle()
+    val selectedTip by inputTipViewModel.selectedTip.collectAsState()
 
     LaunchedEffect(paymentDeclined) {
         if (paymentDeclined) {
@@ -72,7 +75,7 @@ fun InputTipScreen(
             inputTipViewModel.navigateBack()
         },
         onPayWithoutTip = {
-//            val intent = Intent(context, CardProcessActivity::class.java)
+                    //   val intent = Intent(context, CardProcessActivity::class.java)
 //            intent.putExtra(
 //                "amount",
 //                inputTipViewModel.subtotal.toAmountMx(),
@@ -84,10 +87,11 @@ fun InputTipScreen(
 //            intent.putExtra("waiterName", inputTipViewModel.waiterName)
 //            context.startActivity(intent)
 
-            inputTipViewModel.startPayment(0.0)
+            // inputTipViewModel.startPayment(0.0)
+            inputTipViewModel.showPaymentMethodSelector(0.0)
         },
         onPayWithTip = {
-//            val intent =
+            //   val intent =
 //                Intent(context, CardProcessActivity::class.java).apply {
 //                    putExtra(
 //                        "amount",
@@ -100,7 +104,8 @@ fun InputTipScreen(
 //                    putExtra("waiterName", inputTipViewModel.waiterName)
 //                }
 //            context.startActivity(intent)
-            inputTipViewModel.startPayment(it.toAmountMx().toDouble())
+            // inputTipViewModel.startPayment(it.toAmountMx().toDouble())
+            inputTipViewModel.showPaymentMethodSelector(it.toAmountMx().toDouble())
         },
         totalAmount = inputTipViewModel.subtotal.toDouble(),
         waiterName = inputTipViewModel.waiterName,
@@ -120,7 +125,7 @@ fun InputTipScreen(
             onAmountEntered = { amount, isPercentage ->
                 inputTipViewModel.hideCustomAmountKeyboard()
                 if (amount > 0) {
-//                    val intent =
+                                //  val intent =
 //                        Intent(context, CardProcessActivity::class.java).apply {
 //                            putExtra(
 //                                "amount",
@@ -151,13 +156,27 @@ fun InputTipScreen(
                     } else {
                         amount.toString().toAmountMx()
                     }
-
-                    inputTipViewModel.startPayment(
-                        tip = tip.toDouble()
-                    )
+    //    inputTipViewModel.startPayment(
+    //                     tip = tip.toDouble()
+    //                 )
+                    inputTipViewModel.showPaymentMethodSelector(tip.toDouble())
                 }
             },
             title = "Propina",
+        )
+    }
+
+    if (showPaymentMethodSelection) {
+        val tipAmount = selectedTip
+        val subtotalAmount = inputTipViewModel.subtotal.toAmountMx().toDouble()
+        val totalAmount = subtotalAmount + tipAmount
+
+        PaymentMethodSelectionSheet(
+            onDismiss = { inputTipViewModel.hidePaymentMethodSelector() },
+            onCashSelected = { inputTipViewModel.processCashPayment() },
+            onCardSelected = { inputTipViewModel.startCardPayment() },
+            tipAmount = tipAmount,
+            totalAmount = totalAmount
         )
     }
 }

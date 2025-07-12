@@ -1,6 +1,5 @@
 package com.avoqado.pos.features.payment.presentation.inputTipAmount
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.core.data.local.SessionManager
@@ -38,6 +37,14 @@ class InputTipViewModel(
 
     private val _paymentDeclined = MutableStateFlow(false)
     val paymentDeclined: StateFlow<Boolean> = _paymentDeclined
+    
+    // Estado para mostrar el selector de método de pago
+    private val _showPaymentMethodSelection = MutableStateFlow(false)
+    val showPaymentMethodSelection: StateFlow<Boolean> = _showPaymentMethodSelection
+    
+    // Almacenar temporalmente la propina seleccionada
+    private val _selectedTip = MutableStateFlow(0.0)
+    val selectedTip: StateFlow<Double> = _selectedTip
 
     // Default tip percentages (12%, 15%, 18%) - will be overridden with venue settings if available
     private val _tipPercentages = MutableStateFlow(listOf(0.12f, 0.15f, 0.18f))
@@ -94,12 +101,63 @@ class InputTipViewModel(
             false
         }
     }
+    
+    fun showPaymentMethodSelector(tipAmount: Double) {
+        _selectedTip.update { tipAmount }
+        _showPaymentMethodSelection.update { true }
+    }
+    
+    fun hidePaymentMethodSelector() {
+        _showPaymentMethodSelection.update { false }
+    }
 
     fun navigateBack() {
         navigationDispatcher.navigateBack()
     }
+    
+    /**
+     * Procesar pago en efectivo
+     * No se requiere abrir la app externa, solo registrar el pago y navegar al resultado
+     */
+    fun processCashPayment() {
+        viewModelScope.launch {
+            val tipAmount = _selectedTip.value
+            val subtotalAmount = subtotal.toAmountMx().toDouble()
+            
+            // Registrar el pago en la base de datos
+            paymentRepository.getCachePaymentInfo()?.let { info ->
+                paymentRepository.setCachePaymentInfo(
+                    paymentInfoResult = info.copy(
+                        // Generar un ID único para este pago en efectivo
+                        paymentId = "CASH-" + System.currentTimeMillis().toString(),
+                        tipAmount = tipAmount,
+                        subtotal = subtotalAmount,
+                        date = LocalDateTime.now(),
+                        // No incluir parámetro paymentMethod hasta actualizar el modelo completo
+                        splitType = splitType,
+                        waiterName = waiterName,
+                    ),
+                )
+            }
+            
+            // Mostrar mensaje y navegar a la pantalla de resultado
+            snackbarDelegate.showSnackbar(message = "Pago en efectivo registrado")
+            navigateBack()
+            navigationDispatcher.navigateTo(PaymentDests.PaymentResult)
+        }
+    }
 
-    fun startPayment(tip: Double) {
+    /**
+     * Iniciar el proceso de pago con la app externa (tarjeta)
+     */
+    fun startCardPayment() {
+        startPayment(_selectedTip.value)
+    }
+
+    /**
+     * Método original para iniciar el pago (ahora usado para el pago con tarjeta)
+     */
+    private fun startPayment(tip: Double) {
         viewModelScope.launch {
             val amount = subtotal.toAmountMx().toDouble() * 100
             val transaction = contentService.register(amount.toInt())
@@ -120,6 +178,7 @@ class InputTipViewModel(
                                     rootData = Gson().toJson(transaction),
                                     splitType = splitType,
                                     waiterName = waiterName,
+                                    // No incluir parámetro paymentMethod hasta actualizar el modelo completo
                                 ),
                         )
                     }

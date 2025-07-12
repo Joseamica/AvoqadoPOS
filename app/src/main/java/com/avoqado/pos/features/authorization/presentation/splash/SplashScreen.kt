@@ -49,6 +49,8 @@ fun SplashScreen(
     viewModel: SplashViewModel,
 ) {
     val isConfiguring by viewModel.isConfiguring.collectAsStateWithLifecycle()
+    val isTpvNotFound by viewModel.isTpvNotFound.collectAsStateWithLifecycle()
+    val retryCountdown by viewModel.retryCountdown.collectAsStateWithLifecycle()
 
     // Animation states
     var showLogo by remember { mutableStateOf(false) }
@@ -122,21 +124,39 @@ fun SplashScreen(
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // Show loading indicator when configuring
-            if (isConfiguring) {
+            // Show loading indicator when configuring or error message when TPV not found
+            if (isConfiguring || isTpvNotFound) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    ProgressCircleSmart()
+                    if (isTpvNotFound) {
+                        Text(
+                            text = "La terminal aun no esta dada de alta",
+                            fontFamily = FontFamily(Font(R.font.mulish_bold)),
+                            fontSize = 20.sp,
+                            color = textColor,
+                        )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        Text(
+                            text = "Reintentando en $retryCountdown segundos...",
+                            fontFamily = FontFamily(Font(R.font.mulish_regular)),
+                            fontSize = 16.sp,
+                            color = textColor,
+                        )
+                    } else {
+                        ProgressCircleSmart()
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    Text(
-                        text = stringResource(id = R.string.whileInitProcessFinishes),
-                        fontFamily = FontFamily(Font(R.font.mulish_regular)),
-                        fontSize = 18.sp,
-                        color = textColor,
-                    )
+                        Text(
+                            text = stringResource(id = R.string.whileInitProcessFinishes),
+                            fontFamily = FontFamily(Font(R.font.mulish_regular)),
+                            fontSize = 18.sp,
+                            color = textColor,
+                        )
+                    }
                 }
             }
         }
