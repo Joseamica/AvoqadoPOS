@@ -75,9 +75,36 @@ fun InputTipScreen(
             inputTipViewModel.navigateBack()
         },
         onPayWithoutTip = {
+                    //   val intent = Intent(context, CardProcessActivity::class.java)
+//            intent.putExtra(
+//                "amount",
+//                inputTipViewModel.subtotal.toAmountMx(),
+//            )
+//            intent.putExtra("tipAmount", "0.00")
+//            intent.putExtra("currency", CURRENCY_LABEL)
+//            intent.putExtra("operationType", OperationType.PAYMENT.name)
+//            intent.putExtra("splitType", inputTipViewModel.splitType.value)
+//            intent.putExtra("waiterName", inputTipViewModel.waiterName)
+//            context.startActivity(intent)
+
+            // inputTipViewModel.startPayment(0.0)
             inputTipViewModel.showPaymentMethodSelector(0.0)
         },
         onPayWithTip = {
+            //   val intent =
+//                Intent(context, CardProcessActivity::class.java).apply {
+//                    putExtra(
+//                        "amount",
+//                        inputTipViewModel.subtotal.toAmountMx(),
+//                    )
+//                    putExtra("tipAmount", it.toAmountMx())
+//                    putExtra("currency", CURRENCY_LABEL)
+//                    putExtra("operationType", OperationType.PAYMENT.name)
+//                    putExtra("splitType", inputTipViewModel.splitType.value)
+//                    putExtra("waiterName", inputTipViewModel.waiterName)
+//                }
+//            context.startActivity(intent)
+            // inputTipViewModel.startPayment(it.toAmountMx().toDouble())
             inputTipViewModel.showPaymentMethodSelector(it.toAmountMx().toDouble())
         },
         totalAmount = inputTipViewModel.subtotal.toDouble(),
@@ -98,13 +125,40 @@ fun InputTipScreen(
             onAmountEntered = { amount, isPercentage ->
                 inputTipViewModel.hideCustomAmountKeyboard()
                 if (amount > 0) {
+                                //  val intent =
+//                        Intent(context, CardProcessActivity::class.java).apply {
+//                            putExtra(
+//                                "amount",
+//                                inputTipViewModel.subtotal.toAmountMx(),
+//                            )
+//                            if (isPercentage) {
+//                                val subtotal = inputTipViewModel.subtotal.toAmountMx().toDouble()
+//                                putExtra(
+//                                    "tipAmount",
+//                                    (subtotal * amount / 100.0).toString().toAmountMx(),
+//                                )
+//                            } else {
+//                                putExtra(
+//                                    "tipAmount",
+//                                    amount.toString().toAmountMx(),
+//                                )
+//                            }
+//
+//                            putExtra("currency", CURRENCY_LABEL)
+//                            putExtra("operationType", OperationType.PAYMENT.name)
+//                            putExtra("splitType", inputTipViewModel.splitType.value)
+//                            putExtra("waiterName", inputTipViewModel.waiterName)
+//                        }
+//                    context.startActivity(intent)
                     val tip = if (isPercentage) {
                         val subtotal = inputTipViewModel.subtotal.toAmountMx().toDouble()
                         (subtotal * amount / 100.0).toString().toAmountMx()
                     } else {
                         amount.toString().toAmountMx()
                     }
-
+    //    inputTipViewModel.startPayment(
+    //                     tip = tip.toDouble()
+    //                 )
                     inputTipViewModel.showPaymentMethodSelector(tip.toDouble())
                 }
             },
