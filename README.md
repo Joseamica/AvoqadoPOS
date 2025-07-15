@@ -1,70 +1,110 @@
-# demo-sdk-menta
+# Avoqado POS
 
+## Short Description
 
+Avoqado POS is a native Android Point of Sale (POS) application designed for restaurants, cafes, and other venues. It provides staff with the tools to manage tables, take customer orders, process payments efficiently, and handle daily shifts. The application is built to streamline venue operations and enhance the customer experience.
 
-## Getting started
+## Tech Stack
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+*   **Programming Language**: [Kotlin](https://kotlinlang.org/)
+*   **UI Framework**: [Jetpack Compose](https://developer.android.com/jetpack/compose)
+*   **Architecture**: MVVM (Model-View-ViewModel)
+*   **Networking**: [Retrofit](https://square.github.io/retrofit/), [OkHttp](https://square.github.io/okhttp/)
+*   **Database**: [Room](https://developer.android.com/training/data-storage/room)
+*   **Real-time Communication**: [Socket.IO](https://socket.io/)
+*   **Dependency Injection**: Hilt (inferred from common practice, not explicitly seen)
+*   **Asynchronous Programming**: Kotlin Coroutines
+*   **Image Loading**: Coil (inferred from common practice, not explicitly seen)
+*   **Analytics & Crash Reporting**: [Firebase Analytics](https://firebase.google.com/products/analytics), [Firebase Crashlytics](https://firebase.google.com/products/crashlytics)
+*   **Barcode Scanning**: [Google ML Kit](https://developers.google.com/ml-kit/vision/barcode-scanning)
+*   **QR Code Generation**: [compose-qr-code](https://github.com/lightsparkdev/compose-qr-code)
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+## Key Features
 
-## Add your files
+*   **User Authentication**: Secure login for staff members.
+*   **Menu Management**: View and manage menu items and categories.
+*   **Order Management**: Create, modify, and track customer orders.
+*   **Cart Functionality**: Add items to a cart for a seamless checkout process.
+*   **Payment Processing**: Handle payments, including QR code-based payments.
+*   **Shift Management**: Start, end, and manage work shifts for staff.
+*   **Customer Reviews**: Collect and view customer feedback.
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+## Project Structure
+
+The project follows a modular, feature-based architecture:
 
 ```
-cd existing_repo
-git remote add origin https://git.menta.global/devices/demo-sdk-menta.git
-git branch -M main
-git push -uf origin main
+.AvoqadoPOS/
+├── app/                # Main application module
+│   ├── src/main/
+│   │   ├── java/com/avoqado/pos/
+│   │   │   ├── core/       # Shared business logic, data models, and utilities
+│   │   │   ├── di/         # Dependency injection setup
+│   │   │   ├── features/   # Feature-specific modules (e.g., auth, menu, payment)
+│   │   │   ├── ui/         # Shared UI components and themes
+│   │   │   └── utils/      # Utility functions and helpers
+│   │   └── res/          # Android resources (layouts, drawables, etc.)
+│   └── build.gradle.kts # App-level Gradle build script
+├── build.gradle.kts    # Project-level Gradle build script
+├── gradle.properties   # Project-wide Gradle settings
+└── settings.gradle.kts # Gradle settings for included modules
 ```
 
-## Integrate with your tools
+## Getting Started
 
-- [ ] [Set up project integrations](https://git.menta.global/devices/demo-sdk-menta/-/settings/integrations)ok
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+### Prerequisites
 
-## Suggestions for a good README
+*   [Android Studio](https://developer.android.com/studio) (latest stable version recommended)
+*   JDK 1.8 or higher
+*   Android SDK
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+### Installation & Setup
 
-## Name
-Choose a self-explaining name for your project.
+1.  **Clone the repository**:
 
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
+    ```bash
+    git clone <your-repository-url>
+    cd AvoqadoPOS
+    ```
 
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
+2.  **Open in Android Studio**:
 
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+    *   Open Android Studio.
+    *   Select "Open an existing Android Studio project".
+    *   Navigate to the cloned `AvoqadoPOS` directory and open it.
 
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+3.  **Install Dependencies**:
+
+    Gradle will automatically sync and download the required dependencies when you open the project. If it doesn't, you can trigger a manual sync by going to `File > Sync Project with Gradle Files`.
+
+4.  **Environment Variables**:
+
+    If the project requires API keys or other sensitive information, create a `local.properties` file in the root of the project and add the necessary variables. You may find a `local.properties.example` file with the required keys.
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+To run the application, you can either use an Android emulator or a physical device:
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+1.  **Select a run configuration** from the dropdown menu in Android Studio's toolbar.
+2.  **Choose a device** (either a running emulator or a connected physical device).
+3.  **Click the 'Run' button** (green play icon) or use the shortcut `Shift + F10`.
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+Alternatively, you can build and install the app using Gradle from the command line:
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+```bash
+./gradlew installDebug
+```
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+## Running Tests
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+To run the automated tests for the project, execute the following command in the root directory:
+
+```bash
+./gradlew test
+```
+
+This will run all unit tests in the project. To run instrumented tests, you'll need a connected device or emulator and can use the `connectedAndroidTest` task.
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This project is currently unlicensed.
