@@ -169,25 +169,23 @@ fun TransactionsSummaryScreen(viewModel: TransactionSummaryViewModel) {
                         shifts =
                             shifts.take(10).map { shift ->
                                 mapOf(
-                                    "amount" to shift.paymentSum.toString().toAmountMXDouble(),
-                                    "tip" to shift.tipsSum.toString().toAmountMXDouble(),
+                                    "amount" to shift.totalSales.toString().toAmountMXDouble(),
+                                    "tip" to shift.totalTips.toString().toAmountMXDouble(),
                                     "shift" to shift.id,
                                     "startTime" to
-                                        shift.startTime?.let {
-                                            try {
-                                                LocalDateTime.ofInstant(
-                                                    Instant.parse(it),
-                                                    ZoneId.systemDefault()
-                                                )
-                                            } catch (e: Exception) {
-                                                null
-                                            }
+                                        try {
+                                            LocalDateTime.ofInstant(
+                                                shift.startTime,
+                                                ZoneId.systemDefault()
+                                            )
+                                        } catch (e: Exception) {
+                                            null
                                         },
                                     "endTime" to
-                                        if (!shift.endTime.isNullOrEmpty()) {
+                                        if (shift.endTime != null) {
                                             try {
                                                 LocalDateTime.ofInstant(
-                                                    Instant.parse(shift.endTime),
+                                                    shift.endTime,
                                                     ZoneId.systemDefault()
                                                 )
                                             } catch (e: Exception) {

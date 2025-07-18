@@ -77,7 +77,7 @@ fun ColumnScope.ShiftsPage(
                 ) {
                     items(
                         items = items,
-                        key = { shift -> "${shift.id}_${shift.turnId}" }
+                        key = { shift -> "${shift.id}_${shift.staffId}" }
                     ) { shift ->
                         ShiftItemCard(shift)
                     }
@@ -123,7 +123,7 @@ fun ShiftItemCard(shift: Shift) {
                     )
 
                     Text(
-                        shift.startTime?.let { formatDateTime(it) } ?: "",
+                        formatDateTime(shift.startTime),
                         style =
                             MaterialTheme.typography.bodySmall.copy(
                                 color = Color.Black,
@@ -137,7 +137,7 @@ fun ShiftItemCard(shift: Shift) {
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    if (shift.endTime.isNullOrBlank()) {
+                    if (shift.endTime == null) {
                         // Turno abierto - mostrar indicador "Abierto"
                         Box(
                             modifier =
@@ -163,7 +163,7 @@ fun ShiftItemCard(shift: Shift) {
                             style = MaterialTheme.typography.bodySmall.copy(color = Color.Black),
                         )
                         Text(
-                            shift.endTime.let { formatDateTime(it) },
+                            formatDateTime(shift.endTime),
                             style =
                                 MaterialTheme.typography.bodySmall.copy(
                                     color = Color.Black,
@@ -179,7 +179,7 @@ fun ShiftItemCard(shift: Shift) {
                     modifier = Modifier.weight(0.75f),
                 ) {
                     Text(
-                        "Turno",
+                        "Empleado",
                         style =
                             MaterialTheme.typography.bodySmall.copy(
                                 color = Color.Black,
@@ -187,7 +187,7 @@ fun ShiftItemCard(shift: Shift) {
                     )
 
                     Text(
-                        shift.turnId?.toString() ?: "",
+                        shift.staff?.fullName ?: "N/A",
                         style =
                             MaterialTheme.typography.bodyMedium.copy(
                                 color = Color.Black,
@@ -207,7 +207,7 @@ fun ShiftItemCard(shift: Shift) {
                     )
 
                     Text(
-                        "$${shift.paymentSum.toString().toAmountMx()}",
+                        "$${shift.totalSales.toString().toAmountMx()}",
                         style =
                             MaterialTheme.typography.bodyMedium.copy(
                                 color = Color.Black,
@@ -228,7 +228,7 @@ fun ShiftItemCard(shift: Shift) {
                     )
 
                     Text(
-                        "$${shift.tipsSum.toString().toAmountMx()}",
+                        "$${shift.totalTips.toString().toAmountMx()}",
                         style =
                             MaterialTheme.typography.bodyMedium.copy(
                                 color = Color.Black,
@@ -241,16 +241,13 @@ fun ShiftItemCard(shift: Shift) {
     }
 }
 
-fun formatDateTime(dateString: String?): String {
-    // Check if dateString is null or empty
-    if (dateString.isNullOrEmpty()) {
-        return "--" // Return a placeholder for empty dates
+fun formatDateTime(instant: Instant?): String {
+    // Check if instant is null
+    if (instant == null) {
+        return "--" // Return a placeholder for null dates
     }
     
     try {
-        // Parse the ISO-8601 date/time string (Z means UTC time)
-        val instant = Instant.parse(dateString)
-
         // Convert instant to your desired time zone; system default shown here
         val zonedDateTime = instant.atZone(ZoneId.systemDefault())
 
@@ -261,7 +258,7 @@ fun formatDateTime(dateString: String?): String {
         return zonedDateTime.format(formatter)
     } catch (e: Exception) {
         // Log the error and return a fallback value
-        Timber.e("ShiftsPage", "Error parsing date: $dateString", e)
+        Timber.e("ShiftsPage", "Error formatting date: $instant", e)
         return "Invalid date"
     }
 }

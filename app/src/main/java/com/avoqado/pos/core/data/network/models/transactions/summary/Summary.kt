@@ -10,7 +10,7 @@ data class Summary(
     @SerializedName("ratingsCount")
     val ratingsCount: Int?,
     @SerializedName("totalSales")
-    val totalSales: Int?,
+    val totalSales: Double?,
     @SerializedName("totalTips")
-    val totalTips: Int?,
+    val totalTips: Double?,
 )

@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class WaiterTip(
     @SerializedName("amount")
-    val amount: Int?,
+    val amount: Double?,
     @SerializedName("count")
     val count: Int?,
     @SerializedName("name")

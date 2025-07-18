@@ -12,6 +12,8 @@ import com.avoqado.pos.core.data.network.models.bills.NetworkBillV2
 import com.avoqado.pos.core.data.network.models.transactions.NetworkDataShift
 import com.avoqado.pos.core.data.network.models.transactions.NetworkShiftRecord
 import com.avoqado.pos.core.data.network.models.transactions.payments.NetworkPaymentsData
+import com.avoqado.pos.core.data.network.models.shifts.NetworkShiftsData
+import com.avoqado.pos.core.data.network.models.shifts.NetworkShiftNew
 import com.avoqado.pos.core.data.network.models.transactions.summary.NetworkSummaryData
 import com.avoqado.pos.features.menu.data.network.models.AvoqadoMenuResponse
 import com.avoqado.pos.features.menu.data.network.models.NetworkModifierGroupResponse
@@ -58,14 +60,20 @@ interface AvoqadoService {
     ): NetworkShiftRecord
 
     @GET("tpv/venues/{venueId}/shifts")
-    suspend fun getShiftSummary(
+    suspend fun getShifts(
         @Path("venueId") venueId: String,
         @Query("pageSize") pageSize: Int,
         @Query("pageNumber") pageNumber: Int,
         @Query("startTime", encoded = true) startTime: String?,
         @Query("endTime", encoded = true) endTime: String?,
         @Query("waiterId", encoded = true) waiterId: String?,
-    ): NetworkDataShift
+    ): NetworkShiftsData
+
+    @GET("tpv/venues/{venueId}/shifts/current")
+    suspend fun getCurrentShift(
+        @Path("venueId") venueId: String,
+        @Query("pos_name") posName: String?,
+    ): NetworkShiftNew?
 
     @GET("tpv/venues/{venueId}/shifts-summary")
     suspend fun getSummary(

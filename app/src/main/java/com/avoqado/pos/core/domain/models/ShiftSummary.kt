@@ -5,6 +5,6 @@ data class ShiftSummary(
     val averageTipPercentage: Double,
     val ordersCount: Int,
     val ratingsCount: Int,
-    val totalSales: Int,
-    val totalTips: Int,
+    val totalSales: Double,
+    val totalTips: Double,
 )

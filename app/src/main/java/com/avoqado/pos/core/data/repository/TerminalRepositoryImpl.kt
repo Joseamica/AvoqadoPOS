@@ -1,6 +1,5 @@
 package com.avoqado.pos.core.data.repository
 
-
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.data.network.AvoqadoService
 import com.avoqado.pos.core.data.network.MentaService
@@ -13,9 +12,12 @@ import com.avoqado.pos.core.domain.models.ProcessedBy
 import com.avoqado.pos.core.domain.models.Shift
 import com.avoqado.pos.core.domain.models.ShiftParams
 import com.avoqado.pos.core.domain.models.ShiftSummary
+import com.avoqado.pos.core.domain.models.ShiftStatus
 import com.avoqado.pos.core.domain.models.TerminalInfo
 import com.avoqado.pos.core.domain.repositories.TerminalRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import timber.log.Timber
@@ -23,45 +25,36 @@ import java.time.Instant
 
 class TerminalRepositoryImpl(
     private val sessionManager: SessionManager,
+    private val socketIOManager: SocketIOManager,
     private val mentaService: MentaService,
     private val avoqadoService: AvoqadoService,
 ) : TerminalRepository {
-    override suspend fun getTerminalId(serialCode: String): TerminalInfo {
-        val terminal = sessionManager.getTerminalInfo()
-        if (terminal != null) {
-            return TerminalInfo(
-                id = terminal.id,
-                serialCode = terminal.serialCode,
-            )
-        } else {
-            //TODO: Cambiar a MetaContent para obtener datos del terminal
-            return try {
-                val terminals =
-                    mentaService.getTerminals("")
-                val currentTerminal =
-                    terminals.embedded.terminals?.firstOrNull { terminal -> terminal.serialCode == serialCode }
-                currentTerminal?.let {
-                    sessionManager.saveTerminalInfo(it)
-                    TerminalInfo(
-                        id = it.id,
-                        serialCode = it.serialCode,
-                    )
-                } ?: run {
-                    throw AvoqadoError.BasicError(message = "No se encontro informacion de terminal")
-                }
-            } catch (e: Exception) {
-                if (e is HttpException) {
-                    if (e.code() == 401) {
-                        throw AvoqadoError.Unauthorized
-                    } else {
-                        throw AvoqadoError.BasicError(message = "Algo salio mal...")
-                    }
+
+    override suspend fun getTerminalId(serialCode: String): TerminalInfo =
+        try {
+            avoqadoService.getTPV(serialCode).let {
+                TerminalInfo(
+                    id = serialCode, // Use serialCode as id since it.id might not exist
+                    serialCode = serialCode,
+                    venueId = null, // TODO: Map from actual network model
+                    venue = null, // TODO: Map from actual network model
+                    status = null, // TODO: Map from actual network model
+                    isActive = null, // TODO: Map from actual network model
+                    createdAt = null, // TODO: Map from actual network model
+                    updatedAt = null, // TODO: Map from actual network model
+                )
+            }
+        } catch (e: Exception) {
+            if (e is HttpException) {
+                if (e.code() == 401) {
+                    throw AvoqadoError.Unauthorized
                 } else {
-                    throw AvoqadoError.BasicError(message = "Algo salio mal...")
+                    throw AvoqadoError.BasicError(message = e.message())
                 }
+            } else {
+                throw AvoqadoError.BasicError(message = "Algo salio mal...")
             }
         }
-    }
 
     override suspend fun getTerminalShift(
         venueId: String,
@@ -72,24 +65,26 @@ class TerminalRepositoryImpl(
                 .getRestaurantShift(venueId = venueId, posName = posName)
                 .let {
                     Shift(
-                        id = it.id,
-                        turnId = it.turnId,
-                        insideTurnId = it.insideTurnId,
-                        origin = it.origin,
-                        startTime = it.startTime,
-                        endTime = it.endTime,
-                        fund = it.fund,
-                        cash = it.cash,
-                        card = it.card,
-                        credit = it.credit,
-                        cashier = it.cashier,
-                        venueId = it.venueId,
-                        updatedAt = it.updatedAt,
-                        createdAt = it.createdAt,
-                        avgTipPercentage = (it.avgTipPercentage ?: 0.0).toInt(),
-                        tipsSum = it.tipsSum ?: 0,
-                        tipsCount = it.tipsCount ?: 0,
-                        paymentSum = it.paymentSum ?: 0,
+                        id = it.id ?: "",
+                        venueId = it.venueId ?: venueId,
+                        staffId = "", // TODO: Get actual staff ID
+                        startTime = it.startTime?.let { time -> Instant.parse(time) } ?: Instant.now(),
+                        endTime = it.endTime?.let { time -> Instant.parse(time) },
+                        startingCash = 0.0, // TODO: Map from legacy data
+                        endingCash = null,
+                        cashDifference = null,
+                        totalSales = 0.0, // TODO: Map from legacy data
+                        totalTips = 0.0, // TODO: Map from legacy data
+                        totalOrders = 0,
+                        status = if (it.endTime.isNullOrBlank()) ShiftStatus.OPEN else ShiftStatus.CLOSED,
+                        notes = null,
+                        originSystem = it.origin ?: "AVOQADO",
+                        externalId = null,
+                        createdAt = it.createdAt?.let { time -> Instant.parse(time) } ?: Instant.now(),
+                        updatedAt = it.updatedAt?.let { time -> Instant.parse(time) } ?: Instant.now(),
+                        staff = null, // TODO: Get actual staff info
+                        orders = null,
+                        payments = null
                     )
                 }.also {
                     sessionManager.setShift(it)
@@ -127,24 +122,26 @@ class TerminalRepositoryImpl(
                         ),
                 ).let {
                     Shift(
-                        id = it.id,
-                        turnId = it.turnId,
-                        insideTurnId = it.insideTurnId,
-                        origin = it.origin,
-                        startTime = it.startTime,
-                        endTime = it.endTime,
-                        fund = it.fund,
-                        cash = it.cash,
-                        card = it.card,
-                        credit = it.credit,
-                        cashier = it.cashier,
-                        venueId = it.venueId,
-                        updatedAt = it.updatedAt,
-                        createdAt = it.createdAt,
-                        avgTipPercentage = (it.avgTipPercentage ?: 0.0).toInt(),
-                        tipsSum = it.tipsSum ?: 0,
-                        tipsCount = it.tipsCount ?: 0,
-                        paymentSum = it.paymentSum ?: 0,
+                        id = it.id ?: "",
+                        venueId = it.venueId ?: venueId,
+                        staffId = "", // TODO: Get actual staff ID
+                        startTime = it.startTime?.let { time -> Instant.parse(time) } ?: Instant.now(),
+                        endTime = it.endTime?.let { time -> Instant.parse(time) },
+                        startingCash = 0.0, // TODO: Map from legacy data
+                        endingCash = null,
+                        cashDifference = null,
+                        totalSales = 0.0, // TODO: Map from legacy data
+                        totalTips = 0.0, // TODO: Map from legacy data
+                        totalOrders = 0,
+                        status = if (it.endTime.isNullOrBlank()) ShiftStatus.OPEN else ShiftStatus.CLOSED,
+                        notes = null,
+                        originSystem = it.origin ?: "AVOQADO",
+                        externalId = null,
+                        createdAt = it.createdAt?.let { time -> Instant.parse(time) } ?: Instant.now(),
+                        updatedAt = it.updatedAt?.let { time -> Instant.parse(time) } ?: Instant.now(),
+                        staff = null, // TODO: Get actual staff info
+                        orders = null,
+                        payments = null
                     )
                 }.also {
                     sessionManager.setShift(it)
@@ -173,30 +170,32 @@ class TerminalRepositoryImpl(
                     body =
                         ShiftBody(
                             posName = posName,
-                            turnId = shift?.turnId,
+                            turnId = null, // TODO: Get from shift if needed
                             endTime = Instant.now().toString(),
                             origin = "AVOQADO_TPV",
                         ),
                 ).let {
                     Shift(
-                        id = it.id,
-                        turnId = it.turnId,
-                        insideTurnId = it.insideTurnId,
-                        origin = it.origin,
-                        startTime = it.startTime,
-                        endTime = it.endTime,
-                        fund = it.fund,
-                        cash = it.cash,
-                        card = it.card,
-                        credit = it.credit,
-                        cashier = it.cashier,
-                        venueId = it.venueId,
-                        updatedAt = it.updatedAt,
-                        createdAt = it.createdAt,
-                        avgTipPercentage = (it.avgTipPercentage ?: 0.0).toInt(),
-                        tipsSum = it.tipsSum ?: 0,
-                        tipsCount = it.tipsCount ?: 0,
-                        paymentSum = it.paymentSum ?: 0,
+                        id = it.id ?: "",
+                        venueId = it.venueId ?: venueId,
+                        staffId = "", // TODO: Get actual staff ID
+                        startTime = it.startTime?.let { time -> Instant.parse(time) } ?: Instant.now(),
+                        endTime = it.endTime?.let { time -> Instant.parse(time) },
+                        startingCash = 0.0, // TODO: Map from legacy data
+                        endingCash = null,
+                        cashDifference = null,
+                        totalSales = 0.0, // TODO: Map from legacy data
+                        totalTips = 0.0, // TODO: Map from legacy data
+                        totalOrders = 0,
+                        status = if (it.endTime.isNullOrBlank()) ShiftStatus.OPEN else ShiftStatus.CLOSED,
+                        notes = null,
+                        originSystem = it.origin ?: "AVOQADO",
+                        externalId = null,
+                        createdAt = it.createdAt?.let { time -> Instant.parse(time) } ?: Instant.now(),
+                        updatedAt = it.updatedAt?.let { time -> Instant.parse(time) } ?: Instant.now(),
+                        staff = null, // TODO: Get actual staff info
+                        orders = null,
+                        payments = null
                     )
                 }.also {
                     sessionManager.clearShift()
@@ -217,34 +216,61 @@ class TerminalRepositoryImpl(
     override suspend fun getShiftSummary(params: ShiftParams): List<Shift> =
         try {
             avoqadoService
-                .getShiftSummary(
+                .getShifts(
                     venueId = params.venueId,
                     pageSize = params.pageSize,
                     pageNumber = params.page,
                     startTime = params.startTime,
                     endTime = params.endTime,
                     waiterId = params.waiterIds,
-                ).let { data ->
-                    data.data.map {
+                ).let { response ->
+                    response.data.map { networkShift ->
                         Shift(
-                            id = it.id,
-                            turnId = it.turnId,
-                            insideTurnId = it.insideTurnId,
-                            origin = it.origin,
-                            startTime = it.startTime,
-                            endTime = it.endTime,
-                            fund = it.fund,
-                            cash = it.cash,
-                            card = it.card,
-                            credit = it.credit,
-                            cashier = it.cashier,
-                            venueId = it.venueId,
-                            updatedAt = it.updatedAt,
-                            createdAt = it.createdAt,
-                            avgTipPercentage = (it.avgTipPercentage ?: 0.0).toInt(),
-                            tipsSum = it.tipsSum ?: 0,
-                            tipsCount = it.tipsCount ?: 0,
-                            paymentSum = it.paymentSum ?: 0,
+                            id = networkShift.id,
+                            venueId = networkShift.venueId,
+                            staffId = networkShift.staffId,
+                            startTime = Instant.parse(networkShift.startTime),
+                            endTime = networkShift.endTime?.let { Instant.parse(it) },
+                            startingCash = networkShift.startingCash.toDoubleOrNull() ?: 0.0,
+                            endingCash = networkShift.endingCash?.toDoubleOrNull(),
+                            cashDifference = networkShift.cashDifference?.toDoubleOrNull(),
+                            totalSales = networkShift.totalSales.toDoubleOrNull() ?: 0.0,
+                            totalTips = networkShift.totalTips.toDoubleOrNull() ?: 0.0,
+                            totalOrders = networkShift.totalOrders,
+                            status = when (networkShift.status) {
+                                "OPEN" -> ShiftStatus.OPEN
+                                "CLOSED" -> ShiftStatus.CLOSED
+                                else -> ShiftStatus.PENDING
+                            },
+                            notes = networkShift.notes,
+                            originSystem = networkShift.originSystem,
+                            externalId = networkShift.externalId,
+                            createdAt = Instant.parse(networkShift.createdAt),
+                            updatedAt = Instant.parse(networkShift.updatedAt),
+                            staff = networkShift.staff?.let {
+                                com.avoqado.pos.core.domain.models.ShiftStaff(
+                                    id = it.id,
+                                    firstName = it.firstName,
+                                    lastName = it.lastName
+                                )
+                            },
+                            orders = networkShift.orders?.map { order ->
+                                com.avoqado.pos.core.domain.models.ShiftOrder(
+                                    id = order.id,
+                                    orderNumber = order.orderNumber,
+                                    total = order.total.toDoubleOrNull() ?: 0.0,
+                                    status = order.status
+                                )
+                            },
+                            payments = networkShift.payments?.map { payment ->
+                                com.avoqado.pos.core.domain.models.ShiftPayment(
+                                    id = payment.id,
+                                    amount = payment.amount.toDoubleOrNull() ?: 0.0,
+                                    tipAmount = payment.tipAmount.toDoubleOrNull() ?: 0.0,
+                                    method = payment.method,
+                                    status = payment.status
+                                )
+                            }
                         )
                     }
                 }
@@ -281,8 +307,8 @@ class TerminalRepositoryImpl(
                         averageTipPercentage = it.data?.summary?.averageTipPercentage ?: 0.0,
                         ordersCount = it.data?.summary?.ordersCount ?: 0,
                         ratingsCount = it.data?.summary?.ratingsCount ?: 0,
-                        totalSales = it.data?.summary?.totalSales ?: 0,
-                        totalTips = it.data?.summary?.totalTips ?: 0,
+                        totalSales = it.data?.summary?.totalSales?.toDouble() ?: 0.0,
+                        totalTips = it.data?.summary?.totalTips?.toDouble() ?: 0.0,
                     )
                 }
         } catch (e: Exception) {
@@ -355,70 +381,34 @@ class TerminalRepositoryImpl(
         }
 
     override fun connectToShiftEvents(venueId: String) {
-        // Verificamos si el socket está conectado
-        if (!SocketIOManager.isConnected()) {
-            SocketIOManager.connect(SocketIOManager.getServerUrl())
-        }
-
-        // Nos unimos a la sala del venue para escuchar eventos
-        SocketIOManager.joinMobileRoom(venueId)
+        socketIOManager.connect(venueId)
     }
 
     override fun disconnectFromShiftEvents() {
-        // Si tenemos un currentVenueRoomId en SocketIOManager, nos desconectamos
-        SocketIOManager.disconnect()
+        socketIOManager.disconnect()
     }
 
-    override fun listenForShiftEvents(): Flow<Shift> =
-        SocketIOManager.shiftMessageFlow.map { message ->
-            Timber.d("Received shift update: $message")
+    override fun listenForShiftEvents(): Flow<Shift> = flow {
+        // TODO: Implement socket listening for shift updates
+        // This is a placeholder implementation
+        // socketIOManager.listen("shiftUpdate").collect { shiftUpdateMessage ->
+        //     emit(com.avoqado.pos.core.domain.mappers.ShiftMapper.mapToDomain(shiftUpdateMessage))
+        // }
+    }
 
-            // Convertimos el mensaje a un objeto Shift
-            val shift =
-    Shift(
-        id = message.id,
-        turnId = message.turnId,
-        insideTurnId = message.insideTurnId,
-        origin = message.origin,
-        startTime = message.startTime,
-        endTime = message.endTime,
-        fund = message.fund?.toString(),
-        cash = message.cash?.toString(),
-        card = message.card?.toString(),
-        credit = message.credit?.toString(),
-        cashier = message.cashier,
-        venueId = message.venueId,
-        updatedAt = message.updatedAt?.toString(),
-        createdAt = message.createdAt?.toString(),
-        avgTipPercentage = 0, // Default value
-        tipsSum = 0,          // Default value
-        tipsCount = 0,        // Default value
-        paymentSum = 0        // Default value
-    )
-
-            // Guardamos el turno en SessionManager
-            sessionManager.setShift(shift)
-
-            shift
-        }
-        
-    override suspend fun getPaymentById(paymentId: String): Payment? {
+    override suspend fun getPaymentById(paymentId: String): Payment? =
         try {
-            // Get the current venue ID from session
-            val venueId = sessionManager.getVenueId() ?: return null
-            
-            // Set parameters to get all payments for the current venue
-            val params = ShiftParams(
-                pageSize = 1, 
-                page = 1,
-                venueId = venueId,
-                paymentId = paymentId
-            )
-            val payments = getPayments(params)
-            return payments.firstOrNull()
+            sessionManager.getVenueInfo()?.let { venueInfo ->
+                val params = ShiftParams(
+                    venueId = venueInfo.id ?: "",
+                    page = 1,
+                    pageSize = 1,
+                    paymentId = paymentId
+                )
+                getPayments(params).firstOrNull()
+            }
         } catch (e: Exception) {
-            Timber.e(e, "Error finding payment by ID: $paymentId")
-            return null
+            Timber.e(e, "Error getting payment by ID: $paymentId")
+            null
         }
-    }
 }

@@ -57,4 +57,6 @@ object AvoqadoAPI {
     val mentaService: MentaService by lazy {
         retrofitMenta.create(MentaService::class.java)
     }
+
+    val socketIOManager: SocketIOManager = SocketIOManager
 }

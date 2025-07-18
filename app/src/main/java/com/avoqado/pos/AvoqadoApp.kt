@@ -62,7 +62,8 @@ class AvoqadoApp : Application() {
             TerminalRepositoryImpl(
                 sessionManager = sessionManager,
                 mentaService = AvoqadoAPI.mentaService,
-                avoqadoService = AvoqadoAPI.apiService
+                avoqadoService = AvoqadoAPI.apiService,
+                socketIOManager = AvoqadoAPI.socketIOManager
             )
         }
         val authorizationRepository: AuthorizationRepository by lazy {
