@@ -25,7 +25,7 @@ object AppConfig {
     private const val DEFAULT_DEV_MODE = true // Set default development mode
     
     // Backend URLs
-    private const val DEV_SERVER_URL = "https://5ffc-187-190-190-247.ngrok-free.app"
+    private const val DEV_SERVER_URL = "https://3feba7ca7b87.ngrok-free.app"
     private const val PROD_SERVER_URL = "https://api.avoqado.io"
     
     // Frontend URLs
@@ -82,9 +82,9 @@ object AppConfig {
     fun getApiBaseUrl(): String {
         val baseUrl = getServerUrl()
         return if (baseUrl.endsWith("/")) {
-            baseUrl + "v1/"
+            baseUrl + "api/v1/"
         } else {
-            "$baseUrl/v1/"
+            "$baseUrl/api/v1/"
         }
     }
     

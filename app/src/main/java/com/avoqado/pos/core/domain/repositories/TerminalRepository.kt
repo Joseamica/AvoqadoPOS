@@ -1,6 +1,6 @@
 package com.avoqado.pos.core.domain.repositories
 
-import com.avoqado.pos.core.domain.models.PaymentShift
+import com.avoqado.pos.core.domain.models.Payment
 import com.avoqado.pos.core.domain.models.Shift
 import com.avoqado.pos.core.domain.models.ShiftParams
 import com.avoqado.pos.core.domain.models.ShiftSummary
@@ -29,7 +29,7 @@ interface TerminalRepository {
 
     suspend fun getSummary(params: ShiftParams): ShiftSummary
 
-    suspend fun getShiftPaymentsSummary(params: ShiftParams): List<PaymentShift>
+    suspend fun getPayments(params: ShiftParams): List<Payment>
 
     // Nuevos métodos para WebSocket
     fun connectToShiftEvents(venueId: String)
@@ -43,5 +43,5 @@ interface TerminalRepository {
      * @param paymentId The unique identifier of the payment
      * @return The payment if found, null otherwise
      */
-    suspend fun getPaymentById(paymentId: String): PaymentShift?
+    suspend fun getPaymentById(paymentId: String): Payment?
 }

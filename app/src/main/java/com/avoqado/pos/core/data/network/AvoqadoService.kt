@@ -11,7 +11,7 @@ import com.avoqado.pos.core.data.network.models.bills.NetworkBillDetailV2
 import com.avoqado.pos.core.data.network.models.bills.NetworkBillV2
 import com.avoqado.pos.core.data.network.models.transactions.NetworkDataShift
 import com.avoqado.pos.core.data.network.models.transactions.NetworkShiftRecord
-import com.avoqado.pos.core.data.network.models.transactions.payments.NetworkShiftPaymentsData
+import com.avoqado.pos.core.data.network.models.transactions.payments.NetworkPaymentsData
 import com.avoqado.pos.core.data.network.models.transactions.summary.NetworkSummaryData
 import com.avoqado.pos.features.menu.data.network.models.AvoqadoMenuResponse
 import com.avoqado.pos.features.menu.data.network.models.NetworkModifierGroupResponse
@@ -76,14 +76,15 @@ interface AvoqadoService {
     ): NetworkSummaryData
 
     @GET("tpv/venues/{venueId}/payments")
-    suspend fun getPaymentsSummary(
+    suspend fun getPayments(
         @Path("venueId") venueId: String,
         @Query("pageSize") pageSize: Int,
         @Query("pageNumber") pageNumber: Int,
         @Query("startTime", encoded = true) startTime: String?,
         @Query("endTime", encoded = true) endTime: String?,
         @Query("waiterId", encoded = true) waiterId: String?,
-    ): NetworkShiftPaymentsData
+        @Query("paymentId", encoded = true) paymentId: String?,
+    ): NetworkPaymentsData
 
     @GET("tpv/venues/{venueId}/bills")
     suspend fun getActiveBills(

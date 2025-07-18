@@ -27,7 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.avoqado.pos.core.domain.models.PaymentShift
+import com.avoqado.pos.core.domain.models.Payment
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -36,13 +36,13 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentDetailScreen(
-    payment: PaymentShift,
+    payment: Payment,
     onBackClick: () -> Unit
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Detalle de Pago #${payment.paymentId}") },
+                title = { Text("Detalle de Pago #${payment.externalId ?: payment.id}") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
@@ -91,22 +91,22 @@ fun PaymentDetailScreen(
                     // Payment ID and Date
                     DetailsRow(
                         label = "ID de Pago",
-                        value = "#${payment.paymentId}"
+                        value = "#${payment.externalId ?: payment.id}"
                     )
                     
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     DetailsRow(
                         label = "Fecha",
-                        value = formatDateTime(payment.date)
+                        value = formatDetailDateTime(payment.createdAt)
                     )
                     
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     // Waiter info
                     DetailsRow(
-                        label = "Mesero",
-                        value = payment.waiterName
+                        label = "Atendido por",
+                        value = payment.processedBy?.fullName ?: "N/A"
                     )
                     
                     Spacer(modifier = Modifier.height(16.dp))
@@ -115,23 +115,22 @@ fun PaymentDetailScreen(
                     
                     // Payment amounts
                     DetailsRow(
-                        label = "Venta",
-                        value = "$${payment.totalSales.toString().toAmountMx()}"
+                        label = "Subtotal",
+                        value = (payment.amount - payment.tipAmount).toString().toAmountMx()
                     )
                     
                     Spacer(modifier = Modifier.height(8.dp))
                     
                     DetailsRow(
                         label = "Propina",
-                        value = "$${payment.totalTip.toString().toAmountMx()}"
+                        value = payment.tipAmount.toString().toAmountMx()
                     )
                     
                     Spacer(modifier = Modifier.height(8.dp))
                     
-                    val total = payment.totalSales + payment.totalTip
                     DetailsRow(
                         label = "Total",
-                        value = "$${total.toString().toAmountMx()}",
+                        value = payment.amount.toString().toAmountMx(),
                         isBold = true
                     )
                 }
@@ -166,7 +165,7 @@ fun PaymentDetailScreen(
                     // For example, payment method, table number, etc.
                     DetailsRow(
                         label = "Método de Pago",
-                        value = payment.paymentMethod ?: "No disponible"
+                        value = payment.method
                     )
                     
                     if (payment.tableNumber != null) {

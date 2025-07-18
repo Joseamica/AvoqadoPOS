@@ -33,7 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.avoqado.pos.R
-import com.avoqado.pos.core.domain.models.PaymentShift
+import com.avoqado.pos.core.domain.models.Payment
 import com.avoqado.pos.core.domain.models.Shift
 import com.avoqado.pos.core.domain.models.ShiftSummary
 import com.avoqado.pos.core.presentation.components.ObserverLifecycleEvents
@@ -150,12 +150,12 @@ fun TransactionsSummaryScreen(viewModel: TransactionSummaryViewModel) {
                         shiftPayments =
                             payments.take(10).map { payment ->
                                 mapOf(
-                                    "amount" to payment.totalSales.toString().toAmountMXDouble(),
-                                    "tip" to payment.totalTip.toString().toAmountMXDouble(),
+                                    "amount" to payment.amount.toString().toAmountMXDouble(),
+                                    "tip" to payment.tipAmount.toString().toAmountMXDouble(),
                                     "folio" to payment.id,
                                     "dateTime" to
                                         LocalDateTime.ofInstant(
-                                            payment.date,
+                                            payment.createdAt,
                                             ZoneId.systemDefault(),
                                         ),
                                 )
@@ -229,9 +229,9 @@ fun TransactionSummaryContent(
     hasMorePaymentsPages: Boolean = true, // Add this parameter
     onLoadMore: () -> Unit = {},
     summary: ShiftSummary? = null,
-    payments: List<PaymentShift> = emptyList(),
+    payments: List<Payment> = emptyList(),
     onLoadMorePayments: () -> Unit = {},
-    onPaymentSelected: (PaymentShift) -> Unit = {},
+    onPaymentSelected: (Payment) -> Unit = {},
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),

@@ -7,7 +7,9 @@ import com.avoqado.pos.core.data.network.MentaService
 import com.avoqado.pos.core.data.network.SocketIOManager
 import com.avoqado.pos.core.data.network.models.ShiftBody
 import com.avoqado.pos.core.domain.models.AvoqadoError
-import com.avoqado.pos.core.domain.models.PaymentShift
+import com.avoqado.pos.core.domain.models.Payment
+import com.avoqado.pos.core.domain.models.Order
+import com.avoqado.pos.core.domain.models.ProcessedBy
 import com.avoqado.pos.core.domain.models.Shift
 import com.avoqado.pos.core.domain.models.ShiftParams
 import com.avoqado.pos.core.domain.models.ShiftSummary
@@ -296,39 +298,48 @@ class TerminalRepositoryImpl(
             }
         }
 
-    override suspend fun getShiftPaymentsSummary(params: ShiftParams): List<PaymentShift> =
+    override suspend fun getPayments(params: ShiftParams): List<Payment> =
         try {
             avoqadoService
-                .getPaymentsSummary(
+                .getPayments(
                     venueId = params.venueId,
                     pageSize = params.pageSize,
                     pageNumber = params.page,
                     startTime = params.startTime,
                     endTime = params.endTime,
                     waiterId = params.waiterIds,
+                    paymentId = params.paymentId,
                 ).let { data ->
-                    data.data?.map {
-                        PaymentShift(
-                            id = it?.id ?: "",
-                            waiterName = it?.waiter?.nombre ?: "",
-                            totalSales = it?.amount?.toInt() ?: 0,
-                            totalTip =
-                                it
-                                    ?.tips
-                                    ?.firstOrNull()
-                                    ?.amount
-                                    ?.toInt() ?: 0,
-                            paymentId = it?.mentaTicketId ?: "",
-                            date =
-                                it?.createdAt?.let {
-                                    Instant.parse(it)
-                                } ?: Instant.now(),
-                            createdAt =
-                                it?.createdAt?.let {
-                                    Instant.parse(it)
-                                } ?: Instant.now(),
+                    data.data.map { networkPayment ->
+                        Payment(
+                            id = networkPayment.id,
+                            venueId = networkPayment.venueId,
+                            orderId = networkPayment.orderId,
+                            shiftId = networkPayment.shiftId,
+                            processedById = networkPayment.processedById,
+                            amount = networkPayment.amount.toDoubleOrNull() ?: 0.0,
+                            tipAmount = networkPayment.tipAmount.toDoubleOrNull() ?: 0.0,
+                            method = networkPayment.method,
+                            status = networkPayment.status,
+                            processor = networkPayment.processor,
+                            processorId = networkPayment.processorId,
+                            feePercentage = networkPayment.feePercentage?.toDoubleOrNull(),
+                            feeAmount = networkPayment.feeAmount?.toDoubleOrNull(),
+                            netAmount = networkPayment.netAmount?.toDoubleOrNull(),
+                            externalId = networkPayment.externalId,
+                            originSystem = networkPayment.originSystem,
+                            syncStatus = networkPayment.syncStatus,
+                            syncedAt = networkPayment.syncedAt?.let { date -> Instant.parse(date) },
+                            createdAt = Instant.parse(networkPayment.createdAt),
+                            updatedAt = Instant.parse(networkPayment.updatedAt),
+                            processedBy = networkPayment.processedBy?.let {
+                                ProcessedBy(it.id, it.firstName, it.lastName)
+                            },
+                            order = networkPayment.order?.let { o -> Order(o.id) },
+                            allocations = emptyList(), // TODO: Map allocations if needed
+                            tableNumber = networkPayment.order?.table?.number
                         )
-                    } ?: emptyList()
+                    }
                 }
         } catch (e: Exception) {
             Timber.e(e)
@@ -391,23 +402,20 @@ class TerminalRepositoryImpl(
             shift
         }
         
-    override suspend fun getPaymentById(paymentId: String): PaymentShift? {
+    override suspend fun getPaymentById(paymentId: String): Payment? {
         try {
             // Get the current venue ID from session
             val venueId = sessionManager.getVenueId() ?: return null
             
             // Set parameters to get all payments for the current venue
             val params = ShiftParams(
-                venueId = venueId,
-                pageSize = 100, // Set a reasonable page size to ensure we retrieve enough payments
+                pageSize = 1, 
                 page = 1,
-                startTime = null, // No time restrictions
-                endTime = null
+                venueId = venueId,
+                paymentId = paymentId
             )
-            
-            // Get all payments and find the one that matches the paymentId
-            val payments = getShiftPaymentsSummary(params)
-            return payments.find { it.paymentId == paymentId }
+            val payments = getPayments(params)
+            return payments.firstOrNull()
         } catch (e: Exception) {
             Timber.e(e, "Error finding payment by ID: $paymentId")
             return null

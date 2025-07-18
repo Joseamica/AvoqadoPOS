@@ -7,4 +7,5 @@ data class ShiftParams(
     val waiterIds: String? = null,
     val startTime: String? = null,
     val endTime: String? = null,
+    val paymentId: String? = null,
 )

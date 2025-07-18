@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.avoqado.pos.core.data.local.SessionManager
 import com.avoqado.pos.core.domain.models.AvoqadoError
-import com.avoqado.pos.core.domain.models.PaymentShift
+import com.avoqado.pos.core.domain.models.Payment
 import com.avoqado.pos.core.domain.models.Shift
 import com.avoqado.pos.core.domain.models.ShiftParams
 import com.avoqado.pos.core.domain.models.ShiftSummary
@@ -66,8 +66,8 @@ class TransactionSummaryViewModel(
     private val _shiftSummary = MutableStateFlow<ShiftSummary?>(null)
     val shiftSummary: StateFlow<ShiftSummary?> = _shiftSummary.asStateFlow()
 
-    private val _paymentsShiftList = MutableStateFlow<List<PaymentShift>>(emptyList())
-    val paymentsShiftList: StateFlow<List<PaymentShift>> = _paymentsShiftList.asStateFlow()
+    private val _paymentsShiftList = MutableStateFlow<List<Payment>>(emptyList())
+    val paymentsShiftList: StateFlow<List<Payment>> = _paymentsShiftList.asStateFlow()
 
     val venueInfo = sessionManager.getVenueInfo()
 
@@ -171,8 +171,8 @@ class TransactionSummaryViewModel(
                     _hasMorePaymentsPages.update { true }
                 }
 
-                val payments =
-                    terminalRepository.getShiftPaymentsSummary(
+                val payments = 
+                    terminalRepository.getPayments(
                         params =
                             ShiftParams(
                                 pageSize = PAGE_SIZE,
@@ -341,9 +341,9 @@ class TransactionSummaryViewModel(
      * Navigates to the payment detail screen when a payment is selected
      * @param payment The selected payment
      */
-    fun onPaymentSelected(payment: PaymentShift) {
+    fun onPaymentSelected(payment: Payment) {
         // The PaymentDetail destination uses a path parameter, so we need to replace it in the route
-        val route = PaymentDests.PaymentDetail.route.replace("{${PaymentDests.PaymentDetail.ARG_PAYMENT_ID}}", payment.paymentId)
+        val route = PaymentDests.PaymentDetail.route.replace("{${PaymentDests.PaymentDetail.ARG_PAYMENT_ID}}", payment.id)
         navigationDispatcher.navigateTo(route)
     }
 }

@@ -33,7 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.avoqado.pos.core.domain.models.PaymentShift
+import com.avoqado.pos.core.domain.models.Payment
 import com.avoqado.pos.core.presentation.components.PullToRefreshBox
 import com.avoqado.pos.core.presentation.utils.toAmountMx
 import java.time.Instant
@@ -44,20 +44,20 @@ import java.util.Locale
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ColumnScope.PaymentsPage(
-    items: List<PaymentShift> = emptyList(),
+    items: List<Payment> = emptyList(),
     isLoading: Boolean = false,
     isRefreshing: Boolean = false,
     listState: LazyListState = rememberLazyListState(),
     hasMorePages: Boolean = true,
     onLoadMore: () -> Unit = {},
     onRefresh: () -> Unit = {},
-    onPaymentSelected: (PaymentShift) -> Unit = {},
+    onPaymentSelected: (Payment) -> Unit = {},
 ) {
     // Calculate the total from all payment items
     val totalSales = remember(items) {
-        items.sumOf { it.totalSales }
+        items.sumOf { it.amount }
     }
-    
+
     Column(
         modifier = Modifier.weight(1f),
     ) {
@@ -86,14 +86,14 @@ fun ColumnScope.PaymentsPage(
                 ) {
                     items(
                         items = items,
-                        key = { payment -> "${payment.id}_${payment.date ?: ""}_${payment.paymentId}_${payment.hashCode()}" }
+                        key = { payment -> payment.id }
                     ) { payment ->
-                        PaymentShiftItemCard(
+                        PaymentItemCard(
                             payment = payment,
                             onClick = { onPaymentSelected(payment) }
                         )
                     }
-                    
+
                     if (isLoading && hasMorePages) {
                         item {
                             Row(
@@ -110,13 +110,13 @@ fun ColumnScope.PaymentsPage(
             }
         }
     }
-    
+
     // Add sticky total footer
     TotalFooter(totalAmount = totalSales)
 }
 
 @Composable
-fun TotalFooter(totalAmount: Int) {
+fun TotalFooter(totalAmount: Double) {
     Surface(
         color = Color.White,
         modifier = Modifier.fillMaxWidth(),
@@ -136,7 +136,7 @@ fun TotalFooter(totalAmount: Int) {
                     fontWeight = FontWeight.Medium
                 )
             )
-            
+
             Text(
                 text = "$${totalAmount.toString().toAmountMx()}",
                 style = MaterialTheme.typography.bodyLarge.copy(
@@ -148,8 +148,8 @@ fun TotalFooter(totalAmount: Int) {
 }
 
 @Composable
-fun PaymentShiftItemCard(
-    payment: PaymentShift,
+fun PaymentItemCard(
+    payment: Payment,
     onClick: () -> Unit = {}
 ) {
     Card(
@@ -175,7 +175,7 @@ fun PaymentShiftItemCard(
                     ),
                 )
                 Text(
-                    text = "$${payment.totalSales.toString().toAmountMx()}",
+                    text = "$${payment.amount.toString().toAmountMx()}",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = Color.Black,
                         fontWeight = FontWeight.W600,
@@ -190,7 +190,7 @@ fun PaymentShiftItemCard(
                     ),
                 )
                 Text(
-                    text = "$${payment.totalTip.toString().toAmountMx()}",
+                    text = "$${payment.tipAmount.toString().toAmountMx()}",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = Color.Black,
                         fontWeight = FontWeight.W600,
@@ -203,7 +203,7 @@ fun PaymentShiftItemCard(
                 horizontalAlignment = Alignment.End,
             ) {
                 Text(
-                    text = "#${payment.paymentId}",
+                    text = payment.method,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = Color.Black,
                         fontWeight = FontWeight.W500,
@@ -212,7 +212,7 @@ fun PaymentShiftItemCard(
                 Spacer(Modifier.height(8.dp))
 
                 Text(
-                    text = payment.waiterName,
+                    text = payment.status,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = Color.Black,
                         fontWeight = FontWeight.W500,
@@ -222,7 +222,7 @@ fun PaymentShiftItemCard(
                 Spacer(Modifier.height(8.dp))
 
                 Text(
-                    text = formatDateTime(payment.date),
+                    text = formatDateTime(payment.createdAt),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = Color.Black,
                         fontWeight = FontWeight.W500,

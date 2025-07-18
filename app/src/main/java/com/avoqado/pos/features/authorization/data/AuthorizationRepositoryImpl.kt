@@ -24,9 +24,9 @@ class AuthorizationRepositoryImpl(
                 )
             val user =
                 User(
-                    id = response.idmesero,
+                    id = response.staffId,
                     venueId = response.venueId,
-                    name = response.nombre
+                    name = "${response.staff.firstName} ${response.staff.lastName}"
                 )
             sessionManager.saveAvoqadoSession(user)
             return user

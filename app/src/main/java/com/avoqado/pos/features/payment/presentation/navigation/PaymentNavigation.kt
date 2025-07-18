@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import com.avoqado.pos.AvoqadoApp
-import com.avoqado.pos.core.domain.models.PaymentShift
+import com.avoqado.pos.core.domain.models.Payment
 import com.avoqado.pos.core.domain.models.SplitType
 import com.avoqado.pos.core.domain.usecase.ValidateAmountUseCase
 import com.avoqado.pos.core.presentation.delegates.SnackbarDelegate
@@ -126,7 +126,7 @@ fun NavGraphBuilder.paymentNavigation(
     
     composableHolder(PaymentDests.PaymentDetail) {
         val paymentId = it.arguments?.getString(PaymentDests.PaymentDetail.ARG_PAYMENT_ID) ?: ""
-        val paymentState = remember { mutableStateOf<PaymentShift?>(null) }
+        val paymentState = remember { mutableStateOf<Payment?>(null) }
         
         // Launch a coroutine effect to fetch the payment data
         LaunchedEffect(paymentId) {
